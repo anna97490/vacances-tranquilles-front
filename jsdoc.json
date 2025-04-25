@@ -1,0 +1,12 @@
+{
+  "source": {
+    "include": ["src/app"],
+    "includePattern": ".+\\.ts$",
+    "excludePattern": "(node_modules|dist|.*\\.spec\\.ts|app\\.config\\.ts|app\\.routes\\.ts)"
+  },
+  "opts": {
+    "destination": "./docs/jsdoc",
+    "recurse": true
+  },
+  "plugins": []
+}
