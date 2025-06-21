@@ -30,65 +30,92 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Run build (à activer plus tard)
-      #   run: npm run build
+      - name: Run build (à activer plus tard)
+        run: npm run build
 
-      # - name: Run tests (à activer plus tard)
-      #   run: npm run test
+      - name: Run tests with code coverage
+        run: |
+          npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
 
-      # - name: Enforce 80% code coverage (à activer plus tard)
-      #   run: |
-      #     echo "Vérification couverture > 80% - À activer plus tard"
+      - name: Check code coverage ≥ 80%
+        run: |
+          coverage_file=coverage/index.html
+          percent=$(grep -A2 "Statements" $coverage_file | grep -Po '\d+(?=\s*%)' | head -1)
 
-  #auto-bump-version:
-    #if: github.ref == 'refs/heads/staging'
-    #needs: build-and-test
-    #runs-on: ubuntu-latest
+          if [[ -z "$percent" ]]; then
+            echo "Impossible de lire la couverture depuis le fichier HTML."
+            exit 1
+          fi
 
-    #steps:
-      #- name: Checkout code
-        #uses: actions/checkout@v4
-        #with:
-          #fetch-depth: 0
+          echo "Coverage from HTML = $percent%"
 
-      #- name: Configure Git
-        #run: |
-          #git config --global user.name "github-actions"
-          #git config --global user.email "github-actions@github.com"
+          if [ "$percent" -lt 80 ]; then
+            echo "Code coverage ($percent%) is below 80%. Failing the job."
+            exit 1
+          else
+            echo "Code coverage is sufficient ($percent%)."
+          fi
 
-      #- name: Detect commit types
-        #id: version_type
-        #run: |
-          #COMMITS=$(git log origin/main..HEAD --pretty=format:"%s")
-          #echo "$COMMITS" > commits.txt
-          #if grep -q "BREAKING CHANGE\|!\|feat!" commits.txt; then
-            #echo "type=major" >> $GITHUB_OUTPUT
-          #elif grep -q "feat" commits.txt; then
-            #echo "type=minor" >> $GITHUB_OUTPUT
-          #elif grep -q "fix" commits.txt; then
-            #echo "type=patch" >> $GITHUB_OUTPUT
-          #else
-            #echo "type=none" >> $GITHUB_OUTPUT
+      - name: SonarCloud analysis (non-blocking)
+        continue-on-error: true
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: .
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
+          SONAR_PROJECT_KEY: anna97490_vacances-tranquilles-front
+          SONAR_ORGANIZATION: anna97490
 
-      #- name: Bump version in package.json
-        #if: steps.version_type.outputs.type != 'none'
-        #run: |
-          #current_version=$(jq -r .version package.json)
-          #IFS='.' read -r major minor patch <<< "$current_version"
-          #case "${{ steps.version_type.outputs.type }}" in
-            #major)
-              #major=$((major + 1)); minor=0; patch=0 ;;
-            #minor)
-              #minor=$((minor + 1)); patch=0 ;;
-            #patch)
-              #patch=$((patch + 1)) ;;
-          #esac
-          #new_version="$major.$minor.$patch"
-          #echo "Nouvelle version : $new_version"
-          #jq ".version = \"$new_version\"" package.json > tmp.$$.json && mv tmp.$$.json package.json
-         # git add package.json
-          #git commit -m "ci: bump version to $new_version [skip ci]"
-          #git push origin staging
+
+  auto-bump-version:
+    if: github.ref == 'refs/heads/staging'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Detect commit types
+        id: version_type
+        run: |
+          COMMITS=$(git log origin/main..HEAD --pretty=format:"%s")
+          echo "$COMMITS" > commits.txt
+          if grep -q "BREAKING CHANGE\|!\|feat!" commits.txt; then
+            echo "type=major" >> $GITHUB_OUTPUT
+          elif grep -q "feat" commits.txt; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+          elif grep -q "fix" commits.txt; then
+            echo "type=patch" >> $GITHUB_OUTPUT
+          else
+            echo "type=none" >> $GITHUB_OUTPUT
+
+      - name: Bump version in package.json
+        if: steps.version_type.outputs.type != 'none'
+        run: |
+          current_version=$(jq -r .version package.json)
+          IFS='.' read -r major minor patch <<< "$current_version"
+          case "${{ steps.version_type.outputs.type }}" in
+            major)
+              major=$((major + 1)); minor=0; patch=0 ;;
+            minor)
+              minor=$((minor + 1)); patch=0 ;;
+            patch)
+              patch=$((patch + 1)) ;;
+          esac
+          new_version="$major.$minor.$patch"
+          echo "Nouvelle version : $new_version"
+          jq ".version = \"$new_version\"" package.json > tmp.$$.json && mv tmp.$$.json package.json
+          git add package.json
+          git commit -m "ci: bump version to $new_version [skip ci]"
+          git push origin staging
 
   deploy-to-render:
     if: github.ref == 'refs/heads/main'
