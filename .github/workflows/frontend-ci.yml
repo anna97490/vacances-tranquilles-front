@@ -40,7 +40,7 @@ jobs:
       - name: Check code coverage ≥ 80%
         run: |
           coverage_file=coverage/index.html
-          percent=$(grep -A2 "Statements" $coverage_file | grep -Po '\d+(?=\s*%)' | head -1)
+          percent=$(grep -A3 "Statements" $coverage_file | grep -Po '[0-9]+(?=%)' | head -1)
 
           if [[ -z "$percent" ]]; then
             echo "Impossible de lire la couverture depuis le fichier HTML."
