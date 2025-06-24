@@ -7,9 +7,13 @@
     /** Button text color */
     --secondary-text-color: #FFFFFF;
     /** Button nav color */
-    --tertiary-color: #FFA101;
+    --tertiary-color: #db9e36;
     /** Title color */
-    --quaternary-color: #FFA101;
+    --quaternary-color: #db9e36;
     /** Text color */
     --text-color: #31525B;
+}
+body {
+  margin: 0;
+  padding: 0;
 }
