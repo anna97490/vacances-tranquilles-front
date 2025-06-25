@@ -1,0 +1,25 @@
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.65rem 0;
+  border-top: 1px solid #ddd;
+  background-color: var(--secondary-color);
+}
+
+.nav-item {
+  padding: 0.8rem 1.6rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  color: var(--secondary-text-color);
+  background-color: var(--tertiary-color);
+  cursor: pointer;
+}
+
+/* Responsive layout */
+@media (min-width: 768px) {
+  .bottom-nav {
+    justify-content: center;
+    gap: 3rem;
+  }
+}
