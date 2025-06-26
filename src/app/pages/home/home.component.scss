@@ -1,10 +1,9 @@
 .homepage-container {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  min-height: 75vh;
   font-family: 'Segoe UI', sans-serif;
   background-color: var(--primary-color);
+  height: inherit;
 }
 
 h2, h3 {
