@@ -1,7 +1,7 @@
 <div class="homepage-container">
   <main class="content">
     <div class="logo">
-      <img [ngSrc]="logoPath" alt="Vacances Tranquilles" width="185" height="200">
+      <img [ngSrc]="logoPath" alt="Vacances Tranquilles" width="185" height="185">
     </div>
     <h2 class="title">Vacances Tranquilles</h2>
 
@@ -13,8 +13,9 @@
     </section>
 
     <div class="cta-buttons">
-      <button>Je suis un prestataire</button>
-      <button>Je suis un particulier</button>
+      <!-- Effectuer une redirection avec comme path 'login/:userType' à adapter si prestataire ou particulier -->
+      <button routerLink="/login/prestataire">Je suis un prestataire</button>
+      <button routerLink="/login/particulier">Je suis un particulier</button>
     </div>
   </main>
 </div>
