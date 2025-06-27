@@ -1,13 +1,17 @@
 .homepage-container {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
   font-family: 'Segoe UI', sans-serif;
   background-color: var(--primary-color);
+  height: inherit;
 }
 
 h2, h3 {
     color: var(--quaternary-color);
+}
+
+h2 {
+  margin-top: 0;
 }
 
 .content {
@@ -33,8 +37,12 @@ h2, h3 {
   font-size: 1rem;
   line-height: 1.6;
   color: #444;
-  max-width: 700px;
+  max-width: 70%;
   margin: 0 auto;
+}
+
+span.services {
+  font-style: italic;
 }
 
 .cta-buttons {

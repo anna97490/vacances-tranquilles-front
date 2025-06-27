@@ -1,20 +1,26 @@
 <div class="homepage-container">
   <main class="content">
     <div class="logo">
-      <img [ngSrc]="logoPath" alt="Vacances Tranquilles" width="185" height="200">
+      <img [ngSrc]="logoPath" alt="Vacances Tranquilles" width="185" height="185">
     </div>
     <h2 class="title">Vacances Tranquilles</h2>
 
     <section class="description">
-      <h3>Description de l'application</h3>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur risus nibh, pharetra eu bibendum eget, hendrerit id sapien. Mauris leo nunc, pulvinar bibendum pellentesque quis, lobortis eget nulla. Nunc mollis libero a urna convallis, at sagittis nisi suscipit.
-      </p>
+      <h3>La plateforme de services pour des vacances sereines</h3>
+      <div class="description-content">
+        <p>
+          <strong>Vacances Tranquilles</strong> centralise tous les services à domicile dont vous avez besoin pendant vos vacances : <br /><span class="services">soins aux animaux, arrosage des plantes, ménage, récupération du courrier et bien plus encore.</span>
+        </p>
+        <p>
+          Notre plateforme vous met en relation avec des prestataires locaux de confiance, vérifiés et évalués par notre communauté. <br />Finies les recherches interminables sur différentes plateformes !
+        </p>
+      </div>
     </section>
 
     <div class="cta-buttons">
-      <button>Je suis un prestataire</button>
-      <button>Je suis un particulier</button>
+      <!-- Effectuer une redirection avec comme path 'login/:userType' à adapter si prestataire ou particulier -->
+      <button routerLink="/auth/register/prestataire">Je suis un prestataire</button>
+      <button routerLink="/auth/register/particulier">Je suis un particulier</button>
     </div>
   </main>
 </div>

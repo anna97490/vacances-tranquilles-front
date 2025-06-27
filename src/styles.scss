@@ -12,8 +12,15 @@
     --quaternary-color: #db9e36;
     /** Text color */
     --text-color: #31525B;
+
+    --header-height: 13vh;
+    --main-height: 77vh;
+    --footer-height: 10vh;
 }
-body {
+
+html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
 }
