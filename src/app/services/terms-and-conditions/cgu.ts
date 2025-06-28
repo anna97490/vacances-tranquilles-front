@@ -1,15 +1,30 @@
+<<<<<<< Updated upstream
+=======
+/**
+ * Conditions Générales d'Utilisation (CGU) pour la plateforme Vacances Tranquilles
+ * Cette interface définit la structure des CGU, incluant les sections et leur contenu.
+ */
+>>>>>>> Stashed changes
 export interface TermsSection {
   title: string;
   content: string | string[];
 }
 
+/**
+ * Interface représentant le contenu des Conditions Générales d'Utilisation (CGU)
+ * de la plateforme Vacances Tranquilles.
+ * Elle inclut un titre, une date et une liste de sections.
+ */
 export interface TermsContent {
   title: string;
   date: string;
   sections: TermsSection[];
 }
 
-// Exportez un objet concret qui correspond à l'interface TermsContent
+/**
+ * Contenu des Conditions Générales d'Utilisation (CGU) de la plateforme Vacances Tranquilles.
+ * Il s'agit d'un objet conforme à l'interface TermsContent, structuré en sections.
+ */
 export const CGU_DATA: TermsContent = {
   title: "CONDITIONS GÉNÉRALES D'UTILISATION",
   date: "Juin 2025",

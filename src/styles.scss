@@ -24,3 +24,21 @@ html, body {
   height: 100%;
   font-family: 'Roboto', sans-serif;
 }
+
+.mat-mdc-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.mat-mdc-form-field-wrapper .mat-mdc-form-field-flex {
+  align-items: center;
+}
+
+.mat-mdc-form-field-wrapper .mat-mdc-form-field-infix {
+  padding: 0 8px;
+}
+
+.mat-mdc-form-field-wrapper .mat-mdc-form-field-input-control {
+  height: 48px; /* Augmente la hauteur des champs */
+  font-size: 16px;
+}

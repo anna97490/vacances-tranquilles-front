@@ -1,15 +1,26 @@
+/**
+ * Conditions Générales de Vente (CGV) pour la plateforme Vacances Tranquilles
+ * Ces conditions régissent les relations entre les utilisateurs particuliers et les prestataires de services via la plateforme.
+ */
 export interface TermsSection {
   title: string;
   content: string | string[];
 }
 
+/**
+ * Interface représentant le contenu des Conditions Générales de Vente (CGV)
+ * de la plateforme Vacances Tranquilles.
+ */
 export interface TermsContent {
   title: string;
   date: string;
   sections: TermsSection[];
 }
 
-// Exportez un objet concret qui correspond à l'interface TermsContent
+/**
+ * Contenu des Conditions Générales de Vente (CGV) de la plateforme Vacances Tranquilles.
+ * Il s'agit d'un objet conforme à l'interface TermsContent, structuré en sections.
+ */
 export const CGV_DATA: TermsContent = {
   title: "CONDITIONS GÉNÉRALES DE VENTE",
   date: "Juin 2025",
