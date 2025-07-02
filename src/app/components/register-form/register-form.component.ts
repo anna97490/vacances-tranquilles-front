@@ -5,12 +5,13 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
 import { RegistrationField } from '../../services/interfaces/interfaceRegister';
 import { CustomValidators } from '../../services/validators/type-field';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-register-form',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatFormFieldModule, MatInputModule
+    CommonModule, FormsModule, MatFormFieldModule, MatInputModule, NgOptimizedImage
   ],
   encapsulation: ViewEncapsulation.None, 
   templateUrl: './register-form.component.html',
@@ -23,6 +24,8 @@ import { CustomValidators } from '../../services/validators/type-field';
  * Il valide les entrées du formulaire et affiche les erreurs si nécessaire
  */
 export class RegisterFormComponent {
+  logoPath = 'assets/pictures/logo.png';
+  
   // On récupére l'url du chemin pour savoir s'il s'agit d'un particulier ou d'un prestataire
   userType: 'particulier' | 'prestataire';
   registrationFields: RegistrationField[];
@@ -46,27 +49,27 @@ export class RegisterFormComponent {
     // Initialisation des champs en fonction du type d'utilisateur
     if (this.userType === 'particulier') {
       this.registrationFields = [
-        { label: 'First Name', placeholder: 'Enter your first name', type: 'text' },
-        { label: 'Last Name', placeholder: 'Enter your last name', type: 'text' },
-        { label: 'Email', placeholder: 'Enter your email', type: 'email' },
-        { label: 'Password', placeholder: 'Enter your password', type: 'password' },
-        { label: 'Phone Number', placeholder: 'Enter your phone number', type: 'tel' },
-        { label: 'Address', placeholder: 'Enter your address', type: 'text' },
-        { label: 'City', placeholder: 'Enter your city', type: 'text' },
-        { label: 'Postal Code', placeholder: 'Enter your postal code', type: 'text' }
+        { label: 'Prénom', placeholder: 'Entrez votre prénom', type: 'text' },
+        { label: 'Nom', placeholder: 'Entrez votre nom', type: 'text' },
+        { label: 'E-mail', placeholder: 'Entrez votre e-mail', type: 'email' },
+        { label: 'Mot de passe', placeholder: 'Entrez votre mot de passe', type: 'password' },
+        { label: 'Téléphone', placeholder: 'Entrez votre téléphone', type: 'tel' },
+        { label: 'Adresse', placeholder: 'Entrez votre adresse', type: 'text' },
+        { label: 'Ville', placeholder: 'Entrez votre ville', type: 'text' },
+        { label: 'Code postal', placeholder: 'Entrez votre code postal', type: 'text' }
       ];
     } else {
       this.registrationFields = [
-        { label: 'First Name', placeholder: 'Enter your first name', type: 'text' },
-        { label: 'Last Name', placeholder: 'Enter your last name', type: 'text' },
-        { label: 'Email', placeholder: 'Enter your email', type: 'email' },
-        { label: 'Password', placeholder: 'Enter your password', type: 'password' },
-        { label: 'Phone Number', placeholder: 'Enter your phone number', type: 'tel' },
-        { label: 'Address', placeholder: 'Enter your address', type: 'text' },
-        { label: 'City', placeholder: 'Enter your city', type: 'text' },
-        { label: 'Postal Code', placeholder: 'Enter your postal code', type: 'text' },
-        { label: 'Company Name', placeholder: 'Enter your company name', type: 'text' },
-        { label: 'SIRET/SIREN', placeholder: 'Enter your SIRET/SIREN number', type: 'text' }
+        { label: 'Prénom', placeholder: 'Entrez votre prénom', type: 'text' },
+        { label: 'Nom', placeholder: 'Entrez votre nom', type: 'text' },
+        { label: 'E-mail', placeholder: 'Entrez votre e-mail', type: 'email' },
+        { label: 'Mot de passe', placeholder: 'Entrez votre mot de passe', type: 'password' },
+        { label: 'Téléphone', placeholder: 'Entrez votre téléphone', type: 'tel' },
+        { label: 'Adresse', placeholder: 'Entrez votre adresse', type: 'text' },
+        { label: 'Ville', placeholder: 'Entrez votre ville', type: 'text' },
+        { label: 'Code postal', placeholder: 'Entrez votre code postal', type: 'text' },
+        { label: 'Entreprise', placeholder: 'Entrez le nom de votre entreprise', type: 'text' },
+        { label: 'SIRET/SIREN', placeholder: 'Entrez votre numéro SIRET/SIREN', type: 'text' }
       ];
     }
   }

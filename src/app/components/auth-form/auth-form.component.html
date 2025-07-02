@@ -1,4 +1,11 @@
 <div class="example-form">
+    <div class="title-container">
+        <div class="logo">
+            <img [ngSrc]="logoPath" alt="Vacances Tranquilles" width="185" height="185">
+        </div>
+        <h2 class="title">Vacances Tranquilles</h2>
+    </div>
+    <div class="form" >
     <div *ngFor="let field of registrationFields">
         <mat-form-field appearance="fill" class="form-field">
             <mat-label>{{ field.label }}</mat-label>
@@ -8,4 +15,4 @@
     <button mat-raised-button color="primary" class="submit-button" (click)="register()">
         S'inscrire
     </button>
-  </div>
+</div>

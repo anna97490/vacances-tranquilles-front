@@ -5,12 +5,13 @@ import {FormsModule} from '@angular/forms';
 import { RegistrationField } from '../../services/interfaces/interfaceRegister';
 import { CommonModule } from '@angular/common';
 import { CustomValidators } from '../../services/validators/type-field';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-auth-form',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatFormFieldModule, MatInputModule
+    CommonModule, FormsModule, MatFormFieldModule, MatInputModule, NgOptimizedImage
   ],
   encapsulation: ViewEncapsulation.None, 
   templateUrl: './auth-form.component.html',
@@ -23,6 +24,8 @@ import { CustomValidators } from '../../services/validators/type-field';
  * Il valide les entrées du formulaire et affiche les erreurs si nécessaire
  */
 export class AuthFormComponent {
+  logoPath = 'assets/pictures/logo.png';
+
   // On récupére l'url du chemin pour savoir s'il s'agit d'un particulier ou d'un prestataire
   userType: 'particulier' | 'prestataire';
   registrationFields: RegistrationField[];
@@ -37,13 +40,13 @@ export class AuthFormComponent {
     // Initialisation des champs en fonction du type d'utilisateur
     if (this.userType === 'particulier') {
       this.registrationFields = [
-        { label: 'Email', placeholder: 'Enter your email', type: 'email' },
-        { label: 'Password', placeholder: 'Enter your password', type: 'password' },
+        { label: 'E-mail', placeholder: 'Entrez votre e-mail', type: 'email' },
+        { label: 'Mot de passe', placeholder: 'Entrez votre mot de passe', type: 'password' },
       ];
     } else {
       this.registrationFields = [
-        { label: 'Email', placeholder: 'Enter your email', type: 'email' },
-        { label: 'Password', placeholder: 'Enter your password', type: 'password' },
+        { label: 'E-mail', placeholder: 'Entrez votre e-mail', type: 'email' },
+        { label: 'Mot de passe', placeholder: 'Entrez votre mot de passe', type: 'password' },
       ];
     }
   }

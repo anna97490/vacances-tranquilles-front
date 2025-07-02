@@ -1,10 +1,7 @@
-<<<<<<< Updated upstream
-=======
 /**
  * Conditions Générales d'Utilisation (CGU) pour la plateforme Vacances Tranquilles
  * Cette interface définit la structure des CGU, incluant les sections et leur contenu.
  */
->>>>>>> Stashed changes
 export interface TermsSection {
   title: string;
   content: string | string[];
