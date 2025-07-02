@@ -1,0 +1,81 @@
+<div class="container">
+
+    <div class="form-zone">
+        <p><strong>Sélectionner une date</strong></p>
+        <div class="select-group">
+
+            <!-- Jour -->
+            <div class="split-button-wrapper">
+                <button mat-raised-button [matMenuTriggerFor]="dayMenu" class="split-button">
+                    <span class="button-text">{{ selectedDay || 'Jour' }}</span>
+                    <mat-icon class="button-icon">arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #dayMenu="matMenu">
+                    <button mat-menu-item *ngFor="let day of days" (click)="selectedDay = day">
+                        {{ day }}
+                    </button>
+                </mat-menu>
+            </div>
+
+            <!-- Mois -->
+            <div class="split-button-wrapper">
+                <button mat-raised-button [matMenuTriggerFor]="monthMenu" class="split-button">
+                    <span class="button-text">{{ selectedMonth || 'Mois' }}</span>
+                    <mat-icon class="button-icon">arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #monthMenu="matMenu">
+                    <button mat-menu-item *ngFor="let month of months" (click)="selectedMonth = month">
+                        {{ month }}
+                    </button>
+                </mat-menu>
+            </div>
+
+            <!-- Année -->
+            <div class="split-button-wrapper">
+                <button mat-raised-button [matMenuTriggerFor]="yearMenu" class="split-button">
+                    <span class="button-text">{{ selectedYear || 'Année' }}</span>
+                    <mat-icon class="button-icon">arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #yearMenu="matMenu">
+                    <button mat-menu-item *ngFor="let year of years" (click)="selectedYear = year">
+                        {{ year }}
+                    </button>
+                </mat-menu>
+            </div>
+        </div>
+
+
+        <div class="section">
+            <p><strong>Sélectionner un horaire</strong></p>
+<!--             <div class="select-group"> -->
+                <div class="split-button-wrapper">
+                    <button mat-raised-button [matMenuTriggerFor]="hourMenu" class="split-button">
+                        <span class="button-text">{{ selectedHour || 'Heure' }}</span>
+                        <mat-icon class="button-icon">arrow_drop_down</mat-icon>
+                    </button>
+
+                    <mat-menu #hourMenu="matMenu">
+                        <button mat-menu-item *ngFor="let hour of hours" (click)="selectedHour = hour">
+                            {{ hour }}
+                        </button>
+                    </mat-menu>
+                </div>
+<!--             </div> -->
+        </div>
+
+        <div class="section">
+            <p><strong>Choisissez un service</strong></p>
+            <mat-form-field appearance="outline">
+                <mat-select [(ngModel)]="selectedService">
+                    <mat-option *ngFor="let service of services" [value]="service">{{ service }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="button-zone">
+            <button mat-raised-button color="primary" (click)="findProviders()">
+                Voir les prestataires disponibles
+            </button>
+        </div>
+    </div>
+</div>
