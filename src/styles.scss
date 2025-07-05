@@ -12,8 +12,43 @@
     --quaternary-color: #db9e36;
     /** Text color */
     --text-color: #31525B;
+
+    --header-height: 13vh;
+    --main-height: 77vh;
+    --footer-height: 10vh;
+
+    /* Ajout pour page d'accueil */
+    --vt-orange: #FFA500;
+    --vt-orange-light: #ffb733;
+    --vt-bg: #fcfcfa;
+    --vt-grey: #f5f5f5;
+    --vt-grey-border: #e0e0e0;
+    --vt-card-border: #ececec;
+    --vt-title: #2d3a4a;
+    --vt-text: #555;
 }
-body {
+
+html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.mat-mdc-form-field-wrapper .mat-mdc-form-field-flex {
+  align-items: center;
+}
+
+.mat-mdc-form-field-wrapper .mat-mdc-form-field-infix {
+  padding: 0 8px;
+}
+
+.mat-mdc-form-field-wrapper .mat-mdc-form-field-input-control {
+  height: 48px; /* Augmente la hauteur des champs */
+  font-size: 16px;
 }
