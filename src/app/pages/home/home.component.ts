@@ -1,18 +1,25 @@
-import { Component, HostBinding } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+import { Component, HostBinding, OnInit } from '@angular/core';
+import { HomeContentService, HomeContent } from './../../services/home-content.service';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterModule],
+  imports: [CommonModule, NgOptimizedImage, RouterModule, MatIconModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  styleUrl: './home.component.scss',
 })
-export class HomeComponent {
-  logoPath = 'assets/pictures/logo.png';
+export class HomeComponent implements OnInit {
+  content!: HomeContent;
 
   @HostBinding('style.display') display = 'block';
   @HostBinding('style.height') height = '100%';
+
+  constructor(private homeContentService: HomeContentService) {}
+
+  ngOnInit(): void {
+    this.content = this.homeContentService.getContent();
+  }
 }
