@@ -29,15 +29,15 @@ export const routes: Routes = [
     children: [
       { 
         path: 'login/:userType', 
-        loadComponent: () => import('./components/auth-form/auth-form.component')
-          .then(m => m.AuthFormComponent),
+        loadComponent: () => import('./components/login-form/login-form.component')
+          .then(m => m.LoginFormComponent),
         //   Utilisé la propriété data pour passer des informations supplémentaires aux composants chargés (comme isRegister)
         data: { isRegister: false }
       },
       { 
         path: 'register/:userType', 
-        loadComponent: () => import('./components/register-form/register-form.component')
-          .then(m => m.RegisterFormComponent),
+        loadComponent: () => import('./components/register-provider-form/register-provider-form.component')
+          .then(m => m.RegisterProviderFormComponent),
         //   Utilisé la propriété data pour passer des informations supplémentaires aux composants chargés (comme isRegister)
         data: { isRegister: true }
       }
