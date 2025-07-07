@@ -82,11 +82,17 @@
   border: 1.5px solid var(--vt-grey-border);
 }
 
-.btn.orange:hover,
-.btn.orange-outline:hover {
-  background: var(--vt-orange-light);
+.btn.blue {
+  background: #3b575d;
   color: #fff;
-  border-color: var(--vt-orange-light);
+  border: 1.5px solid var(#3b575d);
+}
+
+.btn.blue:hover,
+.btn.blue-outline:hover {
+  background: var(--vt-orange);
+  color: #fff;
+  border-color: var(--vt-orange);
 }
 
 .btn.grey:hover {
@@ -98,6 +104,10 @@
   background: #fff;
   padding: 1rem 0 3.5rem 0;
   margin-top: 0.5rem;
+}
+
+app-footer {
+  width: 100%;
 }
 
 .features-title {
@@ -130,6 +140,11 @@
 
 .feature-icon {
   height: 35px;
+  margin-bottom: 0.7rem;
+}
+
+.logo {
+  height: 80px;
   margin-bottom: 0.7rem;
 }
 
