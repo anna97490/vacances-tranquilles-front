@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
-import { TermsAndConditionsComponent } from './components/terms-and-conditions/terms-and-conditions.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' }
+];
+  { path: '**', redirectTo: 'home' },
   { path: 'home', component: HomeComponent },
   { path: 'terms-and-conditions', 
     children : [
@@ -43,7 +44,4 @@ export const routes: Routes = [
       }
     ]
   },
-  
-  // Route wildcard pour gérer les URLs non trouvées
-  { path: '**', redirectTo: 'home' }
-];
+ 
