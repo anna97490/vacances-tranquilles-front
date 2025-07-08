@@ -24,33 +24,3 @@ html, body {
   height: 100%;
   font-family: 'Roboto', sans-serif;
 }
-
-/* Conteneur principal avec bordure fine */
-.custom-form-field.mat-form-field-appearance-fill {
-  border: 1px solid #000; /* Bordure noire */
-  border-radius: 4px;
-  background-color: white;
-  padding: 0 12px;
-}
-
-/* Supprime le fond gris par défaut */
-.custom-form-field .mat-form-field-flex {
-  background: transparent !important;
-  padding: 0 !important;
-}
-
-/* Supprime la ligne underline de Material */
-.custom-form-field .mat-form-field-underline {
-  display: none !important;
-}
-
-/* Gère l'espacement à l'intérieur du champ */
-.custom-form-field .mat-form-field-infix {
-  padding: 8px 0;
-}
-
-/* Style du label */
-.custom-form-field .mat-form-field-label {
-  color: #000;
-  font-weight: 500;
-}
