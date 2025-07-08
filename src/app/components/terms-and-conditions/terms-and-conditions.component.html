@@ -3,7 +3,9 @@
         <h2>Conditions Générales d'Utilisation (CGU)</h2>
         <div *ngFor="let section of cguContent.sections">
             <h3>{{ section.title }}</h3>
-            <p>{{ section.content }}</p>
+            <div *ngFor="let content of section.content">
+                <p>{{ content.text }}</p>
+            </div>
         </div>
     </ng-container>
 
@@ -11,7 +13,9 @@
         <h2>Conditions Générales de Vente (CGV)</h2>
         <div *ngFor="let section of cgvContent.sections">
             <h3>{{ section.title }}</h3>
-            <p>{{ section.content }}</p>
+            <div *ngFor="let content of section.content">
+                <p>{{ content.text }}</p>
+            </div>
         </div>
     </ng-container>
 

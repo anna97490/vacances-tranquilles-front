@@ -7,7 +7,7 @@ import { CGV_DATA } from './../../services/terms-and-conditions/cgv';
 // Définition des interfaces pour les structures de CGU et CGV
 interface TermsSection {
   title: string;
-  content: string | string[];
+  content: { text: string }[];
 }
 
 interface TermsContent {
@@ -42,12 +42,12 @@ export class TermsAndConditionsComponent {
   }
 
   get cguContent(): TermsContent {
-    // Utilisez l'objet importé avec la structure TermsContent
+    // Utiliser l'objet importé avec la structure TermsContent
     return CGU_DATA;
   }
 
   get cgvContent(): TermsContent {
-    // Utilisez l'objet importé avec la structure TermsContent
+    // Utiliser l'objet importé avec la structure TermsContent
     return CGV_DATA;
   }
 
