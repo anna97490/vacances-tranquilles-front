@@ -22,5 +22,5 @@ export const routes: Routes = [
   },
   
   // Route wildcard pour gérer les URLs non trouvées
-  { path: '**', redirectTo: 'home' }
+  { path: '**', redirectTo: 'home' } 
 ];
