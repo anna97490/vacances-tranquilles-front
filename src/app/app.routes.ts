@@ -2,7 +2,9 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' }
+];
+  { path: '**', redirectTo: 'home' },
   { path: 'home', component: HomeComponent },
   { path: 'terms-and-conditions', 
     children : [
@@ -21,6 +23,25 @@ export const routes: Routes = [
     ]
   },
   
-  // Route wildcard pour gérer les URLs non trouvées
-  { path: '**', redirectTo: 'home' }
-];
+  // Routes d'authentification avec paramètres pour le type d'utilisateur
+  { 
+    path: 'auth',
+    // :userType pour distinguer entre "particulier" et "prestataire"
+    children: [
+      { 
+        path: 'login/:userType', 
+        loadComponent: () => import('./components/login-form/login-form.component')
+          .then(m => m.LoginFormComponent),
+        //   Utilisé la propriété data pour passer des informations supplémentaires aux composants chargés (comme isRegister)
+        data: { isRegister: false }
+      },
+      { 
+        path: 'register/:userType', 
+        loadComponent: () => import('./components/register-provider-form/register-provider-form.component')
+          .then(m => m.RegisterProviderFormComponent),
+        //   Utilisé la propriété data pour passer des informations supplémentaires aux composants chargés (comme isRegister)
+        data: { isRegister: true }
+      }
+    ]
+  },
+ 
