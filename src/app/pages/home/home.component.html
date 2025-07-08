@@ -1,26 +1,31 @@
 <div class="homepage-container">
   <main class="content">
     <div class="logo">
-      <img [ngSrc]="logoPath" alt="Vacances Tranquilles" width="185" height="185">
+        <img [src]="mainLogo" class="logo" alt="" />
     </div>
-    <h2 class="title">Vacances Tranquilles</h2>
-
-    <section class="description">
-      <h3>La plateforme de services pour des vacances sereines</h3>
-      <div class="description-content">
-        <p>
-          <strong>Vacances Tranquilles</strong> centralise tous les services à domicile dont vous avez besoin pendant vos vacances : <br /><span class="services">soins aux animaux, arrosage des plantes, ménage, récupération du courrier et bien plus encore.</span>
-        </p>
-        <p>
-          Notre plateforme vous met en relation avec des prestataires locaux de confiance, vérifiés et évalués par notre communauté. <br />Finies les recherches interminables sur différentes plateformes !
-        </p>
-      </div>
-    </section>
-
+    <h2 class="title">{{ content.title }}</h2>
+    <div class="subtitle">{{ content.subtitle }}</div>
+    <div class="intro-text">{{ content.introText }}</div>
     <div class="cta-buttons">
-      <!-- Effectuer une redirection avec comme path 'login/:userType' à adapter si prestataire ou particulier -->
-      <button routerLink="/auth/register/prestataire">Je suis un prestataire</button>
-      <button routerLink="/auth/register/particulier">Je suis un particulier</button>
+      <button class="btn blue" routerLink="/register-prestataire">{{ content.btnPrestataire }}</button>
+      <button class="btn blue" routerLink="/register-particulier">{{ content.btnParticulier }}</button>
+      <button class="btn grey" routerLink="/login">{{ content.btnConnexion }}</button>
     </div>
   </main>
+  <section class="features-section">
+    <h3 class="features-title">{{ content.featuresTitle }}</h3>
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of content.features">
+        <ng-container *ngIf="feature.iconType === 'custom'; else materialIcon">
+          <img [src]="feature.icon" class="feature-icon" alt="" />
+        </ng-container>
+        <ng-template #materialIcon>
+          <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+        </ng-template>
+        <div class="feature-title">{{ feature.title }}</div>
+        <div class="feature-desc">{{ feature.desc }}</div>
+      </div>
+    </div>
+  </section>
+  <app-footer></app-footer>
 </div>

@@ -1,5 +1,16 @@
-  <header class="header">
-    <button aria-label="Retour" class="icon-button" (click)="goBack()">&larr;</button>
-    <h1>{{ currentTitle}}</h1>
-    <button aria-label="Menu" class="icon-button">&#9776;</button>
-  </header>
+<header class="header">
+  <div class="header-logo">
+    <img [src]="mainLogo" class="logo-img" alt="Logo" />
+  </div>
+  <nav class="header-nav">
+    <a
+      *ngFor="let item of menu"
+      class="nav-link"
+      [class.active]="isActive(item.path)"
+      [routerLink]="item.path"
+    >
+      <img [src]="getIcon(item)" class="icon" alt="" />
+      {{ item.label }}
+    </a>
+  </nav>
+</header>
