@@ -1,0 +1,15 @@
+<div class="services-container">
+  <h3 class="services-title">Services Proposés</h3>
+  <div class="services-list">
+    <mat-card *ngFor="let service of services" class="service-card" appearance="outlined">
+      <div class="service-header">
+        <mat-icon class="service-icon" color="accent">{{ service.icon }}</mat-icon>
+      </div>
+      <div class="service-content">
+        <h4 class="service-title">{{ service.title }}</h4>
+        <p class="service-description">{{ service.description }}</p>
+        <p class="service-price" [ngClass]="{'accent': service.priceColor === 'accent', 'warn': service.priceColor === 'warn'}">{{ service.price }}</p>
+      </div>
+    </mat-card>
+  </div>
+</div>

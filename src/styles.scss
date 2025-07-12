@@ -1,5 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
+/** Material Design */
+@use '@angular/material' as mat;
+@include mat.core();
+
+$frontend-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
 :root {
+  @include mat.all-component-themes($frontend-theme);
+
     /** Background-color */
     --primary-color: #FBF4E9;
     /** Button color */
@@ -12,6 +28,8 @@
     --quaternary-color: #db9e36;
     /** Text color */
     --text-color: #31525B;
+    /** Discret text color */
+    --discret-text-color: #777;
 
     --header-height: 13vh;
     --main-height: 77vh;
@@ -53,3 +71,5 @@ html, body {
   height: 48px; /* Augmente la hauteur des champs */
   font-size: 16px;
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

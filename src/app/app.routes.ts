@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
+import { ProfilePageComponent } from './pages/ProfilePage/profilePage.component';
+
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -20,6 +22,7 @@ export const routes: Routes = [
       }
     ]
   },
+  { path: 'profile', component: ProfilePageComponent },
   
   // Route wildcard pour gérer les URLs non trouvées
   { path: '**', redirectTo: 'home' }
