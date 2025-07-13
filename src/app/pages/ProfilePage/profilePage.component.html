@@ -1,1 +1,13 @@
-<app-display-profile/>
+<ng-container *ngIf="!isEditMode; else editMode">
+  <app-display-profile />
+</ng-container>
+<ng-template #editMode>
+  <app-update-profile />
+</ng-template>
+
+<div class="profile-action-btn-container">
+  <button mat-raised-button class="profile-action-btn" (click)="toggleEditMode()">
+    <mat-icon class="icon-left">{{ isEditMode ? 'done' : 'edit' }}</mat-icon>
+    {{ getButtonText() }}
+  </button>
+</div>

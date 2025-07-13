@@ -1,0 +1,27 @@
+.profile-action-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.profile-action-btn {
+  background-color: var(--secondary-color) !important;
+  color: var(--secondary-text-color) !important;
+  border-radius: 16px !important;
+  padding: 12px 32px !important;
+  font-size: 1.2rem !important;
+  font-family: 'Open Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: none !important;
+  transition: background 0.2s;
+}
+.profile-action-btn:hover {
+  background-color: var(--tertiary-color) !important;
+}
+
+.icon-left {
+  font-size: 1.5em;
+}
+
