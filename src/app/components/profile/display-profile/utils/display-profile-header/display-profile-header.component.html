@@ -20,14 +20,14 @@
     <div class="desc-title">Description</div>
     <div class="profile-description" *ngIf="user.description">{{ user.description }}</div>
     <div class="info-cards">
-      <div class="info-card" *ngIf="user.phoneNumber">
+      <div class="info-card" *ngIf="isAdmin && user.phoneNumber">
         <mat-icon>call</mat-icon>
         <div>
           <div class="info-label">Téléphone</div>
           <div class="info-value">{{ user.phoneNumber }}</div>
         </div>
       </div>
-      <div class="info-card" *ngIf="user.email">
+      <div class="info-card" *ngIf="isAdmin && user.email">
         <mat-icon>mail</mat-icon>
         <div>
           <div class="info-label">Email</div>

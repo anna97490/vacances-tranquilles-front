@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DisplayProfileHeaderComponent } from "../display-profile/utils/display-profile-header/display-profile-header.component";
 import { DisplayProfileServicesComponent } from './utils/display-profile-services/display-profile-services.component';
-import { MOCK_USER } from '../mock-user';
+import { User } from '../../../services/interfaces/interfaceUser';
+import { Service } from '../../../services/interfaces/interfaceService';
+import { UserRole } from '../../../services/interfaces/interfaceUser';
 
 @Component({
   selector: 'app-display-profile',
@@ -11,5 +13,7 @@ import { MOCK_USER } from '../mock-user';
   styleUrl: './display-profile.component.scss'
 })
 export class DisplayProfileComponent {
-  user = MOCK_USER;
+  @Input() user!: User;
+  @Input() services!: Service[];
+  @Input() userRole!: UserRole;
 }

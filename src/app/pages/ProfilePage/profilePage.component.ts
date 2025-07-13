@@ -4,6 +4,10 @@ import { UpdateProfileComponent } from '../../components/profile/update-profile/
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { MOCK_USER, LOGGED_USER } from '../../components/profile/mock-user';
+import { MOCK_SERVICES } from '../../components/profile/mock-service';
+import { User } from '../../services/interfaces/interfaceUser';
+import { Service } from '../../services/interfaces/interfaceService';
 
 @Component({
   selector: 'app-profile',
@@ -18,18 +22,23 @@ export class ProfilePageComponent {
    */
   isEditMode = false;
 
-  /**
-   * Bascule entre le mode affichage et le mode édition
-   */
+  user: User = { ...MOCK_USER };
+  services = [...MOCK_SERVICES];
+  loggedUser: User = { ...LOGGED_USER };
+
   toggleEditMode(): void {
     this.isEditMode = !this.isEditMode;
   }
 
-  /**
-   * Retourne le texte du bouton selon le mode actuel
-   * @returns Le texte à afficher sur le bouton
-   */
   getButtonText(): string {
     return this.isEditMode ? 'Valider les modifications' : 'Modifier';
+  }
+
+  /**
+   * Met à jour l'utilisateur ou les services depuis un enfant
+   */
+  onProfileDataChange(event: { user?: User; services?: Service[] }) {
+    if (event.user) this.user = { ...event.user };
+    if (event.services) this.services = [...event.services];
   }
 }

@@ -1,8 +1,8 @@
 <ng-container *ngIf="!isEditMode; else editMode">
-  <app-display-profile />
+  <app-display-profile [user]="user" [services]="services" [userRole]="loggedUser.role" />
 </ng-container>
 <ng-template #editMode>
-  <app-update-profile />
+  <app-update-profile [user]="user" [services]="services" [userRole]="loggedUser.role" (profileDataChange)="onProfileDataChange($event)" />
 </ng-template>
 
 <div class="profile-action-btn-container">

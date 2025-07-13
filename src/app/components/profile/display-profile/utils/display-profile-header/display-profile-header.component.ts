@@ -33,7 +33,7 @@ export class DisplayProfileHeaderComponent {
   /**
    * Rôle de l'utilisateur connecté (pour l'affichage conditionnel).
    */
-  @Input() currentUserRole!: UserRole;
+  @Input() userRole!: UserRole;
 
   // À remplacer par des vraies valeurs dynamiques si tu les as
   rating: number = 3.5;
@@ -43,7 +43,7 @@ export class DisplayProfileHeaderComponent {
    * Retourne true si l'utilisateur connecté est admin.
    */
   get isAdmin(): boolean {
-    return this.currentUserRole === UserRole.ADMIN;
+    return this.userRole === UserRole.ADMIN;
   }
 
   /**

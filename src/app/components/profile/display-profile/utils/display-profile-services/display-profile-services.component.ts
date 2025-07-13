@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';import { MatCardModule } from '@angular/material/card';
+import { Component, Input } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { NgFor } from '@angular/common';
 import { NgClass } from '@angular/common';
 import { MOCK_SERVICES } from '../../../mock-service';
+import { Service} from '../../../../../services/interfaces/interfaceService'
 
 /**
  * Composant d'affichage des services proposés dans le profil utilisateur.
@@ -19,8 +21,5 @@ import { MOCK_SERVICES } from '../../../mock-service';
   styleUrl: './display-profile-services.component.scss'
 })
 export class DisplayProfileServicesComponent {
-  /**
-   * Liste des services proposés, issue du mock.
-   */
-  services = MOCK_SERVICES;
+  @Input() services!: Service[];
 }

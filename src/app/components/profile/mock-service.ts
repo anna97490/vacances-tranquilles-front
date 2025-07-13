@@ -1,62 +1,28 @@
-/**
- * Mock de services proposés pour affichage dans le profil utilisateur.
- * Peut être utilisé pour des tests ou du développement sans backend.
- *
- * @typedef {Object} Service
- * @property {string} icon - Nom de l'icône Material à afficher.
- * @property {string} title - Titre du service.
- * @property {string} description - Description courte du service.
- * @property {string} price - Prix ou mention (ex: 'Sur devis').
- * @property {string} priceColor - Couleur du prix ('accent' ou 'warn').
- */
+import { Service } from '../../services/interfaces/interfaceService';
 
-/**
- * Liste mock de services proposés.
- * @type {Service[]}
- */
-export const MOCK_SERVICES = [
+export const MOCK_SERVICES: Service[] = [
   {
-    icon: 'build',
+    id: 1,
     title: 'Maintenance',
     description: 'Services de maintenance préventive et corrective',
-    price: 'À partir de 50€/h',
-    priceColor: 'accent'
+    category: 'Maintenance',
+    price: 50,
+    imageUrl: 'https://cdn-icons-png.flaticon.com/512/1250/1250615.png'
   },
   {
-    icon: 'build',
+    id: 2,
     title: 'Réparation',
     description: "Réparation d'équipements et installations",
-    price: 'Sur devis',
-    priceColor: 'warn'
+    category: 'Réparation',
+    price: 30,
+    imageUrl: 'https://cdn-icons-png.flaticon.com/512/1828/1828919.png'
   },
   {
-    icon: 'build',
+    id: 3,
     title: 'Installation',
     description: 'Installation et mise en service',
-    price: 'À partir de 80€/h',
-    priceColor: 'accent'
-  },
-    {
-    icon: 'build',
-    title: 'Maintenance',
-    description: 'Services de maintenance préventive et corrective',
-    price: 'À partir de 50€/h',
-    priceColor: 'accent'
-  },
-  {
-    icon: 'build',
-    title: 'Réparation',
-    description: "Réparation d'équipements et installations",
-    price: 'Sur devis',
-    priceColor: 'warn'
-  },
-  {
-    icon: 'build',
-    title: 'Installation',
-    description: 'Installation et mise en service',
-    price: 'À partir de 80€/h',
-    priceColor: 'accent'
-  },
-  
-  
+    category: 'Installation',
+    price: 80,
+    imageUrl: 'https://cdn-icons-png.flaticon.com/512/190/190411.png'
+  }
 ]; 

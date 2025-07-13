@@ -19,4 +19,25 @@ export const MOCK_USER: User = {
   autoEntrepreneurAttestationUrl: 'https://example.com/attestation.pdf',
   insuranceCertificateUrl: 'https://example.com/assurance.pdf',
   description:'description succinte du prestataire vraiment très très très enrichissante. Il adore sa vie et les gens autour de lui'
+};
+
+export const LOGGED_USER: User = {
+  idUser: 2,
+  profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg',
+  firstName: 'Claire',
+  lastName: 'Durand',
+  email: 'claire.durand@email.com',
+  password: '',
+  role: UserRole.ADMIN,
+  phoneNumber: '+33 6 12 34 56 78',
+  address: '24 avenue de Lyon',
+  city: 'Lyon, France',
+  postalCode: 69000,
+  siretSiren: '',
+  companyName: '',
+  rcNumber: '',
+  kbisUrl: '',
+  autoEntrepreneurAttestationUrl: '',
+  insuranceCertificateUrl: '',
+  description: 'Cliente fidèle, passionnée de déco et de rénovation.'
 }; 

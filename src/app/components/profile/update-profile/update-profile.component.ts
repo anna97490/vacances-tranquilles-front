@@ -1,12 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { User } from '../../../services/interfaces/interfaceUser';
+import { Service } from '../../../services/interfaces/interfaceService';
+import { UserRole } from '../../../services/interfaces/interfaceUser';
+import { UpdateProfileHeaderComponent } from './utils/update-profile-header/update-profile-header/update-profile-header.component';
+import { UpdateProfileServicesComponent } from './utils/update-profile-services/update-profile-services/update-profile-services.component';
 
 @Component({
   selector: 'app-update-profile',
   standalone: true,
-  imports: [],
+  imports: [UpdateProfileHeaderComponent, UpdateProfileServicesComponent],
   templateUrl: './update-profile.component.html',
   styleUrl: './update-profile.component.scss'
 })
 export class UpdateProfileComponent {
+  @Input() user!: User;
+  @Input() services!: Service[];
+  @Input() userRole!: UserRole;
+  @Output() profileDataChange = new EventEmitter<{ user?: User; services?: Service[] }>();
 
+  onUserChange(newUser: User) {
+    this.profileDataChange.emit({ user: newUser });
+  }
+  onServicesChange(newServices: Service[]) {
+    this.profileDataChange.emit({ services: newServices });
+  }
 }
