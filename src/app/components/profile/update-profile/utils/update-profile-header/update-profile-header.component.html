@@ -1,0 +1,56 @@
+<div class="profile-header-main">
+  <div class="profile-header-left">
+    <div class="profile-upload-container">
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        class="custom-upload-btn"
+        (click)="fileInput.click()"
+      >
+        <mat-icon>upload</mat-icon>
+        <span>Choisir une photo</span>
+      </button>
+      <input
+        #fileInput
+        type="file"
+        (change)="onProfilePictureChange($event)"
+        hidden
+      />
+      <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
+    </div>
+    <img [src]="user.profilePicture" alt="Photo de profil" class="profile-picture" />
+    <div class="profile-name">
+      <input [(ngModel)]="user.firstName" placeholder="Prénom" class="profile-input" />
+      <input [(ngModel)]="user.lastName" placeholder="Nom" class="profile-input" />
+    </div>
+  </div>
+
+  <div class="profile-header-right">
+    <div class="desc-title">Description</div>
+    <textarea [(ngModel)]="user.description" class="profile-description" placeholder="Description"></textarea>
+    <div class="info-cards">
+      <div class="info-card">
+        <mat-icon>call</mat-icon>
+        <div>
+          <div class="info-label">Téléphone</div>
+          <input [(ngModel)]="user.phoneNumber" class="info-value" placeholder="Téléphone" />
+        </div>
+      </div>
+      <div class="info-card">
+        <mat-icon>mail</mat-icon>
+        <div>
+          <div class="info-label">Email</div>
+          <input [(ngModel)]="user.email" class="info-value email" placeholder="Email" />
+        </div>
+      </div>
+      <div class="info-card">
+        <mat-icon>location_on</mat-icon>
+        <div>
+          <div class="info-label">Localisation</div>
+          <input [(ngModel)]="user.city" class="info-value" placeholder="Ville" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

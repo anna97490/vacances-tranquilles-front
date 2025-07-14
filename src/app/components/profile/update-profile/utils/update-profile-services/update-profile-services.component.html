@@ -1,0 +1,119 @@
+<div class="services-container">
+  <div class="services-header">
+    <div class="header-spacer"></div>
+    <h3 class="services-title">Services Proposés</h3>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="addNewService()"
+      class="add-service-btn primary-action-btn header-action"
+      [disabled]="isAddingNew || editingService">
+      <mat-icon>add</mat-icon>
+      Ajouter un service
+    </button>
+  </div>
+
+  <!-- Formulaire d'ajout/édition de service -->
+  <div *ngIf="isAddingNew || editingService" class="service-form-container">
+    <mat-card class="service-form-card" appearance="outlined">
+      <mat-card-header>
+        <h3 class="services-title">
+          {{ isAddingNew ? 'Ajouter un nouveau service' : 'Modifier le service' }}
+        </h3>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <form [formGroup]="serviceForm" class="service-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Titre du service</mat-label>
+              <input matInput formControlName="title" placeholder="Ex: Location de vélo">
+              <mat-error *ngIf="isFieldInvalid('title')">
+                {{ getErrorMessage('title') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Catégorie</mat-label>
+              <mat-select formControlName="category">
+                <mat-option *ngFor="let category of categories" [value]="category">
+                  {{ category }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="isFieldInvalid('category')">
+                {{ getErrorMessage('category') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3" 
+                      placeholder="Décrivez votre service en détail..."></textarea>
+            <mat-error *ngIf="isFieldInvalid('description')">
+              {{ getErrorMessage('description') }}
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Prix (€)</mat-label>
+              <input matInput type="number" formControlName="price" min="0" step="0.01">
+              <mat-error *ngIf="isFieldInvalid('price')">
+                {{ getErrorMessage('price') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions class="form-actions">
+        <button mat-button (click)="cancelEdit()" class="primary-action-btn">
+          <mat-icon>cancel</mat-icon>
+          Annuler
+        </button>
+        <button mat-raised-button color="primary" (click)="saveService()" 
+                [disabled]="serviceForm.invalid" class="primary-action-btn">
+          <mat-icon>save</mat-icon>
+          {{ isAddingNew ? 'Ajouter' : 'Sauvegarder' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Liste des services existants -->
+  <div class="services-list">
+    <mat-card *ngFor="let service of services" class="service-card" appearance="outlined">
+      <div class="service-header">
+        <img [src]="service.imageUrl" alt="Icône du service" class="service-icon" width="40" height="40" />
+        <div class="service-actions">
+          <button mat-icon-button color="primary" (click)="editService(service)" 
+                  [disabled]="isAddingNew || editingService">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteService(service.id)"
+                  [disabled]="isAddingNew || editingService">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="service-content">
+        <h4 class="service-title">{{ service.title }}</h4>
+        <p class="service-category">{{ service.category }}</p>
+        <p class="service-description">{{ service.description }}</p>
+        <p class="service-price">{{ service.price }} €</p>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Message si aucun service -->
+  <div *ngIf="services.length === 0 && !isAddingNew" class="no-services">
+    <mat-card class="empty-state-card" appearance="outlined">
+      <mat-card-content class="empty-state-content">
+        <mat-icon class="empty-icon">add_business</mat-icon>
+        <h4>Aucun service proposé</h4>
+        <p>Commencez par ajouter vos premiers services pour les faire découvrir aux autres utilisateurs.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
