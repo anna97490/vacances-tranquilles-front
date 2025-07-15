@@ -8,19 +8,35 @@ export const routes: Routes = [
     children : [
       {
         path: 'cgu',
-        loadComponent: () => import('./components/terms-and-conditions/terms-and-conditions.component')
+        loadComponent: () => import('./pages/terms-and-conditions/terms-and-conditions.component')
           .then(m => m.TermsAndConditionsComponent),
         data: { isCGU: true } // Indique que c'est pour les CGU
       },
       {
         path: 'cgv',
-        loadComponent: () => import('./components/terms-and-conditions/terms-and-conditions.component')
+        loadComponent: () => import('./pages/terms-and-conditions/terms-and-conditions.component')
           .then(m => m.TermsAndConditionsComponent),
         data: { isCGV: true } // Indique que c'est pour les CGV  
       }
     ]
   },
-  
-  // Route wildcard pour gérer les URLs non trouvées
-  { path: '**', redirectTo: 'home' }
+    // Routes d'authentification avec paramètres pour le type d'utilisateur
+  { 
+    path: 'auth',
+    // :userType pour distinguer entre "particulier" et "prestataire"
+    children: [
+      { 
+        path: 'login', 
+        loadComponent: () => import('./pages/login/login-form.component')
+          .then(m => m.LoginFormComponent)
+      },
+      { 
+        path: 'register/:userType', 
+        loadComponent: () => import('./pages/register/register-form.component')
+          .then(m => m.RegisterFormComponent),
+        //   Utilisé la propriété data pour passer des informations supplémentaires aux composants chargés (comme isRegister)
+        data: { isRegister: true }
+      }
+    ]
+  }
 ];
