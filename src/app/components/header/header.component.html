@@ -2,7 +2,9 @@
   <div class="header-logo">
     <img [src]="mainLogo" class="logo-img" alt="Logo" />
   </div>
-  <nav class="header-nav">
+
+  <!-- Menu classique desktop/tablette -->
+  <nav class="header-nav desktop-nav">
     <a
       *ngFor="let item of menu"
       class="nav-link"
@@ -15,4 +17,26 @@
       {{ item.label }}
     </a>
   </nav>
+
+  <!-- Menu burger mobile -->
+  <div class="burger-btn" (click)="toggleMenu()">
+    <img [src]="burgerIcon" class="burger-icon" alt="Menu" />
+  </div>
+
+  <!-- Menu mobile -->
+  <div class="mobile-menu-container" [class.menu-visible]="menuOpen">
+    <nav class="mobile-nav">
+      <a
+        *ngFor="let item of menu"
+        class="nav-link"
+        [class.active]="isActive(item.path)"
+        [routerLink]="item.path"
+        (click)="closeMenu()"
+      >
+        <img [src]="getIcon(item)" class="icon" alt="" />
+        {{ item.label }}
+        <img [src]="arrowForward" class="arrow-icon" alt="Arrow" />
+      </a>
+    </nav>
+  </div>
 </header>

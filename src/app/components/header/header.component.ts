@@ -2,11 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, MatListModule, MatSidenavModule, RouterModule, MatIconModule, MatButtonModule, MatMenuModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
@@ -47,6 +52,7 @@ export class HeaderComponent implements OnInit {
   ];
 
   currentPath: string = '';
+  menuOpen:boolean = false;
 
   constructor(private router: Router, public location: Location) {}
 
@@ -57,6 +63,16 @@ export class HeaderComponent implements OnInit {
     ).subscribe(() => {
       this.currentPath = this.location.path() || '/home';
     });
+  }
+
+  toggleMenu() { 
+    console.log('Menu toggled');
+    this.menuOpen = !this.menuOpen; 
+  }
+
+  closeMenu() { 
+    console.log('Menu closed');
+    this.menuOpen = false; 
   }
 
   isActive(path: string): boolean {

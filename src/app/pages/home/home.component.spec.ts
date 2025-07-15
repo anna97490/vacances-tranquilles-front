@@ -70,6 +70,11 @@ describe('HomeComponent', () => {
 
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
+
+    // Configuration des inputs du composant
+    component.mainLogo = 'assets/pictures/logo.png';
+    component.content = mockContent;
+
     fixture.detectChanges();
   });
 

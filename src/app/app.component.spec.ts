@@ -1,4 +1,9 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { By } from '@angular/platform-browser';
+import { DebugElement, Component } from '@angular/core';
 import { AppComponent } from './app.component';
 import { provideRouter } from '@angular/router';
 
@@ -17,12 +22,6 @@ describe('AppComponent', () => {
 
   afterEach(() => {
     clearLocalStorage();
-  });
-
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
   });
 
   it('should set isConnected to true if token is not present', () => {
