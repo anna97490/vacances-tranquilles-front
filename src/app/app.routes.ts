@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { FeedbackComponent } from './pages/feedback/feedback/feedback.component';
-import { ServiceSearchComponent } from './pages/service-search/service-search/service-search.component';
+import { ServiceSearchComponent } from './pages/service-search/service-search.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
