@@ -1,15 +1,40 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { HomeComponent } from './home.component';
 import { HomeContent, HomeFeature } from './../../services/home-content.service';
+import { HomeContentService } from './../../services/home-content.service';
+import { Renderer2 } from '@angular/core';
+import { FooterComponent } from '../../components/footer/footer.component';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let debugElement: DebugElement;
+
+  // Mock du service HomeContentService
+  const mockHomeContentService = {
+    getContent: jest.fn().mockReturnValue({
+      title: 'Test Title',
+      subtitle: 'Test Subtitle',
+      description: 'Test Description'
+    })
+  };
+
+  // Mock de Renderer2
+  const mockRenderer2 = {
+    createElement: jest.fn(),
+    appendChild: jest.fn(),
+    removeChild: jest.fn()
+  };
+
+  // Mock de fetch pour les tests
+  const mockFetch = jest.fn();
+  global.fetch = mockFetch;
 
   const mockContent: HomeContent = {
     iconType: 'custom' as const,
@@ -50,11 +75,23 @@ describe('HomeComponent', () => {
   };
 
   beforeEach(async () => {
+    // Reset tous les mocks avant chaque test
+    jest.clearAllMocks();
+    mockFetch.mockClear();
+
     await TestBed.configureTestingModule({
       imports: [
-        HomeComponent, // Import du composant standalone
+        HomeComponent,
+        CommonModule,
+        NgOptimizedImage,
         RouterTestingModule,
-        MatIconModule
+        RouterModule.forRoot([]),
+        MatIconModule,
+        FooterComponent
+      ],
+      providers: [
+        { provide: HomeContentService, useValue: mockHomeContentService },
+        { provide: Renderer2, useValue: mockRenderer2 }
       ]
     }).compileComponents();
 
@@ -67,6 +104,15 @@ describe('HomeComponent', () => {
     component.content = mockContent;
 
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    // Nettoyer les timers et les mocks
+    jest.clearAllTimers();
+    jest.clearAllMocks();
+    
+    // Nettoyer window.botpressWebChat
+    delete (window as any).botpressWebChat;
   });
 
   describe('Component Initialization', () => {
@@ -374,9 +420,6 @@ describe('HomeComponent', () => {
       
       expect(() => fixture.detectChanges()).not.toThrow();
     });
-
-    // Supprimer le test problématique avec undefined car le template ne le gère pas
-    // et ce n'est pas un cas d'usage réaliste
   });
 
   describe('CSS Classes and Structure', () => {
@@ -445,29 +488,424 @@ describe('HomeComponent', () => {
     });
   });
 
+  describe('Botpress Integration (lines 57-95)', () => {
+    describe('sendBonjourToBotpress Method', () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('should wait for botpressWebChat to be available before sending message', fakeAsync(() => {
+        // Mock de fetch avec une réponse réussie
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue({ success: true })
+        });
+
+        // Appeler la méthode
+        (component as any).sendBonjourToBotpress();
+
+        // Vérifier que l'intervalle est créé mais aucune requête n'est envoyée initialement
+        expect(mockFetch).not.toHaveBeenCalled();
+
+        // Simuler que botpressWebChat devient disponible
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        // Avancer le timer de 500ms
+        tick(500);
+
+        // Vérifier que fetch a été appelé
+        expect(mockFetch).toHaveBeenCalledWith(
+          'https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages',
+          expect.objectContaining({
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: expect.stringContaining('test-conversation-id')
+          })
+        );
+      }));
+
+      it('should send correct message payload to Botpress', fakeAsync(() => {
+        // Mock de fetch avec une réponse réussie
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue({ success: true })
+        });
+
+        // Mock de generateRandomId
+        const mockId = 'test-random-id';
+        jest.spyOn(component as any, 'generateRandomId').mockReturnValue(mockId);
+
+        // Configurer botpressWebChat
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        // Appeler la méthode
+        (component as any).sendBonjourToBotpress();
+
+        // Avancer le timer
+        tick(500);
+
+        // Vérifier le payload
+        const expectedPayload = {
+          conversationId: 'test-conversation-id',
+          payload: { type: 'text', text: 'Bonjour' },
+          metadata: { clientMessageId: mockId }
+        };
+
+        expect(mockFetch).toHaveBeenCalledWith(
+          'https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(expectedPayload)
+          }
+        );
+      }));
+
+      it('should handle successful response from Botpress', fakeAsync(() => {
+        const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+        const mockResponse = { messageId: 'msg-123', status: 'sent' };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue(mockResponse)
+        });
+
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        (component as any).sendBonjourToBotpress();
+        tick(500);
+
+        // Attendre que les promesses se résolvent
+        tick(100);
+
+        expect(consoleSpy).toHaveBeenCalledWith('Message envoyé avec succès', mockResponse);
+        
+        consoleSpy.mockRestore();
+      }));
+
+      it('should handle HTTP error response from Botpress', fakeAsync(() => {
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+        mockFetch.mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error'
+        });
+
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        (component as any).sendBonjourToBotpress();
+        tick(500);
+
+        // Attendre que les promesses se résolvent
+        tick(100);
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Erreur lors de l\'envoi du message',
+          expect.any(Error)
+        );
+        
+        consoleErrorSpy.mockRestore();
+      }));
+
+      it('should handle network error', fakeAsync(() => {
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+        const networkError = new Error('Network error');
+
+        mockFetch.mockRejectedValueOnce(networkError);
+
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        (component as any).sendBonjourToBotpress();
+        tick(500);
+
+        // Attendre que les promesses se résolvent
+        tick(100);
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Erreur lors de l\'envoi du message',
+          networkError
+        );
+        
+        consoleErrorSpy.mockRestore();
+      }));
+
+      it('should clear interval after successful message send', fakeAsync(() => {
+        const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue({ success: true })
+        });
+
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        (component as any).sendBonjourToBotpress();
+        tick(500);
+
+        expect(clearIntervalSpy).toHaveBeenCalled();
+        
+        clearIntervalSpy.mockRestore();
+      }));
+
+      it('should continue polling if botpressWebChat is not available', fakeAsync(() => {
+        (component as any).sendBonjourToBotpress();
+
+        // Première tentative - pas de botpressWebChat
+        tick(500);
+        expect(mockFetch).not.toHaveBeenCalled();
+
+        // Deuxième tentative - toujours pas disponible
+        tick(500);
+        expect(mockFetch).not.toHaveBeenCalled();
+
+        // Troisième tentative - botpressWebChat devient disponible
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue({ success: true })
+        });
+
+        tick(500);
+        expect(mockFetch).toHaveBeenCalledTimes(1);
+      }));
+
+      it('should not send message if conversationId is missing', fakeAsync(() => {
+        // botpressWebChat existe mais sans conversationId
+        (window as any).botpressWebChat = {};
+
+        (component as any).sendBonjourToBotpress();
+        tick(500);
+
+        expect(mockFetch).not.toHaveBeenCalled();
+
+        // Avec conversationId undefined
+        (window as any).botpressWebChat.conversationId = undefined;
+        tick(500);
+
+        expect(mockFetch).not.toHaveBeenCalled();
+
+        // Avec conversationId null
+        (window as any).botpressWebChat.conversationId = null;
+        tick(500);
+
+        expect(mockFetch).not.toHaveBeenCalled();
+      }));
+    });
+
+    describe('generateRandomId Method', () => {
+      it('should generate a unique ID with correct format', () => {
+        const id1 = (component as any).generateRandomId();
+        const id2 = (component as any).generateRandomId();
+
+        // Vérifier le format
+        expect(id1).toMatch(/^id-[a-z0-9]{16}$/);
+        expect(id2).toMatch(/^id-[a-z0-9]{16}$/);
+
+        // Vérifier l'unicité
+        expect(id1).not.toBe(id2);
+      });
+
+      it('should always start with "id-" prefix', () => {
+        for (let i = 0; i < 10; i++) {
+          const id = (component as any).generateRandomId();
+          expect(id).toMatch(/^id-/);
+        }
+      });
+
+      it('should generate IDs of consistent length', () => {
+        for (let i = 0; i < 10; i++) {
+          const id = (component as any).generateRandomId();
+          expect(id.length).toBe(19); // 'id-' (3) + 16 caractères
+        }
+      });
+
+      it('should only contain valid characters', () => {
+        for (let i = 0; i < 10; i++) {
+          const id = (component as any).generateRandomId();
+          const validPattern = /^id-[a-z0-9]+$/;
+          expect(id).toMatch(validPattern);
+        }
+      });
+
+      it('should be statistically random', () => {
+        const ids = new Set();
+        const iterations = 100;
+
+        // Générer plusieurs IDs
+        for (let i = 0; i < iterations; i++) {
+          const id = (component as any).generateRandomId();
+          ids.add(id);
+        }
+
+        // Tous les IDs devraient être uniques
+        expect(ids.size).toBe(iterations);
+      });
+    });
+
+    describe('Integration Tests', () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('should integrate generateRandomId with sendBonjourToBotpress', fakeAsync(() => {
+        const generateIdSpy = jest.spyOn(component as any, 'generateRandomId');
+        const testId = 'test-generated-id';
+        generateIdSpy.mockReturnValue(testId);
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockResolvedValue({ success: true })
+        });
+
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        (component as any).sendBonjourToBotpress();
+        tick(500);
+
+        // Vérifier que generateRandomId a été appelé
+        expect(generateIdSpy).toHaveBeenCalled();
+
+        // Vérifier que l'ID généré est utilisé dans la requête
+        const callArgs = mockFetch.mock.calls[0];
+        const requestBody = JSON.parse(callArgs[1].body);
+        expect(requestBody.metadata.clientMessageId).toBe(testId);
+
+        generateIdSpy.mockRestore();
+      }));
+
+      it('should handle multiple rapid calls to sendBonjourToBotpress', fakeAsync(() => {
+        const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+
+        mockFetch.mockResolvedValue({
+          ok: true,
+          json: jest.fn().mockResolvedValue({ success: true })
+        });
+
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        // Appeler plusieurs fois rapidement
+        (component as any).sendBonjourToBotpress();
+        (component as any).sendBonjourToBotpress();
+        (component as any).sendBonjourToBotpress();
+
+        tick(500);
+
+        // Vérifier qu'au moins un message a été envoyé
+        expect(mockFetch).toHaveBeenCalled();
+        
+        // Vérifier que les intervals sont nettoyés
+        expect(clearIntervalSpy).toHaveBeenCalled();
+
+        clearIntervalSpy.mockRestore();
+      }));
+    });
+
+    describe('Error Scenarios', () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('should handle invalid JSON response', fakeAsync(() => {
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: jest.fn().mockRejectedValue(new Error('Invalid JSON'))
+        });
+
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        (component as any).sendBonjourToBotpress();
+        tick(500);
+        tick(100);
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Erreur lors de l\'envoi du message',
+          expect.any(Error)
+        );
+
+        consoleErrorSpy.mockRestore();
+      }));
+
+      it('should handle fetch timeout', fakeAsync(() => {
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+        const timeoutError = new Error('Request timeout');
+
+        mockFetch.mockRejectedValueOnce(timeoutError);
+
+        (window as any).botpressWebChat = {
+          conversationId: 'test-conversation-id'
+        };
+
+        (component as any).sendBonjourToBotpress();
+        tick(500);
+        tick(100);
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Erreur lors de l\'envoi du message',
+          timeoutError
+        );
+
+        consoleErrorSpy.mockRestore();
+      }));
+
+      it('should handle undefined window object gracefully', fakeAsync(() => {
+        // Sauvegarder la référence originale
+        const originalWindow = global.window;
+
+        // Simuler l'absence de window (environnement SSR)
+        (global as any).window = undefined;
+
+        expect(() => {
+          (component as any).sendBonjourToBotpress();
+          tick(500);
+        }).not.toThrow();
+
+        // Restaurer window
+        global.window = originalWindow;
+      }));
+    });
+  });
+
   describe('Content Validation', () => {
-    // it('should display all required content sections', () => {
-    //   // Vérifier que tous les éléments essentiels sont présents
-    //   const requiredSelectors = [
-    //     '.homepage-container',
-    //     'main.content',
-    //     '.logo img',
-    //     'h2.title',
-    //     '.subtitle',
-    //     '.intro-text',
-    //     '.cta-buttons',
-    //     'section.features-section',
-    //     'h3.features-title',
-    //     '.features-grid',
-    //     'app-footer'
-    //   ];
-
-    //   requiredSelectors.forEach(selector => {
-    //     const element = debugElement.query(By.css(selector));
-    //     expect(element).toBeTruthy(`Element with selector "${selector}" should be present`);
-    //   });
-    // });
-
     it('should render features with proper structure', () => {
       const featureCards = debugElement.queryAll(By.css('.feature-card'));
       
