@@ -7,6 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
+import { ServiceCategory } from '../../services/interfaces/interfaceService'; // Titles are now in English
 
 @Component({
   selector: 'app-service-search',
@@ -52,7 +53,7 @@ export class ServiceSearchComponent {
     return `${hour.toString().padStart(2, '0')}:00`;
   });
   /** Liste des services disponibles */
-  services = ['Service 1', 'Service 2', 'Service 3'];
+  services = Object.values(ServiceCategory);
 
   /** Jour sélectionné */
   selectedDay: number | undefined;
