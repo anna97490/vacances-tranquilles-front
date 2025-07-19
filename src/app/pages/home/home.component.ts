@@ -24,7 +24,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(private homeContentService: HomeContentService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
-    this.content = this.homeContentService.getContent();
+    // Rendre robuste face à un contenu null/undefined
+    const content = this.homeContentService.getContent();
+    this.content = content ?? {
+      title: '',
+      subtitle: '',
+      introText: '',
+      btnPrestataire: '',
+      btnParticulier: '',
+      btnConnexion: '',
+      featuresTitle: '',
+      iconType: 'custom',
+      mainIcon: '',
+      features: []
+    };
     this.addScript('https://cdn.botpress.cloud/webchat/v3.0/inject.js');
     this.addScript('https://files.bpcontent.cloud/2025/06/23/13/20250623131622-WAJI2P5Q.js');
     this.sendBonjourToBotpress();
