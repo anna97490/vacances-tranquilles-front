@@ -37,6 +37,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         script.parentNode.removeChild(script);
       }
     });
+    this.scriptElements = [];
   }
 
   private addScript(src: string): void {
