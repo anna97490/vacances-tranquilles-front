@@ -48,7 +48,7 @@ jobs:
           name: codecov-frontend
           fail_ci_if_error: true 
  
-      - name: SonarCloud analysis 
+      #- name: SonarCloud analysis 
 
         #ancien code
         #continue-on-error: false 
@@ -57,12 +57,12 @@ jobs:
         #nouveau code 
         #uses: SonarSource/sonarqube-scan-action@v5.0.0
 
-        with: 
-          projectBaseDir: . 
-        env: 
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }} 
-          SONAR_PROJECT_KEY: anna97490_vacances-tranquilles-front 
-          SONAR_ORGANIZATION: anna97490 
+        #with: 
+          #projectBaseDir: . 
+        #env: 
+          #SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }} 
+          #SONAR_PROJECT_KEY: anna97490_vacances-tranquilles-front 
+          #SONAR_ORGANIZATION: anna97490 
   deploy-to-render: 
     if: github.ref == 'refs/heads/main' 
     runs-on: 
