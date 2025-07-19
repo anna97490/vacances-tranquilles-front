@@ -49,8 +49,14 @@ jobs:
           fail_ci_if_error: true 
  
       - name: SonarCloud analysis 
-        continue-on-error: false 
-        uses: SonarSource/sonarcloud-github-action@master 
+
+        #ancien code
+        #continue-on-error: false 
+        #uses: SonarSource/sonarcloud-github-action@master 
+
+        #nouveau code 
+        #uses: SonarSource/sonarqube-scan-action@v5.0.0
+
         with: 
           projectBaseDir: . 
         env: 
