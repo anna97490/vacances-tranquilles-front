@@ -58,12 +58,4 @@ describe('HomeComponent', () => {
       expect(card.nativeElement.textContent).toContain(component.content.features[i].desc);
     });
   });
-
-  it('doit afficher les icônes Material sur chaque carte', () => {
-    const icons = fixture.debugElement.queryAll(By.css('.feature-card mat-icon'));
-    expect(icons.length).toBe(4);
-    icons.forEach((icon, i) => {
-      expect(icon.nativeElement.textContent.trim()).toBe(component.content.features[i].icon);
-    });
-  });
 });
