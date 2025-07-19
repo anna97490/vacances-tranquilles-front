@@ -37,14 +37,15 @@ jobs:
       - name: Run tests with code coverage 
         run: | 
           npm run test -- --watch=false
- 
+      - name: Vérification de l'existence du rapport de couverture
+        run: ls -lh ./frontend/coverage/lcov.info
       - name: Upload coverage to Codecov 
         uses: codecov/codecov-action@v3 
         with: 
           token: ${{ secrets.CODECOV_TOKEN }} 
           files: ./frontend/coverage/lcov.info
           flags: unittests 
-          name: codecov-frontend 
+          name: codecov-frontend
           fail_ci_if_error: true 
  
       - name: SonarCloud analysis 
