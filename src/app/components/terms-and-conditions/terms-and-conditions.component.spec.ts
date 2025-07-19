@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 import { TermsAndConditionsComponent } from './terms-and-conditions.component';
 
 describe('TermsAndConditionsComponent', () => {
@@ -8,7 +9,16 @@ describe('TermsAndConditionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TermsAndConditionsComponent]
+      imports: [TermsAndConditionsComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({}), // ou ce que tu attends comme données
+            snapshot: {},
+          },
+        },
+      ]
     })
     .compileComponents();
 
