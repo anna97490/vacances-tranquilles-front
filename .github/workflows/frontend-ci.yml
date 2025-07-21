@@ -50,11 +50,11 @@ jobs:
  
       - name: SonarCloud analysis 
 
-        continue-on-error: false
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        #continue-on-error: false
+        #uses: SonarSource/sonarqube-scan-action@v5.0.0
 
-        with: 
-          projectBaseDir: . 
+        #with: 
+          #projectBaseDir: . 
         env: 
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }} 
           SONAR_PROJECT_KEY: anna97490_vacances-tranquilles-front 
