@@ -1,0 +1,51 @@
+.providers-header {
+  text-align: center;
+  margin: 32px auto 16px;
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #37575b;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #6b7a86;
+  }
+}
+
+.filter-bar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 16px 24px;
+
+  mat-form-field {
+    min-width: 160px;
+    max-width: 200px;
+  }
+
+  button {
+    font-weight: 500;
+    color: #37575b;
+  }
+}
+
+.providers-container {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.providers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px 24px;
+  max-width: 1200px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}

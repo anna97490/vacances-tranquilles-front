@@ -1,0 +1,153 @@
+.provider-card {
+  padding: 24px;
+  gap: 15px;
+  border-radius: var(--border-radius-base);
+  background: var(--quaternary-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .name {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text-color);
+  }
+
+  .verified-icon {
+    color: var(--tertiary-color);
+    font-size: 1.3rem;
+  }
+
+  .profile-btn {
+    margin-left: auto;
+    background: var(--secondary-color);
+    color: var(--secondary-text-color);
+    border-radius: var(--border-radius-base);
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 6px 16px;
+  }
+}
+
+.rating {
+  margin: 4px 0 8px 0;
+}
+
+.description {
+  font-size: 1rem;
+  color: var(--text-color)
+}
+
+mat-divider {
+  margin: 16px 0;
+  border-color: var( --vt-card-border);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+
+  .price {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-color);
+
+    .unit {
+      font-size: 1rem;
+      color: var(--text-color);
+      margin-left: 4px;
+    }
+  }
+
+  .reserve-btn {
+    align-self: center;
+    width: 100%;
+    background: var(--secondary-color) !important;
+    color: var(--secondary-text-color) !important;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 14px;
+    border-radius: var(--border-radius-base);
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .provider-card {
+    padding: 16px;
+    max-width: 100%;
+    border-radius: var(--border-radius-base);
+  }
+
+  .card-content,
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .avatar {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+  }
+
+  .top-line {
+    flex-wrap: wrap;
+    gap: 6px;
+
+    .profile-btn {
+      align-self: flex-start;
+      margin-left: 0;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+    }
+  }
+
+  .footer {
+    align-items: stretch;
+
+    .price {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .reserve-btn {
+      width: 100%;
+      font-size: 1rem;
+      padding: 12px;
+    }
+  }
+}
+
+

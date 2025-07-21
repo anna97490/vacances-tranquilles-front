@@ -1,0 +1,29 @@
+<mat-card class="provider-card">
+  <div class="header">
+    <img [src]="user?.profilePicture" alt="Photo de {{ user?.firstName }}" class="avatar" />
+
+    <div class="info">
+      <div class="top-line">
+        <span class="name">{{ user?.firstName }} {{ user?.lastName }}</span>
+        <mat-icon class="verified-icon">check_circle</mat-icon>
+        <button mat-button class="profile-btn">Voir le profil</button>
+      </div>
+
+      <div class="rating">
+        <app-rating-stars [rating]="3" [reviewsCount]="32"></app-rating-stars>
+      </div>
+
+      <div class="description">
+        {{ service.description }}
+      </div>
+    </div>
+  </div>
+
+
+  <div class="footer">
+    <div class="price">
+      <span class="euro">€ {{ service.price }}</span><span class="unit">/heure</span>
+    </div>
+    <button mat-raised-button class="reserve-btn">Réserver</button>
+  </div>
+</mat-card>
