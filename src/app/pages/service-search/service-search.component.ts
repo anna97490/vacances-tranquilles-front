@@ -7,7 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
-import { ServiceCategory } from '../../services/interfaces/interfaceService'; // Titles are now in English
+import { ServiceCategory } from '../../models/Service';
 
 @Component({
   selector: 'app-service-search',

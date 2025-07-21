@@ -1,12 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { User } from '../../services/interfaces/interfaceUser';
+import { User } from '../../models/User';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
-import { Service } from '../../services/interfaces/interfaceService';
+import { Service } from '../../models/Service';
 import { PROVIDERS_MOCK } from './mock-user';
 import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.component';
 

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProviderCardComponent } from '../../components/provider-card/provider-card.component';
 import { MOCK_SERVICES } from '../../components/provider-card/mock-service';
-import { Service } from '../../services/interfaces/interfaceService';
+import { Service } from '../../models/Service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';

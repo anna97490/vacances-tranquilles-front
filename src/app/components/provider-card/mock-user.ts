@@ -1,12 +1,12 @@
-import { User, UserRole } from '../../services/interfaces/interfaceUser';
+import { User, UserRole } from '../../models/User';
 
-export const MOCK_USER: User = {
+export const MOCK_USER = new User({
   idUser: 1,
   profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
   firstName: 'Ashfak',
   lastName: 'Sayem',
   email: 'contact@servicepro.fr',
-  password: '', // Jamais utilisé côté front pour l'affichage
+  password: '',
   role: UserRole.PROVIDER,
   phoneNumber: '+1 234 567 890',
   address: '12 rue de Paris',
@@ -19,9 +19,9 @@ export const MOCK_USER: User = {
   autoEntrepreneurAttestationUrl: 'https://example.com/attestation.pdf',
   insuranceCertificateUrl: 'https://example.com/assurance.pdf',
   description:'description succinte du prestataire vraiment très très très enrichissante. Il adore sa vie et les gens autour de lui'
-};
+});
 
-export const LOGGED_USER: User = {
+export const LOGGED_USER = new User({
   idUser: 2,
   profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg',
   firstName: 'Claire',
@@ -40,9 +40,9 @@ export const LOGGED_USER: User = {
   autoEntrepreneurAttestationUrl: '',
   insuranceCertificateUrl: '',
   description: 'Cliente fidèle, passionnée de déco et de rénovation.'
-};
+});
 
-export const MOCK_USER_2: User = {
+export const MOCK_USER_2 = new User({
   idUser: 3,
   profilePicture: 'https://randomuser.me/api/portraits/women/65.jpg',
   firstName: 'Marie',
@@ -61,7 +61,7 @@ export const MOCK_USER_2: User = {
   autoEntrepreneurAttestationUrl: 'https://example.com/attestation2.pdf',
   insuranceCertificateUrl: 'https://example.com/assurance2.pdf',
   description: 'Prestataire passionnée par le jardinage et le bricolage, toujours souriante.'
-};
+});
 
 /**
  * Tableau de prestataires mockés pour affichage.
