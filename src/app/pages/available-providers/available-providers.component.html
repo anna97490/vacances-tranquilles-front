@@ -1,0 +1,15 @@
+
+<div class="page-container">
+  <div class="header-section">
+    <h1>Prestataires Disponibles</h1>
+    <p class="subtitle">Trouvez le prestataire idéal pour vos besoins</p>
+  </div>
+
+  <div class="providers-container">
+    <div class="providers-grid">
+      <ng-container *ngFor="let service of services">
+        <app-provider-card [service]="service"></app-provider-card>
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -5,9 +5,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MOCK_USER, LOGGED_USER } from '../../components/profile/mock-user';
-import { MOCK_SERVICES } from '../../components/profile/mock-service';
-import { User } from '../../services/interfaces/interfaceUser';
-import { Service } from '../../services/interfaces/interfaceService';
+import { MOCK_SERVICES } from '../../components/provider-card/mock-service';
+import { User } from '../../models/User';
+import { Service } from '../../models/Service';
 
 @Component({
   selector: 'app-profile',

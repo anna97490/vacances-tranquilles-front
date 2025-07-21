@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { DisplayProfileHeaderComponent } from "../display-profile/utils/display-profile-header/display-profile-header.component";
 import { DisplayProfileServicesComponent } from './utils/display-profile-services/display-profile-services.component';
-import { User } from '../../../services/interfaces/interfaceUser';
-import { Service } from '../../../services/interfaces/interfaceService';
-import { UserRole } from '../../../services/interfaces/interfaceUser';
+import { User } from '../../../models/User';
+import { Service } from '../../../models/Service';
+import { UserRole } from '../../../models/User';
 
 @Component({
   selector: 'app-display-profile',

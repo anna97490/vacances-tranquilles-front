@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgFor } from '@angular/common';
 import { NgClass } from '@angular/common';
 import { MOCK_SERVICES } from '../../../mock-service';
-import { Service} from '../../../../../services/interfaces/interfaceService'
+import { Service } from '../../../../../models/Service';
 
 /**
  * Composant d'affichage des services proposés dans le profil utilisateur.

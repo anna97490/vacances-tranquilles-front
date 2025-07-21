@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { User, UserRole } from '../../../../../services/interfaces/interfaceUser';
+import { User, UserRole } from '../../../../../models/User';
 
 /**
  * Composant d’en-tête de profil utilisateur.

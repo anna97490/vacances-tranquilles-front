@@ -1,4 +1,4 @@
-import { Service, ServiceCategory  } from '../../models/Service';
+import { Service, ServiceCategory } from '../../models/Service';
 
 /**
  * Mock de services pour l'application.

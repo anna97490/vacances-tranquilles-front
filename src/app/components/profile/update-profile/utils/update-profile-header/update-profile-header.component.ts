@@ -1,7 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { User } from '../../../../../services/interfaces/interfaceUser';
+import { User } from '../../../../../models/User';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 /**
  * Composant d'en-tête de mise à jour du profil utilisateur.
@@ -10,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-update-profile-header',
   standalone: true,
-  imports: [FormsModule, MatIconModule],
+  imports: [FormsModule, MatIconModule, CommonModule],
   templateUrl: './update-profile-header.component.html',
   styleUrl: './update-profile-header.component.scss'
 })

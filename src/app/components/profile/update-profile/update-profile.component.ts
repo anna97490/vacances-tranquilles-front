@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { User } from '../../../services/interfaces/interfaceUser';
-import { Service } from '../../../services/interfaces/interfaceService';
-import { UserRole } from '../../../services/interfaces/interfaceUser';
+import { User } from '../../../models/User';
+import { Service } from '../../../models/Service';
+import { UserRole } from '../../../models/User';
 import { UpdateProfileHeaderComponent } from './utils/update-profile-header/update-profile-header.component';
 import { UpdateProfileServicesComponent } from './utils/update-profile-services/update-profile-services.component';
 

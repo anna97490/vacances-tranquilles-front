@@ -1,0 +1,74 @@
+
+.container {
+  background-color: var(--primary-color);
+  margin: auto;
+  padding: 2rem;
+}
+
+.container-child {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.user-card {
+  margin-bottom: 1rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.user-name {
+  font-weight: 600;
+}
+
+.feedback-card {
+  padding: 1rem;
+}
+
+.section-title {
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.stars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.user-info,
+.feedback-card {
+    background-color: var(--secondary-text-color);
+    border-radius: var(--border-radius-base);
+}
+
+.button {
+    text-align : center;
+    margin-top : 1rem;
+}
+
+.mat-mdc-raised-button{
+    border-radius: var(--border-radius-base);
+    &:not(:disabled){
+        background-color: var(--secondary-color);
+        color: var(--secondary-text-color);
+    }
+}
+
+.mdc-button:hover{
+    background-color: var(--tertiary-color);
+}

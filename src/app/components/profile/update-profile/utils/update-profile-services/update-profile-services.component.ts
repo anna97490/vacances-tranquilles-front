@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Service } from '../../../../../services/interfaces/interfaceService';
+import { Service } from '../../../../../models/Service';
 
 /**
  * Composant de modification des services proposés dans le profil utilisateur.

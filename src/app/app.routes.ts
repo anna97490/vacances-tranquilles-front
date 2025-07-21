@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { ProfilePageComponent } from './pages/ProfilePage/profilePage.component';
 
+import { ServiceSearchComponent } from './pages/service-search/service-search.component';
+import { AvailableProvidersComponent } from './pages/available-providers/available-providers.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -23,6 +25,8 @@ export const routes: Routes = [
     ]
   },
   { path: 'profile', component: ProfilePageComponent },
+  { path: 'service-search', component: ServiceSearchComponent },
+  { path: 'avalaible-providers', component: AvailableProvidersComponent },
   
   // Route wildcard pour gérer les URLs non trouvées
   { path: '**', redirectTo: 'home' }
