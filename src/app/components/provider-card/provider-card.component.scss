@@ -55,6 +55,9 @@
     font-size: 0.95rem;
     font-weight: 500;
     padding: 6px 16px;
+    &:hover {
+      background: var(--tertiary-color);
+    }
   }
 }
 
@@ -65,11 +68,6 @@
 .description {
   font-size: 1rem;
   color: var(--text-color)
-}
-
-mat-divider {
-  margin: 16px 0;
-  border-color: var( --vt-card-border);
 }
 
 .footer {
@@ -100,6 +98,9 @@ mat-divider {
     padding: 14px;
     border-radius: var(--border-radius-base);
     max-width: 90%;
+    &:hover {
+      background: var(--tertiary-color) !important;
+    }
   }
 }
 
