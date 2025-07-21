@@ -59,13 +59,13 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }} 
           SONAR_PROJECT_KEY: anna97490_vacances-tranquilles-front 
           SONAR_ORGANIZATION: anna97490 
-          
-    deploy-to-render: 
-      if: github.ref == 'refs/heads/main' 
-      runs-on: 
-        ubuntu-latest
-      needs: build-and-test 
-      steps: 
-        - name: Trigger Render deploy (frontend) 
-          run: | 
-            curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }} 
+
+  deploy-to-render: 
+    if: github.ref == 'refs/heads/main' 
+    runs-on: 
+      ubuntu-latest
+    needs: build-and-test 
+    steps: 
+      - name: Trigger Render deploy (frontend) 
+        run: | 
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }} 
