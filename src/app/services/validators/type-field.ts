@@ -6,7 +6,7 @@
 export class CustomValidators {
     // Regex patterns
     private static readonly namePattern = /^[a-zA-ZÀ-ÿ\s'-]+$/;
-    private static readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    private static readonly emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     // Allows optional "+" and 10-15 digits
     private static readonly phoneNumberPattern = /^\+?[0-9]{10,15}$/;
      // French postal code (5 digits)
