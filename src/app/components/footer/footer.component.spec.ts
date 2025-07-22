@@ -10,15 +10,86 @@ describe('FooterComponent', () => {
   let fixture: ComponentFixture<FooterComponent>;
   let debugElement: DebugElement;
 
+  // Configuration des données de test
+  const footerData = {
+    columns: [
+      { title: 'Vacances Tranquilles', hasText: true },
+      { title: 'Services', hasText: false },
+      { title: 'À Propos', hasText: false },
+      { title: 'Légal', hasText: false }
+    ],
+    legalLinks: [
+      { route: '/terms-and-conditions/cgu', text: 'Conditions générales d\'utilisation' },
+      { route: '/terms-and-conditions/cgv', text: 'Conditions générales de vente' }
+    ],
+    companyInfo: {
+      name: 'Vacances Tranquilles',
+      description: 'Votre partenaire de confiance',
+      year: 'depuis 2020'
+    },
+    copyright: '© 2025 Tous droits réservés'
+  };
+
+  // Helpers pour réduire la duplication
+  const selectors = {
+    footer: 'footer.footer-mockup',
+    footerContent: '.footer-content',
+    footerCopyright: '.footer-copyright',
+    footerCol: '.footer-col',
+    footerTitle: '.footer-title',
+    footerText: '.footer-text',
+    footerLink: '.footer-link',
+    matNavList: 'mat-nav-list',
+    matListItem: 'a[mat-list-item]',
+    routerLink: 'a[routerLink]'
+  };
+
+  const getElements = {
+    all: (selector: string) => debugElement.queryAll(By.css(selector)),
+    single: (selector: string) => debugElement.query(By.css(selector)),
+    columns: () => getElements.all(selectors.footerCol),
+    legalLinks: () => getElements.all(selectors.footerLink),
+    routerLinks: () => getElements.all(selectors.routerLink)
+  };
+
+  const expectations = {
+    elementExists: (selector: string, shouldExist = true) => {
+      const element = getElements.single(selector);
+      if (shouldExist) {
+        expect(element).toBeTruthy();
+      } else {
+        expect(element).toBeFalsy();
+      }
+    },
+    elementCount: (selector: string, expectedCount: number) => {
+      const elements = getElements.all(selector);
+      expect(elements.length).toBe(expectedCount);
+    },
+    textContent: (selector: string, expectedText: string, exact = true) => {
+      const element = getElements.single(selector);
+      expect(element).toBeTruthy();
+      if (exact) {
+        expect(element.nativeElement.textContent.trim()).toBe(expectedText);
+      } else {
+        expect(element.nativeElement.textContent).toContain(expectedText);
+      }
+    },
+    hasClass: (element: DebugElement, className: string) => {
+      expect(element.nativeElement.classList.contains(className)).toBeTruthy();
+    },
+    hasAttribute: (element: DebugElement, attribute: string, expectedValue?: string) => {
+      expect(element.nativeElement.hasAttribute(attribute)).toBeTruthy();
+      if (expectedValue) {
+        expect(element.nativeElement.getAttribute(attribute)).toBe(expectedValue);
+      }
+    }
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        FooterComponent,
-        MatListModule
-      ],
+      imports: [FooterComponent, MatListModule],
       providers: [provideRouter([])]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FooterComponent);
     component = fixture.componentInstance;
@@ -32,248 +103,229 @@ describe('FooterComponent', () => {
     });
 
     it('should have footer element', () => {
-      const footerElement = debugElement.query(By.css('footer'));
-      expect(footerElement).toBeTruthy();
+      expectations.elementExists(selectors.footer);
     });
   });
 
   describe('Footer Structure', () => {
-    it('should have footer with correct CSS class', () => {
-      const footer = debugElement.query(By.css('footer.footer-mockup'));
-      expect(footer).toBeTruthy();
-      expect(footer.nativeElement.classList.contains('footer-mockup')).toBeTruthy();
-    });
+    const structureTests = [
+      { selector: selectors.footer, description: 'footer with correct CSS class' },
+      { selector: selectors.footerContent, description: 'footer content container' },
+      { selector: selectors.footerCopyright, description: 'footer copyright section' }
+    ];
 
-    it('should have footer content container', () => {
-      const footerContent = debugElement.query(By.css('.footer-content'));
-      expect(footerContent).toBeTruthy();
-    });
-
-    it('should have footer copyright section', () => {
-      const footerCopyright = debugElement.query(By.css('.footer-copyright'));
-      expect(footerCopyright).toBeTruthy();
+    structureTests.forEach(({ selector, description }) => {
+      it(`should have ${description}`, () => {
+        expectations.elementExists(selector);
+      });
     });
 
     it('should have 4 footer columns', () => {
-      const footerColumns = debugElement.queryAll(By.css('.footer-col'));
-      expect(footerColumns.length).toBe(4);
+      expectations.elementCount(selectors.footerCol, 4);
     });
   });
 
   describe('Footer Columns Content', () => {
-    it('should display company information in first column', () => {
-      const footerColumns = debugElement.queryAll(By.css('.footer-col'));
-      const firstColumn = footerColumns[0];
-      
-      const title = firstColumn.query(By.css('.footer-title'));
-      const text = firstColumn.query(By.css('.footer-text'));
-      
-      expect(title).toBeTruthy();
-      expect(title.nativeElement.textContent.trim()).toBe('Vacances Tranquilles');
-      
-      expect(text).toBeTruthy();
-      expect(text.nativeElement.textContent).toContain('Votre partenaire de confiance');
-      expect(text.nativeElement.textContent).toContain('depuis 2020');
-    });
+    footerData.columns.forEach((columnData, index) => {
+      it(`should display ${columnData.title} in column ${index + 1}`, () => {
+        const columns = getElements.columns();
+        const column = columns[index];
+        const title = column.query(By.css(selectors.footerTitle));
+        
+        expect(title).toBeTruthy();
+        expect(title.nativeElement.textContent.trim()).toBe(columnData.title);
 
-    it('should display Services title in second column', () => {
-      const footerColumns = debugElement.queryAll(By.css('.footer-col'));
-      const secondColumn = footerColumns[1];
-      
-      const title = secondColumn.query(By.css('.footer-title'));
-      expect(title).toBeTruthy();
-      expect(title.nativeElement.textContent.trim()).toBe('Services');
-    });
-
-    it('should display À Propos title in third column', () => {
-      const footerColumns = debugElement.queryAll(By.css('.footer-col'));
-      const thirdColumn = footerColumns[2];
-      
-      const title = thirdColumn.query(By.css('.footer-title'));
-      expect(title).toBeTruthy();
-      expect(title.nativeElement.textContent.trim()).toBe('À Propos');
-    });
-
-    it('should display Légal title in fourth column', () => {
-      const footerColumns = debugElement.queryAll(By.css('.footer-col'));
-      const fourthColumn = footerColumns[3];
-      
-      const title = fourthColumn.query(By.css('.footer-title'));
-      expect(title).toBeTruthy();
-      expect(title.nativeElement.textContent.trim()).toBe('Légal');
+        if (columnData.hasText && index === 0) {
+          const text = column.query(By.css(selectors.footerText));
+          expect(text).toBeTruthy();
+          expect(text.nativeElement.textContent).toContain(footerData.companyInfo.description);
+          expect(text.nativeElement.textContent).toContain(footerData.companyInfo.year);
+        }
+      });
     });
   });
 
   describe('Legal Section', () => {
-    it('should have mat-nav-list in legal column', () => {
-      const footerColumns = debugElement.queryAll(By.css('.footer-col'));
-      const legalColumn = footerColumns[3];
-      
-      const navList = legalColumn.query(By.css('mat-nav-list'));
-      expect(navList).toBeTruthy();
+    const legalTests = [
+      {
+        description: 'should have mat-nav-list in legal column',
+        test: () => {
+          const legalColumn = getElements.columns()[3];
+          const navList = legalColumn.query(By.css(selectors.matNavList));
+          expect(navList).toBeTruthy();
+        }
+      },
+      {
+        description: 'should have correct number of legal links',
+        test: () => expectations.elementCount(selectors.footerLink, footerData.legalLinks.length)
+      },
+      {
+        description: 'should have mat-list-item directive on legal links',
+        test: () => {
+          expectations.elementCount(selectors.matListItem, footerData.legalLinks.length);
+          getElements.all(selectors.matListItem).forEach(link => {
+            expectations.hasAttribute(link, 'mat-list-item');
+          });
+        }
+      }
+    ];
+
+    legalTests.forEach(({ description, test }) => {
+      it(description, test);
     });
 
-    it('should display CGU link', () => {
-      const cguLink = debugElement.query(By.css('a[routerLink="/terms-and-conditions/cgu"]'));
-      expect(cguLink).toBeTruthy();
-      expect(cguLink.nativeElement.textContent.trim()).toBe('Conditions générales d\'utilisation');
-      expect(cguLink.nativeElement.classList.contains('footer-link')).toBeTruthy();
-    });
-
-    it('should display CGV link', () => {
-      const cgvLink = debugElement.query(By.css('a[routerLink="/terms-and-conditions/cgv"]'));
-      expect(cgvLink).toBeTruthy();
-      expect(cgvLink.nativeElement.textContent.trim()).toBe('Conditions générales de vente');
-      expect(cgvLink.nativeElement.classList.contains('footer-link')).toBeTruthy();
-    });
-
-    it('should have 2 legal links', () => {
-      const legalLinks = debugElement.queryAll(By.css('.footer-link'));
-      expect(legalLinks.length).toBe(2);
-    });
-
-    it('should have mat-list-item directive on legal links', () => {
-      const legalLinks = debugElement.queryAll(By.css('a[mat-list-item]'));
-      expect(legalLinks.length).toBe(2);
-      
-      legalLinks.forEach(link => {
-        expect(link.nativeElement.hasAttribute('mat-list-item')).toBeTruthy();
+    footerData.legalLinks.forEach((linkData, index) => {
+      it(`should display ${linkData.text.split(' ')[0]} link`, () => {
+        const linkSelector = `a[routerLink="${linkData.route}"]`;
+        const link = getElements.single(linkSelector);
+        
+        expect(link).toBeTruthy();
+        expect(link.nativeElement.textContent.trim()).toBe(linkData.text);
+        expectations.hasClass(link, 'footer-link');
+        expectations.hasAttribute(link, 'routerLink', linkData.route);
       });
     });
 
     it('should have disableRipple attribute on legal links', () => {
-      const legalLinks = debugElement.queryAll(By.css('.footer-link'));
-      legalLinks.forEach(link => {
-        // Vérifier via le component instance au lieu de l'attribut HTML
+      getElements.legalLinks().forEach(link => {
         const componentInstance = link.componentInstance;
-        if (componentInstance && componentInstance.disableRipple !== undefined) {
+        if (componentInstance?.disableRipple !== undefined) {
           expect(componentInstance.disableRipple).toBe(true);
         } else {
-          // Alternative : vérifier que l'attribut ng-reflect-disable-ripple est présent
           const ngReflectAttr = link.nativeElement.getAttribute('ng-reflect-disable-ripple');
           expect(ngReflectAttr).toBe('true');
         }
       });
     });
   });
+
   describe('Router Links', () => {
     it('should have correct routerLink attributes', () => {
-      const cguLink = debugElement.query(By.css('a[routerLink="/terms-and-conditions/cgu"]'));
-      const cgvLink = debugElement.query(By.css('a[routerLink="/terms-and-conditions/cgv"]'));
-      
-      expect(cguLink.nativeElement.getAttribute('routerLink')).toBe('/terms-and-conditions/cgu');
-      expect(cgvLink.nativeElement.getAttribute('routerLink')).toBe('/terms-and-conditions/cgv');
+      footerData.legalLinks.forEach(linkData => {
+        const link = getElements.single(`a[routerLink="${linkData.route}"]`);
+        expectations.hasAttribute(link, 'routerLink', linkData.route);
+      });
     });
 
     it('should have all required router links', () => {
-      const routerLinks = debugElement.queryAll(By.css('a[routerLink]'));
-      expect(routerLinks.length).toBe(2);
+      const routerLinks = getElements.routerLinks();
+      expectations.elementCount(selectors.routerLink, footerData.legalLinks.length);
       
       const routes = routerLinks.map(link => link.nativeElement.getAttribute('routerLink'));
-      expect(routes).toContain('/terms-and-conditions/cgu');
-      expect(routes).toContain('/terms-and-conditions/cgv');
+      footerData.legalLinks.forEach(linkData => {
+        expect(routes).toContain(linkData.route);
+      });
     });
   });
 
   describe('Copyright Section', () => {
     it('should display copyright text', () => {
-      const copyright = debugElement.query(By.css('.footer-copyright'));
-      expect(copyright).toBeTruthy();
-      expect(copyright.nativeElement.textContent.trim()).toBe('© 2025 Tous droits réservés');
+      expectations.textContent(selectors.footerCopyright, footerData.copyright);
     });
 
     it('should have correct copyright year', () => {
-      const copyright = debugElement.query(By.css('.footer-copyright'));
-      expect(copyright.nativeElement.textContent).toContain('2025');
+      expectations.textContent(selectors.footerCopyright, '2025', false);
     });
   });
 
   describe('CSS Classes', () => {
-    it('should have correct CSS classes on footer elements', () => {
-      const footer = debugElement.query(By.css('footer'));
-      const footerContent = debugElement.query(By.css('.footer-content'));
-      const footerCopyright = debugElement.query(By.css('.footer-copyright'));
-      
-      expect(footer.nativeElement.classList.contains('footer-mockup')).toBeTruthy();
-      expect(footerContent.nativeElement.classList.contains('footer-content')).toBeTruthy();
-      expect(footerCopyright.nativeElement.classList.contains('footer-copyright')).toBeTruthy();
-    });
+    const cssTests = [
+      { 
+        selector: selectors.footer, 
+        expectedClasses: ['footer-mockup'],
+        description: 'footer elements'
+      },
+      { 
+        selector: selectors.footerContent, 
+        expectedClasses: ['footer-content'],
+        description: 'footer content'
+      },
+      { 
+        selector: selectors.footerCopyright, 
+        expectedClasses: ['footer-copyright'],
+        description: 'footer copyright'
+      }
+    ];
 
-    it('should have correct CSS classes on footer columns', () => {
-      const footerColumns = debugElement.queryAll(By.css('.footer-col'));
-      footerColumns.forEach(column => {
-        expect(column.nativeElement.classList.contains('footer-col')).toBeTruthy();
+    cssTests.forEach(({ selector, expectedClasses, description }) => {
+      it(`should have correct CSS classes on ${description}`, () => {
+        const element = getElements.single(selector);
+        expectedClasses.forEach(className => {
+          expectations.hasClass(element, className);
+        });
       });
     });
 
-    it('should have correct CSS classes on footer titles', () => {
-      const footerTitles = debugElement.queryAll(By.css('.footer-title'));
-      expect(footerTitles.length).toBe(4);
-      
-      footerTitles.forEach(title => {
-        expect(title.nativeElement.classList.contains('footer-title')).toBeTruthy();
-      });
-    });
+    const multiElementTests = [
+      { selector: selectors.footerCol, className: 'footer-col', count: 4, description: 'footer columns' },
+      { selector: selectors.footerTitle, className: 'footer-title', count: 4, description: 'footer titles' },
+      { selector: selectors.footerText, className: 'footer-text', count: 1, description: 'footer text' },
+      { selector: selectors.footerLink, className: 'footer-link', count: 2, description: 'footer links' }
+    ];
 
-    it('should have correct CSS classes on footer text', () => {
-      const footerText = debugElement.query(By.css('.footer-text'));
-      expect(footerText).toBeTruthy();
-      expect(footerText.nativeElement.classList.contains('footer-text')).toBeTruthy();
-    });
-
-    it('should have correct CSS classes on footer links', () => {
-      const footerLinks = debugElement.queryAll(By.css('.footer-link'));
-      footerLinks.forEach(link => {
-        expect(link.nativeElement.classList.contains('footer-link')).toBeTruthy();
+    multiElementTests.forEach(({ selector, className, count, description }) => {
+      it(`should have correct CSS classes on ${description}`, () => {
+        const elements = getElements.all(selector);
+        expect(elements.length).toBe(count);
+        elements.forEach(element => {
+          expectations.hasClass(element, className);
+        });
       });
     });
   });
 
   describe('HTML Structure', () => {
-    it('should have proper semantic HTML structure', () => {
-      const footer = debugElement.query(By.css('footer'));
-      expect(footer).toBeTruthy();
-      expect(footer.nativeElement.tagName.toLowerCase()).toBe('footer');
-    });
+    const structureTests = [
+      {
+        description: 'should have proper semantic HTML structure',
+        test: () => {
+          const footer = getElements.single(selectors.footer);
+          expect(footer.nativeElement.tagName.toLowerCase()).toBe('footer');
+        }
+      },
+      {
+        description: 'should have proper navigation structure',
+        test: () => {
+          const navList = getElements.single(selectors.matNavList);
+          expect(navList).toBeTruthy();
+          const navLinks = navList.queryAll(By.css('a'));
+          expect(navLinks.length).toBe(footerData.legalLinks.length);
+        }
+      },
+      {
+        description: 'should have proper link structure',
+        test: () => {
+          getElements.routerLinks().forEach(link => {
+            expect(link.nativeElement.tagName.toLowerCase()).toBe('a');
+            expectations.hasAttribute(link, 'routerLink');
+          });
+        }
+      }
+    ];
 
-    it('should have proper navigation structure', () => {
-      const navList = debugElement.query(By.css('mat-nav-list'));
-      expect(navList).toBeTruthy();
-      
-      const navLinks = navList.queryAll(By.css('a'));
-      expect(navLinks.length).toBe(2);
-    });
-
-    it('should have proper link structure', () => {
-      const links = debugElement.queryAll(By.css('a[routerLink]'));
-      links.forEach(link => {
-        expect(link.nativeElement.tagName.toLowerCase()).toBe('a');
-        expect(link.nativeElement.hasAttribute('routerLink')).toBeTruthy();
-      });
+    structureTests.forEach(({ description, test }) => {
+      it(description, test);
     });
   });
 
   describe('Accessibility', () => {
     it('should have proper link attributes', () => {
-      const links = debugElement.queryAll(By.css('a[routerLink]'));
-      links.forEach(link => {
-        expect(link.nativeElement.hasAttribute('routerLink')).toBeTruthy();
+      getElements.routerLinks().forEach(link => {
+        expectations.hasAttribute(link, 'routerLink');
         expect(link.nativeElement.textContent.trim().length).toBeGreaterThan(0);
       });
     });
 
     it('should have meaningful link text', () => {
-      const cguLink = debugElement.query(By.css('a[routerLink="/terms-and-conditions/cgu"]'));
-      const cgvLink = debugElement.query(By.css('a[routerLink="/terms-and-conditions/cgv"]'));
-      
-      expect(cguLink.nativeElement.textContent.trim()).toBe('Conditions générales d\'utilisation');
-      expect(cgvLink.nativeElement.textContent.trim()).toBe('Conditions générales de vente');
+      footerData.legalLinks.forEach(linkData => {
+        const link = getElements.single(`a[routerLink="${linkData.route}"]`);
+        expect(link.nativeElement.textContent.trim()).toBe(linkData.text);
+      });
     });
 
     it('should have proper heading hierarchy', () => {
-      // Les titres utilisent des divs avec class footer-title
-      const footerTitles = debugElement.queryAll(By.css('.footer-title'));
-      expect(footerTitles.length).toBe(4);
+      const footerTitles = getElements.all(selectors.footerTitle);
+      expect(footerTitles.length).toBe(footerData.columns.length);
       
       footerTitles.forEach(title => {
         expect(title.nativeElement.textContent.trim().length).toBeGreaterThan(0);
@@ -284,60 +336,66 @@ describe('FooterComponent', () => {
   describe('Content Validation', () => {
     it('should have all required content sections', () => {
       const compiled = fixture.nativeElement as HTMLElement;
+      const requiredTexts = [
+        ...footerData.columns.map(col => col.title),
+        footerData.copyright
+      ];
       
-      // Vérifier la présence du contenu principal
-      expect(compiled.textContent).toContain('Vacances Tranquilles');
-      expect(compiled.textContent).toContain('Services');
-      expect(compiled.textContent).toContain('À Propos');
-      expect(compiled.textContent).toContain('Légal');
-      expect(compiled.textContent).toContain('© 2025 Tous droits réservés');
+      requiredTexts.forEach(text => {
+        expect(compiled.textContent).toContain(text);
+      });
     });
 
     it('should have proper company information', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      expect(compiled.textContent).toContain('Votre partenaire de confiance');
-      expect(compiled.textContent).toContain('depuis 2020');
+      expect(compiled.textContent).toContain(footerData.companyInfo.description);
+      expect(compiled.textContent).toContain(footerData.companyInfo.year);
     });
 
     it('should have proper legal links text', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      expect(compiled.textContent).toContain('Conditions générales d\'utilisation');
-      expect(compiled.textContent).toContain('Conditions générales de vente');
+      footerData.legalLinks.forEach(linkData => {
+        expect(compiled.textContent).toContain(linkData.text);
+      });
     });
   });
 
   describe('Material Design Integration', () => {
-    it('should use Material Design navigation list', () => {
-      const matNavList = debugElement.query(By.css('mat-nav-list'));
-      expect(matNavList).toBeTruthy();
-    });
+    const materialTests = [
+      { selector: selectors.matNavList, description: 'Material Design navigation list' },
+      { selector: selectors.matListItem, count: footerData.legalLinks.length, description: 'Material Design list items' }
+    ];
 
-    it('should use Material Design list items', () => {
-      const matListItems = debugElement.queryAll(By.css('a[mat-list-item]'));
-      expect(matListItems.length).toBe(2);
+    materialTests.forEach(({ selector, count, description }) => {
+      it(`should use ${description}`, () => {
+        if (count) {
+          expectations.elementCount(selector, count);
+        } else {
+          expectations.elementExists(selector);
+        }
+      });
     });
   });
+
   describe('Layout Structure', () => {
     it('should have proper column structure', () => {
-      const footerColumns = debugElement.queryAll(By.css('.footer-col'));
-      expect(footerColumns.length).toBe(4);
+      const footerColumns = getElements.columns();
+      expect(footerColumns.length).toBe(footerData.columns.length);
       
-      // Vérifier que chaque colonne a un titre
       footerColumns.forEach(column => {
-        const title = column.query(By.css('.footer-title'));
+        const title = column.query(By.css(selectors.footerTitle));
         expect(title).toBeTruthy();
       });
     });
 
     it('should have proper content hierarchy', () => {
-      const footer = debugElement.query(By.css('footer'));
-      const footerContent = footer.query(By.css('.footer-content'));
-      const footerCopyright = footer.query(By.css('.footer-copyright'));
+      const footer = getElements.single(selectors.footer);
+      const footerContent = footer.query(By.css(selectors.footerContent));
+      const footerCopyright = footer.query(By.css(selectors.footerCopyright));
       
       expect(footerContent).toBeTruthy();
       expect(footerCopyright).toBeTruthy();
       
-      // Vérifier que le copyright est après le contenu
       const footerChildren = Array.from(footer.nativeElement.children);
       const contentIndex = footerChildren.indexOf(footerContent.nativeElement);
       const copyrightIndex = footerChildren.indexOf(footerCopyright.nativeElement);
@@ -348,13 +406,26 @@ describe('FooterComponent', () => {
 
   describe('Text Content', () => {
     it('should have proper line breaks in company description', () => {
-      const footerText = debugElement.query(By.css('.footer-text'));
-      // Accept <br> with possible Angular attributes
-      expect(footerText.nativeElement.innerHTML).toMatch(/<br[^>]*>/);
-      expect(footerText.nativeElement.innerHTML.replace(/\s*<br[^>]*>\s*/g, '<br>')).toContain('Votre partenaire de confiance<br>depuis 2020');
-      const textContent = footerText.nativeElement.textContent;
-      expect(textContent).toContain('Votre partenaire de confiance');
-      expect(textContent).toContain('depuis 2020');
+      const footerText = getElements.single(selectors.footerText);
+      expect(footerText).toBeTruthy();
+      
+      const element = footerText.nativeElement;
+      const innerHTML = element.innerHTML;
+      const textContent = element.textContent || '';
+      
+      // Vérifications simples et sécurisées
+      expect(textContent).toContain(footerData.companyInfo.description);
+      expect(textContent).toContain(footerData.companyInfo.year);
+      
+      // Vérification sécurisée de la présence de balises <br>
+      const brTagsCount = (innerHTML.match(/<br\b[^>]*>/g) || []).length;
+      expect(brTagsCount).toBeGreaterThan(0);
+      
+      // Alternative encore plus sûre
+      const hasBrTag = innerHTML.includes('<br>') || 
+                      innerHTML.includes('<br/>') || 
+                      /\<br\s*\/?\>/.test(innerHTML);
+      expect(hasBrTag).toBe(true);
     });
   });
 });

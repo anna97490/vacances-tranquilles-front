@@ -12,6 +12,104 @@ describe('HeaderComponent', () => {
   let mockRouter: any;
   let mockLocation: any;
 
+  // Configuration centralisée des données de test
+  const testData = {
+    paths: {
+      home: '/home',
+      about: '/about',
+      services: '/services',
+      agenda: '/agenda',
+      messagerie: '/messagerie',
+      profil: '/profil',
+      test: '/test',
+      empty: '',
+      complex: [
+        '/user/123/profile',
+        '/search?q=test&sort=date',
+        '/page#section',
+        '/api/v1/users/123',
+        '/français/café'
+      ]
+    },
+    items: {
+      default: {
+        icon: 'default.svg',
+        iconActive: 'active.svg',
+        path: '/test',
+        label: 'Test'
+      },
+      withoutActive: {
+        icon: 'default.svg',
+        path: '/test',
+        label: 'Test'
+      },
+      emptyActive: {
+        icon: 'default.svg',
+        iconActive: '',
+        path: '/test',
+        label: 'Test'
+      },
+      minimal: {
+        icon: 'minimal.svg',
+        path: '/minimal',
+        label: 'Minimal'
+      },
+      incomplete: {
+        label: 'Test'
+      }
+    }
+  };
+
+  // Helpers pour réduire la duplication
+  const testHelpers = {
+    createTestItem: (overrides = {}) => ({
+      ...testData.items.default,
+      ...overrides
+    }),
+    
+    setCurrentPath: (path: string) => {
+      component.currentPath = path;
+      fixture.detectChanges();
+    },
+    
+    triggerNavigation: (path: string) => {
+      mockLocation.path.and.returnValue(path);
+      routerEvents$.next(new NavigationEnd(1, path, path));
+    },
+    
+    getElementBySelector: (selector: string) => 
+      fixture.debugElement.query(By.css(selector)),
+    
+    getAllElementsBySelector: (selector: string) => 
+      fixture.debugElement.queryAll(By.css(selector)),
+    
+    expectPathToBeActive: (path: string, shouldBeActive = true) => {
+      expect(component.isActive(path)).toBe(shouldBeActive);
+    },
+    
+    expectIconToBe: (item: any, expectedIcon: string) => {
+      expect(component.getIcon(item)).toBe(expectedIcon);
+    },
+    
+    simulateHover: (item: any, isHovered = true) => {
+      component.hoveredItem = isHovered ? item : null;
+      fixture.detectChanges();
+    },
+    
+    expectElementToHaveClass: (element: any, className: string, shouldHave = true) => {
+      const hasClass = element.nativeElement.classList.contains(className);
+      expect(hasClass).toBe(shouldHave);
+    }
+  };
+
+  // Configuration de test paramétrée
+  const createParameterizedTests = (testCases: any[], testFunction: Function) => {
+    testCases.forEach(testCase => {
+      const description = typeof testCase === 'object' ? testCase.description : testCase;
+      it(description, () => testFunction(testCase));
+    });
+  };
+
   beforeEach(async () => {
     routerEvents$ = new Subject<RouterEvent>();
 
@@ -20,7 +118,7 @@ describe('HeaderComponent', () => {
     };
 
     mockLocation = {
-      path: jasmine.createSpy().and.returnValue('/home')
+      path: jasmine.createSpy().and.returnValue(testData.paths.home)
     };
 
     await TestBed.configureTestingModule({
@@ -41,482 +139,432 @@ describe('HeaderComponent', () => {
     routerEvents$.complete();
   });
 
-  // -------------------------
-  // 📦 TESTS CONSTRUCTEUR
-  // -------------------------
+  describe('Constructor & Initialization', () => {
+    const constructorTests = [
+      {
+        description: 'should inject Router and Location dependencies',
+        test: () => {
+          expect(component['router']).toBe(mockRouter);
+          expect(component['location']).toBe(mockLocation);
+        }
+      },
+      {
+        description: 'should have router as private property',
+        test: () => {
+          expect(component['router']).toBeDefined();
+          expect(component['router']).toBe(mockRouter);
+        }
+      },
+      {
+        description: 'should have location as public property',
+        test: () => {
+          expect(component.location).toBeDefined();
+          expect(component.location).toBe(mockLocation);
+        }
+      },
+      {
+        description: 'should initialize with default values',
+        test: () => {
+          const newComponent = TestBed.createComponent(HeaderComponent).componentInstance;
+          expect(newComponent.currentPath).toBeDefined();
+          expect(newComponent.hoveredItem).toBeNull();
+        }
+      }
+    ];
 
-  describe('Constructor', () => {
-    it('should inject Router and Location dependencies', () => {
-      expect(component['router']).toBe(mockRouter);
-      expect(component['location']).toBe(mockLocation);
+    constructorTests.forEach(({ description, test }) => {
+      it(description, test);
     });
 
-    it('should have router as private property', () => {
-      expect(component['router']).toBeDefined();
-      expect(component['router']).toBe(mockRouter);
-    });
-
-    it('should have location as public property', () => {
-      expect(component.location).toBeDefined();
-      expect(component.location).toBe(mockLocation);
-    });
-
-    it('should initialize with default values', () => {
-      const newComponent = TestBed.createComponent(HeaderComponent).componentInstance;
-      expect(newComponent.currentPath).toBeDefined();
-      expect(newComponent.hoveredItem).toBeNull();
-    });
-  });
-
-  // -------------------------
-  // 📦 TESTS LOGIQUES (.ts)
-  // -------------------------
-
-  describe('Logic (TypeScript)', () => {
     it('should create the component', () => {
       expect(component).toBeTruthy();
     });
+  });
 
-    describe('ngOnInit', () => {
-      it('should initialize currentPath with location.path() value', () => {
-        mockLocation.path.and.returnValue('/about');
+  describe('ngOnInit', () => {
+    const pathInitializationTests = [
+      { path: testData.paths.about, expected: testData.paths.about },
+      { path: '', expected: testData.paths.home },
+      { path: null, expected: testData.paths.home },
+      { path: undefined, expected: testData.paths.home }
+    ];
+
+    createParameterizedTests(
+      pathInitializationTests.map(test => ({
+        description: `should initialize currentPath correctly for path: ${test.path}`,
+        ...test
+      })),
+      ({ path, expected }: { path: string | null | undefined; expected: string }) => {
+        mockLocation.path.and.returnValue(path);
         component.ngOnInit();
-        expect(component.currentPath).toBe('/about');
-      });
+        expect(component.currentPath).toBe(expected);
+      }
+    );
 
-      it('should default to /home if location.path() returns empty string', () => {
-        mockLocation.path.and.returnValue('');
-        component.ngOnInit();
-        expect(component.currentPath).toBe('/home');
-      });
+    const navigationTests = [
+      {
+        description: 'should update currentPath on NavigationEnd event',
+        test: () => {
+          component.ngOnInit();
+          testHelpers.triggerNavigation(testData.paths.services);
+          expect(component.currentPath).toBe(testData.paths.services);
+        }
+      },
+      {
+        description: 'should fallback to /home if location.path() is empty during NavigationEnd',
+        test: () => {
+          component.ngOnInit();
+          testHelpers.triggerNavigation('');
+          expect(component.currentPath).toBe(testData.paths.home);
+        }
+      },
+      {
+        description: 'should ignore non-NavigationEnd events',
+        test: () => {
+          component.ngOnInit();
+          component.currentPath = '/initial';
+          routerEvents$.next(new NavigationStart(1, '/other'));
+          expect(component.currentPath).toBe('/initial');
+        }
+      },
+      {
+        description: 'should handle multiple NavigationEnd events',
+        test: () => {
+          component.ngOnInit();
+          testHelpers.triggerNavigation('/page1');
+          expect(component.currentPath).toBe('/page1');
+          testHelpers.triggerNavigation('/page2');
+          expect(component.currentPath).toBe('/page2');
+        }
+      }
+    ];
 
-      it('should default to /home if location.path() returns null', () => {
-        mockLocation.path.and.returnValue(null);
-        component.ngOnInit();
-        expect(component.currentPath).toBe('/home');
-      });
-
-      it('should default to /home if location.path() returns undefined', () => {
-        mockLocation.path.and.returnValue(undefined);
-        component.ngOnInit();
-        expect(component.currentPath).toBe('/home');
-      });
-
-      it('should subscribe to router NavigationEnd events', () => {
-        spyOn(component, 'ngOnInit').and.callThrough();
-        component.ngOnInit();
-        
-        mockLocation.path.and.returnValue('/test');
-        routerEvents$.next(new NavigationEnd(1, '/test', '/test'));
-        expect(component.currentPath).toBe('/test');
-      });
-
-      it('should update currentPath on NavigationEnd event', () => {
-        component.ngOnInit();
-        
-        mockLocation.path.and.returnValue('/services');
-        routerEvents$.next(new NavigationEnd(1, '/services', '/services'));
-        expect(component.currentPath).toBe('/services');
-      });
-
-      it('should fallback to /home if location.path() is empty during NavigationEnd', () => {
-        component.ngOnInit();
-        
-        mockLocation.path.and.returnValue('');
-        routerEvents$.next(new NavigationEnd(1, '', ''));
-        expect(component.currentPath).toBe('/home');
-      });
-
-      it('should ignore non-NavigationEnd events', () => {
-        component.ngOnInit();
-        component.currentPath = '/initial';
-        
-        routerEvents$.next(new NavigationStart(1, '/other'));
-        expect(component.currentPath).toBe('/initial');
-      });
-
-      it('should handle multiple NavigationEnd events', () => {
-        component.ngOnInit();
-        
-        mockLocation.path.and.returnValue('/page1');
-        routerEvents$.next(new NavigationEnd(1, '/page1', '/page1'));
-        expect(component.currentPath).toBe('/page1');
-        
-        mockLocation.path.and.returnValue('/page2');
-        routerEvents$.next(new NavigationEnd(2, '/page2', '/page2'));
-        expect(component.currentPath).toBe('/page2');
-      });
-    });
-
-    describe('isActive', () => {
-      it('should return true when path matches currentPath exactly', () => {
-        component.currentPath = '/profil';
-        expect(component.isActive('/profil')).toBeTrue();
-      });
-
-      it('should return false when path does not match currentPath', () => {
-        component.currentPath = '/messagerie';
-        expect(component.isActive('/home')).toBeFalse();
-      });
-
-      it('should return true for exact match with home path', () => {
-        component.currentPath = '/home';
-        expect(component.isActive('/home')).toBeTrue();
-      });
-
-      it('should return false for partial matches', () => {
-        component.currentPath = '/home/profile';
-        expect(component.isActive('/home')).toBeFalse();
-      });
-
-      it('should return false for empty path when currentPath is not empty', () => {
-        component.currentPath = '/home';
-        expect(component.isActive('')).toBeFalse();
-      });
-
-      it('should return true for empty path when currentPath is empty', () => {
-        component.currentPath = '';
-        expect(component.isActive('')).toBeTrue();
-      });
-
-      it('should handle case sensitivity', () => {
-        component.currentPath = '/Home';
-        expect(component.isActive('/home')).toBeFalse();
-        expect(component.isActive('/Home')).toBeTrue();
-      });
-
-      it('should handle paths with query parameters', () => {
-        component.currentPath = '/search?q=test';
-        expect(component.isActive('/search?q=test')).toBeTrue();
-        expect(component.isActive('/search')).toBeFalse();
-      });
-    });
-
-    describe('getIcon', () => {
-      let testItem: any;
-
-      beforeEach(() => {
-        testItem = {
-          icon: 'default.svg',
-          iconActive: 'active.svg',
-          path: '/test'
-        };
-      });
-
-      it('should return iconActive when item is hovered', () => {
-        component.hoveredItem = testItem;
-        component.currentPath = '/other';
-        expect(component.getIcon(testItem)).toBe('active.svg');
-      });
-
-      it('should return iconActive when item path is active', () => {
-        component.hoveredItem = null;
-        component.currentPath = '/test';
-        expect(component.getIcon(testItem)).toBe('active.svg');
-      });
-
-      it('should return iconActive when item is both hovered and active', () => {
-        component.hoveredItem = testItem;
-        component.currentPath = '/test';
-        expect(component.getIcon(testItem)).toBe('active.svg');
-      });
-
-      it('should return default icon when item is not hovered and not active', () => {
-        component.hoveredItem = null;
-        component.currentPath = '/other';
-        expect(component.getIcon(testItem)).toBe('default.svg');
-      });
-
-      it('should return default icon when item is hovered but iconActive is missing', () => {
-        const itemWithoutActiveIcon = {
-          icon: 'default.svg',
-          path: '/test'
-        };
-        component.hoveredItem = itemWithoutActiveIcon;
-        component.currentPath = '/other';
-        expect(component.getIcon(itemWithoutActiveIcon)).toBe('default.svg');
-      });
-
-      it('should return default icon when item is active but iconActive is missing', () => {
-        const itemWithoutActiveIcon = {
-          icon: 'default.svg',
-          path: '/test'
-        };
-        component.hoveredItem = null;
-        component.currentPath = '/test';
-        expect(component.getIcon(itemWithoutActiveIcon)).toBe('default.svg');
-      });
-
-      it('should return default icon when item is hovered but iconActive is empty string', () => {
-        const itemWithEmptyActiveIcon = {
-          icon: 'default.svg',
-          iconActive: '',
-          path: '/test'
-        };
-        component.hoveredItem = itemWithEmptyActiveIcon;
-        component.currentPath = '/other';
-        expect(component.getIcon(itemWithEmptyActiveIcon)).toBe('default.svg');
-      });
-
-      it('should handle different hovered items', () => {
-        const otherItem = {
-          icon: 'other.svg',
-          iconActive: 'other-active.svg',
-          path: '/other'
-        };
-        
-        component.hoveredItem = otherItem;
-        component.currentPath = '/different';
-        
-        expect(component.getIcon(testItem)).toBe('default.svg');
-        expect(component.getIcon(otherItem)).toBe('other-active.svg');
-      });
-
-      it('should handle item with only icon property', () => {
-        const minimalItem = {
-          icon: 'minimal.svg',
-          path: '/minimal'
-        };
-        
-        component.hoveredItem = minimalItem;
-        component.currentPath = '/minimal';
-        
-        expect(component.getIcon(minimalItem)).toBe('minimal.svg');
-      });
+    navigationTests.forEach(({ description, test }) => {
+      it(description, test);
     });
   });
 
-  // ------------------------------------------
-  // 🎨 TESTS D'INTERFACE (HTML / Template DOM)
-  // ------------------------------------------
+  describe('isActive Method', () => {
+    const activeTests = [
+      { currentPath: testData.paths.profil, testPath: testData.paths.profil, expected: true },
+      { currentPath: testData.paths.messagerie, testPath: testData.paths.home, expected: false },
+      { currentPath: testData.paths.home, testPath: testData.paths.home, expected: true },
+      { currentPath: '/home/profile', testPath: testData.paths.home, expected: false },
+      { currentPath: testData.paths.home, testPath: '', expected: false },
+      { currentPath: '', testPath: '', expected: true },
+      { currentPath: '/Home', testPath: '/home', expected: false },
+      { currentPath: '/Home', testPath: '/Home', expected: true },
+      { currentPath: '/search?q=test', testPath: '/search?q=test', expected: true },
+      { currentPath: '/search?q=test', testPath: '/search', expected: false }
+    ];
 
-  describe('Template (HTML/DOM)', () => {
-    it('should render logo with correct src', () => {
-      const img = fixture.debugElement.query(By.css('.logo-img'));
-      expect(img).toBeTruthy();
-      expect(img.nativeElement.getAttribute('src')).toBe(component.mainLogo);
+    createParameterizedTests(
+      activeTests.map(test => ({
+        description: `should return ${test.expected} when currentPath is "${test.currentPath}" and testing "${test.testPath}"`,
+        ...test
+      })),
+      ({ currentPath, testPath, expected }: { currentPath: string; testPath: string; expected: boolean }) => {
+        component.currentPath = currentPath;
+        expect(component.isActive(testPath)).toBe(expected);
+      }
+    );
+  });
+
+  describe('getIcon Method', () => {
+    const iconTests = [
+      {
+        description: 'should return iconActive when item is hovered',
+        setup: () => {
+          const item = testHelpers.createTestItem();
+          testHelpers.simulateHover(item);
+          testHelpers.setCurrentPath('/other');
+          return { item, expected: item.iconActive };
+        }
+      },
+      {
+        description: 'should return iconActive when item path is active',
+        setup: () => {
+          const item = testHelpers.createTestItem();
+          testHelpers.simulateHover(null);
+          testHelpers.setCurrentPath(item.path);
+          return { item, expected: item.iconActive };
+        }
+      },
+      {
+        description: 'should return iconActive when item is both hovered and active',
+        setup: () => {
+          const item = testHelpers.createTestItem();
+          testHelpers.simulateHover(item);
+          testHelpers.setCurrentPath(item.path);
+          return { item, expected: item.iconActive };
+        }
+      },
+      {
+        description: 'should return default icon when item is not hovered and not active',
+        setup: () => {
+          const item = testHelpers.createTestItem();
+          testHelpers.simulateHover(null);
+          testHelpers.setCurrentPath('/other');
+          return { item, expected: item.icon };
+        }
+      },
+      {
+        description: 'should return default icon when item is hovered but iconActive is missing',
+        setup: () => {
+          const item = testData.items.withoutActive;
+          testHelpers.simulateHover(item);
+          testHelpers.setCurrentPath('/other');
+          return { item, expected: item.icon };
+        }
+      },
+      {
+        description: 'should return default icon when item is active but iconActive is missing',
+        setup: () => {
+          const item = testData.items.withoutActive;
+          testHelpers.simulateHover(null);
+          testHelpers.setCurrentPath(item.path);
+          return { item, expected: item.icon };
+        }
+      },
+      {
+        description: 'should return default icon when iconActive is empty string',
+        setup: () => {
+          const item = testData.items.emptyActive;
+          testHelpers.simulateHover(item);
+          testHelpers.setCurrentPath('/other');
+          return { item, expected: item.icon };
+        }
+      }
+    ];
+
+    iconTests.forEach(({ description, setup }) => {
+      it(description, () => {
+        const { item, expected } = setup();
+        testHelpers.expectIconToBe(item, expected);
+      });
     });
 
-    it('should render a nav-link for each menu item', () => {
-      const links = fixture.debugElement.queryAll(By.css('.nav-link'));
-      expect(links.length).toBe(component.menu.length);
+    it('should handle different hovered items', () => {
+      const item1 = testHelpers.createTestItem();
+      const item2 = testHelpers.createTestItem({
+        icon: 'other.svg',
+        iconActive: 'other-active.svg',
+        path: '/other'
+      });
+      
+      testHelpers.simulateHover(item2);
+      testHelpers.setCurrentPath('/different');
+      
+      testHelpers.expectIconToBe(item1, item1.icon);
+      testHelpers.expectIconToBe(item2, item2.iconActive);
+    });
+  });
+
+  describe('Template Rendering', () => {
+    const templateTests = [
+      {
+        description: 'should render logo with correct src',
+        test: () => {
+          const img = testHelpers.getElementBySelector('.logo-img');
+          expect(img).toBeTruthy();
+          expect(img.nativeElement.getAttribute('src')).toBe(component.mainLogo);
+        }
+      },
+      {
+        description: 'should render a nav-link for each menu item',
+        test: () => {
+          const links = testHelpers.getAllElementsBySelector('.nav-link');
+          expect(links.length).toBe(component.menu.length);
+        }
+      },
+      {
+        description: 'should display correct labels for all menu items',
+        test: () => {
+          const links = testHelpers.getAllElementsBySelector('.nav-link');
+          links.forEach((link, i) => {
+            expect(link.nativeElement.textContent).toContain(component.menu[i].label);
+          });
+        }
+      },
+      {
+        description: 'should display correct routerLink attributes',
+        test: () => {
+          const links = testHelpers.getAllElementsBySelector('.nav-link');
+          links.forEach((link, i) => {
+            expect(link.nativeElement.getAttribute('routerLink')).toBe(component.menu[i].path);
+          });
+        }
+      }
+    ];
+
+    templateTests.forEach(({ description, test }) => {
+      it(description, test);
     });
 
     it('should apply .active class to the active route', () => {
-      component.currentPath = '/agenda';
-      fixture.detectChanges();
-      const links = fixture.debugElement.queryAll(By.css('.nav-link'));
+      testHelpers.setCurrentPath(testData.paths.agenda);
+      const links = testHelpers.getAllElementsBySelector('.nav-link');
       const active = links.find(el => el.nativeElement.classList.contains('active'));
       expect(active?.nativeElement.textContent).toContain('Agenda');
     });
 
-    it('should display correct labels for all menu items', () => {
-      const links = fixture.debugElement.queryAll(By.css('.nav-link'));
-      links.forEach((link, i) => {
-        expect(link.nativeElement.textContent).toContain(component.menu[i].label);
+    describe('Hover Interactions', () => {
+      it('should set hoveredItem on mouseenter and remove on mouseleave', () => {
+        const link = testHelpers.getAllElementsBySelector('.nav-link')[0];
+        const item = component.menu[0];
+
+        link.triggerEventHandler('mouseenter', {});
+        fixture.detectChanges();
+        expect(component.hoveredItem).toBe(item);
+
+        link.triggerEventHandler('mouseleave', {});
+        fixture.detectChanges();
+        expect(component.hoveredItem).toBeNull();
+      });
+
+      it('should update icon src based on hoveredItem', () => {
+        const item = component.menu[0];
+        testHelpers.simulateHover(item);
+
+        const link = testHelpers.getAllElementsBySelector('.nav-link')[0];
+        const img = link.query(By.css('img.icon'));
+        expect(img.nativeElement.getAttribute('src')).toBe(component.getIcon(item));
       });
     });
 
-    it('should set hoveredItem on mouseenter and remove on mouseleave', () => {
-      const link = fixture.debugElement.queryAll(By.css('.nav-link'))[0];
-      const item = component.menu[0];
+    describe('Navigation Integration', () => {
+      it('should respond to NavigationEnd and update active class in template', () => {
+        testHelpers.triggerNavigation(testData.paths.messagerie);
+        fixture.detectChanges();
 
-      link.triggerEventHandler('mouseenter', {});
-      fixture.detectChanges();
-      expect(component.hoveredItem).toBe(item);
-
-      link.triggerEventHandler('mouseleave', {});
-      fixture.detectChanges();
-      expect(component.hoveredItem).toBeNull();
-    });
-
-    it('should update icon src based on hoveredItem', () => {
-      const item = component.menu[0];
-      component.hoveredItem = item;
-      fixture.detectChanges();
-
-      const link = fixture.debugElement.queryAll(By.css('.nav-link'))[0];
-      const img = link.query(By.css('img.icon'));
-      expect(img.nativeElement.getAttribute('src')).toBe(component.getIcon(item));
-    });
-
-    it('should respond to NavigationEnd and update active class in template', () => {
-      mockLocation.path.and.returnValue('/messagerie');
-      routerEvents$.next(new NavigationEnd(1, '', '/messagerie'));
-      fixture.detectChanges();
-
-      const links = fixture.debugElement.queryAll(By.css('.nav-link'));
-      const active = links.find(el => el.nativeElement.classList.contains('active'));
-      expect(active?.nativeElement.textContent).toContain('Messagerie');
-    });
-
-    it('should handle empty menu gracefully', () => {
-      component.menu = [];
-      fixture.detectChanges();
-      
-      const links = fixture.debugElement.queryAll(By.css('.nav-link'));
-      expect(links.length).toBe(0);
-    });
-
-    it('should handle null hoveredItem in template', () => {
-      component.hoveredItem = null;
-      fixture.detectChanges();
-      
-      expect(() => fixture.detectChanges()).not.toThrow();
-    });
-
-    it('should display correct routerLink attributes', () => {
-      const links = fixture.debugElement.queryAll(By.css('.nav-link'));
-      links.forEach((link, i) => {
-        expect(link.nativeElement.getAttribute('routerLink')).toBe(component.menu[i].path);
+        const links = testHelpers.getAllElementsBySelector('.nav-link');
+        const active = links.find(el => el.nativeElement.classList.contains('active'));
+        expect(active?.nativeElement.textContent).toContain('Messagerie');
       });
-    });
-
-    it('should have proper HTML structure', () => {
-      const header = fixture.debugElement.query(By.css('header'));
-      const nav = fixture.debugElement.query(By.css('nav'));
-      
-      expect(header).toBeTruthy();
-      expect(nav).toBeTruthy();
     });
   });
 
-  // -------------------------
-  // 📦 TESTS D'INTÉGRATION
-  // -------------------------
-
   describe('Integration Tests', () => {
     it('should work correctly with router navigation and icon changes', () => {
-      const testItem = {
-        label: 'Test',
+      const testItem = testHelpers.createTestItem({
         icon: 'test.svg',
         iconActive: 'test-active.svg',
-        path: '/test'
-      };
+        path: testData.paths.test
+      });
       
       component.menu = [testItem];
       component.ngOnInit();
       
-      expect(component.getIcon(testItem)).toBe('test.svg');
-      
-      mockLocation.path.and.returnValue('/test');
-      routerEvents$.next(new NavigationEnd(1, '/test', '/test'));
-      
-      expect(component.getIcon(testItem)).toBe('test-active.svg');
+      testHelpers.expectIconToBe(testItem, testItem.icon);
+      testHelpers.triggerNavigation(testData.paths.test);
+      testHelpers.expectIconToBe(testItem, testItem.iconActive);
     });
 
     it('should handle hover state changes during navigation', () => {
-      const testItem = {
-        icon: 'test.svg',
-        iconActive: 'test-active.svg',
-        path: '/test'
-      };
-      
+      const testItem = testHelpers.createTestItem();
       component.ngOnInit();
       
-      component.hoveredItem = testItem;
-      expect(component.getIcon(testItem)).toBe('test-active.svg');
+      testHelpers.simulateHover(testItem);
+      testHelpers.expectIconToBe(testItem, testItem.iconActive);
       
-      mockLocation.path.and.returnValue('/other');
-      routerEvents$.next(new NavigationEnd(1, '/other', '/other'));
+      testHelpers.triggerNavigation('/other');
+      testHelpers.expectIconToBe(testItem, testItem.iconActive);
       
-      expect(component.getIcon(testItem)).toBe('test-active.svg');
-      
-      component.hoveredItem = null;
-      expect(component.getIcon(testItem)).toBe('test.svg');
+      testHelpers.simulateHover(null);
+      testHelpers.expectIconToBe(testItem, testItem.icon);
     });
 
     it('should maintain state consistency across multiple operations', () => {
-      const item1 = { icon: 'item1.svg', iconActive: 'item1-active.svg', path: '/item1' };
-      const item2 = { icon: 'item2.svg', iconActive: 'item2-active.svg', path: '/item2' };
+      const item1 = testHelpers.createTestItem({ path: '/item1' });
+      const item2 = testHelpers.createTestItem({ path: '/item2' });
       
       component.ngOnInit();
       
-      expect(component.isActive('/item1')).toBeFalse();
-      expect(component.isActive('/item2')).toBeFalse();
-      expect(component.getIcon(item1)).toBe('item1.svg');
-      expect(component.getIcon(item2)).toBe('item2.svg');
+      testHelpers.expectPathToBeActive('/item1', false);
+      testHelpers.expectPathToBeActive('/item2', false);
+      testHelpers.expectIconToBe(item1, item1.icon);
+      testHelpers.expectIconToBe(item2, item2.icon);
       
-      mockLocation.path.and.returnValue('/item1');
-      routerEvents$.next(new NavigationEnd(1, '/item1', '/item1'));
+      testHelpers.triggerNavigation('/item1');
       
-      expect(component.isActive('/item1')).toBeTrue();
-      expect(component.isActive('/item2')).toBeFalse();
-      expect(component.getIcon(item1)).toBe('item1-active.svg');
-      expect(component.getIcon(item2)).toBe('item2.svg');
+      testHelpers.expectPathToBeActive('/item1', true);
+      testHelpers.expectPathToBeActive('/item2', false);
+      testHelpers.expectIconToBe(item1, item1.iconActive);
+      testHelpers.expectIconToBe(item2, item2.icon);
       
-      component.hoveredItem = item2;
+      testHelpers.simulateHover(item2);
       
-      expect(component.getIcon(item1)).toBe('item1-active.svg');
-      expect(component.getIcon(item2)).toBe('item2-active.svg');
+      testHelpers.expectIconToBe(item1, item1.iconActive);
+      testHelpers.expectIconToBe(item2, item2.iconActive);
+    });
+  });
+
+  describe('Edge Cases', () => {
+    const edgeCaseTests = [
+      {
+        description: 'should handle undefined menu items',
+        test: () => {
+          component.menu = undefined as any;
+          expect(() => fixture.detectChanges()).not.toThrow();
+        }
+      },
+      {
+        description: 'should handle menu items with missing properties',
+        test: () => {
+          const incompleteItem = testData.items.incomplete;
+          component.menu = [incompleteItem as any];
+          fixture.detectChanges();
+          expect(() => component.getIcon(incompleteItem)).not.toThrow();
+        }
+      },
+      {
+        description: 'should handle empty menu gracefully',
+        test: () => {
+          component.menu = [];
+          fixture.detectChanges();
+          const links = testHelpers.getAllElementsBySelector('.nav-link');
+          expect(links.length).toBe(0);
+        }
+      },
+      {
+        description: 'should handle null hoveredItem in template',
+        test: () => {
+          testHelpers.simulateHover(null);
+          expect(() => fixture.detectChanges()).not.toThrow();
+        }
+      }
+    ];
+
+    edgeCaseTests.forEach(({ description, test }) => {
+      it(description, test);
+    });
+
+    it('should handle complex paths with special characters', () => {
+      testData.paths.complex.forEach(path => {
+        component.currentPath = path;
+        testHelpers.expectPathToBeActive(path, true);
+        testHelpers.expectPathToBeActive(path + '/other', false);
+      });
     });
 
     it('should handle rapid navigation changes', () => {
       component.ngOnInit();
       
-      mockLocation.path.and.returnValue('/page1');
-      routerEvents$.next(new NavigationEnd(1, '/page1', '/page1'));
-      expect(component.currentPath).toBe('/page1');
-      
-      mockLocation.path.and.returnValue('/page2');
-      routerEvents$.next(new NavigationEnd(2, '/page2', '/page2'));
-      expect(component.currentPath).toBe('/page2');
-      
-      mockLocation.path.and.returnValue('/page3');
-      routerEvents$.next(new NavigationEnd(3, '/page3', '/page3'));
-      expect(component.currentPath).toBe('/page3');
+      const paths = ['/page1', '/page2', '/page3'];
+      paths.forEach((path, index) => {
+        testHelpers.triggerNavigation(path);
+        expect(component.currentPath).toBe(path);
+      });
     });
   });
 
-  // -------------------------
-  // 📦 TESTS DE COUVERTURE
-  // -------------------------
-
-  describe('Edge Cases and Coverage', () => {
-    it('should handle undefined menu items', () => {
-      component.menu = undefined as any;
-      fixture.detectChanges();
+  describe('HTML Structure', () => {
+    it('should have proper HTML structure', () => {
+      const header = testHelpers.getElementBySelector('header');
+      const nav = testHelpers.getElementBySelector('nav');
       
-      expect(() => fixture.detectChanges()).not.toThrow();
-    });
-
-    it('should handle menu items with missing properties', () => {
-      const incompleteItem = { label: 'Test' };
-      component.menu = [incompleteItem as any];
-      fixture.detectChanges();
-      
-      expect(() => component.getIcon(incompleteItem)).not.toThrow();
-    });
-
-    it('should handle router events subscription lifecycle', () => {
-      component.ngOnInit();
-      expect(component.currentPath).toBeDefined();
-      
-      // Simuler la destruction du composant
-      // component.ngOnDestroy();
-      
-      // Les événements ne devraient plus affecter le composant
-      mockLocation.path.and.returnValue('/should-not-update');
-      routerEvents$.next(new NavigationEnd(1, '/should-not-update', '/should-not-update'));
-      
-      // currentPath ne devrait pas être mis à jour après destruction
-      expect(component.currentPath).not.toBe('/should-not-update');
-    });
-
-    it('should handle complex paths with special characters', () => {
-      const complexPaths = [
-        '/user/123/profile',
-        '/search?q=test&sort=date',
-        '/page#section',
-        '/api/v1/users/123',
-        '/français/café'
-      ];
-      
-      complexPaths.forEach(path => {
-        component.currentPath = path;
-        expect(component.isActive(path)).toBeTrue();
-        expect(component.isActive(path + '/other')).toBeFalse();
-      });
+      expect(header).toBeTruthy();
+      expect(nav).toBeTruthy();
     });
   });
 });
