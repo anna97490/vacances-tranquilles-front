@@ -127,7 +127,7 @@ describe('HomeComponent', () => {
   });
 
   it('should generate a random ID starting with "id-"', () => {
-    const id = component['generateRandomId']();
+    const id = component['generateSecureRandomId']();
     expect(id.startsWith('id-')).toBeTrue();
     expect(id.length).toBeGreaterThan(5);
   });
