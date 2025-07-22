@@ -71,7 +71,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       const bpWebChat = (window as any).botpressWebChat;
       if (bpWebChat && bpWebChat.conversationId) {
         const conversationId = bpWebChat.conversationId;
-        const clientMessageId = this.generateRandomId();
+        const clientMessageId = this.generateSecureRandomId();
 
         fetch('https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages', {
           method: 'POST',
@@ -102,11 +102,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
-  /**
-   * Génère un identifiant unique simple (alphanumérique).
-   */
-  private generateRandomId(): string {
-    return 'id-' + Math.random().toString(36).substr(2, 16);
+  private generateSecureRandomId(): string {
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    return 'id-' + Array.from(array)
+      .map((b) => b.toString(36).padStart(2, '0'))
+      .join('')
+      .slice(0, 16);
   }
-    
 }
