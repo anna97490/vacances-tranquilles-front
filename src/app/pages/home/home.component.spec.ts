@@ -150,7 +150,7 @@ describe('HomeComponent', () => {
     };
     (window as any).botpressWebChat = bpMock;
 
-    spyOn(component as any, 'generateRandomId').and.returnValue('id-test-123');
+    spyOn(component as any, 'generateSecureRandomId').and.returnValue('id-test-123');
 
     // Mock fetch avec une réponse réussie
     spyOn(window, 'fetch').and.returnValue(Promise.resolve({
@@ -191,7 +191,7 @@ describe('HomeComponent', () => {
     const bpMock = { conversationId: 'abc123' };
     (window as any).botpressWebChat = bpMock;
 
-    spyOn(component as any, 'generateRandomId').and.returnValue('id-fail');
+    spyOn(component as any, 'generateSecureRandomId').and.returnValue('id-fail');
 
     // Mock fetch avec une réponse d'erreur
     spyOn(window, 'fetch').and.returnValue(Promise.resolve({
@@ -224,7 +224,7 @@ describe('HomeComponent', () => {
     const bpMock = { conversationId: 'abc123' };
     (window as any).botpressWebChat = bpMock;
 
-    spyOn(component as any, 'generateRandomId').and.returnValue('id-network-error');
+    spyOn(component as any, 'generateSecureRandomId').and.returnValue('id-network-error');
 
     // Mock fetch avec une erreur réseau
     spyOn(window, 'fetch').and.returnValue(Promise.reject(new Error('Network error')));
