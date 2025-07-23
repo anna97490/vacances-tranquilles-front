@@ -16,6 +16,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register-form',
@@ -39,7 +41,7 @@ export class RegisterFormComponent implements OnDestroy {
   mainLogo = './assets/pictures/logo.png';
   private routerSubscription: any;
 
-  constructor(private fb: FormBuilder, private renderer: Renderer2) {
+  constructor(private fb: FormBuilder, private renderer: Renderer2, private http: HttpClient, private router: Router) {
     this.detectUserType();
     this.form = this.buildForm();
   }
@@ -56,14 +58,19 @@ export class RegisterFormComponent implements OnDestroy {
    * Initialise le formulaire avec les validateurs requis
    */
   private buildForm(): FormGroup {
+    // On inclut tous les champs nécessaires pour les deux types d'utilisateur
     return this.fb.group({
-      companyName: ['', Validators.required],
-      siret: ['', [Validators.required, Validators.pattern(/^\d{14}$/)]],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      phoneNumber: ['', Validators.required],
       address: ['', Validators.required],
-      postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      city: ['', Validators.required],
+      postalCode: ['', [Validators.required, Validators.pattern(/^[0-9]{5}$/)]],
+      // Champs spécifiques prestataire
+      companyName: [''],
+      siretSiren: ['', [Validators.pattern(/^[0-9]{14}$/)]]
     });
   }
 
@@ -77,12 +84,55 @@ export class RegisterFormComponent implements OnDestroy {
   }
 
   /**
-   * Soumission du formulaire avec validation
+   * Soumission du formulaire avec validation et adaptation du payload selon le type d'utilisateur.
+   * Envoie les données à l'API backend pour enregistrement en base.
    */
   onSubmit(): void {
     if (this.form.valid) {
-      alert('Inscription soumise !');
-      // Ajouter la logique d'envoi ici
+      let apiUrl: string;
+      let payload: any;
+      if (this.isPrestataire) {
+        apiUrl = 'http://localhost:8080/api/auth/register/provider';
+        payload = {
+          firstName: this.form.value.firstName,
+          lastName: this.form.value.lastName,
+          email: this.form.value.email,
+          password: this.form.value.password,
+          phoneNumber: this.form.value.phoneNumber,
+          address: this.form.value.address,
+          city: this.form.value.city,
+          postalCode: this.form.value.postalCode,
+          companyName: this.form.value.companyName,
+          siretSiren: this.form.value.siretSiren
+        };
+
+        console.log("payload prestataire", payload);
+      } else {
+        apiUrl = 'http://localhost:8080/api/auth/register/client';
+        payload = {
+          firstName: this.form.value.firstName,
+          lastName: this.form.value.lastName,
+          email: this.form.value.email,
+          password: this.form.value.password,
+          phoneNumber: this.form.value.phoneNumber,
+          address: this.form.value.address,
+          city: this.form.value.city,
+          postalCode: this.form.value.postalCode
+        };
+        console.log("payload particulier", payload);
+      }
+      console.log("apiUrl : ", apiUrl);
+      console.log("payload : ", payload);
+      this.http.post("http://localhost:8080/api/auth/login", payload).subscribe({
+        next: () => {
+          alert('Inscription réussie !');
+          this.router.navigate(['/auth/login']);
+        },
+        error: (err) => {
+          const message = err.error?.message || 'Erreur inconnue, veuillez réessayer.';
+          alert('Erreur lors de l\'inscription : ' + message);
+        }
+      });
     } else {
       this.form.markAllAsTouched();
     }

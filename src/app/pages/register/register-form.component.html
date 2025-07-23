@@ -10,6 +10,18 @@
     </div>
   </div>
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-form">
+    <div class="form-group">
+      <label for="firstName">Prénom</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="firstName" formControlName="firstName" placeholder="Votre prénom">
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="lastName">Nom</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="lastName" formControlName="lastName" placeholder="Votre nom">
+      </mat-form-field>
+    </div>
     <div class="form-row" *ngIf="isPrestataire">
       <div class="form-group">
         <label for="companyName">Nom de l'entreprise</label>
@@ -18,9 +30,9 @@
         </mat-form-field>
       </div>
       <div class="form-group">
-        <label for="siret">SIRET</label>
+        <label for="siretSiren">SIRET</label>
         <mat-form-field appearance="outline" class="custom-form-field form-field">
-          <input matInput id="siret" formControlName="siret" placeholder="12345678901234">
+          <input matInput id="siretSiren" formControlName="siretSiren" placeholder="12345678901234">
         </mat-form-field>
       </div>
     </div>
@@ -31,9 +43,9 @@
       </mat-form-field>
     </div>
     <div class="form-group">
-      <label for="phone">Téléphone</label>
+      <label for="phoneNumber">Téléphone</label>
       <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="phone" formControlName="phone" placeholder="06 12 34 56 78">
+        <input matInput id="phoneNumber" formControlName="phoneNumber" placeholder="06 12 34 56 78">
       </mat-form-field>
     </div>
     <div class="form-group">
@@ -46,6 +58,12 @@
       <label for="postalCode">Code postal</label>
       <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
         <input matInput id="postalCode" formControlName="postalCode" placeholder="75000">
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="city">Ville</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="city" formControlName="city" placeholder="Paris">
       </mat-form-field>
     </div>
     <div class="form-group">
