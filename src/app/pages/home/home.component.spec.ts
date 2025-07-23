@@ -30,6 +30,23 @@ describe('HomeComponent', () => {
     features: [mockFeature]
   };
 
+    // Mock pour crypto avant tous les tests
+  beforeAll(() => {
+    if (!window.crypto) {
+      (window as any).crypto = {};
+    }
+    if (!window.crypto.getRandomValues) {
+      window.crypto.getRandomValues = function<T extends ArrayBufferView | null>(array: T): T {
+        if (array && 'length' in array) {
+          for (let i = 0; i < (array as any).length; i++) {
+            (array as any)[i] = Math.floor(Math.random() * 256);
+          }
+        }
+        return array;
+      };
+    }
+  });
+
   beforeEach(async () => {
     mockHomeContentService = jasmine.createSpyObj('HomeContentService', ['getContent']);
     mockRenderer = jasmine.createSpyObj('Renderer2', ['createElement', 'appendChild']);
@@ -130,6 +147,24 @@ describe('HomeComponent', () => {
     const id = component['generateSecureRandomId']();
     expect(id.startsWith('id-')).toBeTrue();
     expect(id.length).toBeGreaterThan(5);
+    expect(id).toMatch(/^id-[a-z0-9]+$/);
+  });
+
+  // Alternative avec spy
+  it('should handle crypto unavailable gracefully', () => {
+    // Créer un spy qui simule l'indisponibilité de crypto
+    const originalGetRandomValues = window.crypto.getRandomValues;
+    
+    // Remplacer par une fonction qui lance une erreur
+    spyOn(window.crypto, 'getRandomValues').and.throwError('crypto.getRandomValues is not available');
+    
+    expect(() => {
+      const id = component['generateSecureRandomId']();
+      expect(id.startsWith('id-')).toBeTrue();
+      expect(id.length).toBeGreaterThan(5);
+    }).not.toThrow();
+    
+    // Le spy sera automatiquement nettoyé après le test
   });
 
   it('should not throw when botpressWebChat is undefined', () => {
@@ -144,106 +179,123 @@ describe('HomeComponent', () => {
     expect(() => component['sendBonjourToBotpress']()).not.toThrow();
   });
 
+  // Test Botpress avec gestion du timing
   it('should send message when botpressWebChat is defined with conversationId', (done) => {
-    const bpMock = {
-      conversationId: 'abc123'
-    };
+    const bpMock = { conversationId: 'abc123' };
     (window as any).botpressWebChat = bpMock;
 
-    spyOn(component as any, 'generateSecureRandomId').and.returnValue('id-test-123');
-
-    // Mock fetch avec une réponse réussie
-    spyOn(window, 'fetch').and.returnValue(Promise.resolve({
+    // Espionner la méthode AVANT d'appeler sendBonjourToBotpress
+    const generateIdSpy = spyOn(component as any, 'generateSecureRandomId').and.returnValue('id-test-123');
+    const fetchSpy = spyOn(window, 'fetch').and.returnValue(Promise.resolve({
       ok: true,
       json: () => Promise.resolve({ success: true })
     }) as any);
+    const consoleSpy = spyOn(console, 'log');
 
-    // Espionner console.log pour vérifier les messages
-    spyOn(console, 'log');
-
+    // Appeler la méthode APRÈS avoir configuré les spies
     component['sendBonjourToBotpress']();
 
+    //  Augmenter le timeout et vérifier les appels
     setTimeout(() => {
-      expect(window.fetch).toHaveBeenCalledWith(
-        'https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            conversationId: 'abc123',
-            payload: {
-              type: 'text',
-              text: 'Bonjour'
-            },
-            metadata: {
-              clientMessageId: 'id-test-123'
-            }
-          })
-        }
-      );
-      // Accepte le message réel et n'importe quel objet en second argument
-      expect(console.log).toHaveBeenCalledWith('Message envoyé avec succès', jasmine.any(Object));
-      done();
-    }, 600);
+      try {
+        // Vérifier que generateSecureRandomId a été appelé
+        expect(generateIdSpy).toHaveBeenCalled();
+        
+        // Vérifier que fetch a été appelé
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              conversationId: 'abc123',
+              payload: { type: 'text', text: 'Bonjour' },
+              metadata: { clientMessageId: 'id-test-123' }
+            })
+          }
+        );
+        
+        // Attendre que la promesse soit résolue
+        setTimeout(() => {
+          expect(consoleSpy).toHaveBeenCalledWith('Message envoyé avec succès', jasmine.any(Object));
+          done();
+        }, 100);
+        
+      } catch (error: any) {
+        done.fail(error);
+      }
+    }, 600); // Augmenter le timeout à 600ms
   });
 
+  // Test d'erreur fetch amélioré
   it('should handle fetch failure gracefully', (done) => {
     const bpMock = { conversationId: 'abc123' };
     (window as any).botpressWebChat = bpMock;
 
-    spyOn(component as any, 'generateSecureRandomId').and.returnValue('id-fail');
-
-    // Mock fetch avec une réponse d'erreur
-    spyOn(window, 'fetch').and.returnValue(Promise.resolve({
+    const generateIdSpy = spyOn(component as any, 'generateSecureRandomId').and.returnValue('id-fail');
+    const fetchSpy = spyOn(window, 'fetch').and.returnValue(Promise.resolve({
       ok: false,
       status: 404,
       json: () => Promise.resolve({})
     }) as any);
-
-    // Espionner console.error pour vérifier la gestion d'erreur
-    spyOn(console, 'error');
+    const consoleErrorSpy = spyOn(console, 'error');
 
     component['sendBonjourToBotpress']();
 
     setTimeout(() => {
-      // Vérifier que fetch a été appelé avec la bonne URL
-      expect(window.fetch).toHaveBeenCalledWith(
-        'https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages',
-        jasmine.objectContaining({
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: jasmine.stringMatching(/"conversationId":"abc123"/)
-        })
-      );
-      expect(console.error).toHaveBeenCalledWith('Erreur lors de l\'envoi du message', jasmine.any(Error));
-      done();
+      try {
+        expect(generateIdSpy).toHaveBeenCalled();
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages',
+          jasmine.objectContaining({
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: jasmine.stringMatching(/"conversationId":"abc123"/)
+          })
+        );
+        
+        // Attendre la résolution de la promesse d'erreur
+        setTimeout(() => {
+          expect(consoleErrorSpy).toHaveBeenCalledWith('Erreur lors de l\'envoi du message', jasmine.any(Error));
+          done();
+        }, 100);
+        
+      } catch (error: any) {
+        done.fail(error);
+      }
     }, 600);
   });
 
+  // Test d'erreur réseau amélioré
   it('should handle fetch network error', (done) => {
     const bpMock = { conversationId: 'abc123' };
     (window as any).botpressWebChat = bpMock;
 
-    spyOn(component as any, 'generateSecureRandomId').and.returnValue('id-network-error');
-
-    // Mock fetch avec une erreur réseau
-    spyOn(window, 'fetch').and.returnValue(Promise.reject(new Error('Network error')));
-
-    // Espionner console.error pour vérifier la gestion d'erreur
-    spyOn(console, 'error');
+    const generateIdSpy = spyOn(component as any, 'generateSecureRandomId').and.returnValue('id-network-error');
+    const fetchSpy = spyOn(window, 'fetch').and.returnValue(Promise.reject(new Error('Network error')));
+    const consoleErrorSpy = spyOn(console, 'error');
 
     component['sendBonjourToBotpress']();
 
     setTimeout(() => {
-      // Vérifier que fetch a été appelé
-      expect(window.fetch).toHaveBeenCalledWith(
-        'https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages',
-        jasmine.objectContaining({
-          method: 'POST'
-        })
-      );
-      expect(console.error).toHaveBeenCalledWith('Erreur lors de l\'envoi du message', jasmine.any(Error));
-      done();
+      try {
+        expect(generateIdSpy).toHaveBeenCalled();
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages',
+          jasmine.objectContaining({
+            method: 'POST'
+          })
+        );
+        
+        // Attendre la résolution de la promesse d'erreur
+        setTimeout(() => {
+          expect(consoleErrorSpy).toHaveBeenCalledWith('Erreur lors de l\'envoi du message', jasmine.any(Error));
+          done();
+        }, 100);
+        
+      } catch (error: any) {
+        done.fail(error);
+      }
     }, 600);
   });
 
@@ -284,13 +336,17 @@ describe('HomeComponent', () => {
       expect(materialIcon?.textContent?.trim()).toBe('home');
     });
 
-    // Gérer le contenu null avec un contenu par défaut
+    // Tests avec getDefaultContent si disponible
     it('should handle null or undefined content gracefully', () => {
       mockHomeContentService.getContent.and.returnValue(null as any);
-      const newComponent = TestBed.createComponent(HomeComponent).componentInstance;
-      // Appeler ngOnInit explicitement avant l'assertion
-      expect(() => newComponent.ngOnInit()).not.toThrow();
-      expect(newComponent.content).toBeDefined();
+      
+      expect(() => {
+        const newFixture = TestBed.createComponent(HomeComponent);
+        const newComponent = newFixture.componentInstance;
+        newComponent.ngOnInit();
+        expect(newComponent.content).toBeDefined();
+        newFixture.detectChanges();
+      }).not.toThrow();
     });
 
     // Test pour contenu undefined
@@ -480,28 +536,35 @@ describe('Script Cleanup', () => {
   // Tests d'intégration pour les scripts
   describe('Script Integration', () => {
     it('should add and remove scripts in complete lifecycle', () => {
-      const scriptElement = document.createElement('script');
+      const scriptElement = createMockScriptElement();
+      mockRenderer.createElement.and.returnValue(scriptElement);
+      
+      const comp = new HomeComponent(mockHomeContentService, mockRenderer);
+      comp['scriptElements'] = [];
+      comp['addScript']('https://integration-test.js');
+      
+      expect(mockRenderer.appendChild).toHaveBeenCalledWith(document.body, scriptElement);
+      expect(comp['scriptElements'].length).toBe(1);
+
+      // Simuler l'ajout au DOM réel pour le test de suppression
+      document.body.appendChild(scriptElement);
+      comp.ngOnDestroy();
+      
+      expect(document.body.contains(scriptElement)).toBeFalse();
+      expect(comp['scriptElements'].length).toBe(0);
+    });
+
+    // Helper function pour éviter la duplication
+    function createMockScriptElement() {
+      const script = document.createElement('script');
       let _src = '';
-      Object.defineProperty(scriptElement, 'src', {
+      Object.defineProperty(script, 'src', {
         get: () => _src,
         set: (val) => { _src = val; },
         configurable: true
       });
-      mockRenderer.createElement.and.returnValue(scriptElement);
-      const comp = new HomeComponent(mockHomeContentService, mockRenderer);
-      comp['scriptElements'] = [];
-      comp['addScript']('https://integration-test.js');
-      expect(mockRenderer.appendChild).toHaveBeenCalledWith(document.body, scriptElement);
-      expect(comp['scriptElements'].length).toBe(1);
-      // Simuler la suppression en rendant parentNode configurable
-      Object.defineProperty(comp['scriptElements'][0], 'parentNode', {
-        value: { removeChild: jasmine.createSpy() },
-        configurable: true,
-        writable: true
-      });
-      comp.ngOnDestroy();
-      expect(comp['scriptElements'].length).toBe(0);
-    });
+      return script;
+    }
 
     it('should handle multiple add/remove cycles', () => {
       const script1 = document.createElement('script');

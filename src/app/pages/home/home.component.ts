@@ -102,12 +102,31 @@ export class HomeComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
-  private generateSecureRandomId(): string {
-    const array = new Uint8Array(16);
-    crypto.getRandomValues(array);
-    return 'id-' + Array.from(array)
-      .map((b) => b.toString(36).padStart(2, '0'))
-      .join('')
-      .slice(0, 16);
+private generateSecureRandomId(): string {
+  try {
+    // Vérifier que crypto ET getRandomValues existent et sont utilisables
+    if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+      const array = new Uint8Array(16);
+      window.crypto.getRandomValues(array);
+      return 'id-' + Array.from(array)
+        .map((b) => b.toString(36).padStart(2, '0'))
+        .join('')
+        .slice(0, 16);
+    } else {
+      // Fallback si crypto n'est pas disponible
+      return this.generateFallbackId();
+    }
+  } catch (error) {
+    // Gérer les erreurs de crypto.getRandomValues
+    console.warn('crypto.getRandomValues failed, using fallback:', error);
+    return this.generateFallbackId();
   }
+}
+
+// Méthode de fallback
+private generateFallbackId(): string {
+  const timestamp = Date.now().toString(36);
+  const randomPart = Math.random().toString(36).substring(2, 10);
+  return `id-${timestamp}${randomPart}`.slice(0, 18);
+}
 }
