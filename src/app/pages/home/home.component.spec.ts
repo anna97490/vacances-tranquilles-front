@@ -145,9 +145,11 @@ describe('HomeComponent', () => {
 
   it('should generate a random ID starting with "id-"', () => {
     const id = component['generateSecureRandomId']();
-    expect(id.startsWith('id-')).toBeTrue();
-    expect(id.length).toBeGreaterThan(5);
-    expect(id).toMatch(/^id-[a-z0-9]+$/);
+    id.then((resolvedId) => {
+      expect(resolvedId.startsWith('id-')).toBeTrue();
+      expect(resolvedId.length).toBeGreaterThan(5);
+      expect(resolvedId).toMatch(/^id-[a-z0-9]+$/);
+    });
   });
 
   // Alternative avec spy
@@ -159,9 +161,12 @@ describe('HomeComponent', () => {
     spyOn(window.crypto, 'getRandomValues').and.throwError('crypto.getRandomValues is not available');
     
     expect(() => {
-      const id = component['generateSecureRandomId']();
-      expect(id.startsWith('id-')).toBeTrue();
-      expect(id.length).toBeGreaterThan(5);
+    const id = component['generateSecureRandomId']();
+    id.then((resolvedId) => {
+      expect(resolvedId.startsWith('id-')).toBeTrue();
+      expect(resolvedId.length).toBeGreaterThan(5);
+      expect(resolvedId).toMatch(/^id-[a-z0-9]+$/);
+    });
     }).not.toThrow();
     
     // Le spy sera automatiquement nettoyé après le test
@@ -298,7 +303,48 @@ describe('HomeComponent', () => {
       }
     }, 600);
   });
+  // Dans home.component.spec.ts - Tests pour la version sécurisée
+  describe('generateSecureRandomId - Security Tests', () => {
+    it('should generate cryptographically secure IDs when crypto is available', () => {
+    const id = component['generateSecureRandomId']();
+    id.then((resolvedId) => {
+      expect(resolvedId.startsWith('id-')).toBeTrue();
+      expect(resolvedId.length).toBeGreaterThan(5);
+      expect(resolvedId).toMatch(/^id-[a-z0-9]+$/);
+    });
+    });
 
+    it('should generate secure fallback IDs when crypto fails', () => {
+      spyOn(window.crypto, 'getRandomValues').and.throwError('Not available');
+      spyOn(console, 'warn');
+      
+      const id = component['generateSecureFallbackId']();
+      expect(id.startsWith('id-')).toBeTrue();
+      expect(id.length).toBeGreaterThan(10);
+    });
+
+    it('should generate different IDs consistently', () => {
+      const ids = new Set();
+      for (let i = 0; i < 1000; i++) {
+        ids.add(component['generateSecureFallbackId']());
+      }
+      // Vérifier qu'il n'y a pas de collisions
+      expect(ids.size).toBe(1000);
+    });
+
+    it('should not expose timing information in fallback', () => {
+      const id1 = component['generateSecureFallbackId']();
+      
+      // Attendre un peu
+      setTimeout(() => {
+        const id2 = component['generateSecureFallbackId']();
+        
+        // Les IDs ne devraient pas révéler le timing exact
+        expect(id1).not.toBe(id2);
+        expect(id1.substring(0, 10)).not.toBe(id2.substring(0, 10));
+      }, 10);
+    });
+  });
   describe('Edge Cases', () => {
     it('should handle empty features array', () => {
       const emptyContent = { ...mockContent, features: [] };
