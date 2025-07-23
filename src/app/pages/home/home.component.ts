@@ -131,11 +131,7 @@ private async generateSecureRandomId(): Promise<string> {
 
   private async generateCryptoSubtleFallback(): Promise<string> {
     try {
-      const key = await window.crypto.subtle.generateKey(
-        { name: 'AES-GCM', length: 256 },
-        true,
-        ['encrypt']
-      );
+      const key = await this.subtleGenerateKey();
       
       const exported = await window.crypto.subtle.exportKey('raw', key);
       const array = new Uint8Array(exported);
@@ -151,30 +147,63 @@ private async generateSecureRandomId(): Promise<string> {
   }
 
   private generateSecureFallbackId(): string {
-    // Version sécurisée pour le fallback final
+    // Sources d'entropie basées sur l'environnement (non prédictibles)
     const entropy = [
       Date.now(),
-      performance.now() * 1000000, // Microsecondes
-      Math.random() * Number.MAX_SAFE_INTEGER,
-      Math.random() * Number.MAX_SAFE_INTEGER,
-      Math.random() * Number.MAX_SAFE_INTEGER,
-      (navigator.userAgent + navigator.language + screen.width + screen.height).length,
+      performance.now() * 1000000, // Microsecondes haute précision
+      performance.timeOrigin,
+      // Utiliser des sources d'entropie du navigateur
+      new Date().getTimezoneOffset(),
+      navigator.hardwareConcurrency || 4,
+      navigator.maxTouchPoints || 0,
+      screen.width * screen.height,
+      screen.colorDepth,
+      window.innerWidth * window.innerHeight,
+      document.documentElement.clientWidth,
+      (navigator.userAgent + navigator.language).length,
       document.referrer.length,
-      history.length
+      history.length,
+      // Sources d'entropie additionnelles
+      window.devicePixelRatio * 1000,
+      navigator.cookieEnabled ? 1 : 0,
+      navigator.onLine ? 1 : 0
     ];
     
-    // Mélanger les sources d'entropie
-    let combined = 0;
+    // Hachage plus robuste sans Math.random()
+    let hash1 = 0x811c9dc5; // FNV-1a initial hash
+    let hash2 = 0x9e3779b9; // Golden ratio hash
+    
     entropy.forEach((source, index) => {
-      combined ^= (source * (index + 1)) % Number.MAX_SAFE_INTEGER;
+      const value = Math.floor(source) ^ (index * 0x6c078965);
+      
+      // FNV-1a hash pour hash1
+      hash1 ^= value & 0xff;
+      hash1 *= 0x01000193;
+      hash1 ^= (value >> 8) & 0xff;
+      hash1 *= 0x01000193;
+      
+      // Golden ratio hash pour hash2
+      hash2 ^= value;
+      hash2 *= 0x9e3779b9;
+      hash2 ^= hash2 >> 16;
     });
     
-    // Générer l'ID final
-    const base = Math.abs(combined).toString(36);
-    const random1 = Math.random().toString(36).substring(2, 8);
-    const random2 = Math.random().toString(36).substring(2, 8);
-    const timestamp = Date.now().toString(36).slice(-4);
+    // Mélanger les deux hashes
+    const finalHash = (hash1 ^ hash2) >>> 0; // Unsigned 32-bit
     
-    return `id-${base}${random1}${random2}${timestamp}`.slice(0, 18);
+    // Générer l'ID sans Math.random()
+    const base = finalHash.toString(36);
+    const timestamp = Date.now().toString(36);
+    const perfValue: any = Math.floor(performance.now() * 1000).toString(36);
+    
+    return `id-${base}${timestamp}${perfValue}`.slice(0, 18);
   }
+
+  private async subtleGenerateKey(): Promise<CryptoKey> {
+  return await window.crypto.subtle.generateKey(
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['encrypt']
+  );
+}
 }
