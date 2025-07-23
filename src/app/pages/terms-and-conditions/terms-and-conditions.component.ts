@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 // Modifiez ces imports pour importer des objets et non des types
 import { CGU_DATA } from './../../services/terms-and-conditions/cgu';
 import { CGV_DATA } from './../../services/terms-and-conditions/cgv';
+import { LocationService } from './../../services/terms-and-conditions/location.service';
 
 // Définition des interfaces pour les structures de CGU et CGV
 interface TermsSection {
@@ -31,9 +32,8 @@ export class TermsAndConditionsComponent {
   // Si le chemin d'accès d'url est /cgv, on affiche les CGV
   isCGV: boolean = false;
 
-  constructor() {
-    // Vérification du chemin d'accès pour déterminer si on affiche les CGU ou les CGV
-    const path = window.location.pathname;
+  constructor(private locationService: LocationService) {
+    const path = this.locationService.getPathname();
     if (path.includes('cgu')) {
       this.isCGU = true;
     } else if (path.includes('cgv')) {
