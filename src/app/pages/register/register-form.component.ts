@@ -123,7 +123,7 @@ export class RegisterFormComponent implements OnDestroy {
       }
       console.log("apiUrl : ", apiUrl);
       console.log("payload : ", payload);
-      this.http.post("http://localhost:8080/api/auth/login", payload).subscribe({
+      this.http.post(apiUrl, payload).subscribe({
         next: () => {
           alert('Inscription réussie !');
           this.router.navigate(['/auth/login']);
