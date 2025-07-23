@@ -24,7 +24,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(private homeContentService: HomeContentService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
-    this.content = this.homeContentService.getContent();
+    // Rendre robuste face à un contenu null/undefined
+    const content = this.homeContentService.getContent();
+    this.content = content ?? {
+      title: '',
+      subtitle: '',
+      introText: '',
+      btnPrestataire: '',
+      btnParticulier: '',
+      btnConnexion: '',
+      featuresTitle: '',
+      iconType: 'custom',
+      mainIcon: '',
+      features: []
+    };
     this.addScript('https://cdn.botpress.cloud/webchat/v3.0/inject.js');
     this.addScript('https://files.bpcontent.cloud/2025/06/23/13/20250623131622-WAJI2P5Q.js');
     this.sendBonjourToBotpress();
@@ -37,6 +50,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         script.parentNode.removeChild(script);
       }
     });
+    this.scriptElements = [];
   }
 
   private addScript(src: string): void {
@@ -57,7 +71,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       const bpWebChat = (window as any).botpressWebChat;
       if (bpWebChat && bpWebChat.conversationId) {
         const conversationId = bpWebChat.conversationId;
-        const clientMessageId = this.generateRandomId();
+        const clientMessageId = this.generateSecureRandomId();
 
         fetch('https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages', {
           method: 'POST',
@@ -88,11 +102,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
-  /**
-   * Génère un identifiant unique simple (alphanumérique).
-   */
-  private generateRandomId(): string {
-    return 'id-' + Math.random().toString(36).substr(2, 16);
+  private generateSecureRandomId(): string {
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    return 'id-' + Array.from(array)
+      .map((b) => b.toString(36).padStart(2, '0'))
+      .join('')
+      .slice(0, 16);
   }
-    
 }
