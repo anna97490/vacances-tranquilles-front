@@ -5,11 +5,8 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jest",
-      "node"
-    ],
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+      "jasmine"
+    ]
   },
   "include": [
     "src/**/*.spec.ts",

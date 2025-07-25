@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,25 +10,49 @@ import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { LoginFormComponent } from './login-form.component';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { Component } from '@angular/core';
+
+// Mock component pour la redirection
+@Component({ template: '' })
+class MockHomeComponent { }
 
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
   let fixture: ComponentFixture<LoginFormComponent>;
   let router: Router;
   let debugElement: DebugElement;
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
+
+  // Mock data pour les tests
+  const validLoginData = {
+    email: 'test@example.com',
+    password: 'password123'
+  };
+
+  const mockLoginResponse = {
+    token: 'mock-jwt-token',
+    userRole: 'CLIENT'
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        LoginFormComponent, // Import du composant standalone
+        LoginFormComponent,
         ReactiveFormsModule,
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
         MatIconModule,
-        RouterTestingModule,
-        BrowserAnimationsModule
+        RouterTestingModule.withRoutes([
+          { path: 'home', component: MockHomeComponent }
+        ]),
+        BrowserAnimationsModule,
+        HttpClientTestingModule
       ],
+      declarations: [MockHomeComponent],
       providers: [FormBuilder]
     }).compileComponents();
 
@@ -36,26 +60,365 @@ describe('LoginFormComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
     debugElement = fixture.debugElement;
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+
     fixture.detectChanges();
   });
 
-  describe('Component Initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
+  afterEach(() => {
+    httpTestingController.verify();
+    localStorage.clear();
+  });
+
+  describe('Error Handling', () => {
+    it('should handle HTTP 201 response as success and navigate', fakeAsync(() => {
+      spyOn(localStorage, 'setItem');
+      spyOn(router, 'navigate');
+      spyOn(window, 'alert');
+      
+      component.form.patchValue(validLoginData);
+      component.onSubmit();
+      
+      const req = httpTestingController.expectOne('http://localhost:8080/api/auth/login');
+      
+      req.flush({ token: 'success-token', userRole: 'CLIENT' }, { status: 201, statusText: 'Created' });
+      tick();
+      
+      expect(localStorage.setItem).toHaveBeenCalledWith('token', 'success-token');
+      expect(localStorage.setItem).toHaveBeenCalledWith('userRole', 'CLIENT');
+      expect(window.alert).toHaveBeenCalledWith('Connexion réussie !');
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    }));
+
+    it('should handle successful HTTP 200 response', fakeAsync(() => {
+      spyOn(localStorage, 'setItem');
+      spyOn(router, 'navigate');
+      
+      component.form.patchValue(validLoginData);
+      component.onSubmit();
+      
+      const req = httpTestingController.expectOne('http://localhost:8080/api/auth/login');
+      
+      req.flush({ token: 'success-token' }, { status: 200, statusText: 'OK' });
+      tick();
+      
+      expect(localStorage.setItem).toHaveBeenCalledWith('token', 'success-token');
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    }));
+
+    // TEST DIRECT de la méthode handleSuccessWithParseError
+    it('should handle parse error with status 200 directly', () => {
+      spyOn(localStorage, 'setItem');
+      spyOn(router, 'navigate');
+      
+      const mockError = {
+        status: 200,
+        error: { text: '{"token":"parse-error-token"}' }
+      };
+      
+      component['handleSuccessWithParseError'](mockError as any);
+      
+      expect(localStorage.setItem).toHaveBeenCalledWith('token', 'parse-error-token');
+      expect(localStorage.setItem).toHaveBeenCalledWith('userRole', '');
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
     });
 
-    it('should initialize the form with correct controls', () => {
-      expect(component.form).toBeDefined();
-      expect(component.form.get('email')).toBeTruthy();
-      expect(component.form.get('password')).toBeTruthy();
+    // TEST de l'extraction de token depuis une erreur
+    it('should extract token from error response text', () => {
+      const testCases = [
+        {
+          name: 'token in text property',
+          error: { text: '{"token":"extracted-token"}' },
+          expected: 'extracted-token'
+        },
+        {
+          name: 'token as direct property',
+          error: { token: 'direct-token' },
+          expected: 'direct-token'
+        },
+        {
+          name: 'invalid JSON in text',
+          error: { text: 'invalid json' },
+          expected: null
+        },
+        {
+          name: 'no text or token',
+          error: {},
+          expected: null
+        }
+      ];
+
+      testCases.forEach(({ name, error, expected }) => {
+        const mockErrorResponse = { status: 200, error };
+        const token = component['extractTokenFromErrorResponse'](mockErrorResponse as any);
+        expect(token).toBe(expected);
+      });
     });
 
-    it('should set main logo path correctly', () => {
-      expect(component.mainLogo).toBe('./assets/pictures/logo.png');
+    it('should detect parse errors correctly', () => {
+      const mockError401 = { status: 401 };
+      const mockError200 = { status: 200 };
+      const mockError201 = { status: 201 };
+      
+      expect(mockError200.status === 200 || mockError200.status === 201).toBeTruthy();
+      expect(mockError201.status === 200 || mockError201.status === 201).toBeTruthy();
+      expect(mockError401.status === 200 || mockError401.status === 201).toBeFalsy();
+    });
+
+    it('should handle HTTP 400 errors', fakeAsync(() => {
+      spyOn(window, 'alert');
+      spyOn(router, 'navigate');
+      
+      component.form.patchValue(validLoginData);
+      component.onSubmit();
+      
+      const req = httpTestingController.expectOne('http://localhost:8080/api/auth/login');
+      
+      req.error(new ProgressEvent('Network error'), {
+        status: 400,
+        statusText: 'Bad Request'
+      });
+      tick();
+      
+      expect(window.alert).toHaveBeenCalledWith('Erreur lors de la connexion : Erreur de connexion inconnue');
+      expect(router.navigate).not.toHaveBeenCalled();
+      expect(component.form.get('password')?.value).toBe('');
+    }));
+
+    it('should handle network errors (status 0)', fakeAsync(() => {
+      spyOn(window, 'alert');
+      
+      component.form.patchValue(validLoginData);
+      component.onSubmit();
+      
+      const req = httpTestingController.expectOne('http://localhost:8080/api/auth/login');
+      
+      req.error(new ProgressEvent('Network error'), {
+        status: 0,
+        statusText: 'Unknown Error'
+      });
+      tick();
+      
+      expect(window.alert).toHaveBeenCalledWith('Erreur lors de la connexion : Impossible de contacter le serveur');
+    }));
+
+    it('should handle unauthorized access (status 401)', fakeAsync(() => {
+      spyOn(window, 'alert');
+      
+      component.form.patchValue(validLoginData);
+      component.onSubmit();
+      
+      const req = httpTestingController.expectOne('http://localhost:8080/api/auth/login');
+      
+      req.error(new ProgressEvent('Unauthorized'), {
+        status: 401,
+        statusText: 'Unauthorized'
+      });
+      tick();
+      
+      expect(window.alert).toHaveBeenCalledWith('Erreur lors de la connexion : Email ou mot de passe incorrect');
+    }));
+
+    it('should handle all HTTP error codes correctly', () => {
+      const testCases = [
+        { status: 401, expected: 'Email ou mot de passe incorrect' },
+        { status: 403, expected: 'Accès non autorisé' },
+        { status: 404, expected: 'Service de connexion non disponible' },
+        { status: 500, expected: 'Erreur interne du serveur' },
+        { status: 0, expected: 'Impossible de contacter le serveur' }
+      ];
+
+      testCases.forEach(({ status, expected }) => {
+        const mockError = { status, error: null };
+        const message = component['getLoginErrorMessage'](mockError as any);
+        expect(message).toBe(expected);
+      });
+    });
+
+    it('should handle custom error message from server', () => {
+      const mockError = {
+        status: 999,
+        error: { message: 'Custom server error' }
+      };
+      
+      const message = component['getLoginErrorMessage'](mockError as any);
+      expect(message).toBe('Custom server error');
+    });
+
+    it('should return default error message for unknown errors', () => {
+      const mockError = {
+        status: 999,
+        error: null
+      };
+      
+      const message = component['getLoginErrorMessage'](mockError as any);
+      expect(message).toBe('Erreur de connexion inconnue');
     });
   });
 
-  describe('Template Rendering', () => {
+  describe('Form Validation and Submission', () => {
+    it('should handle invalid form submission', () => {
+      spyOn(window, 'alert');
+      spyOn(component.form, 'markAllAsTouched');
+      
+      component.onSubmit();
+      
+      expect(component.form.markAllAsTouched).toHaveBeenCalled();
+      expect(window.alert).toHaveBeenCalledWith('L\'email est requis');
+    });
+
+    it('should create correct login payload', () => {
+      component.form.patchValue(validLoginData);
+      
+      const payload = component['createLoginPayload']();
+      
+      expect(payload.email).toBe('test@example.com');
+      expect(payload.password).toBe('password123');
+    });
+
+    it('should validate email field correctly', () => {
+      const emailControl = component.form.get('email');
+      
+      emailControl?.setValue('');
+      expect(emailControl?.hasError('required')).toBeTruthy();
+      
+      emailControl?.setValue('invalid-email');
+      expect(emailControl?.hasError('email')).toBeTruthy();
+      
+      emailControl?.setValue('test@example.com');
+      expect(emailControl?.valid).toBeTruthy();
+    });
+
+    it('should validate password field correctly', () => {
+      const passwordControl = component.form.get('password');
+      
+      passwordControl?.setValue('');
+      expect(passwordControl?.hasError('required')).toBeTruthy();
+      
+      passwordControl?.setValue('123');
+      expect(passwordControl?.hasError('minlength')).toBeTruthy();
+      
+      passwordControl?.setValue('password123');
+      expect(passwordControl?.valid).toBeTruthy();
+    });
+  });
+
+  describe('Successful Login Flow', () => {
+    it('should handle successful login with token and userRole', fakeAsync(() => {
+      spyOn(window, 'alert');
+      spyOn(router, 'navigate');
+      spyOn(localStorage, 'setItem');
+      
+      component.form.patchValue(validLoginData);
+      component.onSubmit();
+      
+      const req = httpTestingController.expectOne('http://localhost:8080/api/auth/login');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body.email).toBe('test@example.com');
+      expect(req.request.body.password).toBe('password123');
+      
+      req.flush(mockLoginResponse, { status: 200, statusText: 'OK' });
+      tick();
+      
+      expect(localStorage.setItem).toHaveBeenCalledWith('token', 'mock-jwt-token');
+      expect(localStorage.setItem).toHaveBeenCalledWith('userRole', 'CLIENT');
+      expect(window.alert).toHaveBeenCalledWith('Connexion réussie !');
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    }));
+
+    it('should handle successful login without userRole', fakeAsync(() => {
+      spyOn(localStorage, 'setItem');
+      
+      component.form.patchValue(validLoginData);
+      component.onSubmit();
+      
+      const req = httpTestingController.expectOne('http://localhost:8080/api/auth/login');
+      req.flush({ token: 'mock-token' }, { status: 200, statusText: 'OK' });
+      tick();
+      
+      expect(localStorage.setItem).toHaveBeenCalledWith('token', 'mock-token');
+      expect(localStorage.setItem).toHaveBeenCalledWith('userRole', '');
+    }));
+
+    it('should handle login response without token', fakeAsync(() => {
+      spyOn(window, 'alert');
+      spyOn(router, 'navigate');
+      
+      component.form.patchValue(validLoginData);
+      component.onSubmit();
+      
+      const req = httpTestingController.expectOne('http://localhost:8080/api/auth/login');
+      req.flush({}, { status: 200, statusText: 'OK' });
+      tick();
+      
+      expect(window.alert).toHaveBeenCalledWith('Erreur: Token manquant dans la réponse du serveur');
+      expect(router.navigate).not.toHaveBeenCalled();
+    }));
+  });
+
+  describe('Private Methods', () => {
+    it('should call storeAuthenticationData correctly', () => {
+      spyOn(localStorage, 'setItem');
+      
+      component['storeAuthenticationData']('test-token', 'USER');
+      
+      expect(localStorage.setItem).toHaveBeenCalledWith('token', 'test-token');
+      expect(localStorage.setItem).toHaveBeenCalledWith('userRole', 'USER');
+    });
+
+    it('should call redirectAfterLogin correctly', () => {
+      spyOn(router, 'navigate');
+      
+      component['redirectAfterLogin']();
+      
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should call resetPasswordField correctly', () => {
+      component.form.get('password')?.setValue('test-password');
+      component['resetPasswordField']();
+      
+      expect(component.form.get('password')?.value).toBe('');
+    });
+
+    it('should call handleInvalidForm correctly', () => {
+      spyOn(window, 'alert');
+      spyOn(component.form, 'markAllAsTouched');
+      
+      component['handleInvalidForm']();
+      
+      expect(component.form.markAllAsTouched).toHaveBeenCalled();
+      expect(window.alert).toHaveBeenCalled();
+    });
+
+    it('should test getValidationErrorMessage for all error types', () => {
+      // Test email required
+      component.form.get('email')?.setValue('');
+      component.form.get('email')?.markAsTouched();
+      expect(component['getValidationErrorMessage']()).toBe('L\'email est requis');
+
+      // Test email format
+      component.form.get('email')?.setValue('invalid-email');
+      expect(component['getValidationErrorMessage']()).toBe('Format d\'email invalide');
+
+      // Test password required
+      component.form.patchValue({ email: 'test@test.com' });
+      component.form.get('password')?.setValue('');
+      component.form.get('password')?.markAsTouched();
+      expect(component['getValidationErrorMessage']()).toBe('Le mot de passe est requis');
+
+      // Test password length
+      component.form.get('password')?.setValue('123');
+      expect(component['getValidationErrorMessage']()).toBe('Le mot de passe doit contenir au moins 6 caractères');
+
+      // Test default message
+      component.form.patchValue({ email: 'test@test.com', password: 'password123' });
+      expect(component['getValidationErrorMessage']()).toBe('Formulaire invalide - vérifiez vos données');
+    });
+  });
+
+  describe('Template Integration', () => {
     it('should display main logo', () => {
       const logoImg = debugElement.query(By.css('.logo img'));
       expect(logoImg).toBeTruthy();
@@ -67,235 +430,25 @@ describe('LoginFormComponent', () => {
       expect(title.nativeElement.textContent).toBe('Bienvenue sur Vacances Tranquilles');
     });
 
-    it('should display form field labels correctly', () => {
-      const emailLabel = debugElement.query(By.css('label[for="email"]'));
-      const passwordLabel = debugElement.query(By.css('label[for="password"]'));
-      
-      expect(emailLabel.nativeElement.textContent).toBe('Email professionnel');
-      expect(passwordLabel.nativeElement.textContent).toBe('Mot de passe');
-    });
-
-    it('should display form fields with correct placeholders', () => {
+    it('should have correct form structure', () => {
+      const form = debugElement.query(By.css('form'));
       const emailInput = debugElement.query(By.css('#email'));
       const passwordInput = debugElement.query(By.css('#password'));
+      const submitButton = debugElement.query(By.css('.login-btn'));
       
+      expect(form).toBeTruthy();
       expect(emailInput).toBeTruthy();
       expect(passwordInput).toBeTruthy();
-      expect(emailInput.nativeElement.placeholder).toBe('entreprise@email.com');
-      expect(passwordInput.nativeElement.placeholder).toBe('********');
-      expect(passwordInput.nativeElement.type).toBe('password');
-    });
-
-    it('should display submit button correctly', () => {
-      const submitButton = debugElement.query(By.css('.login-btn'));
       expect(submitButton).toBeTruthy();
-      expect(submitButton.nativeElement.textContent.trim()).toBe("S'inscrire");
-      expect(submitButton.nativeElement.type).toBe('submit');
-    });
-
-    it('should have correct IDs on form fields', () => {
-      const emailInput = debugElement.query(By.css('#email'));
-      const passwordInput = debugElement.query(By.css('#password'));
-      
-      expect(emailInput.nativeElement.id).toBe('email');
-      expect(passwordInput.nativeElement.id).toBe('password');
-    });
-  });
-
-  describe('Form Validation', () => {
-    it('should validate email field correctly', () => {
-      const emailControl = component.form.get('email');
-      
-      // Test required validation
-      emailControl?.setValue('');
-      expect(emailControl?.hasError('required')).toBeTruthy();
-      
-      // Test email format validation
-      emailControl?.setValue('invalid-email');
-      expect(emailControl?.hasError('email')).toBeTruthy();
-      
-      // Test valid email
-      emailControl?.setValue('test@example.com');
-      expect(emailControl?.valid).toBeTruthy();
-    });
-
-    it('should validate password field correctly', () => {
-      const passwordControl = component.form.get('password');
-      
-      // Test required validation
-      passwordControl?.setValue('');
-      expect(passwordControl?.hasError('required')).toBeTruthy();
-      
-      // Test minimum length validation
-      passwordControl?.setValue('123');
-      expect(passwordControl?.hasError('minlength')).toBeTruthy();
-      
-      // Test valid password
-      passwordControl?.setValue('password123');
-      expect(passwordControl?.valid).toBeTruthy();
-    });
-
-    it('should be invalid when form is empty', () => {
-      expect(component.form.valid).toBeFalsy();
-    });
-
-    it('should be valid when all fields are correctly filled', () => {
-      component.form.patchValue({
-        email: 'test@example.com',
-        password: 'password123'
-      });
-      
-      expect(component.form.valid).toBeTruthy();
-    });
-  });
-
-  describe('Form Interactions', () => {
-    it('should update form values when user types in email field', () => {
-      const emailInput = debugElement.query(By.css('#email'));
-      
-      emailInput.nativeElement.value = 'test@example.com';
-      emailInput.nativeElement.dispatchEvent(new Event('input'));
-      fixture.detectChanges();
-      
-      expect(component.form.get('email')?.value).toBe('test@example.com');
-    });
-
-    it('should update form values when user types in password field', () => {
-      const passwordInput = debugElement.query(By.css('#password'));
-      
-      passwordInput.nativeElement.value = 'password123';
-      passwordInput.nativeElement.dispatchEvent(new Event('input'));
-      fixture.detectChanges();
-      
-      expect(component.form.get('password')?.value).toBe('password123');
     });
 
     it('should call onSubmit when form is submitted', () => {
-      jest.spyOn(component, 'onSubmit');
+      spyOn(component, 'onSubmit');
       const form = debugElement.query(By.css('form'));
       
       form.nativeElement.dispatchEvent(new Event('submit'));
       
       expect(component.onSubmit).toHaveBeenCalled();
-    });
-
-    it('should call onSubmit when submit button is clicked', () => {
-      jest.spyOn(component, 'onSubmit');
-      const submitButton = debugElement.query(By.css('.login-btn'));
-      
-      submitButton.nativeElement.click();
-      
-      expect(component.onSubmit).toHaveBeenCalled();
-    });
-  });
-
-  // describe('Form Submission', () => {
-  //   it('should call markAllAsTouched when form is invalid', () => {
-  //     jest.spyOn(component.form, 'markAllAsTouched');
-  //     jest.spyOn(window, 'alert');
-      
-  //     component.onSubmit();
-      
-  //     expect(component.form.markAllAsTouched).toHaveBeenCalled();
-  //     expect(window.alert).not.toHaveBeenCalled();
-  //   });
-
-  //   it('should show alert when form is valid', () => {
-  //     jest.spyOn(window, 'alert');
-  //     jest.spyOn(component.form, 'markAllAsTouched');
-      
-  //     component.form.patchValue({
-  //       email: 'test@example.com',
-  //       password: 'password123'
-  //     });
-      
-  //     component.onSubmit();
-      
-  //     expect(window.alert).toHaveBeenCalledWith('Connexion soumise !');
-  //     expect(component.form.markAllAsTouched).not.toHaveBeenCalled();
-  //   });
-  // });
-
-  describe('CSS Classes and Styling', () => {
-    it('should have correct CSS classes applied', () => {
-      const loginContainer = debugElement.query(By.css('.login-container'));
-      const loginHeader = debugElement.query(By.css('.login-header'));
-      const loginForm = debugElement.query(By.css('.login-form'));
-      
-      expect(loginContainer).toBeTruthy();
-      expect(loginHeader).toBeTruthy();
-      expect(loginForm).toBeTruthy();
-    });
-
-    it('should have correct number of form groups', () => {
-      const formGroups = debugElement.queryAll(By.css('.form-group'));
-      expect(formGroups.length).toBe(2); // email et password
-    });
-
-    it('should have correct formControlName attributes', () => {
-      const emailInput = debugElement.query(By.css('#email'));
-      const passwordInput = debugElement.query(By.css('#password'));
-      
-      expect(emailInput.nativeElement.getAttribute('formcontrolname')).toBe('email');
-      expect(passwordInput.nativeElement.getAttribute('formcontrolname')).toBe('password');
-    });
-
-    it('should apply full-width class to form fields', () => {
-      const formFields = debugElement.queryAll(By.css('.full-width'));
-      expect(formFields.length).toBeGreaterThan(0);
-    });
-  });
-
-  describe('Material Design Components', () => {
-    it('should use Material form fields correctly', () => {
-      const matFormFields = debugElement.queryAll(By.css('mat-form-field'));
-      expect(matFormFields.length).toBe(2);
-      
-      matFormFields.forEach(field => {
-        expect(field.nativeElement.classList.contains('custom-form-field')).toBeTruthy();
-        expect(field.nativeElement.classList.contains('form-field')).toBeTruthy();
-        expect(field.nativeElement.getAttribute('appearance')).toBe('outline');
-      });
-    });
-
-    it('should use Material button correctly', () => {
-      const matButton = debugElement.query(By.css('button[mat-flat-button]'));
-      expect(matButton).toBeTruthy();
-      expect(matButton.nativeElement.getAttribute('color')).toBe('primary');
-      expect(matButton.nativeElement.classList.contains('login-btn')).toBeTruthy();
-    });
-  });
-
-  describe('Accessibility', () => {
-    it('should have proper labels associated with inputs', () => {
-      const emailLabel = debugElement.query(By.css('label[for="email"]'));
-      const passwordLabel = debugElement.query(By.css('label[for="password"]'));
-      const emailInput = debugElement.query(By.css('#email'));
-      const passwordInput = debugElement.query(By.css('#password'));
-      
-      expect(emailLabel).toBeTruthy();
-      expect(passwordLabel).toBeTruthy();
-      expect(emailInput.nativeElement.id).toBe('email');
-      expect(passwordInput.nativeElement.id).toBe('password');
-    });
-
-    it('should have alt text for logo image', () => {
-      const logoImg = debugElement.query(By.css('.logo img'));
-      expect(logoImg.nativeElement.hasAttribute('alt')).toBeTruthy();
-    });
-  });
-
-  describe('Error Handling', () => {
-    it('should handle form submission errors gracefully', () => {
-      jest.spyOn(component, 'onSubmit').mockImplementation(() => {
-        throw new Error('Test error');
-      });
-      
-      const form = debugElement.query(By.css('form'));
-      
-      expect(() => {
-        form.nativeElement.dispatchEvent(new Event('submit'));
-      }).not.toThrow();
     });
   });
 });

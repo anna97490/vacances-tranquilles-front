@@ -15,9 +15,27 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { Subscription } from 'rxjs';
+
+interface RegisterPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  companyName?: string;
+  siretSiren?: string;
+}
+
+interface ApiConfig {
+  url: string;
+  payload: RegisterPayload;
+}
 
 @Component({
   selector: 'app-register-form',
@@ -36,14 +54,21 @@ import { Router } from '@angular/router';
   encapsulation: ViewEncapsulation.None
 })
 export class RegisterFormComponent implements OnDestroy {
-  form: FormGroup;
+  form!: FormGroup;
   isPrestataire = false;
   mainLogo = './assets/pictures/logo.png';
-  private routerSubscription: any;
+  
+  private routerSubscription?: Subscription;
+  private readonly API_BASE_URL = 'http://localhost:8080/api/auth/register';
 
-  constructor(private fb: FormBuilder, private renderer: Renderer2, private http: HttpClient, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private renderer: Renderer2,
+    private http: HttpClient,
+    private router: Router
+  ) {
     this.detectUserType();
-    this.form = this.buildForm();
+    this.initializeForm();
   }
 
   /**
@@ -55,11 +80,11 @@ export class RegisterFormComponent implements OnDestroy {
   }
 
   /**
-   * Initialise le formulaire avec les validateurs requis
+   * Initialise le formulaire avec les validateurs appropriés
    */
-  private buildForm(): FormGroup {
-    // On inclut tous les champs nécessaires pour les deux types d'utilisateur
-    return this.fb.group({
+  private initializeForm(): void {
+    this.form = this.fb.group({
+      // Champs communs
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -68,10 +93,223 @@ export class RegisterFormComponent implements OnDestroy {
       address: ['', Validators.required],
       city: ['', Validators.required],
       postalCode: ['', [Validators.required, Validators.pattern(/^[0-9]{5}$/)]],
+      
       // Champs spécifiques prestataire
       companyName: [''],
       siretSiren: ['', [Validators.pattern(/^[0-9]{14}$/)]]
     });
+
+    // Ajouter les validateurs conditionnels pour les prestataires
+    this.updateValidatorsBasedOnUserType();
+  }
+
+  /**
+   * Met à jour les validateurs selon le type d'utilisateur
+   */
+  private updateValidatorsBasedOnUserType(): void {
+    if (this.isPrestataire) {
+      this.form.get('companyName')?.setValidators([Validators.required]);
+      this.form.get('siretSiren')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^[0-9]{14}$/)
+      ]);
+    } else {
+      this.form.get('companyName')?.clearValidators();
+      this.form.get('siretSiren')?.clearValidators();
+    }
+    
+    // Mettre à jour la validation
+    this.form.get('companyName')?.updateValueAndValidity();
+    this.form.get('siretSiren')?.updateValueAndValidity();
+  }
+
+  /**
+   * Gestion de la soumission du formulaire
+   */
+  onSubmit(): void {
+    if (!this.isFormValid()) {
+      this.handleInvalidForm();
+      return;
+    }
+
+    const apiConfig = this.buildApiConfig();
+    this.performRegistration(apiConfig);
+  }
+
+  /**
+   * Vérifie la validité du formulaire
+   */
+  private isFormValid(): boolean {
+    return this.form.valid;
+  }
+
+  /**
+   * Gère les cas où le formulaire est invalide
+   */
+  private handleInvalidForm(): void {
+    console.warn('⚠️ Formulaire d\'inscription invalide');
+    this.form.markAllAsTouched();
+    
+    const errorMessage = this.getValidationErrorMessage();
+    alert(errorMessage);
+  }
+
+  /**
+   * Génère un message d'erreur de validation approprié
+   */
+  private getValidationErrorMessage(): string {
+    const controls = this.form.controls;
+
+    // Vérifier les champs communs
+    if (controls['firstName']?.hasError('required')) return 'Le prénom est requis';
+    if (controls['lastName']?.hasError('required')) return 'Le nom est requis';
+    if (controls['email']?.hasError('required')) return 'L\'email est requis';
+    if (controls['email']?.hasError('email')) return 'Format d\'email invalide';
+    if (controls['password']?.hasError('required')) return 'Le mot de passe est requis';
+    if (controls['password']?.hasError('minlength')) return 'Le mot de passe doit contenir au moins 6 caractères';
+    if (controls['phoneNumber']?.hasError('required')) return 'Le numéro de téléphone est requis';
+    if (controls['address']?.hasError('required')) return 'L\'adresse est requise';
+    if (controls['city']?.hasError('required')) return 'La ville est requise';
+    if (controls['postalCode']?.hasError('required')) return 'Le code postal est requis';
+    if (controls['postalCode']?.hasError('pattern')) return 'Le code postal doit contenir 5 chiffres';
+
+    // Vérifier les champs spécifiques prestataire
+    if (this.isPrestataire) {
+      if (controls['companyName']?.hasError('required')) return 'Le nom de l\'entreprise est requis';
+      if (controls['siretSiren']?.hasError('required')) return 'Le numéro SIRET/SIREN est requis';
+      if (controls['siretSiren']?.hasError('pattern')) return 'Le SIRET/SIREN doit contenir 14 chiffres';
+    }
+
+    return 'Formulaire invalide - vérifiez vos données';
+  }
+
+  /**
+   * Construit la configuration API selon le type d'utilisateur
+   */
+  private buildApiConfig(): ApiConfig {
+    const basePayload: RegisterPayload = {
+      firstName: this.form.value.firstName,
+      lastName: this.form.value.lastName,
+      email: this.form.value.email,
+      password: this.form.value.password,
+      phoneNumber: this.form.value.phoneNumber,
+      address: this.form.value.address,
+      city: this.form.value.city,
+      postalCode: this.form.value.postalCode
+    };
+
+    if (this.isPrestataire) {
+      return {
+        url: `${this.API_BASE_URL}/provider`,
+        payload: {
+          ...basePayload,
+          companyName: this.form.value.companyName,
+          siretSiren: this.form.value.siretSiren
+        }
+      };
+    } else {
+      return {
+        url: `${this.API_BASE_URL}/client`,
+        payload: basePayload
+      };
+    }
+  }
+
+  /**
+   * Effectue la requête d'inscription
+   */
+  private performRegistration(apiConfig: ApiConfig): void {
+    const httpOptions = {
+      headers: { 'Content-Type': 'application/json' },
+      observe: 'response' as const,
+      responseType: 'text' as const
+    };
+
+    this.http.post(apiConfig.url, apiConfig.payload, httpOptions).subscribe({
+      next: (response) => this.handleRegistrationSuccess(response),
+      error: (err) => this.handleRegistrationError(err)
+    });
+  }
+
+  /**
+   * Gère le succès de l'inscription
+   */
+  private handleRegistrationSuccess(response: HttpResponse<any>): void {
+    this.showSuccessMessage();
+    this.redirectToLogin();
+  }
+
+  /**
+   * Gère les erreurs d'inscription
+   */
+  private handleRegistrationError(err: HttpErrorResponse): void {
+    console.error('❌ Erreur d\'inscription:', err);
+
+    // Gérer les "fausses erreurs" (succès avec erreur de parsing)
+    if (this.isSuccessfulButParseFailed(err)) {
+      this.handleParseErrorButSuccess();
+      return;
+    }
+
+    // Gérer les vraies erreurs
+    const errorMessage = this.getRegistrationErrorMessage(err);
+    this.showErrorMessage(errorMessage);
+  }
+
+  /**
+   * Vérifie s'il s'agit d'un succès avec erreur de parsing
+   */
+  private isSuccessfulButParseFailed(err: HttpErrorResponse): boolean {
+    return err.status === 200 || err.status === 201;
+  }
+
+  /**
+   * Gère le cas d'un succès avec erreur de parsing
+   */
+  private handleParseErrorButSuccess(): void {
+    this.showSuccessMessage();
+    this.redirectToLogin();
+  }
+
+  /**
+   * Génère un message d'erreur approprié selon l'erreur d'inscription
+   */
+  private getRegistrationErrorMessage(err: HttpErrorResponse): string {
+    const errorMessages: { [key: number]: string } = {
+      400: 'Données invalides - vérifiez vos informations',
+      409: 'Un compte avec cet email existe déjà',
+      422: 'Données de validation incorrectes',
+      500: 'Erreur interne du serveur',
+      0: 'Impossible de contacter le serveur'
+    };
+
+    if (errorMessages[err.status]) {
+      return errorMessages[err.status];
+    }
+
+    return err.error?.message || 'Erreur inconnue lors de l\'inscription';
+  }
+
+  /**
+   * Affiche un message de succès
+   */
+  private showSuccessMessage(): void {
+    const userType = this.isPrestataire ? 'prestataire' : 'particulier';
+    alert(`Inscription ${userType} réussie ! Vous pouvez maintenant vous connecter.`);
+  }
+
+  /**
+   * Affiche un message d'erreur
+   */
+  private showErrorMessage(message: string): void {
+    alert('Erreur lors de l\'inscription : ' + message);
+  }
+
+  /**
+   * Redirige vers la page de connexion
+   */
+  private redirectToLogin(): void {
+    this.router.navigate(['/auth/login']);
   }
 
   /**
@@ -83,58 +321,36 @@ export class RegisterFormComponent implements OnDestroy {
     }
   }
 
-  /**
-   * Soumission du formulaire avec validation et adaptation du payload selon le type d'utilisateur.
-   * Envoie les données à l'API backend pour enregistrement en base.
-   */
-  onSubmit(): void {
-    if (this.form.valid) {
-      let apiUrl: string;
-      let payload: any;
-      if (this.isPrestataire) {
-        apiUrl = 'http://localhost:8080/api/auth/register/provider';
-        payload = {
-          firstName: this.form.value.firstName,
-          lastName: this.form.value.lastName,
-          email: this.form.value.email,
-          password: this.form.value.password,
-          phoneNumber: this.form.value.phoneNumber,
-          address: this.form.value.address,
-          city: this.form.value.city,
-          postalCode: this.form.value.postalCode,
-          companyName: this.form.value.companyName,
-          siretSiren: this.form.value.siretSiren
-        };
+  // ✅ MÉTHODES UTILITAIRES PUBLIQUES
 
-        console.log("payload prestataire", payload);
-      } else {
-        apiUrl = 'http://localhost:8080/api/auth/register/client';
-        payload = {
-          firstName: this.form.value.firstName,
-          lastName: this.form.value.lastName,
-          email: this.form.value.email,
-          password: this.form.value.password,
-          phoneNumber: this.form.value.phoneNumber,
-          address: this.form.value.address,
-          city: this.form.value.city,
-          postalCode: this.form.value.postalCode
-        };
-        console.log("payload particulier", payload);
-      }
-      console.log("apiUrl : ", apiUrl);
-      console.log("payload : ", payload);
-      this.http.post(apiUrl, payload).subscribe({
-        next: () => {
-          alert('Inscription réussie !');
-          this.router.navigate(['/auth/login']);
-        },
-        error: (err) => {
-          const message = err.error?.message || 'Erreur inconnue, veuillez réessayer.';
-          alert('Erreur lors de l\'inscription : ' + message);
-        }
-      });
-    } else {
-      this.form.markAllAsTouched();
+  /**
+   * Récupère le titre du formulaire selon le type d'utilisateur
+   */
+  getFormTitle(): string {
+    return this.isPrestataire ? 'Inscription Prestataire' : 'Inscription Particulier';
+  }
+
+  /**
+   * Vérifie si un champ doit être affiché selon le type d'utilisateur
+   */
+  shouldShowField(fieldName: string): boolean {
+    const prestataireOnlyFields = ['companyName', 'siretSiren'];
+    
+    if (prestataireOnlyFields.includes(fieldName)) {
+      return this.isPrestataire;
     }
+    
+    return true;
+  }
+
+  /**
+   * Récupère les classes CSS pour un champ selon son état de validation
+   */
+  getFieldClasses(fieldName: string): string {
+    const field = this.form.get(fieldName);
+    
+    if (!field) return '';
+    
+    return field.invalid && field.touched ? 'field-error' : '';
   }
 }
