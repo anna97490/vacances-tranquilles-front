@@ -1,4 +1,5 @@
-import { HomeContentService, HomeContent } from './../../services/home-content.service';
+import { HomeContentService } from './../../services/home-content.service';
+import { HomeContent } from '../../models/interfacesHome';
 
 describe('HomeContentService', () => {
   let service: HomeContentService;

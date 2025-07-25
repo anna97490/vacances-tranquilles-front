@@ -1,13 +1,4 @@
-export interface TermsSection {
-  title: string;
-  content: { text: string }[];
-}
-
-export interface TermsContent {
-  title: string;
-  date: string;
-  sections: TermsSection[];
-}
+import { TermsContent } from '../../models/interfacesTerms';
 
 // Fonction utilitaire pour générer les textes à puces
 const bullet = (items: string[]) =>

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HomeComponent } from './home.component';
-import { HomeContentService, HomeContent } from '../../services/home-content.service';
+import { HomeContentService } from '../../services/home-content.service';
+import { HomeContent } from '../../models/interfacesHome';
 import { provideRouter } from '@angular/router';
 import { Renderer2 } from '@angular/core';
 

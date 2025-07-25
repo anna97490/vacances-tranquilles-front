@@ -18,24 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
-
-interface RegisterPayload {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phoneNumber: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  companyName?: string;
-  siretSiren?: string;
-}
-
-interface ApiConfig {
-  url: string;
-  payload: RegisterPayload;
-}
+import { RegisterPayload, ApiConfig } from '../../models/interfacesRegister';
 
 @Component({
   selector: 'app-register-form',

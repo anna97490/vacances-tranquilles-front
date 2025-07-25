@@ -4,18 +4,8 @@ import { CommonModule } from '@angular/common';
 import { CGU_DATA } from './../../services/terms-and-conditions/cgu';
 import { CGV_DATA } from './../../services/terms-and-conditions/cgv';
 import { LocationService } from './../../services/terms-and-conditions/location.service';
+import { TermsContent } from '../../models/interfacesTerms';
 
-// Définition des interfaces pour les structures de CGU et CGV
-interface TermsSection {
-  title: string;
-  content: { text: string }[];
-}
-
-interface TermsContent {
-  title: string;
-  date: string;
-  sections: TermsSection[];
-}
 
 @Component({
   selector: 'app-terms-and-conditions',

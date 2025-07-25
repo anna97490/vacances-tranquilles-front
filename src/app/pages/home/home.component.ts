@@ -1,9 +1,11 @@
 import { Component, HostBinding, OnInit, OnDestroy, Renderer2 } from '@angular/core';
-import { HomeContentService, HomeContent } from './../../services/home-content.service';
+import { HomeContent } from '../../models/interfacesHome';
+import { HomeContentService } from './../../services/home-content.service';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {MatIconModule} from '@angular/material/icon';
 import { FooterComponent } from '../../components/footer/footer.component';
+
 @Component({
   selector: 'app-home',
   standalone: true,
