@@ -7,17 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, RouterLink, Router } from '@angular/router';
 import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
-
-interface LoginResponse {
-  token: string;
-  userRole: string;
-  [key: string]: any;
-}
-
-interface LoginPayload {
-  email: string;
-  password: string;
-}
+import { LoginResponse, LoginPayload } from '../../models/interfacesLogin';
 
 @Component({
   selector: 'app-login-form',
