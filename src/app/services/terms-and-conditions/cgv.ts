@@ -2,7 +2,6 @@ export interface TermsSection {
   title: string;
   content: { text: string }[];
 }
-
 export interface TermsContent {
   title: string;
   date: string;
@@ -140,6 +139,5 @@ content: [
     }
   ]
 };
-
 // Pour garder la compatibilité avec l'ancien code
 export const CGV = CGV_DATA;

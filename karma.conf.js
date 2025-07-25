@@ -36,6 +36,9 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['ChromeHeadless'],
     singleRun: false,
-    restartOnFileChange: true
+    restartOnFileChange: true,
+    files: [
+       { pattern: 'src/assets/**/*', watched: false, included: false, served: true }
+    ]
   });
 };

@@ -4,7 +4,6 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {MatIconModule} from '@angular/material/icon';
 import { FooterComponent } from '../../components/footer/footer.component';
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -15,12 +14,9 @@ import { FooterComponent } from '../../components/footer/footer.component';
 export class HomeComponent implements OnInit, OnDestroy {
   content!: HomeContent;
   mainLogo = 'assets/pictures/logo.png';
-
   @HostBinding('style.display') display = 'block';
   @HostBinding('style.height') height = '100%';
-
   private scriptElements: HTMLScriptElement[] = [];
-
   constructor(private homeContentService: HomeContentService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
@@ -42,7 +38,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.addScript('https://files.bpcontent.cloud/2025/06/23/13/20250623131622-WAJI2P5Q.js');
     this.sendBonjourToBotpress();
   }
-
   ngOnDestroy(): void {
     // Nettoyage pour éviter les conflits si on navigue ailleurs
     this.scriptElements.forEach(script => {
@@ -61,7 +56,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.renderer.appendChild(document.body, script);
     this.scriptElements.push(script);
   }
-
   /**
    * Envoie le message 'Bonjour' au chatbot Botpress via une requête POST,
    * une fois que le widget et la conversation sont initialisés.
@@ -96,13 +90,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         .catch(error => {
           console.error('Erreur lors de l\'envoi du message', error);
         });
-
         clearInterval(interval);
       }
     }, 500);
   }
 
-// ✅ SOLUTION RECOMMANDÉE : Version hybride sécurisée
 private async generateSecureRandomId(): Promise<string> {
   try {
     // Essayer d'abord Web Crypto API

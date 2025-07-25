@@ -12,7 +12,7 @@ import { filter } from 'rxjs/operators';
 })
 export class HeaderComponent implements OnInit {
   mainLogo = 'assets/pictures/logo.png';
-
+  hoveredItem: any = null;
   menu = [
     {
       label: 'Accueil',
@@ -64,6 +64,10 @@ export class HeaderComponent implements OnInit {
   }
 
   getIcon(item: any): string {
-    return this.isActive(item.path) ? item.iconActive : item.icon;
+    // Affiche l'icône active si l'item est survolé OU si la route est active
+    if ((this.hoveredItem === item || this.isActive(item.path)) && item.iconActive) {
+      return item.iconActive;
+    }
+    return item.icon;
   }
 }

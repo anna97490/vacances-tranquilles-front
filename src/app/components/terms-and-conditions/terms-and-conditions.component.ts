@@ -10,13 +10,11 @@ interface TermsSection {
   title: string;
   content: { text: string }[];
 }
-
 interface TermsContent {
   title: string;
   date: string;
   sections: TermsSection[];
 }
-
 @Component({
   selector: 'app-terms-and-conditions',
   standalone: true,
@@ -40,17 +38,14 @@ export class TermsAndConditionsComponent {
       this.isCGV = true;
     }
   }
-
   get cguContent(): TermsContent {
     // Utiliser l'objet importé avec la structure TermsContent
     return CGU_DATA;
   }
-
   get cgvContent(): TermsContent {
     // Utiliser l'objet importé avec la structure TermsContent
     return CGV_DATA;
   }
-
   // Méthode pour afficher le contenu des CGU ou CGV
   getContent(): TermsContent {
     if (this.isCGU) {
@@ -61,12 +56,10 @@ export class TermsAndConditionsComponent {
     // Retourner un objet vide mais avec la structure attendue
     return { title: '', date: '', sections: [] };
   }
-
   // Ajouter cette méthode à votre classe TermsAndConditionsComponent
   isArray(content: string | string[]): boolean {
     return Array.isArray(content);
   }
-
   // Méthode pour vérifier si on affiche les CGU
   isShowingCGU(): boolean {
     return this.isCGU;
@@ -75,5 +68,4 @@ export class TermsAndConditionsComponent {
   isShowingCGV(): boolean {
     return this.isCGV;
   }
-
 }

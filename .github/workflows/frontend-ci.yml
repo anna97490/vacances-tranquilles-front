@@ -22,18 +22,18 @@ jobs:
     steps: 
       - name: Checkout code 
         uses: actions/checkout@v4 
-    
+
       - name: Use Node.js ${{ matrix.node-version }} 
         uses: actions/setup-node@v4 
         with: 
           node-version: ${{ matrix.node-version }} 
-    
+
       - name: Install dependencies 
         run: npm install 
-    
+
       - name: Run build 
         run: npm run build 
-    
+
       - name: Run tests with code coverage 
         run: | 
           npm run test -- --watch=false
@@ -47,7 +47,6 @@ jobs:
           flags: unittests
           name: codecov-frontend
           fail_ci_if_error: true 
- 
       - name: SonarCloud analysis 
         continue-on-error: false
         uses: SonarSource/sonarqube-scan-action@v5.0.0

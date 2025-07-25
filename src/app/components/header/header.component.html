@@ -8,6 +8,8 @@
       class="nav-link"
       [class.active]="isActive(item.path)"
       [routerLink]="item.path"
+      (mouseenter)="hoveredItem = item"
+      (mouseleave)="hoveredItem = null"
     >
       <img [src]="getIcon(item)" class="icon" alt="" />
       {{ item.label }}
