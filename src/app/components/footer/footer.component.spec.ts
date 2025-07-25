@@ -367,59 +367,59 @@ describe('FooterComponent', () => {
 
 describe('Text Content', () => {
   it('should have proper line breaks in company description', () => {
-    const footerText = getElements.single(selectors.footerText);
+    const footerText = debugElement.query(By.css('.footer-text'));
     expect(footerText).toBeTruthy();
-    
+
     const element = footerText.nativeElement;
     const innerHTML = element.innerHTML;
     const textContent = element.textContent || '';
-    
+
     // Vérifications simples et sécurisées du contenu
-    expect(textContent).toContain(footerData.companyInfo.description);
-    expect(textContent).toContain(footerData.companyInfo.year);
-    
+    expect(textContent).toContain('Votre partenaire de confiance');
+    expect(textContent).toContain('depuis 2020');
+
     // Approche plus robuste pour vérifier la structure
-    const hasLineBreaks = innerHTML.includes('<br>') || 
-                         innerHTML.includes('<br/>') || 
+    const hasLineBreaks = innerHTML.includes('<br>') ||
+                         innerHTML.includes('<br/>') ||
                          innerHTML.includes('<br />') ||
                          innerHTML.includes('\n') ||
                          element.children.length > 0;
-    
+
     expect(hasLineBreaks).toBe(true);
   });
 
   // Test alternatif plus défensif
   it('should display company information correctly', () => {
-    const footerText = getElements.single(selectors.footerText);
+    const footerText = debugElement.query(By.css('.footer-text'));
     expect(footerText).toBeTruthy();
-    
+
     const element = footerText.nativeElement;
     const textContent = element.textContent || '';
     const innerHTML = element.innerHTML;
-    
+
     // Tests essentiels
-    expect(textContent).toContain(footerData.companyInfo.description);
-    expect(textContent).toContain(footerData.companyInfo.year);
-    
+    expect(textContent).toContain('Votre partenaire de confiance');
+    expect(textContent).toContain('depuis 2020');
+
     // Test de structure plus flexible
-    const hasStructure = innerHTML.length > textContent.length || 
+    const hasStructure = innerHTML.length > textContent.length ||
                         element.childNodes.length > 1 ||
                         innerHTML !== textContent;
-    
+
     expect(hasStructure).toBe(true);
   });
 
   // Test de debug pour comprendre la structure réelle
   it('should debug footer text structure', () => {
-    const footerText = getElements.single(selectors.footerText);
-    
+    const footerText = debugElement.query(By.css('.footer-text'));
+
     if (footerText) {
       const element = footerText.nativeElement;
       console.log('Footer text innerHTML:', element.innerHTML);
       console.log('Footer text textContent:', element.textContent);
       console.log('Footer text childNodes count:', element.childNodes.length);
       console.log('Footer text children count:', element.children.length);
-      
+
       // Analyser les noeuds enfants
       Array.from(element.childNodes).forEach((node, index) => {
         const n = node as Node;
@@ -431,19 +431,19 @@ describe('Text Content', () => {
         });
       });
     }
-    
+
     // Ce test passe toujours, il sert au debug
     expect(true).toBe(true);
   });
 
   // Version simplifiée qui fonctionne dans tous les cas
   it('should contain required company information', () => {
-    const footerText = getElements.single(selectors.footerText);
+    const footerText = debugElement.query(By.css('.footer-text'));
     expect(footerText).toBeTruthy();
-    
+
     const textContent = footerText.nativeElement.textContent || '';
-    expect(textContent).toContain(footerData.companyInfo.description);
-    expect(textContent).toContain(footerData.companyInfo.year);
+    expect(textContent).toContain('Votre partenaire de confiance');
+    expect(textContent).toContain('depuis 2020');
 
   });
 });

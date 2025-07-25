@@ -136,8 +136,8 @@ describe('HeaderComponent', () => {
     },
     
     triggerNavigation: (path: string) => {
-      mockLocation.path.and.returnValue(path);
-      routerEvents$.next(new NavigationEnd(1, path, path));
+      mockLocation.path.and.returnValue(path || testData.paths.home);
+      routerEvents$.next(new NavigationEnd(1, path || testData.paths.home, path || testData.paths.home));
       fixture.detectChanges();
     },
     
@@ -196,6 +196,14 @@ describe('HeaderComponent', () => {
             snapshot: {},
           },
         },
+        {
+          provide: Router,
+          useValue: mockRouter
+        },
+        {
+          provide: Location,
+          useValue: mockLocation
+        }
       ]
     })
     .compileComponents();
@@ -203,6 +211,10 @@ describe('HeaderComponent', () => {
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
     
+    // Vérifier que les mocks sont bien injectés
+    expect(component['router']).toBe(mockRouter);
+    expect(component.location).toBe(mockLocation);
+
     // Initialiser les propriétés du composant si nécessaire
     if (!component.currentPath) {
       component.currentPath = testData.paths.home;
@@ -295,7 +307,10 @@ describe('HeaderComponent', () => {
         description: 'should fallback to /home if location.path() is empty during NavigationEnd',
         test: () => {
           component.ngOnInit();
-          testHelpers.triggerNavigation('');
+          // S'assurer que le mock retourne bien une chaîne vide
+          mockLocation.path.and.returnValue('');
+          routerEvents$.next(new NavigationEnd(1, '', ''));
+          fixture.detectChanges();
           expect(component.currentPath).toBe(testData.paths.home);
         }
       },
@@ -312,9 +327,15 @@ describe('HeaderComponent', () => {
         description: 'should handle multiple NavigationEnd events',
         test: () => {
           component.ngOnInit();
-          testHelpers.triggerNavigation('/page1');
+          // CORRECTION : Configurer le mock pour chaque navigation
+          mockLocation.path.and.returnValue('/page1');
+          routerEvents$.next(new NavigationEnd(1, '/page1', '/page1'));
+          fixture.detectChanges();
           expect(component.currentPath).toBe('/page1');
-          testHelpers.triggerNavigation('/page2');
+          
+          mockLocation.path.and.returnValue('/page2');
+          routerEvents$.next(new NavigationEnd(2, '/page2', '/page2'));
+          fixture.detectChanges();
           expect(component.currentPath).toBe('/page2');
         }
       }
