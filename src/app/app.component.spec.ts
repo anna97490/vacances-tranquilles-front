@@ -45,5 +45,3 @@ describe('AppComponent', () => {
     expect(app.title).toBe('frontend');
   });
 });
-
-});
