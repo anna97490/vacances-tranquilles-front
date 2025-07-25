@@ -47,7 +47,6 @@ jobs:
           flags: unittests
           name: codecov-frontend
           fail_ci_if_error: true 
-
       - name: SonarCloud analysis 
         continue-on-error: false
         uses: SonarSource/sonarqube-scan-action@v5.0.0
