@@ -45,7 +45,7 @@ export class ServicesService {
       .set('endTime', endTime);
 
     // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1MzgwNTkzMywiZXhwIjoxNzUzODA5NTMzfQ.J4sx7E8TIsCF2zcRokDWQk3x7Dm0N7WJ7PS1mW1Sf4c';
+    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1MzgwOTYxNSwiZXhwIjoxNzUzODEzMjE1fQ.rMcNs5pJskgbSSXYWqFF8yPuhCbECNdM66wj_nDy380';
     
     // Configuration des headers
     const headers = new HttpHeaders({

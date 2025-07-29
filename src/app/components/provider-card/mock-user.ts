@@ -87,4 +87,4 @@ export const MOCK_USER_3 = new User({
 /**
  * Tableau de prestataires mockés pour affichage.
  */
-export const PROVIDERS_MOCK: User[] = [MOCK_USER, MOCK_USER_2]; 
+export const PROVIDERS_MOCK: User[] = [MOCK_USER, MOCK_USER_2, MOCK_USER_3]; 
