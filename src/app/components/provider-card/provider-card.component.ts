@@ -42,7 +42,7 @@ export class ProviderCardComponent {
    */
   set service(service: Service) {
     this._service = service;
-    this.user = PROVIDERS_MOCK.find((u: User) => u.idUser === service.userId);
+    this.user = PROVIDERS_MOCK.find((u: User) => u.idUser === service.providerId);
   }
   /**
    * Getter pour le service.

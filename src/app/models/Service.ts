@@ -21,7 +21,7 @@ export class Service {
   title!: string;
 
   /** Description détaillée du service */
-  description!: string;
+  description?: string;
 
   /** Catégorie du service (ex: entretien, travaux, etc.) */
   category!: ServiceCategory;
@@ -30,5 +30,5 @@ export class Service {
   price!: number;
 
   /** Identifiant de l'utilisateur associé à ce service */
-  userId!: number;
+  providerId!: number;
 }

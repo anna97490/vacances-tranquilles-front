@@ -63,6 +63,27 @@ export const MOCK_USER_2 = new User({
   description: 'Prestataire passionnée par le jardinage et le bricolage, toujours souriante.'
 });
 
+export const MOCK_USER_3 = new User({
+  idUser: 5,
+  profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
+  firstName: 'Ashfak',
+  lastName: 'Sayem',
+  email: 'contact@servicepro.fr',
+  password: '',
+  role: UserRole.PROVIDER,
+  phoneNumber: '+1 234 567 890',
+  address: '12 rue de Paris',
+  city: 'Lyon, France',
+  postalCode: 69000,
+  siretSiren: '123 456 789 00012',
+  companyName: 'ServicePro',
+  rcNumber: 'RC123456789',
+  kbisUrl: 'https://example.com/kbis.pdf',
+  autoEntrepreneurAttestationUrl: 'https://example.com/attestation.pdf',
+  insuranceCertificateUrl: 'https://example.com/assurance.pdf',
+  description:'description succinte du prestataire vraiment très très très enrichissante. Il adore sa vie et les gens autour de lui'
+});
+
 /**
  * Tableau de prestataires mockés pour affichage.
  */

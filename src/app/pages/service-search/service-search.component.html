@@ -60,8 +60,9 @@
         </mat-form-field>
       </div>
       <div class="button-zone">
-        <button mat-raised-button color="primary" class="main-action-btn" [disabled]="!isFormValid()" (click)="findProviders()">
-          Voir les prestataires disponibles
+        <button mat-raised-button color="primary" class="main-action-btn" [disabled]="!isFormValid() || isLoading" (click)="findProviders()">
+          <span *ngIf="!isLoading">Voir les prestataires disponibles</span>
+          <span *ngIf="isLoading">Recherche en cours...</span>
         </button>
       </div>
     </form>
