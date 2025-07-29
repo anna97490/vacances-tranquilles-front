@@ -62,7 +62,10 @@ describe('LoginFormComponent', () => {
     debugElement = fixture.debugElement;
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
-
+    // SUPPRIMER TOUS les logs console pour chaque test
+    spyOn(console, 'warn').and.stub();
+    spyOn(console, 'error').and.stub();
+    spyOn(console, 'log').and.stub();
     fixture.detectChanges();
   });
 
