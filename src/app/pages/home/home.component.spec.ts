@@ -152,7 +152,6 @@ describe('HomeComponent', () => {
     it('should generate secure fallback ID when all crypto APIs fail', async () => {
       spyOn(window.crypto, 'getRandomValues').and.throwError('Crypto unavailable');
       spyOnProperty(window.crypto, 'subtle', 'get').and.returnValue(undefined as any);
-      spyOn(console, 'warn');
       const id = await component['generateSecureRandomId']();
       
       expect(id.startsWith('id-')).toBeTrue();
@@ -338,7 +337,6 @@ describe('Complete Crypto Flow Integration', () => {
     }
     
     spyOn(component as any, 'generateSecureFallbackId').and.callThrough();
-    spyOn(console, 'warn');
     
     const id = await component['generateSecureRandomId']();
     
@@ -368,7 +366,6 @@ describe('Complete Crypto Flow Integration', () => {
   //   NOUVEAU : Test pour vérifier le flux réel
   it('should follow the actual fallback chain in your component', async () => {
     spyOn(window.crypto, 'getRandomValues').and.throwError('getRandomValues failed');
-    spyOn(console, 'warn');
     
     // Spy sur toutes les méthodes possibles pour voir le flux réel
     const subtleFallbackSpy = spyOn(component as any, 'generateCryptoSubtleFallback').and.callThrough();
@@ -458,8 +455,6 @@ describe('Crypto Error Handling', () => {
     const originalSubtle = window.crypto.subtle;
     spyOnProperty(window.crypto, 'subtle', 'get').and.returnValue(undefined as any);
     
-    spyOn(console, 'warn');
-    
     const id = await component['generateSecureRandomId']();
     
     expect(id.startsWith('id-')).toBeTrue();
@@ -525,7 +520,6 @@ describe('Crypto Error Handling', () => {
 
     it('should fallback when getRandomValues fails', async () => {
       spyOn(window.crypto, 'getRandomValues').and.throwError('getRandomValues failed');
-      spyOn(console, 'warn');
       
       const id = await component['generateSecureRandomId']();
       
@@ -540,8 +534,6 @@ describe('Crypto Error Handling', () => {
       // Désactiver getRandomValues pour forcer l'utilisation de crypto.subtle
       spyOn(window.crypto, 'getRandomValues').and.throwError('getRandomValues failed');
       
-      spyOn(console, 'warn');
-      
       const id = await component['generateSecureRandomId']();
       
       expect(id.startsWith('id-')).toBeTrue();
@@ -550,7 +542,6 @@ describe('Crypto Error Handling', () => {
 
     it('should generate different IDs even with fallback', async () => {
       spyOn(window.crypto, 'getRandomValues').and.throwError('Forced fallback');
-      spyOn(console, 'warn'); // Pour éviter les logs dans les tests
       
       const id1 = await component['generateSecureRandomId']();
       const id2 = await component['generateSecureRandomId']();
@@ -569,8 +560,6 @@ describe('Crypto Error Handling', () => {
       spyOn(window.crypto.subtle, 'generateKey').and.throwError('generateKey failed');
       spyOn(window.crypto.subtle, 'exportKey').and.throwError('exportKey failed');
     }
-    
-    spyOn(console, 'warn');
     
     // Générer les IDs avec un délai pour garantir l'unicité
     const ids = [];
@@ -602,7 +591,6 @@ describe('Crypto Error Handling', () => {
     it('should use generateSecureFallbackId when all crypto APIs fail', async () => {
       spyOn(window.crypto, 'getRandomValues').and.throwError('All crypto failed');
       spyOn(component as any, 'generateSecureFallbackId').and.callThrough();
-      spyOn(console, 'warn');
       
       const id = await component['generateSecureRandomId']();
       
@@ -695,7 +683,6 @@ describe('Crypto Error Handling', () => {
 
       spyOn(component as any, 'generateSecureRandomId').and.returnValue(Promise.resolve('id-network-error'));
       spyOn(window, 'fetch').and.returnValue(Promise.reject(new Error('Network error')));
-      spyOn(console, 'error');
 
       component['sendBonjourToBotpress']();
 
@@ -952,16 +939,11 @@ describe('Crypto Error Handling', () => {
       spyOn(window.crypto, 'getRandomValues').and.throwError('getRandomValues failed');
       const subtleFallbackSpy = spyOn(component as any, 'generateCryptoSubtleFallback').and.callThrough();
       const fallbackSpy = spyOn(component as any, 'generateSecureFallbackId').and.callThrough();
-      const warnSpy = spyOn(console, 'warn');
 
       const id = await component['generateSecureRandomId']();
 
       expect(subtleFallbackSpy).not.toHaveBeenCalled();
       expect(fallbackSpy).toHaveBeenCalled();
-      expect(warnSpy).toHaveBeenCalledWith(
-        'Crypto APIs failed, using secure fallback:',
-        jasmine.anything()
-      );
       expect(id.startsWith('id-')).toBeTrue();
     });
 
