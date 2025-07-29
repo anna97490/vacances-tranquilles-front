@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
-
+import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
@@ -17,6 +17,15 @@ export const routes: Routes = [
         loadComponent: () => import('./components/terms-and-conditions/terms-and-conditions.component')
           .then(m => m.TermsAndConditionsComponent),
         data: { isCGV: true } // Indique que c'est pour les CGV  
+      }
+    ]
+  },
+  {
+    path: 'reservation',
+    children: [
+      {
+        path: 'detail',
+        component: ReservationDetailComponent
       }
     ]
   },

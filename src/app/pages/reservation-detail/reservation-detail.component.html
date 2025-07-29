@@ -1,0 +1,133 @@
+<mat-card class="reservation-detail-card" *ngIf="hasValidReservation(); else noReservation">
+  <!-- En-tête avec titre -->
+  <mat-card-header class="reservation-header">
+    <mat-card-title class="reservation-title">
+      Détail de la réservation
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content class="reservation-content">
+    <!-- Section informations principales -->
+    <div class="reservation-info-grid">
+      <!-- Date -->
+      <div class="info-item">
+        <div class="info-label">
+          <img src="./../../../assets/icons/calendar_month_24dp_FFFFF.svg" alt="Calendar Icon" class="info-icon">
+          Date
+        </div>
+        <div class="info-value" data-testid="reservation-date">
+          {{ getFormattedDate(reservation!.date) }}
+        </div>
+      </div>
+
+      <!-- Nom du particulier -->
+      <div class="info-item">
+        <div class="info-label">
+          <img src="./../../../assets/icons/person_24dp_FFFFFF.svg" alt="Nom" class="info-icon">
+          Nom du particulier
+        </div>
+        <div class="info-value" data-testid="client-name">
+          {{ reservation!.clientName }}
+        </div>
+      </div>
+
+      <!-- Heure -->
+      <div class="info-item">
+        <div class="info-label">
+          <img src="./../../../assets/icons/schedule_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg" alt="Heure" class="info-icon">
+          Heure
+        </div>
+        <div class="info-value" data-testid="reservation-time">
+          {{ getFormattedTime(reservation!.time) }}
+        </div>
+      </div>
+
+      <!-- Localisation -->
+      <div class="info-item">
+        <div class="info-label">
+          <img src="./../../../assets/icons/location_on_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg" alt="Localisation" class="info-icon">
+          Localisation
+        </div>
+        <div class="info-value" data-testid="location">
+          {{ reservation!.location }}
+        </div>
+      </div>
+    </div>
+
+    <mat-divider class="section-divider"></mat-divider>
+
+    <!-- Section détail de la prestation -->
+    <div class="service-section">
+      <h3 class="section-title">
+        Détail de la prestation
+      </h3>
+
+      <!-- Description du service -->
+      <div class="service-item">
+        <div class="service-label">
+          <img src="./../../../assets/icons/info_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg" alt="Description" class="info-icon">
+          Descriptif du service
+        </div>
+        <div class="service-value" data-testid="service-description">
+          {{ reservation!.serviceDescription }}
+        </div>
+      </div>
+
+      <!-- Statut -->
+      <div class="service-item">
+        <div class="service-label">
+          <img src="./../../../assets/icons/check_circle_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg" alt="Statut" class="info-icon">
+          Statut
+        </div>
+        <div class="service-value">
+          <mat-chip 
+            [color]="getStatusConfig(reservation!.status).color"
+            selected
+            class="status-chip"
+            data-testid="status-chip">
+            <mat-icon matChipAvatar>{{ getStatusConfig(reservation!.status).icon }}</mat-icon>
+            {{ getStatusConfig(reservation!.status).label }}
+          </mat-chip>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <!-- Actions -->
+  <mat-card-actions class="reservation-actions" *ngIf="showActions">
+    <button 
+      mat-raised-button 
+      [color]="getActionColor('cancel')"
+      [disabled]="!isActionAllowed('cancel')"
+      [matTooltip]="getActionTooltip('cancel')"
+      (click)="onActionClick('cancel')"
+      data-testid="cancel-button"
+      class="action-button">
+      <mat-icon>{{ getActionIcon('cancel') }}</mat-icon>
+      {{ getActionLabel('cancel') }}
+    </button>
+
+    <button 
+      mat-raised-button 
+      [color]="getActionColor('validate')"
+      [disabled]="!isActionAllowed('validate')"
+      [matTooltip]="getActionTooltip('validate')"
+      (click)="onActionClick('validate')"
+      data-testid="validate-button"
+      class="action-button">
+      <mat-icon>{{ getActionIcon('validate') }}</mat-icon>
+      {{ getActionLabel('validate') }}
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<!-- Template pour le cas où il n'y a pas de réservation -->
+<ng-template #noReservation>
+  <mat-card class="no-reservation-card">
+    <mat-card-content class="no-reservation-content">
+      <mat-icon class="no-reservation-icon">event_busy</mat-icon>
+      <h3>Aucune réservation sélectionnée</h3>
+      <p>Veuillez sélectionner une réservation pour afficher ses détails.</p>
+    </mat-card-content>
+  </mat-card>
+</ng-template>

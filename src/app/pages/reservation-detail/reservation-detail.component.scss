@@ -1,0 +1,214 @@
+.reservation-detail-card {
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+
+  .reservation-header {
+    background: linear-gradient(135deg, #3b575d 0%, #31525B 100%);
+    color: white;
+    margin: -16px -16px 0 -16px;
+    padding: 16px;
+    border-radius: 12px 12px 0 0;
+
+    .reservation-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.5rem;
+      font-weight: 500;
+
+      .title-icon {
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  .reservation-content {
+    padding: 24px 16px;
+
+    .reservation-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .info-item {
+        .info-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 500;
+          color: #31525B;
+          margin-bottom: 8px;
+          font-size: 0.9rem;
+
+          .info-icon {
+            filter: brightness(0.5) contrast(02);
+            font-size: 1.1rem;
+          }
+        }
+
+        .info-value {
+          font-size: 1rem;
+          color: #333;
+          padding-left: 28px;
+          font-weight: 400;
+        }
+      }
+    }
+
+    .section-divider {
+      margin: 24px 0;
+      border-color: #e0e0e0;
+    }
+
+    .service-section {
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #31525B;
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin: 0 0 20px 0;
+
+        .section-icon {
+          color: #db9e36;
+          font-size: 1.3rem;
+        }
+      }
+
+      .service-item {
+        margin-bottom: 16px;
+
+        .service-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 500;
+          color: #31525B;
+          margin-bottom: 8px;
+          font-size: 0.9rem;
+
+          .service-icon {
+            font-size: 1.1rem;
+            color: #db9e36;
+          }
+        }
+
+        .service-value {
+          padding-left: 28px;
+          font-size: 1rem;
+          color: #555;
+          line-height: 1.5;
+
+          .status-chip {
+            font-weight: 500;
+            
+            ::ng-deep .mat-mdc-chip-avatar {
+              font-size: 1rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .reservation-actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background-color: #fafafa;
+    border-radius: 0 0 12px 12px;
+    border-top: 1px solid #e0e0e0;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      
+      .action-button {
+        width: 100%;
+      }
+    }
+
+    .action-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      padding: 8px 24px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      mat-icon {
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
+
+.no-reservation-card {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+
+  .no-reservation-content {
+    padding: 48px 24px;
+
+    .no-reservation-icon {
+      font-size: 4rem;
+      color: #ccc;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      color: #31525B;
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: #666;
+      margin: 0;
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reservation-detail-card,
+.no-reservation-card {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Variables CSS personnalisées pour cohérence
+:host {
+  --primary-color: #FBF4E9;
+  --secondary-color: #31525B;
+  --tertiary-color: #db9e36;
+  --text-color: #31525B;
+}
