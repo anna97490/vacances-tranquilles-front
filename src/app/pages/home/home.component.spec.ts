@@ -55,6 +55,10 @@ describe('HomeComponent', () => {
   });
 
   beforeEach(async () => {
+    // SUPPRIMER TOUS les logs console pour chaque test
+    spyOn(console, 'warn').and.stub();
+    spyOn(console, 'error').and.stub();
+    spyOn(console, 'log').and.stub();
     mockHomeContentService = jasmine.createSpyObj('HomeContentService', ['getContent']);
     mockRenderer = jasmine.createSpyObj('Renderer2', ['createElement', 'appendChild']);
 
@@ -123,7 +127,7 @@ describe('HomeComponent', () => {
     expect(image?.getAttribute('src')).toBe(mockFeature.icon);
   });
 
-  // Tests pour generateSecureRandomId (async)
+  // Tests pour generateSecureRandomId
   describe('generateSecureRandomId', () => {
     it('should generate a random ID starting with "id-"', async () => {
       const id = await component['generateSecureRandomId']();
@@ -134,7 +138,6 @@ describe('HomeComponent', () => {
 
     it('should handle crypto unavailable gracefully', async () => {
       spyOn(window.crypto, 'getRandomValues').and.throwError('crypto.getRandomValues is not available');
-      spyOn(console, 'warn');
       
       const id = await component['generateSecureRandomId']();
       
@@ -319,15 +322,11 @@ describe('Complete Crypto Flow Integration', () => {
     
     expect(window.crypto.getRandomValues).toHaveBeenCalled();
     
-    //   CORRECTION : Vérifier le flux réel de votre composant
-    // if (window.crypto.subtle && component['generateCryptoSubtleFallback']) {
-    //   expect(component['generateCryptoSubtleFallback']).toHaveBeenCalled();
-    // } else {
-      // Si crypto.subtle n'est pas utilisé, le fallback sécurisé devrait être appelé
+      expect(window.crypto.getRandomValues).toHaveBeenCalled();
       expect(component['generateSecureFallbackId']).toHaveBeenCalled();
-    // }
-    
-    expect(id.startsWith('id-')).toBeTrue();
+      expect(id.startsWith('id-')).toBeTrue();
+      // Logs supprimés mais vérification que warn a été appelé
+      expect(console.warn).toHaveBeenCalled();
   });
 
   it('should fallback to secure fallback when both crypto APIs fail', async () => {
@@ -633,7 +632,6 @@ describe('Crypto Error Handling', () => {
         ok: true,
         json: () => Promise.resolve({ success: true })
       }) as any);
-      spyOn(console, 'log');
 
       component['sendBonjourToBotpress']();
 
@@ -673,7 +671,6 @@ describe('Crypto Error Handling', () => {
         status: 404,
         json: () => Promise.resolve({})
       }) as any);
-      spyOn(console, 'error');
 
       component['sendBonjourToBotpress']();
 
