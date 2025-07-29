@@ -265,7 +265,87 @@ describe('RegisterFormComponent', () => {
       const errorMessage = component['getValidationErrorMessage']();
       expect(errorMessage).toBe('Le prénom est requis');
     });
+    it('should return phone number required error message', () => {
+      component.form.patchValue({
+        firstName: 'Test',
+        lastName: 'Test',
+        email: 'test@test.com',
+        password: 'password123'
+      });
+      
+      component.form.get('phoneNumber')?.setValue('');
+      component.form.get('phoneNumber')?.markAsTouched();
+      
+      const errorMessage = component['getValidationErrorMessage']();
+      expect(errorMessage).toBe('Le numéro de téléphone est requis');
+    });
+    it('should return address required error message', () => {
+      component.form.patchValue({
+        firstName: 'Test',
+        lastName: 'Test',
+        email: 'test@test.com',
+        password: 'password123',
+        phoneNumber: '0123456789'
+      });
+      
+      component.form.get('address')?.setValue('');
+      component.form.get('address')?.markAsTouched();
+      
+      const errorMessage = component['getValidationErrorMessage']();
+      expect(errorMessage).toBe('L\'adresse est requise');
+    });
+    it('should return city required error message', () => {
+      component.form.patchValue({
+        firstName: 'Test',
+        lastName: 'Test',
+        email: 'test@test.com',
+        password: 'password123',
+        phoneNumber: '0123456789',
+        address: 'Test address'
+      });
+      
+      component.form.get('city')?.setValue('');
+      component.form.get('city')?.markAsTouched();
+      
+      const errorMessage = component['getValidationErrorMessage']();
+      expect(errorMessage).toBe('La ville est requise');
+    });
 
+    it('should return postal code required error message', () => {
+      component.form.patchValue({
+        firstName: 'Test',
+        lastName: 'Test',
+        email: 'test@test.com',
+        password: 'password123',
+        phoneNumber: '0123456789',
+        address: 'Test address',
+        city: 'Test city'
+      });
+      
+      component.form.get('postalCode')?.setValue('');
+      component.form.get('postalCode')?.markAsTouched();
+      
+      const errorMessage = component['getValidationErrorMessage']();
+      expect(errorMessage).toBe('Le code postal est requis');
+    });
+
+    it('should return postal code pattern error message', () => {
+      component.form.patchValue({
+        firstName: 'Test',
+        lastName: 'Test',
+        email: 'test@test.com',
+        password: 'password123',
+        phoneNumber: '0123456789',
+        address: 'Test address',
+        city: 'Test city'
+      });
+      
+      component.form.get('postalCode')?.setValue('123'); // Invalid pattern
+      component.form.get('postalCode')?.markAsTouched();
+      
+      const errorMessage = component['getValidationErrorMessage']();
+      expect(errorMessage).toBe('Le code postal doit contenir 5 chiffres');
+    });
     it('should return email format error message', () => {
       component.form.patchValue({ firstName: 'Test', lastName: 'Test' });
       component.form.get('email')?.setValue('invalid-email');
@@ -309,7 +389,48 @@ describe('RegisterFormComponent', () => {
       const errorMessage = component['getValidationErrorMessage']();
       expect(errorMessage).toBe('Le nom de l\'entreprise est requis');
     });
-
+    it('should return SIRET required error for prestataire', () => {
+      component.isPrestataire = true;
+      component['updateValidatorsBasedOnUserType']();
+      
+      component.form.patchValue({
+        firstName: 'Test',
+        lastName: 'Test',
+        email: 'test@test.com',
+        password: 'password123',
+        phoneNumber: '0123456789',
+        address: 'Test address',
+        city: 'Test city',
+        postalCode: '75000',
+        companyName: 'Test Company'
+      });
+      
+      component.form.get('siretSiren')?.setValue('');
+      component.form.get('siretSiren')?.markAsTouched();
+      
+      const errorMessage = component['getValidationErrorMessage']();
+      expect(errorMessage).toBe('Le numéro SIRET/SIREN est requis');
+    });
+    it('should return default error message when no specific error found', () => {
+      // Créer un état où aucune condition spécifique n'est remplie
+      component.form.patchValue({
+        firstName: 'Test',
+        lastName: 'Test',
+        email: 'test@test.com',
+        password: 'password123',
+        phoneNumber: '0123456789',
+        address: 'Test address',
+        city: 'Test city',
+        postalCode: '75000'
+      });
+      
+      // Forcer une erreur custom qui n'est pas gérée spécifiquement
+      component.form.get('email')?.setErrors({ 'customError': true });
+      component.form.get('email')?.markAsTouched();
+      
+      const errorMessage = component['getValidationErrorMessage']();
+      expect(errorMessage).toBe('Formulaire invalide - vérifiez vos données');
+    });
     it('should return SIRET error for prestataire', () => {
       component.isPrestataire = true;
       component['updateValidatorsBasedOnUserType']();
@@ -333,7 +454,91 @@ describe('RegisterFormComponent', () => {
       expect(errorMessage).toBe('Le SIRET/SIREN doit contenir 14 chiffres');
     });
   });
+  describe('Edge Cases Coverage', () => {
+    
+    it('should handle empty form submission with all fields invalid', () => {
+      spyOn(window, 'alert');
+      spyOn(component.form, 'markAllAsTouched');
+      
+      // Vider tous les champs
+      Object.keys(component.form.controls).forEach(key => {
+        component.form.get(key)?.setValue('');
+      });
+      
+      component.onSubmit();
+      
+      expect(component.form.markAllAsTouched).toHaveBeenCalled();
+      expect(window.alert).toHaveBeenCalled();
+      expect(component.form.valid).toBeFalsy();
+    });
 
+    it('should handle prestataire form with missing company fields', () => {
+      component.isPrestataire = true;
+      component['updateValidatorsBasedOnUserType']();
+      
+      spyOn(window, 'alert');
+      
+      // Remplir seulement les champs communs
+      component.form.patchValue({
+        firstName: 'Test',
+        lastName: 'Test',
+        email: 'test@test.com',
+        password: 'password123',
+        phoneNumber: '0123456789',
+        address: 'Test address',
+        city: 'Test city',
+        postalCode: '75000'
+        // Manque companyName et siretSiren
+      });
+      
+      component.onSubmit();
+      
+      expect(window.alert).toHaveBeenCalled();
+      expect(component.form.valid).toBeFalsy();
+    });
+
+    it('should validate all pattern-based fields together', () => {
+      const patterns = [
+        { field: 'postalCode', invalidValue: 'abc12', validValue: '75000' },
+        { field: 'email', invalidValue: 'invalid-email', validValue: 'test@test.com' }
+      ];
+      
+      patterns.forEach(({ field, invalidValue, validValue }) => {
+        // Test invalid
+        component.form.get(field)?.setValue(invalidValue);
+        component.form.get(field)?.markAsTouched();
+        expect(component.form.get(field)?.valid).toBeFalsy();
+        
+        // Test valid
+        component.form.get(field)?.setValue(validValue);
+        expect(component.form.get(field)?.valid).toBeTruthy();
+      });
+    });
+
+    it('should handle SIRET validation for prestataire with edge cases', () => {
+      component.isPrestataire = true;
+      component['updateValidatorsBasedOnUserType']();
+      
+      const siretControl = component.form.get('siretSiren');
+      
+      const testCases = [
+        { value: '', shouldBeValid: false, error: 'required' },
+        { value: '123', shouldBeValid: false, error: 'pattern' },
+        { value: 'abcd1234567890', shouldBeValid: false, error: 'pattern' },
+        { value: '12345678901234', shouldBeValid: true, error: null }
+      ];
+      
+      testCases.forEach(({ value, shouldBeValid, error }) => {
+        siretControl?.setValue(value);
+        siretControl?.markAsTouched();
+        
+        expect(siretControl?.valid).toBe(shouldBeValid);
+        if (error) {
+          expect(siretControl?.hasError(error)).toBeTruthy();
+        }
+      });
+    });
+  });
   describe('API Configuration', () => {
     it('should build correct API config for particulier', () => {
       component.isPrestataire = false;
