@@ -8,7 +8,8 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  AbstractControl
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -41,17 +42,60 @@ export class RegisterFormComponent implements OnDestroy {
   isPrestataire = false;
   mainLogo = './assets/pictures/logo.png';
   
-  private routerSubscription?: Subscription;
+  private readonly routerSubscription?: Subscription;
   private readonly API_BASE_URL = 'http://localhost:8080/api/auth/register';
 
   constructor(
-    private fb: FormBuilder,
-    private renderer: Renderer2,
-    private http: HttpClient,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly renderer: Renderer2,
+    private readonly http: HttpClient,
+    private readonly router: Router
   ) {
     this.detectUserType();
     this.initializeForm();
+  }
+
+  /**
+   * Checks if the error response is a potential parse error (status 200 or 201).
+   */
+  private isPotentialParseError(error: { status: number }): boolean {
+    return error.status === 200 || error.status === 201;
+  }
+
+  /**
+   * Handles actual HTTP errors during registration.
+   * @param error The HttpErrorResponse object.
+   */
+  private processActualError(error: HttpErrorResponse): void {
+    window.alert('Erreur lors de la connexion : ' + this.getRegistrationErrorMessage(error));
+    this.resetPasswordField();
+  }
+
+  /**
+   * Réinitialise le champ mot de passe du formulaire.
+   */
+  resetPasswordField(): void {
+    const passwordControl = this.form.get('password');
+    if (passwordControl) {
+      passwordControl.setValue('');
+      passwordControl.markAsUntouched();
+    }
+  }
+
+  /**
+   * Extracts token from an error response, returns null if parsing fails.
+   */
+  private extractTokenFromErrorResponse(error: any): string | null {
+    try {
+      if (typeof error?.error?.text === 'string') {
+        const parsed = JSON.parse(error.error.text);
+        return parsed.token || null;
+      }
+    } catch (e) {
+      console.warn('Erreur lors du parsing du token depuis la réponse:', e);
+      return null;
+    }
+    return null;
   }
 
   /**
@@ -67,7 +111,6 @@ export class RegisterFormComponent implements OnDestroy {
    */
   private initializeForm(): void {
     this.form = this.fb.group({
-      // Champs communs
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -75,35 +118,35 @@ export class RegisterFormComponent implements OnDestroy {
       phoneNumber: ['', Validators.required],
       address: ['', Validators.required],
       city: ['', Validators.required],
-      postalCode: ['', [Validators.required, Validators.pattern(/^[0-9]{5}$/)]],
-      
-      // Champs spécifiques prestataire
+      postalCode: ['', [
+        Validators.required, 
+        Validators.pattern(/^\d{5}$/)  // Utilisation de \d au lieu de [0-9]
+      ]],
       companyName: [''],
-      siretSiren: ['', [Validators.pattern(/^[0-9]{14}$/)]]
+      siretSiren: ['']
     });
-
-    // Ajouter les validateurs conditionnels pour les prestataires
-    this.updateValidatorsBasedOnUserType();
   }
 
   /**
    * Met à jour les validateurs selon le type d'utilisateur
    */
   private updateValidatorsBasedOnUserType(): void {
+const companyNameControl = this.form.get('companyName');
+    const siretSirenControl = this.form.get('siretSiren');
+
     if (this.isPrestataire) {
-      this.form.get('companyName')?.setValidators([Validators.required]);
-      this.form.get('siretSiren')?.setValidators([
+      companyNameControl?.setValidators([Validators.required]);
+      siretSirenControl?.setValidators([
         Validators.required,
-        Validators.pattern(/^[0-9]{14}$/)
+        Validators.pattern(/^\d{14}$/)  // Utilisation de \d au lieu de [0-9]
       ]);
     } else {
-      this.form.get('companyName')?.clearValidators();
-      this.form.get('siretSiren')?.clearValidators();
+      companyNameControl?.clearValidators();
+      siretSirenControl?.clearValidators();
     }
-    
-    // Mettre à jour la validation
-    this.form.get('companyName')?.updateValueAndValidity();
-    this.form.get('siretSiren')?.updateValueAndValidity();
+
+    companyNameControl?.updateValueAndValidity();
+    siretSirenControl?.updateValueAndValidity();
   }
 
   /**
@@ -142,8 +185,19 @@ export class RegisterFormComponent implements OnDestroy {
    */
   private getValidationErrorMessage(): string {
     const controls = this.form.controls;
+    
+    // Vérifier les erreurs des champs communs
+    const commonFieldError = this.checkCommonFieldErrors(controls);
+    if (commonFieldError) return commonFieldError;
+    
+    // Vérifier les erreurs spécifiques aux prestataires
+    const prestataireError = this.checkPrestataireErrors(controls);
+    if (prestataireError) return prestataireError;
+    
+    return 'Formulaire invalide - vérifiez vos données';
+  }
 
-    // Vérifier les champs communs
+  private checkCommonFieldErrors(controls: { [key: string]: AbstractControl }): string | null {
     if (controls['firstName']?.hasError('required')) return 'Le prénom est requis';
     if (controls['lastName']?.hasError('required')) return 'Le nom est requis';
     if (controls['email']?.hasError('required')) return 'L\'email est requis';
@@ -155,15 +209,18 @@ export class RegisterFormComponent implements OnDestroy {
     if (controls['city']?.hasError('required')) return 'La ville est requise';
     if (controls['postalCode']?.hasError('required')) return 'Le code postal est requis';
     if (controls['postalCode']?.hasError('pattern')) return 'Le code postal doit contenir 5 chiffres';
+    
+    return null;
+  }
 
-    // Vérifier les champs spécifiques prestataire
+  private checkPrestataireErrors(controls: { [key: string]: AbstractControl }): string | null {
     if (this.isPrestataire) {
       if (controls['companyName']?.hasError('required')) return 'Le nom de l\'entreprise est requis';
       if (controls['siretSiren']?.hasError('required')) return 'Le numéro SIRET/SIREN est requis';
       if (controls['siretSiren']?.hasError('pattern')) return 'Le SIRET/SIREN doit contenir 14 chiffres';
     }
-
-    return 'Formulaire invalide - vérifiez vos données';
+    
+    return null;
   }
 
   /**
@@ -257,20 +314,21 @@ export class RegisterFormComponent implements OnDestroy {
   /**
    * Génère un message d'erreur approprié selon l'erreur d'inscription
    */
-  private getRegistrationErrorMessage(err: HttpErrorResponse): string {
-    const errorMessages: { [key: number]: string } = {
-      400: 'Données invalides - vérifiez vos informations',
-      409: 'Un compte avec cet email existe déjà',
-      422: 'Données de validation incorrectes',
-      500: 'Erreur interne du serveur',
-      0: 'Impossible de contacter le serveur'
-    };
-
-    if (errorMessages[err.status]) {
-      return errorMessages[err.status];
-    }
-
-    return err.error?.message || 'Erreur inconnue lors de l\'inscription';
+  private getRegistrationErrorMessage(error: HttpErrorResponse): string {
+    switch (error.status) {
+        case 400:
+          return 'Données invalides - vérifiez vos informations';
+        case 409:
+          return 'Un compte avec cet email existe déjà';
+        case 422:
+          return 'Données de validation incorrectes';
+        case 500:
+          return 'Erreur interne du serveur';
+        case 0:
+          return 'Impossible de contacter le serveur';
+        default:
+          return error.error?.message || 'Erreur inconnue lors de l\'inscription';
+      }
   }
 
   /**

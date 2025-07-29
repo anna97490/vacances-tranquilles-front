@@ -21,7 +21,7 @@ export class TermsAndConditionsComponent {
   // Si le chemin d'accès d'url est /cgv, on affiche les CGV
   isCGV: boolean = false;
 
-  constructor(private locationService: LocationService) {
+  constructor(private readonly locationService: LocationService) {
     const path = this.locationService.getPathname();
     if (path.includes('cgu')) {
       this.isCGU = true;

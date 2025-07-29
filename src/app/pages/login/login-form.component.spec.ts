@@ -10,7 +10,7 @@ import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { LoginFormComponent } from './login-form.component';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 
@@ -126,6 +126,8 @@ describe('LoginFormComponent', () => {
 
     // TEST de l'extraction de token depuis une erreur
     it('should extract token from error response text', () => {
+      // SUPPRIMER les logs console pendant ce test
+      spyOn(console, 'warn').and.stub();
       const testCases = [
         {
           name: 'token in text property',
@@ -154,13 +156,103 @@ describe('LoginFormComponent', () => {
         const token = component['extractTokenFromErrorResponse'](mockErrorResponse as any);
         expect(token).toBe(expected);
       });
+      // VÉRIFIER que console.warn a été appelé pour le cas JSON invalide
+      expect(console.warn).toHaveBeenCalledWith(
+        'Erreur lors du parsing du token depuis la réponse:', 
+        jasmine.any(SyntaxError)
+      );
     });
 
-    it('should detect parse errors correctly', () => {
-      const mockError401 = { status: 401 };
-      const mockError200 = { status: 200 };
-      const mockError201 = { status: 201 };
+    // NOUVEAU TEST spécifique pour la gestion des erreurs JSON
+    it('should handle JSON parse errors gracefully', () => {
+      spyOn(console, 'warn').and.stub(); // Supprimer les logs
       
+      const errorWithInvalidJson = {
+        status: 200,
+        error: { text: 'this is not valid JSON at all!' }
+      };
+      
+      const token = component['extractTokenFromErrorResponse'](errorWithInvalidJson as any);
+      
+      expect(token).toBeNull();
+      expect(console.warn).toHaveBeenCalledWith(
+        'Erreur lors du parsing du token depuis la réponse:', 
+        jasmine.any(SyntaxError)
+      );
+    });
+  // TEST pour vérifier que les tokens valides sont extraits correctement
+  it('should extract valid tokens successfully', () => {
+    spyOn(console, 'warn').and.stub();
+    
+    const validCases = [
+      {
+        error: { text: '{"token":"valid-token-123"}' },
+        expected: 'valid-token-123'
+      },
+      {
+        error: { text: '{"token":"jwt.token.here","userRole":"CLIENT"}' },
+        expected: 'jwt.token.here'
+      },
+      {
+        error: { token: 'direct-token-access' },
+        expected: 'direct-token-access'
+      }
+    ];
+
+    validCases.forEach(({ error, expected }) => {
+      const mockErrorResponse = { status: 200, error };
+      const token = component['extractTokenFromErrorResponse'](mockErrorResponse as any);
+      expect(token).toBe(expected);
+    });
+
+    // Console.warn ne devrait PAS être appelé pour les cas valides
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  // TEST pour les cas edge avec différents formats de réponse
+  it('should handle various error response formats', () => {
+    spyOn(console, 'warn').and.stub();
+    
+    const edgeCases = [
+      {
+        name: 'empty text',
+        error: { text: '' },
+        expected: null
+      },
+      {
+        name: 'null text',
+        error: { text: null },
+        expected: null
+      },
+      {
+        name: 'undefined text',
+        error: { text: undefined },
+        expected: null
+      },
+      {
+        name: 'JSON without token',
+        error: { text: '{"message":"success"}' },
+        expected: null
+      },
+      {
+        name: 'null token value',
+        error: { text: '{"token":null}' },
+        expected: null
+      }
+    ];
+
+    edgeCases.forEach(({ name, error, expected }) => {
+      const mockErrorResponse = { status: 200, error };
+      const token = component['extractTokenFromErrorResponse'](mockErrorResponse as any);
+      expect(token).toBe(expected);
+    });
+  });
+
+  it('should detect parse errors correctly', () => {
+    const mockError401 = { status: 401 };
+    const mockError200 = { status: 200 };
+    const mockError201 = { status: 201 };
+
       expect(mockError200.status === 200 || mockError200.status === 201).toBeTruthy();
       expect(mockError201.status === 200 || mockError201.status === 201).toBeTruthy();
       expect(mockError401.status === 200 || mockError401.status === 201).toBeFalsy();
@@ -256,7 +348,148 @@ describe('LoginFormComponent', () => {
       expect(message).toBe('Erreur de connexion inconnue');
     });
   });
+  // GROUPE DE TESTS séparé pour les méthodes refactorisées
+  describe('Refactored Methods Coverage', () => {
+    beforeEach(() => {
+      // Supprimer tous les logs pour ce groupe de tests
+      spyOn(console, 'warn').and.stub();
+      spyOn(console, 'error').and.stub();
+    });
 
+    it('should identify potential parse errors correctly', () => {
+      const error200 = { status: 200 } as HttpErrorResponse;
+      const error201 = { status: 201 } as HttpErrorResponse;
+      const error401 = { status: 401 } as HttpErrorResponse;
+      
+      expect(component['isPotentialParseError'](error200)).toBeTruthy();
+      expect(component['isPotentialParseError'](error201)).toBeTruthy();
+      expect(component['isPotentialParseError'](error401)).toBeFalsy();
+    });
+
+    it('should process actual errors correctly', () => {
+      spyOn(window, 'alert');
+      spyOn(component as any, 'resetPasswordField');
+      spyOn(component as any, 'getLoginErrorMessage').and.returnValue('Test error');
+      
+      const error = { status: 401 } as HttpErrorResponse;
+      
+      // APPELER la méthode
+      component['processActualError'](error);
+      
+      expect(window.alert).toHaveBeenCalledWith('Erreur lors de la connexion : Test error');
+      expect(component['resetPasswordField']).toHaveBeenCalled();
+    });
+    // NOUVEAU TEST pour tester handleLoginError avec les différents flux
+    it('should route to correct handler based on error status', () => {
+      spyOn(component as any, 'handleSuccessWithParseError');
+      spyOn(component as any, 'processActualError');
+      
+      // Test flux parse error (status 200)
+      const parseError = { status: 200, error: { text: '{"token":"test"}' } } as HttpErrorResponse;
+      component['handleLoginError'](parseError);
+      expect(component['handleSuccessWithParseError']).toHaveBeenCalledWith(parseError);
+      expect(component['processActualError']).not.toHaveBeenCalled();
+      
+      // Reset spies
+      (component as any)['handleSuccessWithParseError'].calls.reset();
+      (component as any)['processActualError'].calls.reset();
+      
+      // Test flux erreur réelle (status 401)
+      const realError = { status: 401, error: null } as HttpErrorResponse;
+      component['handleLoginError'](realError);
+      expect(component['processActualError']).toHaveBeenCalledWith(realError);
+      expect(component['handleSuccessWithParseError']).not.toHaveBeenCalled();
+    });
+    it('should handle success with parse error flow', () => {
+      spyOn(localStorage, 'setItem');
+      spyOn(router, 'navigate');
+      spyOn(window, 'alert');
+      spyOn(component as any, 'extractTokenFromErrorResponse').and.returnValue('extracted-token');
+      
+      const mockError = {
+        status: 200,
+        error: { text: '{"token":"extracted-token"}' }
+      };
+      
+      // APPELER la méthode avec les spies configurés
+      component['handleSuccessWithParseError'](mockError as any);
+      
+      // VÉRIFICATIONS après l'appel de méthode
+      expect(component['extractTokenFromErrorResponse']).toHaveBeenCalledWith(mockError as any);
+      expect(localStorage.setItem).toHaveBeenCalledWith('token', 'extracted-token');
+      expect(localStorage.setItem).toHaveBeenCalledWith('userRole', '');
+      expect(window.alert).toHaveBeenCalledWith('Connexion réussie !');
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    });
+    // TESTS COMPLÉMENTAIRES pour couvrir tous les cas
+    it('should handle success with parse error flow - without spy on extractToken', () => {
+      spyOn(localStorage, 'setItem');
+      spyOn(router, 'navigate');
+      spyOn(window, 'alert');
+      
+      const mockError = {
+        status: 200,
+        error: { text: '{"token":"real-extracted-token"}' }
+      };
+      
+      // TESTER le flux complet sans spy sur extractTokenFromErrorResponse
+      component['handleSuccessWithParseError'](mockError as any);
+      
+      expect(localStorage.setItem).toHaveBeenCalledWith('token', 'real-extracted-token');
+      expect(localStorage.setItem).toHaveBeenCalledWith('userRole', '');
+      expect(window.alert).toHaveBeenCalledWith('Connexion réussie !');
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should handle missing token in parse error response', () => {
+      spyOn(window, 'alert');
+      spyOn(router, 'navigate');
+      spyOn(localStorage, 'setItem');
+      
+      const mockError = {
+        status: 200,
+        error: { text: 'invalid response without token' }
+      };
+
+      // APPELER la méthode
+      component['handleSuccessWithParseError'](mockError as any);
+    
+      // VÉRIFICATIONS pour le cas d'échec
+      expect(window.alert).toHaveBeenCalledWith('Erreur: Token manquant dans la réponse du serveur');
+      expect(router.navigate).not.toHaveBeenCalled();
+      expect(localStorage.setItem).not.toHaveBeenCalled();
+    });
+    // TEST complet du flux extractTokenFromErrorResponse
+    it('should extract tokens correctly from various error formats', () => {
+      const testCases = [
+        {
+          name: 'valid JSON with token',
+          error: { status: 200, error: { text: '{"token":"valid-token","role":"CLIENT"}' } },
+          expected: 'valid-token'
+        },
+        {
+          name: 'direct token property',
+          error: { status: 200, error: { token: 'direct-token' } },
+          expected: 'direct-token'
+        },
+        {
+          name: 'invalid JSON',
+          error: { status: 200, error: { text: 'not json' } },
+          expected: null
+        },
+        {
+          name: 'empty error object',
+          error: { status: 200, error: {} },
+          expected: null
+        }
+      ];
+
+      testCases.forEach(({ name, error, expected }) => {
+        const result = component['extractTokenFromErrorResponse'](error as any);
+        expect(result).toBe(expected);
+      });
+    });
+  });
   describe('Form Validation and Submission', () => {
     it('should handle invalid form submission', () => {
       spyOn(window, 'alert');

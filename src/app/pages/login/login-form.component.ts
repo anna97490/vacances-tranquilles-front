@@ -32,9 +32,9 @@ export class LoginFormComponent {
   private readonly API_URL = 'http://localhost:8080/api/auth/login';
 
   constructor(
-    private fb: FormBuilder,
-    private http: HttpClient,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly http: HttpClient,
+    private readonly router: Router
   ) {
     this.initializeForm();
   }
@@ -152,17 +152,18 @@ export class LoginFormComponent {
    */
   private handleLoginError(err: HttpErrorResponse): void {
 
-    // Gérer les "fausses erreurs" (succès avec erreur de parsing)
-    if (err.status === 200 || err.status === 201) {
+    // Vérifier d'abord si c'est une erreur de parsing avec status 200/201
+    if (this.isPotentialParseError(err)) {
       this.handleSuccessWithParseError(err);
       return;
     }
 
-    // Gérer les vraies erreurs de connexion
-    const errorMessage = this.getLoginErrorMessage(err);
-    alert('Erreur lors de la connexion : ' + errorMessage);
-    
-    this.resetPasswordField();
+    // Gérer les vraies erreurs
+    this.processActualError(err);
+  }
+
+  private isPotentialParseError(error: HttpErrorResponse): boolean {
+    return error.status === 200 || error.status === 201;
   }
 
   /**
@@ -170,25 +171,44 @@ export class LoginFormComponent {
    */
   private handleSuccessWithParseError(err: HttpErrorResponse): void {
     
-    // Essayer de récupérer le token même en cas d'erreur de parsing
+    console.log('Gestion spéciale pour erreur de parsing avec status 200:', err);
+    
     const token = this.extractTokenFromErrorResponse(err);
     if (token) {
       this.storeAuthenticationData(token, '');
+      alert('Connexion réussie !');
+      this.redirectAfterLogin();
+    } else {
+      alert('Erreur: Token manquant dans la réponse du serveur');
     }
-    this.redirectAfterLogin();
   }
 
+  private processActualError(error: HttpErrorResponse): void {
+    const errorMessage = this.getLoginErrorMessage(error);
+    alert(`Erreur lors de la connexion : ${errorMessage}`);
+    this.resetPasswordField();
+  }
+  
   /**
    * Essaie d'extraire le token d'une réponse d'erreur
    */
   private extractTokenFromErrorResponse(err: HttpErrorResponse): string | null {
     try {
+      // Essayer d'extraire depuis err.text (cas de parsing JSON)
       if (err.error?.text) {
         const parsed = JSON.parse(err.error.text);
         return parsed.token || null;
       }
-      return err.error?.token || null;
+      
+      // Essayer d'extraire depuis err.token (cas direct)
+      if (err.error?.token) {
+        return err.error.token;
+      }
+      
+      return null;
     } catch (parseError) {
+      // ✅ Gestion appropriée de l'exception
+      console.warn('Erreur lors du parsing du token depuis la réponse:', parseError);
       return null;
     }
   }
