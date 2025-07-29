@@ -129,8 +129,6 @@ describe('LoginFormComponent', () => {
 
     // TEST de l'extraction de token depuis une erreur
     it('should extract token from error response text', () => {
-      // SUPPRIMER les logs console pendant ce test
-      spyOn(console, 'warn').and.stub();
       const testCases = [
         {
           name: 'token in text property',
@@ -168,7 +166,6 @@ describe('LoginFormComponent', () => {
 
     // NOUVEAU TEST spécifique pour la gestion des erreurs JSON
     it('should handle JSON parse errors gracefully', () => {
-      spyOn(console, 'warn').and.stub(); // Supprimer les logs
       
       const errorWithInvalidJson = {
         status: 200,
@@ -184,8 +181,7 @@ describe('LoginFormComponent', () => {
       );
     });
   // TEST pour vérifier que les tokens valides sont extraits correctement
-  it('should extract valid tokens successfully', () => {
-    spyOn(console, 'warn').and.stub();
+  it('should extract valid tokens successfully', () => {;
     
     const validCases = [
       {
@@ -214,7 +210,6 @@ describe('LoginFormComponent', () => {
 
   // TEST pour les cas edge avec différents formats de réponse
   it('should handle various error response formats', () => {
-    spyOn(console, 'warn').and.stub();
     
     const edgeCases = [
       {
@@ -353,12 +348,6 @@ describe('LoginFormComponent', () => {
   });
   // GROUPE DE TESTS séparé pour les méthodes refactorisées
   describe('Refactored Methods Coverage', () => {
-    beforeEach(() => {
-      // Supprimer tous les logs pour ce groupe de tests
-      spyOn(console, 'warn').and.stub();
-      spyOn(console, 'error').and.stub();
-    });
-
     it('should identify potential parse errors correctly', () => {
       const error200 = { status: 200 } as HttpErrorResponse;
       const error201 = { status: 201 } as HttpErrorResponse;
