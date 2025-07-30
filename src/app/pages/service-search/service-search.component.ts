@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { ServiceCategory } from '../../models/Service';
-import { ServicesService } from '../../core/services/services/services.service';
+import { ServicesService } from '../../services/services/services.service';
 import { Router } from '@angular/router';
 
 @Component({

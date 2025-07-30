@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Service } from '../../../models/Service';
-import { getServiceCategoryKey } from '../../../mappers/serviceCategoryMapper';
+import { Service } from '../../models/Service';
+import { getServiceCategoryKey } from '../../mappers/serviceCategoryMapper';
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +45,7 @@ export class ServicesService {
       .set('endTime', endTime);
 
     // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1MzgwOTYxNSwiZXhwIjoxNzUzODEzMjE1fQ.rMcNs5pJskgbSSXYWqFF8yPuhCbECNdM66wj_nDy380';
+    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1Mzg2NDUzNCwiZXhwIjoxNzUzODY4MTM0fQ.52_35TpIPAoaS1cWmoS8QJNXNHmJNIEZFsHpgLKa-V8';
     
     // Configuration des headers
     const headers = new HttpHeaders({

@@ -40,15 +40,21 @@ export class ProviderCardComponent {
    * Setter pour le service.
    * Met à jour le service et recherche l'utilisateur associé dans les données mockées.
    */
-  set service(service: Service) {
+set service(service: Service) {
+  if (service) {
     this._service = service;
     this.user = PROVIDERS_MOCK.find((u: User) => u.idUser === service.providerId);
+  } else {
+    this._service = undefined as any;
+    this.user = undefined;
   }
+} 
+
   /**
    * Getter pour le service.
    * @returns {Service} Le service associé à la carte.
    */
-  get service(): Service {
+  get service(): Service | undefined {
     return this._service;
   }
 }

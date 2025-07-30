@@ -14,7 +14,7 @@
       </div>
 
       <div class="description">
-        {{ service.description }}
+        {{ service?.description }}
       </div>
     </div>
   </div>
@@ -22,7 +22,7 @@
 
   <div class="footer">
     <div class="price">
-      <span class="euro">€ {{ service.price }}</span><span class="unit">/heure</span>
+      <span class="euro">€ {{ service?.price }}</span><span class="unit">/heure</span>
     </div>
     <button mat-raised-button class="reserve-btn">Réserver</button>
   </div>
