@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProviderCardComponent } from '../../components/provider-card/provider-card.component';
-import { Service } from '../../models/Service';
+import { Service, ServiceCategory } from '../../models/Service';
 import { User } from '../../models/User';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -136,7 +136,28 @@ export class AvailableProvidersComponent implements OnInit {
     if (!this.searchCriteria) return '';
     
     const { category, postalCode, date, startTime, endTime } = this.searchCriteria;
-    return `${category} - ${postalCode} - ${date} ${startTime}-${endTime}`;
+    
+    // Convertir le code de catégorie en label complet
+    const categoryLabel = this.getCategoryLabel(category);
+    
+    return `${categoryLabel} - ${postalCode} - ${date} ${startTime}-${endTime}`;
+  }
+
+  /**
+   * Convertit un code de catégorie en label complet
+   * @param categoryCode Le code de la catégorie (ex: 'HOME')
+   * @returns Le label complet de la catégorie
+   */
+  private getCategoryLabel(categoryCode: string): string {
+    const categoryMap: Record<string, string> = {
+      'HOME': 'Entretien de la maison',
+      'OUTDOOR': 'Entretien extérieur',
+      'REPAIRS': 'Petits travaux',
+      'SHOPPING': 'Courses et logistique',
+      'ANIMALS': 'Soins aux animaux'
+    };
+    
+    return categoryMap[categoryCode] || categoryCode;
   }
 
   /**
