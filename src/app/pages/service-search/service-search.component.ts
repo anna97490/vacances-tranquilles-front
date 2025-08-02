@@ -40,7 +40,59 @@ export class ServiceSearchComponent {
     const year = this.selectedYear || new Date().getFullYear();
     const monthIndex = this.months.indexOf(month ?? '');
     const daysInMonth = monthIndex >= 0 ? new Date(year, monthIndex + 1, 0).getDate() : 31;
-    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    
+    const allDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    
+    // Si on n'a pas sélectionné de mois/année, retourner tous les jours
+    if (!month || !this.selectedYear) {
+      return allDays;
+    }
+    
+    // Filtrer les jours passés
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth();
+    const currentDay = today.getDate();
+    
+    // Si le mois/année sélectionné est dans le passé, retourner un tableau vide
+    if (year < currentYear || (year === currentYear && monthIndex < currentMonth)) {
+      return [];
+    }
+    
+    // Si c'est le mois/année actuel, filtrer les jours passés
+    if (year === currentYear && monthIndex === currentMonth) {
+      return allDays.filter(day => day >= currentDay);
+    }
+    
+    // Sinon, retourner tous les jours du mois
+    return allDays;
+  }
+
+  /**
+   * Vérifie si un jour donné est dans le passé
+   */
+  isDayInPast(day: number): boolean {
+    if (!this.selectedMonth || !this.selectedYear) return false;
+    
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth();
+    const currentDay = today.getDate();
+    
+    const monthIndex = this.months.indexOf(this.selectedMonth);
+    
+    // Si l'année est dans le passé
+    if (this.selectedYear < currentYear) return true;
+    
+    // Si c'est l'année actuelle mais le mois est dans le passé
+    if (this.selectedYear === currentYear && monthIndex < currentMonth) return true;
+    
+    // Si c'est le mois/année actuel, vérifier le jour
+    if (this.selectedYear === currentYear && monthIndex === currentMonth) {
+      return day < currentDay;
+    }
+    
+    return false;
   }
   /** Liste des mois */
   months = [
@@ -48,13 +100,34 @@ export class ServiceSearchComponent {
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
   ];
   /** Liste des années disponibles */
-  years = [2025, 2026];
+  get years() {
+    const currentYear = new Date().getFullYear();
+    return [currentYear, currentYear + 1];
+  }
 
   /** Liste des horaires (heures pleines de 8h à 20h) */
   hours = Array.from({ length: 13 }, (_, i) => {
     const hour = 8 + i;
     return `${hour.toString().padStart(2, '0')}:00`;
   });
+
+  /** Liste des heures de fin disponibles (filtrées selon l'heure de début) */
+  get availableEndHours() {
+    if (!this.selectedStartHour) {
+      return this.hours;
+    }
+    
+    // Convertit les heures "HH:mm" en minutes pour comparaison
+    const toMinutes = (h: string) => {
+      const [hour, min] = h.split(":").map(Number);
+      return hour * 60 + min;
+    };
+    
+    const startMinutes = toMinutes(this.selectedStartHour);
+    
+    // Retourne seulement les heures qui sont strictement supérieures à l'heure de début
+    return this.hours.filter(hour => toMinutes(hour) > startMinutes);
+  }
   
   /** Liste des services disponibles */
   services = Object.entries(ServiceCategory).map(([key, value]) => ({ key, value }));
@@ -91,6 +164,8 @@ export class ServiceSearchComponent {
 
   /**
    * Vérifie que l'heure de fin est après l'heure de début.
+   * Cette validation est maintenant redondante car nous filtrons les heures de fin,
+   * mais elle reste pour la sécurité.
    */
   get isHourRangeValid(): boolean {
     if (!this.selectedStartHour || !this.selectedEndHour) return true;
@@ -100,6 +175,20 @@ export class ServiceSearchComponent {
       return hour * 60 + min;
     };
     return toMinutes(this.selectedEndHour) > toMinutes(this.selectedStartHour);
+  }
+
+  /**
+   * Vérifie que la date sélectionnée n'est pas dans le passé.
+   */
+  get isDateValid(): boolean {
+    if (!this.selectedDay || !this.selectedMonth || !this.selectedYear) return true;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Remet à minuit pour comparer seulement la date
+    
+    const selectedDate = new Date(this.selectedYear, this.months.indexOf(this.selectedMonth), this.selectedDay);
+    
+    return selectedDate >= today;
   }
 
   /**
@@ -114,8 +203,48 @@ export class ServiceSearchComponent {
       this.selectedEndHour &&
       this.selectedService &&
       this.isPostalCodeValid &&
-      this.isHourRangeValid
+      this.isHourRangeValid &&
+      this.isDateValid
     );
+  }
+
+  /**
+   * Gère le changement d'heure de début et réinitialise l'heure de fin si nécessaire
+   */
+  onStartHourChange() {
+    // Si l'heure de fin sélectionnée n'est plus disponible, la réinitialiser
+    if (this.selectedEndHour && this.selectedStartHour) {
+      const availableEndHours = this.availableEndHours;
+      if (!availableEndHours.includes(this.selectedEndHour)) {
+        this.selectedEndHour = undefined;
+      }
+    }
+  }
+
+  /**
+   * Gère le changement de mois et réinitialise le jour si nécessaire
+   */
+  onMonthChange() {
+    // Si le jour sélectionné n'est plus disponible, le réinitialiser
+    if (this.selectedDay && this.selectedMonth && this.selectedYear) {
+      const availableDays = this.days;
+      if (!availableDays.includes(this.selectedDay)) {
+        this.selectedDay = undefined;
+      }
+    }
+  }
+
+  /**
+   * Gère le changement d'année et réinitialise le jour si nécessaire
+   */
+  onYearChange() {
+    // Si le jour sélectionné n'est plus disponible, le réinitialiser
+    if (this.selectedDay && this.selectedMonth && this.selectedYear) {
+      const availableDays = this.days;
+      if (!availableDays.includes(this.selectedDay)) {
+        this.selectedDay = undefined;
+      }
+    }
   }
 
   /**
@@ -141,6 +270,11 @@ export class ServiceSearchComponent {
   findProviders() {
     if (!this.isPostalCodeValid) {
       alert('Veuillez saisir un code postal valide.');
+      return;
+    }
+
+    if (!this.isDateValid) {
+      alert('La date sélectionnée ne peut pas être dans le passé.');
       return;
     }
 

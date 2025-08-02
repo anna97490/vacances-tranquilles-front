@@ -11,7 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { ServicesService } from '../../services/services/services.service';
-import { UserInformationService } from '../../services/user-information.service';
+import { UserInformationService } from '../../services/user-information/user-information.service';
 
 /**
  * Composant listant les prestataires disponibles.

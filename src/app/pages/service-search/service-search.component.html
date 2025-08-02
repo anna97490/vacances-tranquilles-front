@@ -11,15 +11,16 @@
               <mat-option *ngFor="let day of days" [value]="day">{{ day }}</mat-option>
             </mat-select>
             <mat-error *ngIf="dayCtrl.invalid && dayCtrl.touched">Jour requis</mat-error>
+            <mat-error *ngIf="selectedMonth && selectedYear && days.length === 0">Aucune date disponible dans le passé</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-select placeholder="Mois" [(ngModel)]="selectedMonth" name="month" required #monthCtrl="ngModel">
+            <mat-select placeholder="Mois" [(ngModel)]="selectedMonth" name="month" required #monthCtrl="ngModel" (selectionChange)="onMonthChange()">
               <mat-option *ngFor="let month of months" [value]="month">{{ month }}</mat-option>
             </mat-select>
             <mat-error *ngIf="monthCtrl.invalid && monthCtrl.touched">Mois requis</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-select placeholder="Année" [(ngModel)]="selectedYear" name="year" required #yearCtrl="ngModel">
+            <mat-select placeholder="Année" [(ngModel)]="selectedYear" name="year" required #yearCtrl="ngModel" (selectionChange)="onYearChange()">
               <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
             </mat-select>
             <mat-error *ngIf="yearCtrl.invalid && yearCtrl.touched">Année requise</mat-error>
@@ -30,17 +31,17 @@
         <label class="section-label">Sélectionner un horaire</label>
         <div class="hour-row">
           <mat-form-field appearance="outline">
-            <mat-select placeholder="Heure de début" [(ngModel)]="selectedStartHour" name="startHour" [disabled]="!selectedDay || !selectedMonth || !selectedYear" #startHourCtrl="ngModel">
+            <mat-select placeholder="Heure de début" [(ngModel)]="selectedStartHour" name="startHour" [disabled]="!selectedDay || !selectedMonth || !selectedYear" #startHourCtrl="ngModel" (selectionChange)="onStartHourChange()">
               <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
             </mat-select>
             <mat-error *ngIf="startHourCtrl.invalid && startHourCtrl.touched">Heure de début requise</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-select placeholder="Heure de fin" [(ngModel)]="selectedEndHour" name="endHour" [disabled]="!selectedStartHour" #endHourCtrl="ngModel">
-              <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
+              <mat-option *ngFor="let hour of availableEndHours" [value]="hour">{{ hour }}</mat-option>
             </mat-select>
             <mat-error *ngIf="endHourCtrl.invalid && endHourCtrl.touched">Heure de fin requise</mat-error>
-            <mat-error *ngIf="selectedStartHour && selectedEndHour && !isHourRangeValid">L'heure de fin doit être après l'heure de début</mat-error>
+            <mat-error *ngIf="selectedStartHour && !availableEndHours.length">Aucune heure de fin disponible après l'heure de début sélectionnée</mat-error>
           </mat-form-field>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { UserInformationService } from './user-information.service';
-import { User, UserRole } from '../models/User';
+import { User, UserRole } from '../../models/User';
 
 describe('UserInformationService', () => {
   let service: UserInformationService;
@@ -59,7 +59,6 @@ describe('UserInformationService', () => {
       address: '456 Client St',
       city: 'Paris',
       postalCode: 75002,
-      profilePicture: 'client.jpg'
     });
 
     service.getUserProfile().subscribe(user => {
@@ -83,7 +82,6 @@ describe('UserInformationService', () => {
         address: '123 Main St',
         city: 'Paris',
         postalCode: 75001,
-        profilePicture: 'profile.jpg',
         companyName: 'John Services',
         siretSiren: '12345678901234'
       }),
@@ -97,7 +95,6 @@ describe('UserInformationService', () => {
         address: '789 Provider St',
         city: 'Lyon',
         postalCode: 69001,
-        profilePicture: 'jane.jpg',
         companyName: 'Jane Services',
         siretSiren: '98765432109876'
       })
