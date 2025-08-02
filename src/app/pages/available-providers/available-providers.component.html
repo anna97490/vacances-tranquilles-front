@@ -26,7 +26,10 @@
     <!-- Liste des prestataires trouvés-->
     <div *ngIf="services.length > 0" class="providers-grid">
       <ng-container *ngFor="let service of services">
-        <app-provider-card [service]="service"></app-provider-card>
+        <app-provider-card 
+          [service]="service"
+          [providerInfo]="getProviderInfo(service.providerId)">
+        </app-provider-card>
       </ng-container>
     </div>
   </div>

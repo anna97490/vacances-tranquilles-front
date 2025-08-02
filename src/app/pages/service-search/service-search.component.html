@@ -54,7 +54,7 @@
       <div class="form-section">
         <mat-form-field appearance="outline" class="full-width">
           <mat-select placeholder="Choisissez un service" [(ngModel)]="selectedService" name="service" required #serviceCtrl="ngModel">
-            <mat-option *ngFor="let service of services" [value]="service">{{ service }}</mat-option>
+            <mat-option *ngFor="let service of services" [value]="service.key">{{ service.value }}</mat-option>
           </mat-select>
           <mat-error *ngIf="serviceCtrl.invalid && serviceCtrl.touched">Service requis</mat-error>
         </mat-form-field>

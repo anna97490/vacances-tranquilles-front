@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Service } from '../../models/Service';
-import { getServiceCategoryKey } from '../../mappers/serviceCategoryMapper';
+import { Service, ServiceCategory } from '../../models/Service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,21 +30,21 @@ export class ServicesService {
   ): Observable<Service[]> {
     const url = `${this.baseUrl}/services/search`;
 
-    const categoryKey = getServiceCategoryKey(category);
-    if (!categoryKey) {
+    // Vérification que la catégorie est valide
+    if (!Object.keys(ServiceCategory).includes(category)) {
       throw new Error(`Catégorie inconnue : ${category}`);
     }
     
     // Construction des paramètres de requête
     const params = new HttpParams()
-      .set('category', categoryKey)
+      .set('category', category)
       .set('postalCode', postalCode)
       .set('date', date)
       .set('startTime', startTime)
       .set('endTime', endTime);
 
     // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1Mzg2NDUzNCwiZXhwIjoxNzUzODY4MTM0fQ.52_35TpIPAoaS1cWmoS8QJNXNHmJNIEZFsHpgLKa-V8';
+    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1NDE0MTI5OSwiZXhwIjoxNzU0MTQ0ODk5fQ.1nNAN_nisKhhNhMVgFPc1BlFAj7oUUcX1tSNYFgeIYk';
     
     // Configuration des headers
     const headers = new HttpHeaders({

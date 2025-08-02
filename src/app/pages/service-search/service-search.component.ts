@@ -57,7 +57,7 @@ export class ServiceSearchComponent {
   });
   
   /** Liste des services disponibles */
-  services = Object.values(ServiceCategory);
+  services = Object.entries(ServiceCategory).map(([key, value]) => ({ key, value }));
 
   /** Jour sélectionné */
   selectedDay: number | undefined;
@@ -70,7 +70,7 @@ export class ServiceSearchComponent {
   /** Heure de fin sélectionnée */
   selectedEndHour: string | undefined;
   /** Service sélectionné */
-  selectedService: string | undefined;
+  selectedService: keyof typeof ServiceCategory | undefined;
   /** Code postal saisi */
   postalCode: string = '';
 
