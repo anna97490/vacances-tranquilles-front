@@ -14,8 +14,6 @@ export class User {
   /** Identifiant unique de l'utilisateur */
   idUser!: number;
 
-  /** URL de la photo de profil */
-  profilePicture!: string;
 
   /** Prénom de l'utilisateur */
   firstName!: string;
@@ -50,19 +48,19 @@ export class User {
   /** Numéro SIRET/SIREN (prestataires uniquement) */
   siretSiren?: string;
 
-  /** Nom de l’entreprise (prestataires uniquement) */
+  /** Nom de l'entreprise (prestataires uniquement) */
   companyName?: string;
 
   /** Numéro de responsabilité civile (prestataires uniquement) */
   rcNumber?: string;
 
-  /** URL vers l’extrait Kbis (prestataires uniquement) */
+  /** URL vers l'extrait Kbis (prestataires uniquement) */
   kbisUrl?: string;
 
-  /** URL vers l’attestation d’auto-entrepreneur (prestataires uniquement) */
+  /** URL vers l'attestation d'auto-entrepreneur (prestataires uniquement) */
   autoEntrepreneurAttestationUrl?: string;
 
-  /** URL vers le certificat d’assurance (prestataires uniquement) */
+  /** URL vers le certificat d'assurance (prestataires uniquement) */
   insuranceCertificateUrl?: string;
 
   /** Description de l'utilisateur */

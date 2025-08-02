@@ -2,7 +2,6 @@ import { User, UserRole } from '../../models/User';
 
 export const MOCK_USER = new User({
   idUser: 1,
-  profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
   firstName: 'Ashfak',
   lastName: 'Sayem',
   email: 'contact@servicepro.fr',
@@ -23,7 +22,6 @@ export const MOCK_USER = new User({
 
 export const LOGGED_USER = new User({
   idUser: 2,
-  profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg',
   firstName: 'Claire',
   lastName: 'Durand',
   email: 'claire.durand@email.com',
@@ -44,7 +42,6 @@ export const LOGGED_USER = new User({
 
 export const MOCK_USER_2 = new User({
   idUser: 3,
-  profilePicture: 'https://randomuser.me/api/portraits/women/65.jpg',
   firstName: 'Marie',
   lastName: 'Dubois',
   email: 'marie.dubois@email.com',
@@ -65,7 +62,6 @@ export const MOCK_USER_2 = new User({
 
 export const MOCK_USER_3 = new User({
   idUser: 5,
-  profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
   firstName: 'Ashfak',
   lastName: 'Sayem',
   email: 'contact@servicepro.fr',
