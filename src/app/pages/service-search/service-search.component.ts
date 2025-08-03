@@ -35,38 +35,19 @@ import { Router } from '@angular/router';
  */
 export class ServiceSearchComponent {
   /** Liste des jours du mois sélectionné */
-  get days() {
-    const month = this.selectedMonth;
-    const year = this.selectedYear || new Date().getFullYear();
-    const monthIndex = this.months.indexOf(month ?? '');
-    const daysInMonth = monthIndex >= 0 ? new Date(year, monthIndex + 1, 0).getDate() : 31;
-    
-    const allDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-    
-    // Si on n'a pas sélectionné de mois/année, retourner tous les jours
-    if (!month || !this.selectedYear) {
-      return allDays;
-    }
-    
-    // Filtrer les jours passés
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
-    const currentDay = today.getDate();
-    
-    // Si le mois/année sélectionné est dans le passé, retourner un tableau vide
-    if (year < currentYear || (year === currentYear && monthIndex < currentMonth)) {
-      return [];
-    }
-    
-    // Si c'est le mois/année actuel, filtrer les jours passés
-    if (year === currentYear && monthIndex === currentMonth) {
-      return allDays.filter(day => day >= currentDay);
-    }
-    
-    // Sinon, retourner tous les jours du mois
-    return allDays;
+get days(): number[] {
+  if (!this.selectedMonth || !this.selectedYear) {
+    return [];
   }
+
+  const monthIndex = this.months.indexOf(this.selectedMonth);
+  if (monthIndex === -1) {
+    return [];
+  }
+
+  const daysInMonth = new Date(this.selectedYear, monthIndex + 1, 0).getDate();
+  return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+}
 
   /**
    * Vérifie si un jour donné est dans le passé

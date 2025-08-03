@@ -1,134 +1,138 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AvailableProvidersComponent } from './available-providers.component';
 import { Router } from '@angular/router';
-import { ServiceCategory, Service } from '../../models/Service';
+import { Service, ServiceCategory } from '../../models/Service';
+import { User, UserRole } from '../../models/User';
+import { of, throwError } from 'rxjs';
+import { ServicesService } from '../../services/services/services.service';
+import { UserInformationService } from '../../services/user-information/user-information.service';
 
-// SpyObj de Jasmine pour simuler le Router
 const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+const servicesServiceSpy = jasmine.createSpyObj('ServicesService', ['searchServices']);
+const userInfoServiceSpy = jasmine.createSpyObj('UserInformationService', ['getUserById']);
 
-describe('AvailableProvidersComponent', () => {
+describe('AvailableProvidersComponent - Full Coverage', () => {
   let component: AvailableProvidersComponent;
   let fixture: ComponentFixture<AvailableProvidersComponent>;
 
-  const mockSearchResults = JSON.stringify([
-    {
-      id: 1,
-      title: 'Tonte de pelouse',
-      category: 'Entretien extérieur',
-      price: 30,
-      providerId: 101
-    },
-    {
-      id: 2,
-      title: 'Montage de meuble',
-      category: 'Petits travaux',
-      price: 50,
-      providerId: 102
-    }
-  ]);
+  const mockServices: Service[] = [
+    { id: 1, title: 'Tonte', category: ServiceCategory.OUTDOOR, price: 20, providerId: 1 },
+    { id: 2, title: 'Plomberie', category: ServiceCategory.REPAIRS, price: 50, providerId: 2 }
+  ];
 
-  const mockSearchCriteria = JSON.stringify({
-    category: 'REPAIRS',
-    postalCode: '75001',
-    date: '2025-08-01',
-    startTime: '10:00',
-    endTime: '12:00'
-  });
+const mockUser: User = new User({
+  idUser: 1,
+  firstName: 'Alice',
+  lastName: 'Martin',
+  email: 'alice@example.com',
+  phoneNumber: '0612345678',
+  address: '10 rue de la République',
+  city: 'Lyon',
+  postalCode: 69000,
+  role: UserRole.PROVIDER,
+  companyName: 'ServicesPro',
+  siretSiren: '12345678900012',
+  rcNumber: 'RC123456789',
+  kbisUrl: 'https://example.com/kbis.pdf',
+  autoEntrepreneurAttestationUrl: 'https://example.com/auto-entrepreneur.pdf',
+  insuranceCertificateUrl: 'https://example.com/assurance.pdf',
+  description: 'Prestataire expérimenté dans les services à domicile'
+});
 
   beforeEach(async () => {
-    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
-      switch (key) {
-        case 'searchResults':
-          return mockSearchResults;
-        case 'searchCriteria':
-          return mockSearchCriteria;
-        default:
-          return null;
-      }
-    });
-
     await TestBed.configureTestingModule({
       imports: [AvailableProvidersComponent],
-      providers: [{ provide: Router, useValue: routerSpy }]
+      providers: [
+        { provide: Router, useValue: routerSpy },
+        { provide: ServicesService, useValue: servicesServiceSpy },
+        { provide: UserInformationService, useValue: userInfoServiceSpy }
+      ]
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(AvailableProvidersComponent);
     component = fixture.componentInstance;
+  });
 
-    // Remap le champ `category` à l'enum après chargement
-    const rawServices = JSON.parse(mockSearchResults);
-    component.services = rawServices.map((s: any): Service => ({
-      ...s,
-      category: mapCategory(s.category)
-    }));
-
-    component.searchCriteria = JSON.parse(mockSearchCriteria);
-    fixture.detectChanges();
+  afterEach(() => {
+    localStorage.clear();
+    routerSpy.navigate.calls.reset();
+    servicesServiceSpy.searchServices.calls.reset();
+    userInfoServiceSpy.getUserById.calls.reset();
   });
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load and remap services from localStorage correctly', () => {
+  it('should navigate if searchCriteria is missing', () => {
+    spyOn(localStorage, 'getItem').and.returnValue(null);
+    component.ngOnInit();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/service-search']);
+  });
+
+  it('should catch JSON.parse error and navigate', () => {
+    spyOn(localStorage, 'getItem').and.returnValue('{invalidJson');
+    component.ngOnInit();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/service-search']);
+  });
+
+  it('should call searchServices and populate services and providers', fakeAsync(() => {
+    spyOn(localStorage, 'getItem').and.callFake((key) => {
+      if (key === 'searchCriteria') return JSON.stringify({ category: 'REPAIRS', postalCode: '75000', date: '2025-08-01', startTime: '10:00', endTime: '12:00' });
+      return null;
+    });
+
+    servicesServiceSpy.searchServices.and.returnValue(of(mockServices));
+    userInfoServiceSpy.getUserById.and.returnValue(of(mockUser));
+
+    component.ngOnInit();
+    tick();
+
     expect(component.services.length).toBe(2);
-    expect(component.services[0].title).toBe('Tonte de pelouse');
-    expect(component.services[0].category).toBe(ServiceCategory.OUTDOOR);
+    expect(servicesServiceSpy.searchServices).toHaveBeenCalled();
+    expect(userInfoServiceSpy.getUserById).toHaveBeenCalledWith(1);
+    expect(userInfoServiceSpy.getUserById).toHaveBeenCalledWith(2);
+  }));
+
+  it('should handle searchServices error', fakeAsync(() => {
+    spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({ category: 'REPAIRS', postalCode: '75000' }));
+    servicesServiceSpy.searchServices.and.returnValue(throwError(() => new Error('fail')));
+    component.ngOnInit();
+    tick();
+    expect(component.services).toEqual([]);
+  }));
+
+  it('should handle getUserById error gracefully', fakeAsync(() => {
+    spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({ category: 'REPAIRS', postalCode: '75000', date: '2025-08-01', startTime: '10:00', endTime: '12:00' }));
+    servicesServiceSpy.searchServices.and.returnValue(of(mockServices));
+    userInfoServiceSpy.getUserById.and.returnValue(throwError(() => new Error('fail')));
+    component.ngOnInit();
+    tick();
+    expect(userInfoServiceSpy.getUserById).toHaveBeenCalled();
+  }));
+
+  it('should return correct formattedCriteria', () => {
+    component.searchCriteria = { category: 'HOME', postalCode: '75000', date: '2025-08-01', startTime: '10:00', endTime: '12:00' };
+    expect(component.formattedCriteria).toContain('Entretien de la maison');
   });
 
-  it('should format search criteria correctly', () => {
-    expect(component.formattedCriteria).toBe('REPAIRS - 75001 - 2025-08-01 10:00-12:00');
-  });
-
-  it('should return correct services count', () => {
-    expect(component.servicesCount).toBe(2);
-  });
-
-  it('should navigate to /service-search if no results in localStorage', () => {
-    // simuler le cas où il n'y a pas de résultats
-    (localStorage.getItem as jasmine.Spy).and.returnValue(null);
-
-    fixture = TestBed.createComponent(AvailableProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/service-search']);
-  });
-
-  it('should navigate to /service-search when navigateToSearch() is called', () => {
-    component.navigateToSearch();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/service-search']);
-  });
-
-  it('should return empty formattedCriteria if no searchCriteria is set', () => {
+  it('should return empty formattedCriteria if searchCriteria is null', () => {
     component.searchCriteria = null;
     expect(component.formattedCriteria).toBe('');
   });
 
-  it('should display the correct number of services in the template', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('2'); // ou autre logique selon ton HTML
+  it('should return category label fallback if unknown', () => {
+    expect((component as any).getCategoryLabel('UNKNOWN')).toBe('UNKNOWN');
   });
 
-  it('should render provider cards for each service', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const cards = compiled.querySelectorAll('app-provider-card');
-    expect(cards.length).toBe(2);
+  it('should return undefined if no provider info found', () => {
+    expect(component.getProviderInfo(999)).toBeUndefined();
   });
 
-  it('should not crash if some fields in searchCriteria are missing', () => {
-    component.searchCriteria = {
-      category: 'REPAIRS',
-      postalCode: '75000'
-      // pas de date, startTime, endTime
-    };
-
-    expect(component.formattedCriteria).toContain('REPAIRS - 75000');
+  it('should navigate to /service-search when navigateToSearch is called', () => {
+    component.navigateToSearch();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/service-search']);
   });
 });
-
-// Fonction pour mapper les catégories
-function mapCategory(label: string): ServiceCategory {
-  const entry = Object.entries(ServiceCategory).find(([_, val]) => val === label);
-  return entry ? (entry[1] as ServiceCategory) : ServiceCategory.HOME;
-}

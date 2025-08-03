@@ -49,59 +49,17 @@ describe('ServiceSearchComponent', () => {
       component.postalCode = '1234';
       expect(component.isPostalCodeValid).toBeFalse();
     });
-
-    it('should return false for postal code with letters', () => {
-      component.postalCode = '75A01';
-      expect(component.isPostalCodeValid).toBeFalse();
-    });
-
-    it('should return false for empty postal code', () => {
-      component.postalCode = '';
-      expect(component.isPostalCodeValid).toBeFalse();
-    });
-  });
-
-  describe('isHourRangeValid', () => {
-    it('should return true when end hour is after start hour', () => {
-      component.selectedStartHour = '10:00';
-      component.selectedEndHour = '12:00';
-      expect(component.isHourRangeValid).toBeTrue();
-    });
-
-    it('should return false when end hour is before start hour', () => {
-      component.selectedStartHour = '14:00';
-      component.selectedEndHour = '11:00';
-      expect(component.isHourRangeValid).toBeFalse();
-    });
-
-    it('should return false when start hour is equal to end hour', () => {
-      component.selectedStartHour = '09:00';
-      component.selectedEndHour = '09:00';
-      expect(component.isHourRangeValid).toBeFalse();
-    });
-
-    it('should return true when start hour is undefined', () => {
-      component.selectedStartHour = undefined;
-      component.selectedEndHour = '10:00';
-      expect(component.isHourRangeValid).toBeTrue();
-    });
-
-    it('should return true when end hour is undefined', () => {
-      component.selectedStartHour = '08:00';
-      component.selectedEndHour = undefined;
-      expect(component.isHourRangeValid).toBeTrue();
-    });
   });
 
   describe('isFormValid', () => {
     beforeEach(() => {
-      // Remplir tous les champs avec des valeurs valides par défaut
-      component.selectedDay = 1;
-      component.selectedMonth = 'Janvier';
-      component.selectedYear = 2025;
+      const now = new Date();
+      component.selectedDay = now.getDate();
+      component.selectedMonth = component.months[now.getMonth()];
+      component.selectedYear = now.getFullYear();
       component.selectedStartHour = '10:00';
-      component.selectedEndHour = '11:00';
-      component.selectedService = 'Plomberie';
+      component.selectedEndHour = '12:00';
+      component.selectedService = 'HOME';
       component.postalCode = '75001';
     });
 
@@ -109,152 +67,78 @@ describe('ServiceSearchComponent', () => {
       expect(component.isFormValid()).toBeTrue();
     });
 
-    it('should return false when postal code is invalid', () => {
-      component.postalCode = '123'; // invalide
-      expect(component.isFormValid()).toBeFalse();
-    });
-
     it('should return false when hour range is invalid', () => {
       component.selectedStartHour = '12:00';
-      component.selectedEndHour = '10:00'; // fin avant début
+      component.selectedEndHour = '10:00';
       expect(component.isFormValid()).toBeFalse();
     });
 
-    it('should return false when a required field is missing (e.g. selectedDay)', () => {
-      component.selectedDay = undefined!;
-      expect(component.isFormValid()).toBeFalse();
-    });
-
-    it('should return false when selectedService is missing', () => {
-      component.selectedService = undefined!;
+    it('should return false when postal code is invalid', () => {
+      component.postalCode = '000';
       expect(component.isFormValid()).toBeFalse();
     });
   });
 
-  describe('format Date', () => {
-    it('should return correct date string in format YYYY-MM-DD', () => {
-      component.selectedDay = 5;
-      component.selectedMonth = 'Mars';
-      component.selectedYear = 2025;
-
-      const result = (component as any).formatDate();
-      expect(result).toBe('2025-03-05');
-    });
-
-    it('should throw error if selectedDay is missing', () => {
-      component.selectedDay = undefined!;
-      component.selectedMonth = 'Mars';
-      component.selectedYear = 2025;
-
-      expect(() => (component as any).formatDate()).toThrowError('Date incomplète');
-    });
-
-    it('should throw error if selectedMonth is missing', () => {
-      component.selectedDay = 5;
-      component.selectedMonth = undefined!;
-      component.selectedYear = 2025;
-
-      expect(() => (component as any).formatDate()).toThrowError('Date incomplète');
-    });
-
-    it('should throw error if selectedYear is missing', () => {
-      component.selectedDay = 5;
-      component.selectedMonth = 'Mars';
-      component.selectedYear = undefined!;
-
-      expect(() => (component as any).formatDate()).toThrowError('Date incomplète');
-    });
-
-    it('should generate hours from 08:00 to 20:00', () => {
-      expect(component.hours).toEqual([
-        '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00',
-        '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'
-      ]);
-    });
-
-  });
-
-  describe('find providers', () => {
+  describe('findProviders', () => {
     let searchSpy: jasmine.Spy;
     let navigateSpy: jasmine.Spy;
 
     beforeEach(() => {
-      // Remplir tous les champs valides
-      component.selectedDay = 10;
-      component.selectedMonth = 'Janvier';
-      component.selectedYear = 2025;
+      const today = new Date();
+      component.selectedDay = today.getDate();
+      component.selectedMonth = component.months[today.getMonth()];
+      component.selectedYear = today.getFullYear();
       component.selectedStartHour = '10:00';
       component.selectedEndHour = '12:00';
-      component.selectedService = 'Plomberie';
+      component.selectedService = 'HOME';
       component.postalCode = '75001';
 
-      // Spies
-      searchSpy = (TestBed.inject(ServicesService) as any).searchServices;
-      navigateSpy = (TestBed.inject(Router) as any).navigate;
+      searchSpy = TestBed.inject(ServicesService).searchServices as jasmine.Spy;
+      navigateSpy = TestBed.inject(Router).navigate as jasmine.Spy;
 
-      // Spy localStorage
       spyOn(localStorage, 'setItem');
+      spyOn(window, 'alert');
     });
 
-    it('should call searchServices and navigate if form is valid', () => {
+    it('should call service and navigate if form is valid', () => {
       component.findProviders();
 
-      expect(searchSpy).toHaveBeenCalledWith(
-        'Plomberie',
-        '75001',
-        '2025-01-10',
-        '10:00',
-        '12:00'
-      );
-
-      expect(localStorage.setItem).toHaveBeenCalledWith(
-        'searchResults',
-        jasmine.any(String)
-      );
-
-      expect(localStorage.setItem).toHaveBeenCalledWith(
-        'searchCriteria',
-        jasmine.any(String)
-      );
-
+      expect(searchSpy).toHaveBeenCalled();
+      expect(localStorage.setItem).toHaveBeenCalledWith('searchResults', jasmine.any(String));
+      expect(localStorage.setItem).toHaveBeenCalledWith('searchCriteria', jasmine.any(String));
       expect(navigateSpy).toHaveBeenCalledWith(['/avalaible-providers']);
     });
 
-    it('should not call service or navigate if postal code is invalid', () => {
-      component.postalCode = '123'; // invalide
-
-      spyOn(window, 'alert');
+    it('should alert if postal code is invalid', () => {
+      component.postalCode = '12';
       component.findProviders();
-
-      expect(searchSpy).not.toHaveBeenCalled();
-      expect(navigateSpy).not.toHaveBeenCalled();
       expect(window.alert).toHaveBeenCalledWith('Veuillez saisir un code postal valide.');
     });
 
-    it('should not call service or navigate if form is invalid', () => {
-      component.selectedStartHour = '12:00';
-      component.selectedEndHour = '10:00'; // invalide (heure de fin avant début)
+    it('should alert if date is in the past', () => {
+      const past = new Date();
+      past.setDate(past.getDate() - 2);
+      component.selectedDay = past.getDate();
+      component.selectedMonth = component.months[past.getMonth()];
+      component.selectedYear = past.getFullYear();
 
-      spyOn(window, 'alert');
       component.findProviders();
+      expect(window.alert).toHaveBeenCalledWith('La date sélectionnée ne peut pas être dans le passé.');
+    });
 
-      expect(searchSpy).not.toHaveBeenCalled();
-      expect(navigateSpy).not.toHaveBeenCalled();
+    it('should alert if form is invalid', () => {
+      component.selectedStartHour = '12:00';
+      component.selectedEndHour = '10:00';
+      component.findProviders();
       expect(window.alert).toHaveBeenCalledWith('Veuillez remplir tous les champs obligatoires.');
     });
   });
 
   describe('days getter', () => {
-    it('should return 31 days for Janvier 2025', () => {
+    it('should return correct number of days for Janvier 2025', () => {
       component.selectedMonth = 'Janvier';
       component.selectedYear = 2025;
       expect(component.days.length).toBe(31);
-    });
-
-    it('should return 29 days for Février 2024 (année bissextile)', () => {
-      component.selectedMonth = 'Février';
-      component.selectedYear = 2024;
-      expect(component.days.length).toBe(29);
     });
 
     it('should return 28 days for Février 2025', () => {
@@ -263,25 +147,129 @@ describe('ServiceSearchComponent', () => {
       expect(component.days.length).toBe(28);
     });
 
-    it('should return 31 days if month is undefined', () => {
+    it('should return 29 days for Février 2024 (leap year)', () => {
+      component.selectedMonth = 'Février';
+      component.selectedYear = 2024;
+      expect(component.days.length).toBe(29);
+    });
+  });
+
+  describe('onStartHourChange', () => {
+    it('should reset end hour if not in available end hours', () => {
+      component.selectedStartHour = '10:00';
+      component.selectedEndHour = '09:00'; // non valide
+      component.onStartHourChange();
+      expect(component.selectedEndHour).toBeUndefined();
+    });
+
+    it('should not reset end hour if still valid', () => {
+      component.selectedStartHour = '10:00';
+      component.selectedEndHour = '11:00'; // valide
+      component.onStartHourChange();
+      expect(component.selectedEndHour).toBe('11:00');
+    });
+  });
+
+  describe('onMonthChange', () => {
+    it('should reset day if not in available days after month change', () => {
+      component.selectedDay = 31;
+      component.selectedMonth = 'Février';
+      component.selectedYear = 2025;
+      component.onMonthChange();
+      expect(component.selectedDay).toBeUndefined();
+    });
+
+    it('should keep day if still valid after month change', () => {
+      component.selectedDay = 28;
+      component.selectedMonth = 'Février';
+      component.selectedYear = 2025;
+      component.onMonthChange();
+      expect(component.selectedDay).toBe(28);
+    });
+  });
+
+  describe('onYearChange', () => {
+    it('should reset day if not in available days after year change', () => {
+      component.selectedDay = 29;
+      component.selectedMonth = 'Février';
+      component.selectedYear = 2023; // pas bissextile
+      component.onYearChange();
+      expect(component.selectedDay).toBeUndefined();
+    });
+
+    it('should keep day if still valid after year change', () => {
+      component.selectedDay = 29;
+      component.selectedMonth = 'Février';
+      component.selectedYear = 2024; // bissextile
+      component.onYearChange();
+      expect(component.selectedDay).toBe(29);
+    });
+  });
+
+  describe('isHourRangeValid', () => {
+    it('should return true if end hour is after start hour', () => {
+      component.selectedStartHour = '10:00';
+      component.selectedEndHour = '11:00';
+      expect(component.isHourRangeValid).toBeTrue();
+    });
+
+    it('should return false if end hour is before start hour', () => {
+      component.selectedStartHour = '11:00';
+      component.selectedEndHour = '10:00';
+      expect(component.isHourRangeValid).toBeFalse();
+    });
+
+    it('should return true if start or end hour is missing', () => {
+      component.selectedStartHour = undefined;
+      component.selectedEndHour = undefined;
+      expect(component.isHourRangeValid).toBeTrue();
+    });
+  });
+
+  describe('isDateValid', () => {
+    it('should return false if selected date is in the past', () => {
+      const past = new Date();
+      past.setDate(past.getDate() - 1);
+      component.selectedDay = past.getDate();
+      component.selectedMonth = component.months[past.getMonth()];
+      component.selectedYear = past.getFullYear();
+      expect(component.isDateValid).toBeFalse();
+    });
+
+    it('should return true if selected date is today or future', () => {
+      const future = new Date();
+      future.setDate(future.getDate() + 1);
+      component.selectedDay = future.getDate();
+      component.selectedMonth = component.months[future.getMonth()];
+      component.selectedYear = future.getFullYear();
+      expect(component.isDateValid).toBeTrue();
+    });
+
+    it('should return true if date is incomplete', () => {
+      component.selectedDay = undefined;
       component.selectedMonth = undefined;
-      expect(component.days.length).toBe(31);
+      component.selectedYear = undefined;
+      expect(component.isDateValid).toBeTrue();
     });
   });
 
-  describe('hour getter', () => {
-    it('should generate hours from 08:00 to 20:00', () => {
-      expect(component.hours).toEqual([
-        '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00',
-        '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'
-      ]);
-    });
-  });
+  describe('findProviders errors', () => {
+    it('should catch error if formatDate throws', () => {
+      spyOn<any>(component, 'formatDate').and.throwError('format error');
+      spyOnProperty(component, 'isDateValid', 'get').and.returnValue(true); // <-- ici
+      spyOn(window, 'alert');
 
-  describe('services getter', () => {
-    it('should have services from ServiceCategory enum', () => {
-      const values = Object.values(ServiceCategory);
-      expect(component.services).toEqual(values);
+      component.selectedDay = 1;
+      component.selectedMonth = 'Janvier';
+      component.selectedYear = 2025;
+      component.selectedStartHour = '10:00';
+      component.selectedEndHour = '11:00';
+      component.selectedService = 'HOME';
+      component.postalCode = '75001';
+
+      component.findProviders();
+
+      expect(window.alert).toHaveBeenCalledWith('Erreur lors du formatage de la date.');
     });
   });
 

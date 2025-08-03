@@ -14,7 +14,6 @@ export class User {
   /** Identifiant unique de l'utilisateur */
   idUser!: number;
 
-
   /** Prénom de l'utilisateur */
   firstName!: string;
 

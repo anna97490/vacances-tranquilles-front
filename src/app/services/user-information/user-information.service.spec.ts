@@ -12,6 +12,7 @@ describe('UserInformationService', () => {
       imports: [HttpClientTestingModule],
       providers: [UserInformationService]
     });
+
     service = TestBed.inject(UserInformationService);
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -45,6 +46,7 @@ describe('UserInformationService', () => {
 
     const req = httpMock.expectOne('http://localhost:8080/api/users/1');
     expect(req.request.method).toBe('GET');
+    expect(req.request.headers.has('Authorization')).toBeTrue();
     req.flush(mockUser);
   });
 
@@ -67,6 +69,7 @@ describe('UserInformationService', () => {
 
     const req = httpMock.expectOne('http://localhost:8080/api/users/profile');
     expect(req.request.method).toBe('GET');
+    expect(req.request.headers.has('Authorization')).toBeTrue();
     req.flush(mockUser);
   });
 
@@ -109,6 +112,45 @@ describe('UserInformationService', () => {
     const req = httpMock.expectOne('http://localhost:8080/api/users/batch');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ userIds });
+    expect(req.request.headers.has('Authorization')).toBeTrue();
     req.flush(mockUsers);
   });
-}); 
+
+  it('should use fallback token when localStorage token is missing', () => {
+    spyOn(localStorage, 'getItem').and.returnValue(null);
+
+    const mockUser = new User({
+      idUser: 3,
+      firstName: 'Fallback',
+      lastName: 'User',
+      email: 'fallback@example.com',
+      role: UserRole.CLIENT,
+      phoneNumber: '0123000000',
+      address: 'Nowhere',
+      city: 'Paris',
+      postalCode: 75000
+    });
+
+    service.getUserById(3).subscribe(user => {
+      expect(user).toEqual(mockUser);
+    });
+
+    const req = httpMock.expectOne('http://localhost:8080/api/users/3');
+    expect(req.request.method).toBe('GET');
+    expect(req.request.headers.get('Authorization')).toContain('Bearer');
+    req.flush(mockUser);
+  });
+
+  it('should handle 404 error on getUserById', () => {
+    service.getUserById(999).subscribe({
+      next: () => fail('Should have failed with 404'),
+      error: (error) => {
+        expect(error.status).toBe(404);
+        expect(error.statusText).toBe('Not Found');
+      }
+    });
+
+    const req = httpMock.expectOne('http://localhost:8080/api/users/999');
+    req.flush('User not found', { status: 404, statusText: 'Not Found' });
+  });
+});
