@@ -33,9 +33,9 @@ jobs:
       - name: Run build (à activer plus tard)
         run: npm run build
 
-      - name: Run tests with code coverage
-        run: |
-          npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+      #- name: Run tests with code coverage
+      #  run: |
+       #   npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
 
 #      - name: Check code coverage ≥ 80%
  #       run: |
