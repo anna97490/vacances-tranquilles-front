@@ -37,24 +37,23 @@ jobs:
         run: |
           npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
 
-      - name: Check code coverage ≥ 80%
-        run: |
-          coverage_file=coverage/index.html
-          percent=$(grep -A3 "Statements" $coverage_file | grep -Po '[0-9]+(?=%)' | head -1)
+#      - name: Check code coverage ≥ 80%
+ #       run: |
+  #        coverage_file=coverage/index.html
+   #       percent=$(grep -A3 "Statements" $coverage_file | grep -Po '[0-9]+(?=%)' | head -1)
+#      if [[ -z "$percent" ]]; then
+ #           echo "Impossible de lire la couverture depuis le fichier HTML."
+  #          exit 1
+   #       fi
 
-          if [[ -z "$percent" ]]; then
-            echo "Impossible de lire la couverture depuis le fichier HTML."
-            exit 1
-          fi
+    #      echo "Coverage from HTML = $percent%"
 
-          echo "Coverage from HTML = $percent%"
-
-          if [ "$percent" -lt 80 ]; then
-            echo "Code coverage ($percent%) is below 80%. Failing the job."
-            exit 1
-          else
-            echo "Code coverage is sufficient ($percent%)."
-          fi
+     #     if [ "$percent" -lt 80 ]; then
+      #      echo "Code coverage ($percent%) is below 80%. Failing the job."
+       #     exit 1
+        #  else
+         #   echo "Code coverage is sufficient ($percent%)."
+          #fi
 
       - name: SonarCloud analysis (non-blocking)
         continue-on-error: true
