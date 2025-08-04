@@ -41,7 +41,7 @@ describe('LoginFormComponent', () => {
   // Mock data pour les tests
   const validLoginData = {
     email: 'test@example.com',
-    password: 'password123'
+    userSecret: 'password123'
   };
 
   const mockLoginResponse = {
@@ -130,14 +130,14 @@ describe('LoginFormComponent', () => {
 
     it('should require password field', () => {
       // Arrange
-      const passwordControl = component.form.get('password');
+      const userSecretControl = component.form.get('userSecret');
       
       // Act & Assert
-      passwordControl?.setValue('');
-      expect(passwordControl?.errors?.['required']).toBeTruthy();
+      userSecretControl?.setValue('');
+      expect(userSecretControl?.errors?.['required']).toBeTruthy();
       
-      passwordControl?.setValue('password123');
-      expect(passwordControl?.errors?.['required']).toBeFalsy();
+      userSecretControl?.setValue('password123');
+      expect(userSecretControl?.errors?.['required']).toBeFalsy();
     });
   });
 
@@ -153,7 +153,10 @@ describe('LoginFormComponent', () => {
       tick();
       
       // Assert
-      expect(loginService.performLogin).toHaveBeenCalledWith(validLoginData, component.urlApi);
+      expect(loginService.performLogin).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123'
+      }, component.urlApi);
       expect(loginService.handleLoginSuccess).toHaveBeenCalledWith(mockLoginResponse);
       verifyNoAlertsShown(spies);
     }));
@@ -175,7 +178,10 @@ describe('LoginFormComponent', () => {
       tick();
       
       // Assert
-      expect(loginService.performLogin).toHaveBeenCalledWith(validLoginData, component.urlApi);
+      expect(loginService.performLogin).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123'
+      }, component.urlApi);
       expect(loginService.handleLoginError).toHaveBeenCalledWith(errorResponse);
       expect(loginValidationService.resetPasswordField).toHaveBeenCalledWith(component.form);
       verifyNoAlertsShown(spies);
@@ -276,7 +282,10 @@ describe('LoginFormComponent', () => {
       tick();
       
       // Assert
-      expect(loginService.performLogin).toHaveBeenCalledWith(validLoginData, component.urlApi);
+      expect(loginService.performLogin).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123'
+      }, component.urlApi);
       expect(loginService.handleLoginSuccess).toHaveBeenCalledWith(mockLoginResponse);
       verifyNoAlertsShown(spies);
     }));
@@ -297,7 +306,10 @@ describe('LoginFormComponent', () => {
       tick();
       
       // Assert
-      expect(loginService.performLogin).toHaveBeenCalledWith(validLoginData, component.urlApi);
+      expect(loginService.performLogin).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123'
+      }, component.urlApi);
       expect(loginService.handleLoginError).toHaveBeenCalledWith(errorResponse);
       verifyNoAlertsShown(spies);
     }));

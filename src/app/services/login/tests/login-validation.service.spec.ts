@@ -14,7 +14,7 @@ describe('LoginValidationService', () => {
     
     form = fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      userSecret: ['', [Validators.required, Validators.minLength(6)]]
     });
 
     // Supprimer tous les logs console pour chaque test
@@ -31,7 +31,7 @@ describe('LoginValidationService', () => {
     it('should return true for valid form', () => {
       form.patchValue({
         email: 'test@example.com',
-        password: 'password123'
+        userSecret: 'password123'
       });
       
       expect(service.isFormValid(form)).toBeTruthy();
@@ -40,7 +40,7 @@ describe('LoginValidationService', () => {
     it('should return false for invalid form', () => {
       form.patchValue({
         email: 'invalid-email',
-        password: '123'
+        userSecret: '123'
       });
       
       expect(service.isFormValid(form)).toBeFalsy();
@@ -66,8 +66,8 @@ describe('LoginValidationService', () => {
 
     it('should return password required error', () => {
       form.get('email')?.setValue('test@example.com');
-      form.get('password')?.setValue('');
-      form.get('password')?.markAsTouched();
+      form.get('userSecret')?.setValue('');
+      form.get('userSecret')?.markAsTouched();
       
       const message = service.getValidationErrorMessage(form);
       expect(message).toBe('Le mot de passe est requis');
@@ -75,8 +75,8 @@ describe('LoginValidationService', () => {
 
     it('should return password minlength error', () => {
       form.get('email')?.setValue('test@example.com');
-      form.get('password')?.setValue('123');
-      form.get('password')?.markAsTouched();
+      form.get('userSecret')?.setValue('123');
+      form.get('userSecret')?.markAsTouched();
       
       const message = service.getValidationErrorMessage(form);
       expect(message).toBe('Le mot de passe doit contenir au moins 6 caractères');
@@ -84,7 +84,7 @@ describe('LoginValidationService', () => {
 
     it('should return default error message', () => {
       form.get('email')?.setValue('test@example.com');
-      form.get('password')?.setValue('password123');
+      form.get('userSecret')?.setValue('password123');
       form.get('email')?.setErrors({ 'customError': true });
       
       const message = service.getValidationErrorMessage(form);
@@ -94,13 +94,13 @@ describe('LoginValidationService', () => {
 
   describe('resetPasswordField', () => {
     it('should reset password field', () => {
-      form.get('password')?.setValue('test123');
-      form.get('password')?.markAsTouched();
+      form.get('userSecret')?.setValue('test123');
+      form.get('userSecret')?.markAsTouched();
       
       service.resetPasswordField(form);
       
-      expect(form.get('password')?.value).toBe('');
-      expect(form.get('password')?.touched).toBeFalsy();
+      expect(form.get('userSecret')?.value).toBe('');
+      expect(form.get('userSecret')?.touched).toBeFalsy();
     });
 
     it('should handle missing password field', () => {
@@ -116,13 +116,13 @@ describe('LoginValidationService', () => {
     it('should mark all fields as touched', () => {
       form.patchValue({
         email: 'invalid-email',
-        password: '123'
+        userSecret: '123'
       });
       
       service.markAllFieldsAsTouched(form);
       
       expect(form.get('email')?.touched).toBeTruthy();
-      expect(form.get('password')?.touched).toBeTruthy();
+      expect(form.get('userSecret')?.touched).toBeTruthy();
     });
   });
 });

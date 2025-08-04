@@ -27,7 +27,7 @@ describe('LoginFormConfigService', () => {
 
     it('should create form with email and password controls', () => {
       expect(form.get('email')).toBeTruthy();
-      expect(form.get('password')).toBeTruthy();
+      expect(form.get('userSecret')).toBeTruthy();
     });
 
     it('should have required validators on email', () => {
@@ -45,23 +45,23 @@ describe('LoginFormConfigService', () => {
     });
 
     it('should have required validator on password', () => {
-      const passwordControl = form.get('password');
-      passwordControl?.setValue('');
+      const userSecretControl = form.get('userSecret');
+      userSecretControl?.setValue('');
       
-      expect(passwordControl?.hasError('required')).toBeTruthy();
+      expect(userSecretControl?.hasError('required')).toBeTruthy();
     });
 
     it('should have minlength validator on password', () => {
-      const passwordControl = form.get('password');
-      passwordControl?.setValue('123');
+      const userSecretControl = form.get('userSecret');
+      userSecretControl?.setValue('123');
       
-      expect(passwordControl?.hasError('minlength')).toBeTruthy();
+      expect(userSecretControl?.hasError('minlength')).toBeTruthy();
     });
 
     it('should accept valid email and password', () => {
       form.patchValue({
         email: 'test@example.com',
-        password: 'password123'
+        userSecret: 'password123'
       });
       
       expect(form.valid).toBeTruthy();
@@ -76,7 +76,7 @@ describe('LoginFormConfigService', () => {
     it('should create payload with form values', () => {
       form.patchValue({
         email: 'test@example.com',
-        password: 'password123'
+        userSecret: 'password123'
       });
       
       const payload = service.createLoginPayload(form);
