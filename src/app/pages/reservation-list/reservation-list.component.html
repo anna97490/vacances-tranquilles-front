@@ -1,0 +1,139 @@
+<div class="reservation-list-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1 class="page-title">Liste des réservations</h1>
+    </div>
+    
+    <div class="search-filter-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput 
+               [formControl]="searchControl"
+               placeholder="Rechercher..."
+               type="text">
+      </mat-form-field>
+      
+      <button mat-stroked-button class="filter-button">
+        <mat-icon>filter_list</mat-icon>
+        Filtrer
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter/Sort Buttons -->
+  <div class="filter-sort-section">
+    <mat-chip-listbox 
+      class="status-filters"
+      (selectionChange)="onStatusFilterChange($event)"
+      [value]="currentFilters.status ? [currentFilters.status] : []">
+      
+      <mat-chip-option value="all" class="filter-chip">
+        Toutes les réservations
+      </mat-chip-option>
+      
+      <mat-chip-option value="CONFIRMEE" class="filter-chip">
+        Confirmées
+      </mat-chip-option>
+      
+      <mat-chip-option value="EN_ATTENTE" class="filter-chip">
+        En attente
+      </mat-chip-option>
+      
+      <mat-chip-option value="ANNULEE" class="filter-chip">
+        Annulées
+      </mat-chip-option>
+    </mat-chip-listbox>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Chargement des réservations...</p>
+  </div>
+
+  <!-- Reservation List -->
+  <div *ngIf="!loading" class="reservation-list">
+    <mat-card *ngFor="let reservation of reservations" class="reservation-card">
+      <div class="reservation-header">
+        <div class="user-info">
+          <div class="avatar-container">
+            <mat-icon class="avatar-icon">person</mat-icon>
+          </div>
+          
+          <div class="user-details">
+            <div class="user-name">
+              {{ getFullName(reservation.customer) }}
+              <mat-icon class="verified-icon">check_circle</mat-icon>
+            </div>
+            <div class="reservation-date">
+              {{ formatDate(reservation.reservationDate) }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="reservation-status">
+          <span class="status-badge" [ngClass]="getStatusClass(reservation.status)">
+            {{ getStatusDisplay(reservation.status) }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="reservation-content">
+        <div class="service-info">
+          <h3 class="service-title">{{ reservation.service?.title || 'Service non spécifié' }}</h3>
+          <p class="service-description">{{ reservation.service?.description || 'Aucune description disponible' }}</p>
+        </div>
+        
+        <div class="reservation-details">
+          <div class="detail-item">
+            <mat-icon class="detail-icon">calendar_today</mat-icon>
+            <span class="detail-text">
+              Du {{ formatDate(reservation.startDate) }} au {{ formatDate(reservation.endDate) }}
+            </span>
+          </div>
+          
+          <div class="detail-item">
+            <mat-icon class="detail-icon">euro</mat-icon>
+            <span class="detail-text">{{ formatPrice(reservation.totalPrice) }}</span>
+          </div>
+        </div>
+        
+        <div *ngIf="reservation.comment" class="reservation-comment">
+          <p class="comment-text">{{ reservation.comment }}</p>
+        </div>
+      </div>
+      
+      <div class="reservation-actions">
+        <button mat-button class="action-button">
+          <mat-icon>visibility</mat-icon>
+          Voir détails
+        </button>
+        
+        <button mat-button class="action-button">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && reservations.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">event_busy</mat-icon>
+    <h3>Aucune réservation trouvée</h3>
+    <p>Aucune réservation ne correspond à vos critères de recherche.</p>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && reservations.length > 0" class="pagination-container">
+    <mat-paginator 
+      [length]="pagination.totalItems"
+      [pageSize]="pagination.itemsPerPage"
+      [pageIndex]="pagination.currentPage - 1"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+      class="pagination">
+    </mat-paginator>
+  </div>
+</div> 

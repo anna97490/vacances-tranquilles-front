@@ -4,6 +4,11 @@ import { HomeComponent } from './pages/home/home.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
+  { 
+    path: 'reservations', 
+    loadComponent: () => import('./pages/reservation-list/reservation-list.component')
+      .then(m => m.ReservationListComponent)
+  },
   { path: 'terms-and-conditions', 
     children : [
       {

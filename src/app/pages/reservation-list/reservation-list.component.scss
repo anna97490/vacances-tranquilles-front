@@ -1,0 +1,474 @@
+// Variables de couleurs basées sur la maquette
+$primary-color: #FFA101; // Orange principal
+$background-color: #F8F6F2; // Beige clair
+$text-primary: #2C2C2C; // Gris foncé
+$text-secondary: #666666; // Gris moyen
+$white: #FFFFFF;
+$border-color: #E0E0E0;
+$success-color: #4CAF50;
+$warning-color: #FF9800;
+$error-color: #F44336;
+
+.reservation-list-container {
+  background-color: $background-color;
+  min-height: 100vh;
+  padding: 24px;
+  font-family: 'Roboto', sans-serif;
+
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .title-section {
+      .page-title {
+        color: $text-primary;
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1.2;
+      }
+    }
+
+    .search-filter-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .search-field {
+        min-width: 300px;
+        
+        ::ng-deep .mat-mdc-form-field {
+          .mat-mdc-text-field-wrapper {
+            background-color: $white;
+            border-radius: 8px;
+            border: 1px solid $border-color;
+            
+            &:hover {
+              border-color: $primary-color;
+            }
+          }
+          
+          .mat-mdc-form-field-focus-overlay {
+            background-color: transparent;
+          }
+          
+          &.mat-focused .mat-mdc-text-field-wrapper {
+            border-color: $primary-color;
+            box-shadow: 0 0 0 2px rgba(255, 161, 1, 0.1);
+          }
+        }
+      }
+
+      .filter-button {
+        border-radius: 8px;
+        border: 1px solid $border-color;
+        color: $text-primary;
+        background-color: $white;
+        padding: 8px 16px;
+        height: 48px;
+        
+        &:hover {
+          background-color: rgba(255, 161, 1, 0.05);
+          border-color: $primary-color;
+        }
+        
+        mat-icon {
+          margin-right: 8px;
+          color: $primary-color;
+        }
+      }
+    }
+  }
+
+  .filter-sort-section {
+    margin-bottom: 24px;
+
+    .status-filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      ::ng-deep .mdc-evolution-chip {
+        border-radius: 20px;
+        background-color: $white;
+        border: 1px solid $border-color;
+        color: $text-secondary;
+        font-weight: 500;
+        padding: 8px 16px;
+        height: auto;
+        min-height: 36px;
+        
+        &:hover {
+          background-color: rgba(255, 161, 1, 0.05);
+        }
+        
+        &.mdc-evolution-chip--selected {
+          background-color: $primary-color;
+          color: $white;
+          border-color: $primary-color;
+        }
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: $text-secondary;
+    
+    p {
+      margin-top: 16px;
+      font-size: 16px;
+    }
+  }
+
+  .reservation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .reservation-card {
+      background-color: $white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid $border-color;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+      }
+
+      .reservation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid #F0F0F0;
+
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .avatar-container {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #F5F5F5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .avatar-icon {
+              color: $text-secondary;
+              font-size: 24px;
+              width: 24px;
+              height: 24px;
+            }
+          }
+
+          .user-details {
+            .user-name {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              color: $text-primary;
+              font-weight: 600;
+              font-size: 16px;
+              margin-bottom: 4px;
+
+              .verified-icon {
+                color: $primary-color;
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+              }
+            }
+
+            .reservation-date {
+              color: $text-secondary;
+              font-size: 14px;
+            }
+          }
+        }
+
+        .reservation-status {
+          .status-badge {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            
+            &.status-confirmed {
+              background-color: rgba(76, 175, 80, 0.1);
+              color: $success-color;
+            }
+            
+            &.status-pending {
+              background-color: rgba(255, 152, 0, 0.1);
+              color: $warning-color;
+            }
+            
+            &.status-cancelled {
+              background-color: rgba(244, 67, 54, 0.1);
+              color: $error-color;
+            }
+            
+            &.status-completed {
+              background-color: rgba(33, 150, 243, 0.1);
+              color: #2196F3;
+            }
+            
+            &.status-default {
+              background-color: rgba(158, 158, 158, 0.1);
+              color: #9E9E9E;
+            }
+          }
+        }
+      }
+
+      .reservation-content {
+        padding: 16px 24px;
+
+        .service-info {
+          margin-bottom: 16px;
+
+          .service-title {
+            color: $text-primary;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+          }
+
+          .service-description {
+            color: $text-secondary;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+          }
+        }
+
+        .reservation-details {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-bottom: 16px;
+
+          .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .detail-icon {
+              color: $primary-color;
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+            }
+
+            .detail-text {
+              color: $text-primary;
+              font-size: 14px;
+              font-weight: 500;
+            }
+          }
+        }
+
+        .reservation-comment {
+          background-color: #F8F9FA;
+          border-radius: 8px;
+          padding: 12px;
+          border-left: 4px solid $primary-color;
+
+          .comment-text {
+            color: $text-secondary;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+            font-style: italic;
+          }
+        }
+      }
+
+      .reservation-actions {
+        display: flex;
+        gap: 8px;
+        padding: 16px 24px;
+        border-top: 1px solid #F0F0F0;
+        background-color: #FAFAFA;
+
+        .action-button {
+          color: $primary-color;
+          font-weight: 500;
+          
+          &:hover {
+            background-color: rgba(255, 161, 1, 0.05);
+          }
+          
+          mat-icon {
+            margin-right: 4px;
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: $text-secondary;
+
+    .empty-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: $text-secondary;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      color: $text-primary;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+
+    p {
+      font-size: 16px;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+
+    ::ng-deep .mat-mdc-paginator {
+      background-color: transparent;
+      
+      .mat-mdc-paginator-container {
+        justify-content: center;
+      }
+      
+      .mat-mdc-paginator-page-size {
+        display: none;
+      }
+      
+      .mat-mdc-paginator-navigation-previous,
+      .mat-mdc-paginator-navigation-next {
+        color: $primary-color;
+        
+        &:disabled {
+          color: $text-secondary;
+        }
+      }
+      
+      .mat-mdc-paginator-range-actions {
+        .mat-mdc-paginator-navigation-previous,
+        .mat-mdc-paginator-navigation-next {
+          background-color: $white;
+          border: 1px solid $border-color;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          
+          &:hover:not(:disabled) {
+            background-color: rgba(255, 161, 1, 0.05);
+            border-color: $primary-color;
+          }
+        }
+      }
+      
+      .mat-mdc-paginator-range-label {
+        color: $text-secondary;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .reservation-list-container {
+    padding: 16px;
+
+    .header-section {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+
+      .search-filter-section {
+        flex-direction: column;
+        
+        .search-field {
+          min-width: auto;
+          width: 100%;
+        }
+      }
+    }
+
+    .filter-sort-section {
+      .status-filters {
+        justify-content: center;
+      }
+    }
+
+    .reservation-list {
+      .reservation-card {
+        .reservation-header {
+          flex-direction: column;
+          gap: 12px;
+          align-items: flex-start;
+
+          .reservation-status {
+            align-self: flex-end;
+          }
+        }
+
+        .reservation-actions {
+          flex-direction: column;
+          gap: 8px;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reservation-card {
+  animation: fadeIn 0.3s ease-out;
+} 
