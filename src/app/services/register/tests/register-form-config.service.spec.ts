@@ -76,8 +76,8 @@ describe('RegisterFormConfigService', () => {
         expect(service.getFieldType('email', false)).toBe('email');
       });
 
-      it('devrait retourner "password" pour le champ password', () => {
-        expect(service.getFieldType('password', false)).toBe('password');
+      it('devrait retourner "password" pour le champ userSecret', () => {
+        expect(service.getFieldType('userSecret', false)).toBe('password');
       });
 
       it('devrait retourner "text" pour le champ siretSiren', () => {
@@ -116,7 +116,7 @@ describe('RegisterFormConfigService', () => {
       const form = service.createRegistrationForm();
       
       const expectedControls = [
-        'firstName', 'lastName', 'email', 'password',
+        'firstName', 'lastName', 'email', 'userSecret',
         'phoneNumber', 'address', 'city', 'postalCode',
         'companyName', 'siretSiren'
       ];
@@ -130,7 +130,7 @@ describe('RegisterFormConfigService', () => {
       const form = service.createRegistrationForm();
       
       const requiredFields = [
-        'firstName', 'lastName', 'email', 'password',
+        'firstName', 'lastName', 'email', 'userSecret',
         'phoneNumber', 'address', 'city', 'postalCode'
       ];
       
@@ -152,15 +152,27 @@ describe('RegisterFormConfigService', () => {
       expect(emailControl?.valid).toBeTruthy();
     });
 
-    it('should have minlength validator on password field', () => {
+    it('should have minlength validator on userSecret field', () => {
       const form = service.createRegistrationForm();
-      const passwordControl = form.get('password');
+      const userSecretControl = form.get('userSecret');
       
-      passwordControl?.setValue('123');
-      expect(passwordControl?.hasError('minlength')).toBeTruthy();
+      userSecretControl?.setValue('123');
+      expect(userSecretControl?.hasError('minlength')).toBeTruthy();
       
-      passwordControl?.setValue('password123');
-      expect(passwordControl?.valid).toBeTruthy();
+      userSecretControl?.setValue('Password123!');
+      expect(userSecretControl?.valid).toBeTruthy();
+    });
+
+    it('should have pattern validator on userSecret field', () => {
+      const form = service.createRegistrationForm();
+      const userSecretControl = form.get('userSecret');
+      
+      // Test pattern validation
+      userSecretControl?.setValue('password'); // Pas de majuscule, chiffre ou caractère spécial
+      expect(userSecretControl?.hasError('pattern')).toBeTruthy();
+      
+      userSecretControl?.setValue('Password123!');
+      expect(userSecretControl?.valid).toBeTruthy();
     });
 
     it('should have pattern validator on postalCode field', () => {
@@ -286,7 +298,7 @@ describe('RegisterFormConfigService', () => {
 
     it('should return true for common fields regardless of user type', () => {
       const commonFields = [
-        'firstName', 'lastName', 'email', 'password',
+        'firstName', 'lastName', 'email', 'userSecret',
         'phoneNumber', 'address', 'city', 'postalCode'
       ];
       
@@ -299,6 +311,28 @@ describe('RegisterFormConfigService', () => {
     it('should return true for unknown fields', () => {
       expect(service.shouldShowField('unknownField', true)).toBeTruthy();
       expect(service.shouldShowField('unknownField', false)).toBeTruthy();
+    });
+  });
+
+  describe('getFieldValidators', () => {
+    it('should return correct validators for userSecret field', () => {
+      const validators = service.getFieldValidators('userSecret');
+      expect(validators.length).toBe(3); // required, minlength, pattern
+    });
+
+    it('should return correct validators for email field', () => {
+      const validators = service.getFieldValidators('email');
+      expect(validators.length).toBe(2); // required, email
+    });
+
+    it('should return correct validators for postalCode field', () => {
+      const validators = service.getFieldValidators('postalCode');
+      expect(validators.length).toBe(2); // required, pattern
+    });
+
+    it('should return default validators for unknown field', () => {
+      const validators = service.getFieldValidators('unknownField');
+      expect(validators.length).toBe(1); // required only
     });
   });
 

@@ -51,7 +51,7 @@ describe('RegisterService', () => {
     // Arrange
     const payload = new RegisterPayload();
     payload.email = 'test@example.com';
-    payload.password = 'password123';
+    payload.password = 'Password123!';
     payload.firstName = 'John';
     payload.lastName = 'Doe';
 

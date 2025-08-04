@@ -16,7 +16,7 @@ describe('RegisterValidationService', () => {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      userSecret: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)]],
       phoneNumber: ['', Validators.required],
       address: ['', Validators.required],
       city: ['', Validators.required],
@@ -41,7 +41,7 @@ describe('RegisterValidationService', () => {
         firstName: 'Jean',
         lastName: 'Dupont',
         email: 'jean@test.com',
-        password: 'password123',
+        userSecret: 'Password123!',
         phoneNumber: '0123456789',
         address: '123 rue Test',
         city: 'Paris',
@@ -103,8 +103,8 @@ describe('RegisterValidationService', () => {
         lastName: 'Dupont', 
         email: 'jean@test.com' 
       });
-      form.get('password')?.setValue('');
-      form.get('password')?.markAsTouched();
+      form.get('userSecret')?.setValue('');
+      form.get('userSecret')?.markAsTouched();
       
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Le mot de passe est requis');
@@ -116,10 +116,22 @@ describe('RegisterValidationService', () => {
         lastName: 'Dupont', 
         email: 'jean@test.com' 
       });
-      form.get('password')?.setValue('123');
+      form.get('userSecret')?.setValue('123');
       
       const message = service.getValidationErrorMessage(form, false);
-      expect(message).toBe('Le mot de passe doit contenir au moins 6 caractères');
+      expect(message).toBe('Le mot de passe doit contenir au moins 8 caractères');
+    });
+
+    it('should return password pattern error', () => {
+      form.patchValue({ 
+        firstName: 'Jean', 
+        lastName: 'Dupont', 
+        email: 'jean@test.com' 
+      });
+      form.get('userSecret')?.setValue('password'); // Pas de majuscule, chiffre ou caractère spécial
+      
+      const message = service.getValidationErrorMessage(form, false);
+      expect(message).toBe('Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial');
     });
 
     it('should return postal code pattern error', () => {
@@ -127,7 +139,7 @@ describe('RegisterValidationService', () => {
         firstName: 'Jean',
         lastName: 'Dupont',
         email: 'jean@test.com',
-        password: 'password123',
+        userSecret: 'Password123!',
         phoneNumber: '0123456789',
         address: '123 rue Test',
         city: 'Paris'
@@ -143,7 +155,7 @@ describe('RegisterValidationService', () => {
         firstName: 'Jean',
         lastName: 'Dupont',
         email: 'jean@test.com',
-        password: 'password123',
+        userSecret: 'Password123!',
         phoneNumber: '0123456789',
         address: '123 rue Test',
         city: 'Paris',
@@ -165,7 +177,7 @@ describe('RegisterValidationService', () => {
         firstName: 'Jean',
         lastName: 'Dupont',
         email: 'jean@test.com',
-        password: 'password123',
+        userSecret: 'Password123!',
         phoneNumber: '0123456789',
         address: '123 rue Test',
         city: 'Paris',
@@ -187,7 +199,7 @@ describe('RegisterValidationService', () => {
         firstName: 'Jean',
         lastName: 'Dupont',
         email: 'jean@test.com',
-        password: 'password123',
+        userSecret: 'Password123!',
         phoneNumber: '0123456789',
         address: '123 rue Test',
         city: 'Paris',
@@ -211,7 +223,7 @@ describe('RegisterValidationService', () => {
         firstName: 'Jean',
         lastName: 'Dupont',
         email: 'jean@test.com',
-        password: 'password123',
+        userSecret: 'Password123!',
         phoneNumber: '0123456789',
         address: '123 rue Test',
         city: 'Paris',
@@ -258,13 +270,13 @@ describe('RegisterValidationService', () => {
 
   describe('resetPasswordField', () => {
     it('should reset password field value and touch state', () => {
-      form.get('password')?.setValue('test-password');
-      form.get('password')?.markAsTouched();
+      form.get('userSecret')?.setValue('test-password');
+      form.get('userSecret')?.markAsTouched();
       
       service.resetPasswordField(form);
       
-      expect(form.get('password')?.value).toBe('');
-      expect(form.get('password')?.untouched).toBeTruthy();
+      expect(form.get('userSecret')?.value).toBe('');
+      expect(form.get('userSecret')?.untouched).toBeTruthy();
     });
 
     it('should handle form without password field gracefully', () => {
@@ -300,8 +312,9 @@ describe('RegisterValidationService', () => {
         { field: 'lastName', error: 'required', expected: 'Le nom est requis' },
         { field: 'email', error: 'required', expected: 'L\'email est requis' },
         { field: 'email', error: 'email', expected: 'Format d\'email invalide' },
-        { field: 'password', error: 'required', expected: 'Le mot de passe est requis' },
-        { field: 'password', error: 'minlength', expected: 'Le mot de passe doit contenir au moins 6 caractères' },
+        { field: 'userSecret', error: 'required', expected: 'Le mot de passe est requis' },
+        { field: 'userSecret', error: 'minlength', expected: 'Le mot de passe doit contenir au moins 8 caractères' },
+        { field: 'userSecret', error: 'pattern', expected: 'Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial' },
         { field: 'phoneNumber', error: 'required', expected: 'Le numéro de téléphone est requis' },
         { field: 'address', error: 'required', expected: 'L\'adresse est requise' },
         { field: 'city', error: 'required', expected: 'La ville est requise' },
@@ -319,7 +332,7 @@ describe('RegisterValidationService', () => {
         firstName: 'Jean',
         lastName: 'Dupont',
         email: 'jean@test.com',
-        password: 'password123',
+        userSecret: 'Password123!',
         phoneNumber: '0123456789',
         address: '123 rue Test',
         city: 'Paris',

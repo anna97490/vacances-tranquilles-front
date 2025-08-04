@@ -11,7 +11,7 @@ describe('RegisterApiBuilderService', () => {
     firstName: 'Jean',
     lastName: 'Dupont',
     email: 'jean.dupont@test.com',
-    password: 'password123',
+    userSecret: 'Password123!',
     phoneNumber: '0123456789',
     address: '123 rue de la Paix',
     city: 'Paris',
@@ -29,7 +29,7 @@ describe('RegisterApiBuilderService', () => {
       firstName: [mockFormData.firstName],
       lastName: [mockFormData.lastName],
       email: [mockFormData.email],
-      password: [mockFormData.password],
+      userSecret: [mockFormData.userSecret],
       phoneNumber: [mockFormData.phoneNumber],
       address: [mockFormData.address],
       city: [mockFormData.city],
@@ -59,7 +59,7 @@ describe('RegisterApiBuilderService', () => {
         firstName: 'Jean',
         lastName: 'Dupont',
         email: 'jean.dupont@test.com',
-        password: 'password123',
+        password: 'Password123!',
         phoneNumber: '0123456789',
         address: '123 rue de la Paix',
         city: 'Paris',
@@ -77,7 +77,7 @@ describe('RegisterApiBuilderService', () => {
         firstName: 'Jean',
         lastName: 'Dupont',
         email: 'jean.dupont@test.com',
-        password: 'password123',
+        password: 'Password123!',
         phoneNumber: '0123456789',
         address: '123 rue de la Paix',
         city: 'Paris',
@@ -108,7 +108,7 @@ describe('RegisterApiBuilderService', () => {
         firstName: [''],
         lastName: [''],
         email: [''],
-        password: [''],
+        userSecret: [''],
         phoneNumber: [''],
         address: [''],
         city: [''],
@@ -149,7 +149,7 @@ describe('RegisterApiBuilderService', () => {
         firstName: ['Jean-François'],
         lastName: ['O\'Connor'],
         email: ['jean.francois@test.com'],
-        password: ['P@ssw0rd!'],
+        userSecret: ['P@ssw0rd!'],
         phoneNumber: ['+33 1 23 45 67 89'],
         address: ['123 rue de l\'Église, Apt. 4B'],
         city: ['Saint-Étienne'],
@@ -170,7 +170,7 @@ describe('RegisterApiBuilderService', () => {
         firstName: '  Jean  ', // with spaces
         lastName: 'DUPONT', // uppercase
         email: 'Jean.Dupont@EXAMPLE.COM', // mixed case
-        password: 'password123',
+        userSecret: 'Password123!',
         phoneNumber: '01.23.45.67.89', // with dots
         address: '123 RUE DE LA PAIX',
         city: 'paris', // lowercase

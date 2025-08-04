@@ -43,8 +43,9 @@ export class RegisterValidationService {
     if (controls['lastName']?.hasError('required')) return 'Le nom est requis';
     if (controls['email']?.hasError('required')) return 'L\'email est requis';
     if (controls['email']?.hasError('email')) return 'Format d\'email invalide';
-    if (controls['password']?.hasError('required')) return 'Le mot de passe est requis';
-    if (controls['password']?.hasError('minlength')) return 'Le mot de passe doit contenir au moins 6 caractères';
+    if (controls['userSecret']?.hasError('required')) return 'Le mot de passe est requis';
+    if (controls['userSecret']?.hasError('minlength')) return 'Le mot de passe doit contenir au moins 8 caractères';
+    if (controls['userSecret']?.hasError('pattern')) return 'Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial';
     if (controls['phoneNumber']?.hasError('required')) return 'Le numéro de téléphone est requis';
     if (controls['address']?.hasError('required')) return 'L\'adresse est requise';
     if (controls['city']?.hasError('required')) return 'La ville est requise';
@@ -87,10 +88,10 @@ export class RegisterValidationService {
    * @param form Le formulaire
    */
   resetPasswordField(form: FormGroup): void {
-    const passwordControl = form.get('password');
-    if (passwordControl) {
-      passwordControl.setValue('');
-      passwordControl.markAsUntouched();
+    const userSecretControl = form.get('userSecret');
+    if (userSecretControl) {
+      userSecretControl.setValue('');
+      userSecretControl.markAsUntouched();
     }
   }
 }

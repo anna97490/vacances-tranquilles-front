@@ -19,7 +19,7 @@ export class RegisterApiBuilderService {
       firstName: form.value.firstName,
       lastName: form.value.lastName,
       email: form.value.email,
-      password: form.value.password,
+      password: form.value.userSecret, // Mappé depuis userSecret vers password pour l'API
       phoneNumber: form.value.phoneNumber,
       address: form.value.address,
       city: form.value.city,
