@@ -1,17 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { UserTypeDetectorService } from '../user-type-detector.service';
-import { createWindowSpies, mockConsoleWarn } from '../../../utils/test-helpers';
 
 describe('UserTypeDetectorService', () => {
   let service: UserTypeDetectorService;
-  let spies: ReturnType<typeof createWindowSpies>;
-  let consoleWarnSpy: jasmine.Spy;
+
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(UserTypeDetectorService);
-    spies = createWindowSpies();
-    consoleWarnSpy = mockConsoleWarn();
   });
 
   afterEach(() => {

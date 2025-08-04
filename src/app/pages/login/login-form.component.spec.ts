@@ -5,13 +5,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { DebugElement, Component } from '@angular/core';
-import { By } from '@angular/platform-browser';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
 import { of, throwError } from 'rxjs';
 
 import { LoginFormComponent } from './login-form.component';
@@ -33,18 +31,11 @@ class MockHomeComponent { }
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
   let fixture: ComponentFixture<LoginFormComponent>;
-  let router: Router;
-  let debugElement: DebugElement;
   let httpTestingController: HttpTestingController;
   
   // Services
-  let envService: EnvService;
   let loginValidationService: LoginValidationService;
-  let loginFormConfigService: LoginFormConfigService;
   let loginService: LoginService;
-  let authStorageService: AuthStorageService;
-  let loginErrorHandlerService: LoginErrorHandlerService;
-  let loginNavigationService: LoginNavigationService;
   let spies: ReturnType<typeof createWindowSpies>;
 
   // Mock data pour les tests
@@ -92,18 +83,11 @@ describe('LoginFormComponent', () => {
 
     fixture = TestBed.createComponent(LoginFormComponent);
     component = fixture.componentInstance;
-    router = TestBed.inject(Router);
-    debugElement = fixture.debugElement;
     httpTestingController = TestBed.inject(HttpTestingController);
     
     // Injection des services
-    envService = TestBed.inject(EnvService);
     loginValidationService = TestBed.inject(LoginValidationService);
-    loginFormConfigService = TestBed.inject(LoginFormConfigService);
     loginService = TestBed.inject(LoginService);
-    authStorageService = TestBed.inject(AuthStorageService);
-    loginErrorHandlerService = TestBed.inject(LoginErrorHandlerService);
-    loginNavigationService = TestBed.inject(LoginNavigationService);
 
     // Setup des spies window
     spies = createWindowSpies();

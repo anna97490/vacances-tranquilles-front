@@ -277,6 +277,20 @@ describe('RegisterValidationService', () => {
   });
 
   describe('private methods coverage', () => {
+    // Extracted to avoid deep nesting
+    function runTestCase(controls: any, field: string, error: string, expected: string, service: any) {
+      // Reset all controls
+      Object.keys(controls).forEach(key => {
+        controls[key].setErrors(null);
+      });
+
+      // Set specific error
+      controls[field].setErrors({ [error]: true });
+
+      const result = service.checkCommonFieldErrors(controls);
+      expect(result).toBe(expected);
+    }
+
     it('should check all common field errors', () => {
       const controls = form.controls;
       
@@ -296,16 +310,7 @@ describe('RegisterValidationService', () => {
       ];
 
       testCases.forEach(({ field, error, expected }) => {
-        // Reset all controls
-        Object.keys(controls).forEach(key => {
-          controls[key].setErrors(null);
-        });
-        
-        // Set specific error
-        controls[field].setErrors({ [error]: true });
-        
-        const result = (service as any).checkCommonFieldErrors(controls);
-        expect(result).toBe(expected);
+        runTestCase(controls, field, error, expected, service as any);
       });
     });
 

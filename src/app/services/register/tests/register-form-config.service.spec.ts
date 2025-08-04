@@ -1,15 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { FormBuilder, Validators } from '@angular/forms';
 import { RegisterFormConfigService } from './../register-form-config.service';
 
 describe('RegisterFormConfigService', () => {
   let service: RegisterFormConfigService;
-  let fb: FormBuilder;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(RegisterFormConfigService);
-    fb = TestBed.inject(FormBuilder);
 
     // Supprimer tous les logs console pour chaque test
     spyOn(console, 'warn').and.stub();
@@ -21,6 +18,99 @@ describe('RegisterFormConfigService', () => {
     expect(service).toBeTruthy();
   });
 
+  describe('Field Utils', () => {
+    describe('getFieldLabel', () => {
+      it('devrait retourner le label pour companyName si prestataire', () => {
+        expect(service.getFieldLabel('companyName', true)).toBe("Nom de l'entreprise");
+      });
+
+      it('devrait retourner une chaîne vide pour companyName si non prestataire', () => {
+        expect(service.getFieldLabel('companyName', false)).toBe('');
+      });
+
+      it('devrait retourner le label pour siretSiren si prestataire', () => {
+        expect(service.getFieldLabel('siretSiren', true)).toBe('SIRET/SIREN');
+      });
+
+      it('devrait retourner une chaîne vide pour siretSiren si non prestataire', () => {
+        expect(service.getFieldLabel('siretSiren', false)).toBe('');
+      });
+
+      it('devrait retourner le label standard pour firstName', () => {
+        expect(service.getFieldLabel('firstName', false)).toBe('Prénom');
+      });
+
+      it('devrait retourner le nom du champ si non trouvé', () => {
+        expect(service.getFieldLabel('champInconnu', false)).toBe('champInconnu');
+      });
+    });
+
+    describe('getFieldPlaceholder', () => {
+      it('devrait retourner le placeholder pour companyName si prestataire', () => {
+        expect(service.getFieldPlaceholder('companyName', true)).toBe('Votre entreprise');
+      });
+
+      it('devrait retourner une chaîne vide pour companyName si non prestataire', () => {
+        expect(service.getFieldPlaceholder('companyName', false)).toBe('');
+      });
+
+      it('devrait retourner le placeholder pour siretSiren si prestataire', () => {
+        expect(service.getFieldPlaceholder('siretSiren', true)).toBe('Numéro SIRET/SIREN');
+      });
+
+      it('devrait retourner une chaîne vide pour siretSiren si non prestataire', () => {
+        expect(service.getFieldPlaceholder('siretSiren', false)).toBe('');
+      });
+
+      it('devrait retourner le placeholder standard pour email', () => {
+        expect(service.getFieldPlaceholder('email', false)).toBe('exemple@mail.com');
+      });
+
+      it('devrait retourner une chaîne vide pour un champ inconnu', () => {
+        expect(service.getFieldPlaceholder('champInconnu', false)).toBe('');
+      });
+    });
+
+    describe('getFieldType', () => {
+      it('devrait retourner "email" pour le champ email', () => {
+        expect(service.getFieldType('email', false)).toBe('email');
+      });
+
+      it('devrait retourner "password" pour le champ password', () => {
+        expect(service.getFieldType('password', false)).toBe('password');
+      });
+
+      it('devrait retourner "text" pour le champ siretSiren', () => {
+        expect(service.getFieldType('siretSiren', true)).toBe('text');
+      });
+
+      it('devrait retourner "text" pour un champ inconnu', () => {
+        expect(service.getFieldType('champInconnu', false)).toBe('text');
+      });
+    });
+    describe('getFieldRequired', () => {
+      it('devrait retourner true pour companyName si prestataire', () => {
+        expect(service.getFieldRequired('companyName', true)).toBe(true);
+      });
+
+      it('devrait retourner false pour companyName si non prestataire', () => {
+        expect(service.getFieldRequired('companyName', false)).toBe(false);
+      });
+
+      it('devrait retourner true pour siretSiren si prestataire', () => {
+        expect(service.getFieldRequired('siretSiren', true)).toBe(true);
+      });
+
+      it('devrait retourner false pour siretSiren si non prestataire', () => {
+        expect(service.getFieldRequired('siretSiren', false)).toBe(false);
+      });
+
+      it('devrait retourner true pour un champ inconnu', () => {
+        expect(service.getFieldRequired('champInconnu', true)).toBe(true);
+        expect(service.getFieldRequired('champInconnu', false)).toBe(true);
+      });
+    });
+  });
   describe('createRegistrationForm', () => {
     it('should create form with all required controls', () => {
       const form = service.createRegistrationForm();

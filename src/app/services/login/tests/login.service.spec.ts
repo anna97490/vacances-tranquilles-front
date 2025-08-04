@@ -4,7 +4,7 @@ import { LoginService } from '../login.service';
 import { AuthStorageService } from '../auth-storage.service';
 import { LoginErrorHandlerService } from '../login-error-handler.service';
 import { LoginNavigationService } from '../login-navigation.service';
-import { LoginPayload, LoginResponse } from '../../../models/Login';
+import { LoginPayload } from '../../../models/Login';
 import { HttpErrorResponse } from '@angular/common/http';
 
 describe('LoginService', () => {

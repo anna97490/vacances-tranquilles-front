@@ -18,11 +18,6 @@ export class SecureIdGeneratorService {
         return this.generateWebCryptoId(prefix, length);
       }
       
-      // Fallback avec crypto subtil si disponible
-      if (window.crypto?.subtle) {
-        return await this.generateCryptoSubtleFallback(prefix, length);
-      }
-      
       // Dernier recours : fallback sécurisé
       return this.generateSecureFallbackId(prefix, length);
       

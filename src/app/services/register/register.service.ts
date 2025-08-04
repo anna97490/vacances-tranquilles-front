@@ -13,10 +13,10 @@ import { UserTypeDetectorService } from './user-type-detector.service';
 export class RegisterService {
 
   constructor(
-    private http: HttpClient,
-    private router: Router,
-    private errorHandler: RegisterErrorHandlerService,
-    private userTypeDetector: UserTypeDetectorService
+    private readonly http: HttpClient,
+    private readonly router: Router,
+    private readonly errorHandler: RegisterErrorHandlerService,
+    private readonly userTypeDetector: UserTypeDetectorService
   ) {}
 
   /**

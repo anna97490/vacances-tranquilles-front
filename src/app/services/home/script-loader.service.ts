@@ -5,7 +5,7 @@ import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
   providedIn: 'root'
 })
 export class ScriptLoaderService {
-  private renderer: Renderer2;
+  private readonly renderer: Renderer2;
   private scriptElements: HTMLScriptElement[] = [];
 
   constructor(rendererFactory: RendererFactory2) {
