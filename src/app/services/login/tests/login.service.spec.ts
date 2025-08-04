@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { LoginService } from './login.service';
-import { AuthStorageService } from './auth-storage.service';
-import { LoginErrorHandlerService } from './login-error-handler.service';
-import { LoginNavigationService } from './login-navigation.service';
-import { LoginPayload, LoginResponse } from '../../models/Login';
+import { LoginService } from '../login.service';
+import { AuthStorageService } from '../auth-storage.service';
+import { LoginErrorHandlerService } from '../login-error-handler.service';
+import { LoginNavigationService } from '../login-navigation.service';
+import { LoginPayload, LoginResponse } from '../../../models/Login';
 import { HttpErrorResponse } from '@angular/common/http';
 
 describe('LoginService', () => {
@@ -56,7 +56,7 @@ describe('LoginService', () => {
     const apiUrl = 'https://api.example.com';
 
     // Act
-    service.performLogin(payload, apiUrl).subscribe(response => {
+    service.performLogin(payload, apiUrl).subscribe((response: any) => {
       expect(response.status).toBe(200);
     });
 

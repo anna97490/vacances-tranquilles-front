@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { HomeInitializationService } from './home-initilization.service';
-import { ScriptLoaderService } from './script-loader.service';
-import { BotpressService } from './chatbot/botpress.service';
+import { HomeInitializationService } from '../home-initilization.service';
+import { ScriptLoaderService } from '../script-loader.service';
+import { BotpressService } from '../chatbot/botpress.service';
 
 describe('HomeInitializationService', () => {
   let service: HomeInitializationService;

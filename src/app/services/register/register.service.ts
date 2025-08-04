@@ -49,7 +49,7 @@ export class RegisterService {
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
   handleRegistrationError(error: HttpErrorResponse, isPrestataire: boolean): void {
-    console.error('❌ Erreur d\'inscription:', error);
+    console.error('Erreur d\'inscription:', error);
 
     // Gérer les "fausses erreurs" (succès avec erreur de parsing)
     if (this.errorHandler.isSuccessfulButParseFailed(error)) {

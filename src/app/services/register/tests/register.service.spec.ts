@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
-import { RegisterService } from './register.service';
-import { RegisterErrorHandlerService } from './register-error-handler.service';
-import { UserTypeDetectorService } from './user-type-detector.service';
-import { ApiConfig, RegisterPayload } from '../../models/Register';
+import { RegisterService } from './../register.service';
+import { RegisterErrorHandlerService } from './../register-error-handler.service';
+import { UserTypeDetectorService } from './../user-type-detector.service';
+import { ApiConfig, RegisterPayload } from './../../../models/Register';
 import { HttpErrorResponse } from '@angular/common/http';
 
 describe('RegisterService', () => {
@@ -60,7 +60,7 @@ describe('RegisterService', () => {
     apiConfig.payload = payload;
 
     // Act
-    service.performRegistration(apiConfig).subscribe(response => {
+    service.performRegistration(apiConfig).subscribe((response: any) => {
       expect(response.status).toBe(200);
     });
 
@@ -111,7 +111,7 @@ describe('RegisterService', () => {
     service.handleRegistrationError(error, false);
 
     // Assert
-    expect(console.error).toHaveBeenCalledWith('❌ Erreur d\'inscription:', error);
+    expect(console.error).toHaveBeenCalledWith('Erreur d\'inscription:', error);
     expect(window.alert).toHaveBeenCalledWith('Inscription particulier réussie ! Vous pouvez maintenant vous connecter.');
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
   });
@@ -128,7 +128,7 @@ describe('RegisterService', () => {
     service.handleRegistrationError(error, false);
 
     // Assert
-    expect(console.error).toHaveBeenCalledWith('❌ Erreur d\'inscription:', error);
+    expect(console.error).toHaveBeenCalledWith('Erreur d\'inscription:', error);
     expect(window.alert).toHaveBeenCalledWith('Erreur lors de l\'inscription : Bad Request');
   });
 }); 
