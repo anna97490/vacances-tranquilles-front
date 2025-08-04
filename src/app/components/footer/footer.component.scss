@@ -3,6 +3,15 @@
   color: var(--secondary-text-color);
   padding: 2.2rem 0 0.5rem 0;
   font-family: 'Segoe UI', sans-serif;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 .footer-content {
@@ -11,7 +20,9 @@
   gap: 3.5rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding-bottom: 1.2rem;
+  padding: 0 1rem 1.2rem 1rem;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .footer-col {
@@ -19,6 +30,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+  flex: 1;
+  max-width: 250px;
 }
 
 .footer-title {
@@ -26,12 +39,16 @@
   font-size: 1.08rem;
   color: var(--secondary-text-color);
   margin-bottom: 0.3rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 a.footer-link, .footer-text {
   font-size: 0.9rem !important;
   margin-bottom: 0.5rem;
   color: var(--secondary-text-color) !important;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 mat-nav-list {
@@ -62,11 +79,15 @@ mat-divider {
   font-size: 1rem;
   margin-top: 0.2rem;
   margin-bottom: 0.2rem;
+  width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 @media (max-width: 900px) {
   .footer-content {
     gap: 1.5rem;
+    padding: 0 1rem 1.2rem 1rem;
   }
 }
 
@@ -75,10 +96,27 @@ mat-divider {
     flex-direction: column;
     align-items: center;
     gap: 2.2rem;
+    padding: 0 1rem 1.2rem 1rem;
   }
   .footer-col {
     min-width: 0;
     width: 100%;
     align-items: center;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-mockup {
+    padding: 1.5rem 0 0.5rem 0;
+  }
+  
+  .footer-content {
+    gap: 1.5rem;
+    padding: 0 0.5rem 1rem 0.5rem;
+  }
+  
+  .footer-copyright {
+    padding: 0 0.5rem;
   }
 }
