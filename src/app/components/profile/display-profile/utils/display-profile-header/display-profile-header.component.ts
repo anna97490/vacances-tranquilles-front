@@ -46,13 +46,6 @@ export class DisplayProfileHeaderComponent {
     return this.userRole === UserRole.ADMIN;
   }
 
-  /**
-   * Retourne l'URL de la photo de profil, ou une image par défaut si non renseignée.
-   */
-  get profilePictureUrl(): string {
-    return this.user.profilePicture || 'assets/pictures/logo.png';
-  }
-
   get fullStars(): any[] {
     return Array(Math.floor(this.rating));
   }

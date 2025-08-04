@@ -1,7 +1,7 @@
 <div class="profile-header-main">
   <div class="profile-header-left">
     <div class="profile-upload-container">
-      <button
+<!--       <button
         mat-flat-button
         color="primary"
         type="button"
@@ -16,10 +16,10 @@
         type="file"
         (change)="onProfilePictureChange($event)"
         hidden
-      />
+      /> -->
       <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
     </div>
-    <img [src]="user.profilePicture" alt="Photo de profil" class="profile-picture" />
+<!--     <img [src]="user.profilePicture" alt="Photo de profil" class="profile-picture" /> -->
     <div class="profile-name">
       <input [(ngModel)]="user.firstName" placeholder="Prénom" class="profile-input" />
       <input [(ngModel)]="user.lastName" placeholder="Nom" class="profile-input" />

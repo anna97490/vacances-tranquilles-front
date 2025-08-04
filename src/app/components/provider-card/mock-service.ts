@@ -11,7 +11,7 @@ export const MOCK_SERVICES: Service[] = [
     description: 'Nettoyage et entretien des espaces intérieurs de la maison.',
     category: ServiceCategory.HOME,
     price: 45,
-    userId: 1,
+    providerId: 1,
   },
   {
     id: 2,
@@ -19,7 +19,7 @@ export const MOCK_SERVICES: Service[] = [
     description: "Tonte de pelouse, taille de haies et entretien général des jardins.",
     category: ServiceCategory.OUTDOOR,
     price: 60,
-    userId: 1,
+    providerId: 1,
   },
   {
     id: 3,
@@ -27,7 +27,7 @@ export const MOCK_SERVICES: Service[] = [
     description: 'Réparation de vos appareils électroménagers défectueux (réfrigérateur, lave-vaisselle, etc.).',
     category: ServiceCategory.REPAIRS,
     price: 50,
-    userId: 1,
+    providerId: 1,
   },
   {
     id: 4,
@@ -35,7 +35,7 @@ export const MOCK_SERVICES: Service[] = [
     description: 'Livraison à domicile de vos courses alimentaires hebdomadaires.',
     category: ServiceCategory.SHOPPING,
     price: 25,
-    userId: 1,
+    providerId: 1,
   },
   {
     id: 5,
@@ -43,7 +43,7 @@ export const MOCK_SERVICES: Service[] = [
     description: 'Promenade et soins pour vos animaux de compagnie.',
     category: ServiceCategory.ANIMALS,
     price: 15,
-    userId: 1,
+    providerId: 1,
   },
   {
     id: 6,
@@ -51,7 +51,7 @@ export const MOCK_SERVICES: Service[] = [
     description: 'Application de peinture dans les pièces de votre maison.',
     category: ServiceCategory.HOME,
     price: 100,
-    userId: 1,
+    providerId: 1,
   },
   {
     id: 7,
@@ -59,7 +59,7 @@ export const MOCK_SERVICES: Service[] = [
     description: 'Installation et configuration de systèmes de sécurité à domicile (caméras, alarmes).',
     category: ServiceCategory.REPAIRS,
     price: 120,
-    userId: 1,
+    providerId: 1,
   },
   {
     id: 8,
@@ -67,7 +67,7 @@ export const MOCK_SERVICES: Service[] = [
     description: 'Réparation des fuites et autres dommages au toit de votre maison.',
     category: ServiceCategory.REPAIRS,
     price: 200,
-    userId: 1,
+    providerId: 1,
   },
   {
     id: 9,
@@ -75,7 +75,7 @@ export const MOCK_SERVICES: Service[] = [
     description: 'Services de nettoyage et entretien des piscines (filtration, nettoyage du bassin).',
     category: ServiceCategory.OUTDOOR,
     price: 70,
-    userId: 1,
+    providerId: 1,
   },
   {
     id: 10,
@@ -83,6 +83,6 @@ export const MOCK_SERVICES: Service[] = [
     description: 'Consultations et soins de santé pour vos animaux de compagnie.',
     category: ServiceCategory.ANIMALS,
     price: 50,
-    userId: 1,
+    providerId: 1,
   }
 ];

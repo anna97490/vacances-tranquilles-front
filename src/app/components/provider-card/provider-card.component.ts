@@ -7,7 +7,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
 import { Service } from '../../models/Service';
-import { PROVIDERS_MOCK } from './mock-user';
 import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.component';
 
 /**
@@ -30,25 +29,59 @@ export class ProviderCardComponent {
   public user?: User;
 
   /**
-   * Service à afficher dans la carte. Recherche automatiquement le user correspondant.
+   * Service à afficher dans la carte.
    * @type {Service}
    */
-  private _service!: Service;
+  private _service?: Service;
 
   @Input()
   /**
    * Setter pour le service.
-   * Met à jour le service et recherche l'utilisateur associé dans les données mockées.
+   * Met à jour le service et utilise les données mockées par défaut.
    */
   set service(service: Service) {
-    this._service = service;
-    this.user = PROVIDERS_MOCK.find((u: User) => u.idUser === service.userId);
-  }
+    if (service) {
+      this._service = service;
+      // Utiliser les données du prestataire fournies ou undefined si pas disponibles
+      this.user = this._providerInfo;
+    } else {
+      this._service = undefined;
+      this.user = undefined;
+    }
+  } 
+
   /**
    * Getter pour le service.
    * @returns {Service} Le service associé à la carte.
    */
-  get service(): Service {
+  get service(): Service | undefined {
     return this._service;
+  }
+
+  /**
+   * Informations du prestataire fournies directement
+   * @type {User | undefined}
+   */
+  private _providerInfo?: User;
+
+  @Input()
+  /**
+   * Setter pour les informations du prestataire.
+   * Met à jour les informations du prestataire.
+   */
+  set providerInfo(providerInfo: User | undefined) {
+    this._providerInfo = providerInfo;
+    // Mettre à jour l'utilisateur si un service est déjà défini
+    if (this._service && providerInfo) {
+      this.user = providerInfo;
+    }
+  }
+
+  /**
+   * Getter pour les informations du prestataire.
+   * @returns {User | undefined} Les informations du prestataire.
+   */
+  get providerInfo(): User | undefined {
+    return this._providerInfo;
   }
 }

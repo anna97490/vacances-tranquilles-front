@@ -28,7 +28,7 @@ export class UpdateProfileHeaderComponent {
    * Gère le changement de photo de profil et met à jour l'aperçu et le nom du fichier.
    * @param event Événement de sélection de fichier
    */
-  onProfilePictureChange(event: Event): void {
+/*   onProfilePictureChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       this.fileName = input.files[0].name;
@@ -38,5 +38,5 @@ export class UpdateProfileHeaderComponent {
       };
       reader.readAsDataURL(input.files[0]);
     }
-  }
+  } */
 }

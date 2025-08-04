@@ -117,6 +117,10 @@
     align-items: flex-start;
   }
 
+  .header {
+    position: relative;
+  }
+
   .avatar {
     width: 64px;
     height: 64px;
@@ -126,13 +130,14 @@
   .top-line {
     flex-wrap: wrap;
     gap: 6px;
+  }
 
-    .profile-btn {
-      align-self: flex-start;
-      margin-left: 0;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-    }
+  .profile-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.85rem;
+    padding: 5px 12px;
   }
 
   .footer {
