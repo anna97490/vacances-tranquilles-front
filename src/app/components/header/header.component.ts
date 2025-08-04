@@ -8,7 +8,11 @@ import { filter } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: [
+    './header.component.scss',           // Styles de base (commun)
+    './header.component.desktop.scss',   // Styles desktop
+    './header.component.mobile.scss'     // Styles mobile
+  ]
 })
 export class HeaderComponent implements OnInit {
   mainLogo = 'assets/pictures/logo.png';

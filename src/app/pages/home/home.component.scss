@@ -1,3 +1,5 @@
+// Home Component - Styles de base (commun mobile et desktop)
+
 .homepage-container {
   display: flex;
   flex-direction: column;
@@ -23,15 +25,20 @@
 
 .logo {
   margin-bottom: 1.2rem;
+  
+  img {
+    width: 120px;
+    height: auto;
+  }
 }
 
 .main-icon {
-  font-size: 48px;
+  font-size: 36px;
   color: var(--quaternary-color);
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
   color: var(--text-color);
@@ -41,7 +48,7 @@
 
 .subtitle {
   font-weight: bold;
-  font-size: 20px;
+  font-size: 18px;
   color: var(--discret-text-color);
   margin-bottom: 1.2rem;
   word-wrap: break-word;
@@ -194,29 +201,4 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   text-align: center;
-}
-
-@media (max-width: 480px) {
-  .homepage-container {
-    padding: 0 0.5rem;
-  }
-  
-  .content {
-    padding: 1rem 0.5rem 0rem 0.5rem;
-  }
-  
-  .btn {
-    width: 100%;
-    max-width: 280px;
-  }
-  
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    padding: 0 0.5rem;
-  }
-  
-  .feature-card {
-    padding: 1rem;
-  }
 }
