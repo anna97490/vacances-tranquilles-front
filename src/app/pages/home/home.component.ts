@@ -1,8 +1,10 @@
-import { Component, HostBinding, OnInit, OnDestroy, Renderer2 } from '@angular/core';
-import { HomeContentService, HomeContent } from './../../services/home-content.service';
+import { Component, HostBinding, OnInit, OnDestroy } from '@angular/core';
+import { HomeContent } from './../../models/Home';
+import { HomeContentService } from './../../services/home-content.service';
+import { HomeInitializationService } from './../../services/home/home-initilization.service';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import {MatIconModule} from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { FooterComponent } from '../../components/footer/footer.component';
 
 @Component({
@@ -15,84 +17,63 @@ import { FooterComponent } from '../../components/footer/footer.component';
 export class HomeComponent implements OnInit, OnDestroy {
   content!: HomeContent;
   mainLogo = 'assets/pictures/logo.png';
-
+  
   @HostBinding('style.display') display = 'block';
   @HostBinding('style.height') height = '100%';
 
-  private scriptElements: HTMLScriptElement[] = [];
-
-  constructor(private homeContentService: HomeContentService, private renderer: Renderer2) {}
+  constructor(
+    private homeContentService: HomeContentService,
+    private homeInitializationService: HomeInitializationService
+  ) {}
 
   ngOnInit(): void {
-    this.content = this.homeContentService.getContent();
-    this.addScript('https://cdn.botpress.cloud/webchat/v3.0/inject.js');
-    this.addScript('https://files.bpcontent.cloud/2025/06/23/13/20250623131622-WAJI2P5Q.js');
-    this.sendBonjourToBotpress();
+    console.log('HomeComponent initialized');
+    this.initializeContent();
+    this.initializeServices();
   }
 
   ngOnDestroy(): void {
-    // Nettoyage pour éviter les conflits si on navigue ailleurs
-    this.scriptElements.forEach(script => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    });
-  }
-
-  private addScript(src: string): void {
-    const script = this.renderer.createElement('script');
-    script.type = 'text/javascript';
-    script.src = src;
-    script.async = true;
-    this.renderer.appendChild(document.body, script);
-    this.scriptElements.push(script);
+    this.homeInitializationService.cleanup();
   }
 
   /**
-   * Envoie le message 'Bonjour' au chatbot Botpress via une requête POST,
-   * une fois que le widget et la conversation sont initialisés.
+   * Initialise le contenu de la page
    */
-  private sendBonjourToBotpress(): void {
-    const interval = setInterval(() => {
-      const bpWebChat = (window as any).botpressWebChat;
-      if (bpWebChat && bpWebChat.conversationId) {
-        const conversationId = bpWebChat.conversationId;
-        const clientMessageId = this.generateRandomId();
-
-        fetch('https://webchat.botpress.cloud/30677914-9ece-488e-b7ad-f2415dad46c3/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            conversationId,
-            payload: { type: 'text', text: 'Bonjour' },
-            metadata: { clientMessageId }
-          })
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Erreur lors de l\'envoi du message');
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log('Message envoyé avec succès', data);
-        })
-        .catch(error => {
-          console.error('Erreur lors de l\'envoi du message', error);
-        });
-
-        clearInterval(interval);
-      }
-    }, 500);
+  private initializeContent(): void {
+    console.log('Initializing content...');
+    const content = this.homeContentService.getContent();
+    this.content = content ?? this.getDefaultContent();
+    console.log('Content initialized:', this.content);
   }
 
   /**
-   * Génère un identifiant unique simple (alphanumérique).
+   * Initialise les services externes (scripts, chatbot, etc.)
    */
-  private generateRandomId(): string {
-    return 'id-' + Math.random().toString(36).substr(2, 16);
+  private async initializeServices(): Promise<void> {
+    try {
+      console.log('Initializing services...');
+      await this.homeInitializationService.initializeHomeServices();
+      console.log('Services initialized successfully');
+    } catch (error) {
+      console.error('Erreur lors de l\'initialisation des services:', error);
+    }
   }
-    
+
+  /**
+   * Retourne un contenu par défaut en cas d'erreur
+   */
+  private getDefaultContent(): HomeContent {
+    return {
+      title: 'Vacances Tranquilles',
+      subtitle: 'Votre partenaire de confiance pour des vacances sereines',
+      introText: 'Simplifiez la gestion de vos locations saisonnières',
+      btnPrestataire: 'Inscription Prestataires',
+      btnParticulier: 'Inscription Particuliers',
+      btnConnexion: 'Connexion',
+      featuresTitle: 'Pourquoi Nous Choisir',
+      iconType: 'custom',
+      mainIcon: 'assets/icons/beach_access_FFA101.svg',
+      features: []
+    };
+  }
 }

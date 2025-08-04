@@ -1,77 +1,175 @@
 .header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background-color: #39575e;
   padding: 0 2rem;
   height: 60px;
   border-bottom: 2px solid #e0e0e0;
-  justify-content: space-between;
-}
 
-.header-logo {
-  display: flex;
-  align-items: center;
-  margin-right: 2.5rem;
-}
+  .header-logo {
+    display: flex;
+    align-items: center;
+    margin-right: 2.5rem;
 
-.icon {
-  margin-right: 10px;
-}
-.logo-img {
-  height: 36px;
-  margin-right: 0.5rem;
-}
+    .logo-img {
+      height: 36px;
+      margin-right: 0.5rem;
+    }
 
-.logo-text {
-  font-weight: bold;
-  font-size: 1.5rem;
-  color: #fff;
-}
-
-.header-nav {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
-}
-
-.nav-link {
-  display: flex;
-  align-items: center;
-  color: #fff;
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 400;
-  transition: color 0.2s;
-  position: relative;
-}
-
-.nav-link .nav-icon {
-  font-size: 1.3rem;
-  margin-right: 0.5rem;
-}
-
-.nav-link.active,
-.nav-link:hover {
-  color: #ffb300;
-}
-
-.nav-link.active::after {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -8px;
-  height: 4px;
-  border-radius: 2px;
-  background: #ffb300;
-}
-
-@media (max-width: 900px) {
-  .header-nav {
-    gap: 1.2rem;
+    .logo-text {
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: #fff;
+    }
   }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 400;
+      position: relative;
+      transition: color 0.2s;
+
+      .nav-icon {
+        font-size: 1.3rem;
+        margin-right: 0.5rem;
+      }
+
+      .icon {
+        margin-right: 10px;
+        font-size: 1.2rem;
+        display: inline-flex;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+      }
+
+      &.active,
+      &:hover {
+        color: var(--vt-orange-light);
+        
+        .icon {
+          // Filtre pour rendre les icônes orange
+          filter: brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2500%) hue-rotate(5deg);
+        }
+      }
+
+      &.active::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--vt-orange-light);
+      }
+    }
+  }
+
+  .desktop-nav {
+    display: flex;
+  }
+
+  .burger-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    .burger-icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  // Mobile menu container
+  .mobile-menu-container {
+    display: none;
+    position: absolute;
+    width: 25vh;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    border-top: 1px solid #e0e0e0;
+    z-index: 1000;
+    box-shadow: -5px 9px 5px 0px rgba(0, 0, 0, 0.1);
+
+    &.menu-visible {
+      display: block;
+    }
+
+    .mobile-nav {
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        color: #4a6b73;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 400;
+        padding: 0.75rem 0;
+
+        .icon {
+          margin-right: 10px;
+          font-size: 1.2rem;
+          display: inline-flex;
+          align-items: center;
+          width: 20px;
+          height: 20px;
+          // Filtre pour rendre les icônes grises/noires pour le menu mobile
+          filter: brightness(0) saturate(100%) invert(29%) sepia(18%) saturate(1087%) hue-rotate(162deg) brightness(91%) contrast(91%);
+        }
+
+        .arrow-icon {
+          margin-left: auto;
+          width: 10px;
+          height: 10px;
+          filter: brightness(0) saturate(100%) invert(29%) sepia(18%) saturate(1087%) hue-rotate(162deg) brightness(91%) contrast(91%);
+        }
+
+        &.active,
+        &:hover {
+          color: var(--vt-orange-light);
+          
+          .icon {
+            // Filtre pour rendre les icônes orange
+            filter: brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2500%) hue-rotate(5deg);
+          }
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 900px) {
   .header {
+    background-color: var(--primary-color);
     padding: 0 0.5rem;
+    position: relative;
+    .desktop-nav {
+      display: none;
+    }
+
+    .burger-btn {
+      display: block;
+    }
   }
 }

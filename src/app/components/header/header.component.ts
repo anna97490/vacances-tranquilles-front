@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
-
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -12,7 +11,7 @@ import { filter } from 'rxjs/operators';
 })
 export class HeaderComponent implements OnInit {
   mainLogo = 'assets/pictures/logo.png';
-
+  hoveredItem: any = null;
   menu = [
     {
       label: 'Accueil',
@@ -45,11 +44,8 @@ export class HeaderComponent implements OnInit {
       path: '/assistance'
     }
   ];
-
   currentPath: string = '';
-
   constructor(private router: Router, public location: Location) {}
-
   ngOnInit(): void {
     this.currentPath = this.location.path() || '/home';
     this.router.events.pipe(
@@ -58,12 +54,15 @@ export class HeaderComponent implements OnInit {
       this.currentPath = this.location.path() || '/home';
     });
   }
-
   isActive(path: string): boolean {
     return this.currentPath === path;
   }
 
   getIcon(item: any): string {
-    return this.isActive(item.path) ? item.iconActive : item.icon;
+    // Affiche l'icône active si l'item est survolé OU si la route est active
+    if ((this.hoveredItem === item || this.isActive(item.path)) && item.iconActive) {
+      return item.iconActive;
+    }
+    return item.icon;
   }
 }
