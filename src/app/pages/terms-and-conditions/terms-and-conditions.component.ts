@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { CGU_DATA } from './../../services/terms-and-conditions/cgu';
 import { CGV_DATA } from './../../services/terms-and-conditions/cgv';
 import { LocationService } from './../../services/terms-and-conditions/location.service';
-import { TermsContent } from '../../models/interfacesTerms';
+import { TermsContent } from './../../models/Terms';
 
 @Component({
   selector: 'app-terms-and-conditions',

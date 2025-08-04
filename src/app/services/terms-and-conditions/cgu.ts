@@ -1,4 +1,4 @@
-import { TermsContent } from '../../models/interfacesTerms';
+import { TermsContent } from './../../models/Terms';
 
 // Fonction utilitaire pour formatage des puces
 const bullet = (lines: string[]) => lines.map(text => ({ text: `• ${text}` }));

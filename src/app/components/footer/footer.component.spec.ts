@@ -475,7 +475,6 @@ describe('FooterComponent', () => {
       expect(true).toBe(true);
     });
 
-    // Version simplifiée qui fonctionne dans tous les cas
     it('should contain required company information', () => {
       const footerText = getElements.single(selectors.footerText);
       expect(footerText).toBeTruthy();

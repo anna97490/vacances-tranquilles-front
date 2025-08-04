@@ -1,13 +1,16 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterModule, RouterLink, Router } from '@angular/router';
-import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { LoginResponse, LoginPayload } from '../../models/interfacesLogin';
+import { RouterModule, RouterLink } from '@angular/router';
+import { LoginPayload } from './../../models/Login';
+import { EnvService } from './../../services/EnvService';
+import { LoginValidationService } from '../../services/login/login-validation.service';
+import { LoginFormConfigService } from '../../services/login/login-form-config.service';
+import { LoginService } from '../../services/login/login.service';
 
 @Component({
   selector: 'app-login-form',
@@ -29,13 +32,15 @@ import { LoginResponse, LoginPayload } from '../../models/interfacesLogin';
 export class LoginFormComponent {
   form!: FormGroup;
   mainLogo = './assets/pictures/logo.png';
-  private readonly API_URL = 'http://localhost:8080/api/auth/login';
+  urlApi: string;
 
   constructor(
-    private readonly fb: FormBuilder,
-    private readonly http: HttpClient,
-    private readonly router: Router
+    private readonly envService: EnvService,
+    private readonly validationService: LoginValidationService,
+    private readonly formConfigService: LoginFormConfigService,
+    private readonly loginService: LoginService
   ) {
+    this.urlApi = this.envService.apiUrl;
     this.initializeForm();
   }
 
@@ -43,23 +48,19 @@ export class LoginFormComponent {
    * Initialise le formulaire de connexion
    */
   private initializeForm(): void {
-    this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+    this.form = this.formConfigService.createLoginForm();
   }
 
   /**
    * Gestion de la soumission du formulaire de connexion
    */
   onSubmit(): void {
-    if (!this.form.valid) {
+    if (!this.validationService.isFormValid(this.form)) {
       this.handleInvalidForm();
       return;
     }
 
     const payload = this.createLoginPayload();
-    
     this.performLogin(payload);
   }
 
@@ -67,171 +68,29 @@ export class LoginFormComponent {
    * Gère les cas où le formulaire est invalide
    */
   private handleInvalidForm(): void {
-    this.form.markAllAsTouched();
+    this.validationService.markAllFieldsAsTouched(this.form);
     
-    const errorMessage = this.getValidationErrorMessage();
+    const errorMessage = this.validationService.getValidationErrorMessage(this.form);
     alert(errorMessage);
-  }
-
-  /**
-   * Génère un message d'erreur de validation approprié
-   */
-  private getValidationErrorMessage(): string {
-    const emailControl = this.form.get('email');
-    const passwordControl = this.form.get('password');
-
-    if (emailControl?.hasError('required')) return 'L\'email est requis';
-    if (emailControl?.hasError('email')) return 'Format d\'email invalide';
-    if (passwordControl?.hasError('required')) return 'Le mot de passe est requis';
-    if (passwordControl?.hasError('minlength')) return 'Le mot de passe doit contenir au moins 6 caractères';
-    
-    return 'Formulaire invalide - vérifiez vos données';
   }
 
   /**
    * Crée le payload pour la requête de connexion
    */
   private createLoginPayload(): LoginPayload {
-    return {
-      email: this.form.value.email,
-      password: this.form.value.password
-    };
+    return this.formConfigService.createLoginPayload(this.form);
   }
 
   /**
-   * Effectue la requête de connexion vers l'API
+   * Effectue la requête de connexion
    */
   private performLogin(payload: LoginPayload): void {
-    const httpOptions = {
-      headers: { 'Content-Type': 'application/json' },
-      observe: 'response' as const,
-      responseType: 'json' as const
-    };
-
-    this.http.post<LoginResponse>(this.API_URL, payload, httpOptions).subscribe({
-      next: (response) => this.handleLoginSuccess(response),
-      error: (err) => this.handleLoginError(err)
+    this.loginService.performLogin(payload, this.urlApi).subscribe({
+      next: (response) => this.loginService.handleLoginSuccess(response),
+      error: (error) => {
+        this.loginService.handleLoginError(error);
+        this.validationService.resetPasswordField(this.form);
+      }
     });
-  }
-
-  /**
-   * Gère le succès de la connexion
-   */
-  private handleLoginSuccess(response: HttpResponse<LoginResponse>): void {
-    
-    const responseBody = response.body;
-    if (!responseBody?.token) {
-      alert('Erreur: Token manquant dans la réponse du serveur');
-      return;
-    }
-
-    // Stockage des données d'authentification
-    this.storeAuthenticationData(responseBody.token, responseBody.userRole);
-    
-    alert('Connexion réussie !');
-    this.redirectAfterLogin();
-  }
-
-  /**
-   * Stocke les données d'authentification en localStorage
-   */
-  private storeAuthenticationData(token: string, userRole: string): void {
-    localStorage.setItem('token', token);
-    localStorage.setItem('userRole', userRole || '');
-  }
-
-  /**
-   * Redirige l'utilisateur après une connexion réussie
-   */
-  private redirectAfterLogin(): void {
-    this.router.navigate(['/home']);
-  }
-
-  /**
-   * Gère les erreurs de connexion
-   */
-  private handleLoginError(err: HttpErrorResponse): void {
-
-    // Vérifier d'abord si c'est une erreur de parsing avec status 200/201
-    if (this.isPotentialParseError(err)) {
-      this.handleSuccessWithParseError(err);
-      return;
-    }
-
-    // Gérer les vraies erreurs
-    this.processActualError(err);
-  }
-
-  private isPotentialParseError(error: HttpErrorResponse): boolean {
-    return error.status === 200 || error.status === 201;
-  }
-
-  /**
-   * Gère le cas d'un succès avec erreur de parsing de la réponse
-   */
-  private handleSuccessWithParseError(err: HttpErrorResponse): void {
-    
-    console.log('Gestion spéciale pour erreur de parsing avec status 200:', err);
-    
-    const token = this.extractTokenFromErrorResponse(err);
-    if (token) {
-      this.storeAuthenticationData(token, '');
-      alert('Connexion réussie !');
-      this.redirectAfterLogin();
-    } else {
-      alert('Erreur: Token manquant dans la réponse du serveur');
-    }
-  }
-
-  private processActualError(error: HttpErrorResponse): void {
-    const errorMessage = this.getLoginErrorMessage(error);
-    alert(`Erreur lors de la connexion : ${errorMessage}`);
-    this.resetPasswordField();
-  }
-  
-  /**
-   * Essaie d'extraire le token d'une réponse d'erreur
-   */
-  private extractTokenFromErrorResponse(err: HttpErrorResponse): string | null {
-    try {
-      // Essayer d'extraire depuis err.text (cas de parsing JSON)
-      if (err.error?.text) {
-        const parsed = JSON.parse(err.error.text);
-        return parsed.token || null;
-      }
-      
-      // Essayer d'extraire depuis err.token (cas direct)
-      if (err.error?.token) {
-        return err.error.token;
-      }
-      
-      return null;
-    } catch (parseError) {
-      // ✅ Gestion appropriée de l'exception
-      console.warn('Erreur lors du parsing du token depuis la réponse:', parseError);
-      return null;
-    }
-  }
-
-  /**
-   * Génère un message d'erreur approprié selon l'erreur de connexion
-   */
-  private getLoginErrorMessage(err: HttpErrorResponse): string {
-    const errorMessages: { [key: number]: string } = {
-      401: 'Email ou mot de passe incorrect',
-      403: 'Accès non autorisé',
-      404: 'Service de connexion non disponible',
-      500: 'Erreur interne du serveur',
-      0: 'Impossible de contacter le serveur'
-    };
-
-    return errorMessages[err.status] || err.error?.message || 'Erreur de connexion inconnue';
-  }
-
-  /**
-   * Remet à zéro le champ mot de passe après une erreur
-   */
-  private resetPasswordField(): void {
-    this.form.get('password')?.setValue('');
   }
 }

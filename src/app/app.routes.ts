@@ -10,13 +10,13 @@ export const routes: Routes = [
         path: 'cgu',
         loadComponent: () => import('./pages/terms-and-conditions/terms-and-conditions.component')
           .then(m => m.TermsAndConditionsComponent),
-        data: { isCGU: true } // Indique que c'est pour les CGU
+        data: { isCGU: true }
       },
       {
         path: 'cgv',
         loadComponent: () => import('./pages/terms-and-conditions/terms-and-conditions.component')
           .then(m => m.TermsAndConditionsComponent),
-        data: { isCGV: true } // Indique que c'est pour les CGV  
+        data: { isCGV: true }
       }
     ]
   },

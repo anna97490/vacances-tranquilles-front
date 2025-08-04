@@ -111,7 +111,6 @@ describe('HeaderComponent', () => {
     }
   });
 
-  // Mock plus complet de Location
   const createMockLocation = () => ({
     path: jasmine.createSpy('path').and.returnValue(testData.paths.home),
     back: jasmine.createSpy('back'),
@@ -192,7 +191,7 @@ describe('HeaderComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            params: of({}), // ou ce que tu attends comme données
+            params: of({}),
             snapshot: {},
           },
         },
@@ -327,7 +326,7 @@ describe('HeaderComponent', () => {
         description: 'should handle multiple NavigationEnd events',
         test: () => {
           component.ngOnInit();
-          // CORRECTION : Configurer le mock pour chaque navigation
+          // Configurer le mock pour chaque navigation
           mockLocation.path.and.returnValue('/page1');
           routerEvents$.next(new NavigationEnd(1, '/page1', '/page1'));
           fixture.detectChanges();
@@ -564,7 +563,7 @@ describe('Template Rendering', () => {
     // Afficher une partie du HTML pour debug
     console.log('Template HTML (first 1000 chars):', compiled.innerHTML.substring(0, 1000));
     
-    expect(true).toBe(true); // Ce test passe toujours
+    expect(true).toBe(true);
   });
 
   // Tests conditionnels basés sur la structure réelle

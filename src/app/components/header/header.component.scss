@@ -55,7 +55,7 @@
 
       &.active,
       &:hover {
-        color: #ffb300;
+        color: var(--vt-orange-light);
         
         .icon {
           // Filtre pour rendre les icônes orange
@@ -71,7 +71,7 @@
         right: 0;
         height: 4px;
         border-radius: 2px;
-        background: #ffb300;
+        background: var(--vt-orange-light);
       }
     }
   }
@@ -142,7 +142,7 @@
 
         &.active,
         &:hover {
-          color: #ffb300;
+          color: var(--vt-orange-light);
           
           .icon {
             // Filtre pour rendre les icônes orange

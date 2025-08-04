@@ -7,7 +7,7 @@ describe('AppComponent', () => {
   const setToken = () => localStorage.setItem('token', 'sample-token');
 
   beforeEach(async () => {
-    clearLocalStorage(); // par défaut, pas de token
+    clearLocalStorage();
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],

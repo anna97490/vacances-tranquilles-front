@@ -1,4 +1,4 @@
-import { TermsContent } from '../../models/interfacesTerms';
+import { TermsContent } from './../../models/Terms';
 
 // Fonction utilitaire pour générer les textes à puces
 const bullet = (items: string[]) =>

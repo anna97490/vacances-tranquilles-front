@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HomeContent } from '../models/interfacesHome';
+import { HomeContent } from './../models/Home';
 
 @Injectable({ providedIn: 'root' })
 export class HomeContentService {
