@@ -78,17 +78,19 @@ export class RegisterFormConfigService {
     // Exemple simple, à adapter selon vos besoins réels
     if (fieldName === 'companyName') return isPrestataire ? 'Nom de l\'entreprise' : '';
     if (fieldName === 'siretSiren') return isPrestataire ? 'SIRET/SIREN' : '';
-    // Ajoutez les autres champs ici
+    
+    // NOSONAR - These are UI labels, not hardcoded passwords
     const labels: Record<string, string> = {
       firstName: 'Prénom',
       lastName: 'Nom',
       email: 'Email',
-      password: 'Mot de passe',
+      password: 'Mot de passe', // UI label for password field
       phoneNumber: 'Téléphone',
       address: 'Adresse',
       city: 'Ville',
       postalCode: 'Code postal'
     };
+    
     return labels[fieldName] || fieldName;
   }
 
@@ -101,16 +103,19 @@ export class RegisterFormConfigService {
     // Exemple simple, à adapter selon vos besoins réels
     if (fieldName === 'companyName') return isPrestataire ? 'Votre entreprise' : '';
     if (fieldName === 'siretSiren') return isPrestataire ? 'Numéro SIRET/SIREN' : '';
+    
+    // NOSONAR - These are UI placeholders, not hardcoded credentials
     const placeholders: Record<string, string> = {
       firstName: 'Jean',
       lastName: 'Dupont',
       email: 'exemple@mail.com',
-      password: '********',
+      password: '********', // UI placeholder for password field display
       phoneNumber: '0601020304',
       address: '123 rue Exemple',
       city: 'Paris',
       postalCode: '75000'
     };
+    
     return placeholders[fieldName] || '';
   }
 
