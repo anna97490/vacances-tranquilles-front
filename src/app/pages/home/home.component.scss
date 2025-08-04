@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   font-family: 'Segoe UI', sans-serif;
-  background-color: var(--vt-bg);
+  background-color: var(--secondary-text-color);
   min-height: 100vh;
 }
 
@@ -21,20 +21,20 @@
 
 .main-icon {
   font-size: 48px;
-  color: var(--vt-orange);
+  color: var(--quaternary-color);
 }
 
 .title {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: #222;
+  color: var(--text-color);
 }
 
 .subtitle {
   font-weight: bold;
   font-size: 20px;
-  color: #444;
+  color: var(--discret-text-color);
   margin-bottom: 1.2rem;
 }
 
@@ -65,43 +65,44 @@
 }
 
 .btn.orange {
-  background: var(--vt-orange);
-  color: #fff;
-  border: 1.5px solid var(--vt-orange);
+  background: var(--quaternary-color);
+
+  color: var(--secondary-text-color);
+  border: 1.5px solid var(--quaternary-color);
 }
 
 .btn.orange-outline {
-  background: #fff;
-  color: var(--vt-orange);
-  border: 1.5px solid var(--vt-orange);
+  background: var(--secondary-text-color);
+  color: var(--quaternary-color);
+  border: 1.5px solid var(--quaternary-color);
 }
 
 .btn.grey {
   background: var(--vt-grey);
-  color: #444;
+  color: var(--discret-text-color);
   border: 1.5px solid var(--vt-grey-border);
 }
 
 .btn.blue {
-  background: #3b575d;
-  color: #fff;
-  border: 1.5px solid var(#3b575d);
+  background: var(--button-color);
+  color: var(--secondary-text-color);
+  border: 1.5px solid var(--button-color);
 }
 
 .btn.blue:hover,
 .btn.blue-outline:hover {
-  background: var(--vt-orange);
-  color: #fff;
-  border-color: var(--vt-orange);
+  background: var(--quaternary-color);
+  color: var(--secondary-text-color);
+  border-color: var(--quaternary-color);
 }
 
 .btn.grey:hover {
-  background: var(--vt-grey-border);
+  background: var(--secondary-text-color);
 }
 
 .features-section {
   width: 100%;
-  background: #fff;
+  background: var(--secondary-text-color);
   padding: 1rem 0 3.5rem 0;
   margin-top: 0.5rem;
 }
@@ -114,7 +115,7 @@ app-footer {
   text-align: center;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--vt-title);
+  color: var(--text-color);
   margin-bottom: 2.2rem;
 }
 
@@ -127,8 +128,8 @@ app-footer {
 }
 
 .feature-card {
-  background: #fff;
-  border: 1.5px solid var(--vt-card-border);
+  background: var(--secondary-text-color);
+  border: 1.5px solid var(--secondary-text-color);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   padding: 1.5rem 1.2rem;
@@ -151,7 +152,7 @@ app-footer {
 .feature-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--vt-title);
+  color: var(--text-color);
   margin-bottom: 0.3rem;
 }
 
@@ -161,10 +162,6 @@ app-footer {
 }
 
 @media (min-width: 700px) {
-  // .cta-buttons {
-  //   flex-direction: row;
-  //   gap: 1.2rem;
-  // }
   .features-grid {
     grid-template-columns: 1fr 1fr;
   }

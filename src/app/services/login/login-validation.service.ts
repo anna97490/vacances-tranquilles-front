@@ -21,12 +21,12 @@ export class LoginValidationService {
    */
   getValidationErrorMessage(form: FormGroup): string {
     const emailControl = form.get('email');
-    const passwordControl = form.get('password');
+    const userSecretControl = form.get('userSecret');
 
     if (emailControl?.hasError('required')) return 'L\'email est requis';
     if (emailControl?.hasError('email')) return 'Format d\'email invalide';
-    if (passwordControl?.hasError('required')) return 'Le mot de passe est requis';
-    if (passwordControl?.hasError('minlength')) return 'Le mot de passe doit contenir au moins 6 caractères';
+    if (userSecretControl?.hasError('required')) return 'Le mot de passe est requis';
+    if (userSecretControl?.hasError('minlength')) return 'Le mot de passe doit contenir au moins 6 caractères';
     
     return 'Formulaire invalide - vérifiez vos données';
   }
@@ -36,10 +36,10 @@ export class LoginValidationService {
    * @param form Le formulaire
    */
   resetPasswordField(form: FormGroup): void {
-    const passwordControl = form.get('password');
-    if (passwordControl) {
-      passwordControl.setValue('');
-      passwordControl.markAsUntouched();
+    const userSecretControl = form.get('userSecret');
+    if (userSecretControl) {
+      userSecretControl.setValue('');
+      userSecretControl.markAsUntouched();
     }
   }
 

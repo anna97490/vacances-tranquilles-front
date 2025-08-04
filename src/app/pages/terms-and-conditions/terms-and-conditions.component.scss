@@ -6,7 +6,7 @@
   height: inherit;
 
   padding: 2rem;
-  color: var(--text-color, #31525B);
+  color: var(--text-color, --text-color);
   line-height: 1.6;
   font-size: 1rem;
 }

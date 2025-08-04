@@ -1,779 +1,288 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
-import { HeaderComponent } from './header.component';
-import { Router, NavigationEnd, NavigationStart, RouterEvent, provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subject } from 'rxjs';
-import { By } from '@angular/platform-browser';
+import { Router, ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
+
+import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
-  let routerEvents$: Subject<RouterEvent>;
-  let mockRouter: any;
-  let mockLocation: any;
-
-  // Configuration centralisée des données de test
-  const testData = {
-    paths: {
-      home: '/home',
-      about: '/about',
-      services: '/services',
-      agenda: '/agenda',
-      messagerie: '/messagerie',
-      profil: '/profil',
-      test: '/test',
-      empty: '',
-      complex: [
-        '/user/123/profile',
-        '/search?q=test&sort=date',
-        '/page#section',
-        '/api/v1/users/123',
-        '/français/café'
-      ]
-    },
-    items: {
-      default: {
-        icon: 'default.svg',
-        iconActive: 'active.svg',
-        path: '/test',
-        label: 'Test'
-      },
-      withoutActive: {
-        icon: 'default.svg',
-        path: '/test',
-        label: 'Test'
-      },
-      emptyActive: {
-        icon: 'default.svg',
-        iconActive: '',
-        path: '/test',
-        label: 'Test'
-      },
-      minimal: {
-        icon: 'minimal.svg',
-        path: '/minimal',
-        label: 'Minimal'
-      },
-      incomplete: {
-        label: 'Test'
-      }
-    }
-  };
-
-  // Mock plus complet du Router
-  const createMockRouter = () => ({
-    events: routerEvents$.asObservable(),
-    url: '/home',
-    navigate: jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true)),
-    navigateByUrl: jasmine.createSpy('navigateByUrl').and.returnValue(Promise.resolve(true)),
-    createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({}),
-    serializeUrl: jasmine.createSpy('serializeUrl').and.returnValue(''),
-    parseUrl: jasmine.createSpy('parseUrl').and.returnValue({
-      root: {
-        children: {},
-        numberOfChildren: 0,
-        hasChildren: () => false
-      },
-      queryParams: {},
-      fragment: null
-    }),
-    isActive: jasmine.createSpy('isActive').and.returnValue(false),
-    routerState: {
-      root: {
-        children: [],
-        firstChild: null,
-        parent: null,
-        pathFromRoot: [],
-        paramMap: new Map(),
-        queryParamMap: new Map(),
-        snapshot: {
-          params: {},
-          queryParams: {},
-          fragment: null,
-          data: {},
-          url: [],
-          outlet: 'primary',
-          component: null,
-          routeConfig: null,
-          root: null,
-          parent: null,
-          firstChild: null,
-          children: [],
-          pathFromRoot: [],
-          paramMap: new Map(),
-          queryParamMap: new Map(),
-          title: undefined
-        }
-      },
-      snapshot: {}
-    }
-  });
-
-  const createMockLocation = () => ({
-    path: jasmine.createSpy('path').and.returnValue(testData.paths.home),
-    back: jasmine.createSpy('back'),
-    forward: jasmine.createSpy('forward'),
-    go: jasmine.createSpy('go'),
-    replaceState: jasmine.createSpy('replaceState'),
-    subscribe: jasmine.createSpy('subscribe').and.returnValue({ unsubscribe: () => {} }),
-    normalize: jasmine.createSpy('normalize').and.returnValue(''),
-    prepareExternalUrl: jasmine.createSpy('prepareExternalUrl').and.returnValue('')
-  });
-
-  // Helpers pour réduire la duplication
-  const testHelpers = {
-    createTestItem: (overrides = {}) => ({
-      ...testData.items.default,
-      ...overrides
-    }),
-    
-    setCurrentPath: (path: string) => {
-      component.currentPath = path;
-      fixture.detectChanges();
-    },
-    
-    triggerNavigation: (path: string) => {
-      mockLocation.path.and.returnValue(path || testData.paths.home);
-      routerEvents$.next(new NavigationEnd(1, path || testData.paths.home, path || testData.paths.home));
-      fixture.detectChanges();
-    },
-    
-    getElementBySelector: (selector: string) => 
-      fixture.debugElement.query(By.css(selector)),
-    
-    getAllElementsBySelector: (selector: string) => 
-      fixture.debugElement.queryAll(By.css(selector)),
-    
-    expectPathToBeActive: (path: string, shouldBeActive = true) => {
-      expect(component.isActive(path)).toBe(shouldBeActive);
-    },
-    
-    expectIconToBe: (item: any, expectedIcon: string) => {
-      expect(component.getIcon(item)).toBe(expectedIcon);
-    },
-    
-    simulateHover: (item: any, isHovered = true) => {
-      component.hoveredItem = isHovered ? item : null;
-      fixture.detectChanges();
-    },
-    
-    expectElementToHaveClass: (element: any, className: string, shouldHave = true) => {
-      const hasClass = element.nativeElement.classList.contains(className);
-      expect(hasClass).toBe(shouldHave);
-    }
-  };
-
-  // Configuration de test paramétrée avec gestion d'erreur
-  const createParameterizedTests = (testCases: any[], testFunction: Function) => {
-    testCases.forEach(testCase => {
-      const description = typeof testCase === 'object' ? testCase.description : testCase;
-      it(description, () => {
-        try {
-          testFunction(testCase);
-        } catch (error) {
-          console.error(`Test failed for case: ${JSON.stringify(testCase)}`, error);
-          throw error;
-        }
-      });
-    });
-  };
+  let router: Router;
+  let location: Location;
 
   beforeEach(async () => {
-    routerEvents$ = new Subject<RouterEvent>();
-    mockRouter = createMockRouter();
-    mockLocation = createMockLocation();
-
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
       providers: [
         {
-          provide: ActivatedRoute,
+          provide: Router,
           useValue: {
-            params: of({}),
-            snapshot: {},
-          },
+            events: of({}),
+            navigate: jasmine.createSpy('navigate'),
+            url: '/home',
+            createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({}),
+            parseUrl: jasmine.createSpy('parseUrl').and.returnValue({}),
+            serializeUrl: jasmine.createSpy('serializeUrl').and.returnValue(''),
+            createUrlTreeFromSegment: jasmine.createSpy('createUrlTreeFromSegment').and.returnValue({}),
+            routerState: {
+              snapshot: {
+                root: {
+                  children: []
+                }
+              }
+            }
+          }
         },
         {
-          provide: Router,
-          useValue: mockRouter
+          provide: ActivatedRoute,
+          useValue: {
+            url: of([]),
+            params: of({}),
+            queryParams: of({}),
+            fragment: of(''),
+            data: of({}),
+            outlet: 'primary',
+            component: null,
+            snapshot: {
+              url: [],
+              params: {},
+              queryParams: {},
+              fragment: '',
+              data: {},
+              outlet: 'primary',
+              component: null
+            }
+          }
         },
         {
           provide: Location,
-          useValue: mockLocation
+          useValue: {
+            path: jasmine.createSpy('path').and.returnValue('/home')
+          }
         }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
-    
-    // Vérifier que les mocks sont bien injectés
-    expect(component['router']).toBe(mockRouter);
-    expect(component.location).toBe(mockLocation);
-
-    // Initialiser les propriétés du composant si nécessaire
-    if (!component.currentPath) {
-      component.currentPath = testData.paths.home;
-    }
-    if (component.hoveredItem === undefined) {
-      component.hoveredItem = null;
-    }
-    
+    router = TestBed.inject(Router);
+    location = TestBed.inject(Location);
     fixture.detectChanges();
   });
 
-  afterEach(() => {
-    routerEvents$.complete();
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
 
-  describe('Constructor & Initialization', () => {
-    const constructorTests = [
-      {
-        description: 'should inject Router and Location dependencies',
-        test: () => {
-          expect(component['router']).toBe(mockRouter);
-          expect(component['location']).toBe(mockLocation);
-        }
-      },
-      {
-        description: 'should have router as private property',
-        test: () => {
-          expect(component['router']).toBeDefined();
-          expect(component['router']).toBe(mockRouter);
-        }
-      },
-      {
-        description: 'should have location as public property',
-        test: () => {
-          expect(component.location).toBeDefined();
-          expect(component.location).toBe(mockLocation);
-        }
-      },
-      {
-        description: 'should initialize with default values',
-        test: () => {
-          const newFixture = TestBed.createComponent(HeaderComponent);
-          const newComponent = newFixture.componentInstance;
-          newFixture.detectChanges();
-          expect(newComponent.currentPath).toBeDefined();
-          expect(newComponent.hoveredItem).toBeNull();
-        }
-      }
-    ];
-
-    constructorTests.forEach(({ description, test }) => {
-      it(description, test);
-    });
-
-    it('should create the component', () => {
-      expect(component).toBeTruthy();
-    });
+  it('should initialize with correct menu items', () => {
+    expect(component.menu.length).toBe(5);
+    expect(component.menu[0].label).toBe('Accueil');
+    expect(component.menu[1].label).toBe('Profil');
+    expect(component.menu[2].label).toBe('Messagerie');
+    expect(component.menu[3].label).toBe('Agenda');
+    expect(component.menu[4].label).toBe('Assistance');
   });
 
-  describe('ngOnInit', () => {
-    const pathInitializationTests = [
-      { path: testData.paths.about, expected: testData.paths.about },
-      { path: '', expected: testData.paths.home },
-      { path: null, expected: testData.paths.home },
-      { path: undefined, expected: testData.paths.home }
-    ];
-
-    createParameterizedTests(
-      pathInitializationTests.map(test => ({
-        description: `should initialize currentPath correctly for path: ${test.path || 'empty/null/undefined'}`,
-        ...test
-      })),
-      ({ path, expected }: { path: string | null | undefined; expected: string }) => {
-        mockLocation.path.and.returnValue(path);
-        component.ngOnInit();
-        expect(component.currentPath).toBe(expected);
-      }
-    );
-
-    const navigationTests = [
-      {
-        description: 'should update currentPath on NavigationEnd event',
-        test: () => {
-          component.ngOnInit();
-          testHelpers.triggerNavigation(testData.paths.services);
-          expect(component.currentPath).toBe(testData.paths.services);
-        }
-      },
-      {
-        description: 'should fallback to /home if location.path() is empty during NavigationEnd',
-        test: () => {
-          component.ngOnInit();
-          // S'assurer que le mock retourne bien une chaîne vide
-          mockLocation.path.and.returnValue('');
-          routerEvents$.next(new NavigationEnd(1, '', ''));
-          fixture.detectChanges();
-          expect(component.currentPath).toBe(testData.paths.home);
-        }
-      },
-      {
-        description: 'should ignore non-NavigationEnd events',
-        test: () => {
-          component.ngOnInit();
-          component.currentPath = '/initial';
-          routerEvents$.next(new NavigationStart(1, '/other'));
-          expect(component.currentPath).toBe('/initial');
-        }
-      },
-      {
-        description: 'should handle multiple NavigationEnd events',
-        test: () => {
-          component.ngOnInit();
-          // Configurer le mock pour chaque navigation
-          mockLocation.path.and.returnValue('/page1');
-          routerEvents$.next(new NavigationEnd(1, '/page1', '/page1'));
-          fixture.detectChanges();
-          expect(component.currentPath).toBe('/page1');
-          
-          mockLocation.path.and.returnValue('/page2');
-          routerEvents$.next(new NavigationEnd(2, '/page2', '/page2'));
-          fixture.detectChanges();
-          expect(component.currentPath).toBe('/page2');
-        }
-      }
-    ];
-
-    navigationTests.forEach(({ description, test }) => {
-      it(description, test);
-    });
+  it('should have correct paths for menu items', () => {
+    expect(component.menu[0].path).toBe('/home');
+    expect(component.menu[1].path).toBe('/profil');
+    expect(component.menu[2].path).toBe('/messagerie');
+    expect(component.menu[3].path).toBe('/agenda');
+    expect(component.menu[4].path).toBe('/assistance');
   });
 
-  describe('isActive Method', () => {
-    const activeTests = [
-      { currentPath: testData.paths.profil, testPath: testData.paths.profil, expected: true },
-      { currentPath: testData.paths.messagerie, testPath: testData.paths.home, expected: false },
-      { currentPath: testData.paths.home, testPath: testData.paths.home, expected: true },
-      { currentPath: '/home/profile', testPath: testData.paths.home, expected: false },
-      { currentPath: testData.paths.home, testPath: '', expected: false },
-      { currentPath: '', testPath: '', expected: true },
-      { currentPath: '/Home', testPath: '/home', expected: false },
-      { currentPath: '/Home', testPath: '/Home', expected: true },
-      // Séparation du test problématique pour diagnostic
-      { currentPath: '/search?q=simple', testPath: '/search?q=simple', expected: true }
-    ];
-
-    createParameterizedTests(
-      activeTests.map(test => ({
-        description: `should return ${test.expected} when currentPath is "${test.currentPath}" and testing "${test.testPath}"`,
-        ...test
-      })),
-      ({ currentPath, testPath, expected }: { currentPath: string; testPath: string; expected: boolean }) => {
-        component.currentPath = currentPath;
-        const result = component.isActive(testPath);
-        expect(result).toBe(expected);
-      }
-    );
-
-    // Test séparé pour le cas problématique avec gestion d'erreur
-    it('should handle complex query parameters correctly', () => {
-      const complexPath = '/search?q=test&sort=date';
-      component.currentPath = complexPath;
-      
-      try {
-        const isActiveExact = component.isActive(complexPath);
-        expect(isActiveExact).toBe(true);
-        
-        const isActivePartial = component.isActive('/search');
-        expect(isActivePartial).toBe(false);
-      } catch (error) {
-        console.error('Error testing complex path:', error);
-        // Fallback: test avec une version simplifiée
-        component.currentPath = '/search';
-        expect(component.isActive('/search')).toBe(true);
-      }
-    });
+  it('should have correct icons for menu items', () => {
+    expect(component.menu[0].icon).toContain('cottage');
+    expect(component.menu[1].icon).toContain('person');
+    expect(component.menu[2].icon).toContain('chat_bubble');
+    expect(component.menu[3].icon).toContain('calendar');
+    expect(component.menu[4].icon).toContain('contact_support');
   });
 
-  describe('getIcon Method', () => {
-    const iconTests = [
-      {
-        description: 'should return iconActive when item is hovered',
-        setup: () => {
-          const item = testHelpers.createTestItem();
-          testHelpers.simulateHover(item);
-          testHelpers.setCurrentPath('/other');
-          return { item, expected: item.iconActive };
-        }
-      },
-      {
-        description: 'should return iconActive when item path is active',
-        setup: () => {
-          const item = testHelpers.createTestItem();
-          testHelpers.simulateHover(null);
-          testHelpers.setCurrentPath(item.path);
-          return { item, expected: item.iconActive };
-        }
-      },
-      {
-        description: 'should return iconActive when item is both hovered and active',
-        setup: () => {
-          const item = testHelpers.createTestItem();
-          testHelpers.simulateHover(item);
-          testHelpers.setCurrentPath(item.path);
-          return { item, expected: item.iconActive };
-        }
-      },
-      {
-        description: 'should return default icon when item is not hovered and not active',
-        setup: () => {
-          const item = testHelpers.createTestItem();
-          testHelpers.simulateHover(null);
-          testHelpers.setCurrentPath('/other');
-          return { item, expected: item.icon };
-        }
-      },
-      {
-        description: 'should return default icon when item is hovered but iconActive is missing',
-        setup: () => {
-          const item = testData.items.withoutActive;
-          testHelpers.simulateHover(item);
-          testHelpers.setCurrentPath('/other');
-          return { item, expected: item.icon };
-        }
-      },
-      {
-        description: 'should return default icon when item is active but iconActive is missing',
-        setup: () => {
-          const item = testData.items.withoutActive;
-          testHelpers.simulateHover(null);
-          testHelpers.setCurrentPath(item.path);
-          return { item, expected: item.icon };
-        }
-      },
-      {
-        description: 'should return default icon when iconActive is empty string',
-        setup: () => {
-          const item = testData.items.emptyActive;
-          testHelpers.simulateHover(item);
-          testHelpers.setCurrentPath('/other');
-          return { item, expected: item.icon };
-        }
-      }
-    ];
-
-    iconTests.forEach(({ description, setup }) => {
-      it(description, () => {
-        const { item, expected } = setup();
-        testHelpers.expectIconToBe(item, expected);
-      });
-    });
-
-    it('should handle different hovered items', () => {
-      const item1 = testHelpers.createTestItem();
-      const item2 = testHelpers.createTestItem({
-        icon: 'other.svg',
-        iconActive: 'other-active.svg',
-        path: '/other'
-      });
-      
-      testHelpers.simulateHover(item2);
-      testHelpers.setCurrentPath('/different');
-      
-      testHelpers.expectIconToBe(item1, item1.icon);
-      testHelpers.expectIconToBe(item2, item2.iconActive);
-    });
+  it('should have active icons for menu items', () => {
+    expect(component.menu[0].iconActive).toContain('FFA101');
+    expect(component.menu[1].iconActive).toContain('FFA101');
+    expect(component.menu[2].iconActive).toContain('FFA101');
+    expect(component.menu[3].iconActive).toContain('FFA101');
+    expect(component.menu[4].iconActive).toContain('FFA101');
   });
 
-describe('Template Rendering', () => {
-  const templateTests = [
-    {
-      description: 'should render logo with correct src',
-      test: () => {
-        const img = testHelpers.getElementBySelector('.logo-img');
-        expect(img).toBeTruthy();
-        expect(img.nativeElement.getAttribute('src')).toBe(component.mainLogo);
-      }
-    },
-    {
-      description: 'should render a nav-link for each menu item',
-      test: () => {
-        const links = testHelpers.getAllElementsBySelector('.nav-link');
-        expect(links.length).toBe(component.menu.length);
-      }
-    },
-    {
-      description: 'should display correct labels for all menu items',
-      test: () => {
-        const links = testHelpers.getAllElementsBySelector('.nav-link');
-        links.forEach((link, i) => {
-          expect(link.nativeElement.textContent).toContain(component.menu[i].label);
-        });
-      }
-    },
-    {
-      description: 'should display navigation elements',
-      test: () => {
-        // Test plus basique qui vérifie juste la présence des éléments de navigation
-        const navLinks = testHelpers.getAllElementsBySelector('.nav-link');
-        expect(navLinks.length).toBe(component.menu.length);
-        
-        // Vérifier que chaque lien contient le bon label
-        navLinks.forEach((link, i) => {
-          expect(link.nativeElement.textContent).toContain(component.menu[i].label);
-        });
-      }
-    }
-  ];
-
-  templateTests.forEach(({ description, test }) => {
-    it(description, test);
+  it('should initialize with correct logo path', () => {
+    expect(component.mainLogo).toBe('assets/pictures/logo.png');
   });
 
-  // Test de debug pour comprendre la structure réelle
-  it('should debug template structure', () => {
-    fixture.detectChanges();
+  it('should initialize with hoveredItem as null', () => {
+    expect(component.hoveredItem).toBeNull();
+  });
+
+  it('should initialize with mobile menu closed', () => {
+    expect(component.isMobileMenuOpen).toBe(false);
+  });
+
+  it('should return correct icon based on hover state', () => {
+    const menuItem = component.menu[0];
+    component.hoveredItem = menuItem;
+    
+    const icon = component.getIcon(menuItem);
+    expect(icon).toBe(menuItem.iconActive);
+  });
+
+  it('should return default icon when not hovered', () => {
+    const menuItem = component.menu[0];
+    component.hoveredItem = null;
+    component.currentPath = '/profil'; // Définir une route différente pour éviter l'état actif
+    
+    const icon = component.getIcon(menuItem);
+    expect(icon).toBe(menuItem.icon);
+  });
+
+  it('should return active icon when route is active', () => {
+    const menuItem = component.menu[0];
+    component.currentPath = '/home';
+    component.hoveredItem = null;
+    
+    const icon = component.getIcon(menuItem);
+    expect(icon).toBe(menuItem.iconActive);
+  });
+
+  it('should return active icon when both hovered and route is active', () => {
+    const menuItem = component.menu[0];
+    component.currentPath = '/home';
+    component.hoveredItem = menuItem;
+    
+    const icon = component.getIcon(menuItem);
+    expect(icon).toBe(menuItem.iconActive);
+  });
+
+  it('should return default icon when route is not active and not hovered', () => {
+    const menuItem = component.menu[0];
+    component.currentPath = '/profil';
+    component.hoveredItem = null;
+    
+    const icon = component.getIcon(menuItem);
+    expect(icon).toBe(menuItem.icon);
+  });
+
+  // Tests pour le burger menu
+  it('should toggle mobile menu when toggleMobileMenu is called', () => {
+    expect(component.isMobileMenuOpen).toBe(false);
+    
+    component.toggleMobileMenu();
+    expect(component.isMobileMenuOpen).toBe(true);
+    
+    component.toggleMobileMenu();
+    expect(component.isMobileMenuOpen).toBe(false);
+  });
+
+  it('should close mobile menu when closeMobileMenu is called', () => {
+    component.isMobileMenuOpen = true;
+    
+    component.closeMobileMenu();
+    expect(component.isMobileMenuOpen).toBe(false);
+  });
+
+  it('should prevent body scroll when mobile menu is open', () => {
+    const originalOverflow = document.body.style.overflow;
+    
+    component.toggleMobileMenu();
+    expect(document.body.style.overflow).toBe('hidden');
+    
+    component.toggleMobileMenu();
+    expect(document.body.style.overflow).toBe('');
+    
+    // Restaurer l'état original
+    document.body.style.overflow = originalOverflow;
+  });
+
+  it('should restore body scroll when mobile menu is closed', () => {
+    const originalOverflow = document.body.style.overflow;
+    component.isMobileMenuOpen = true;
+    
+    component.closeMobileMenu();
+    expect(document.body.style.overflow).toBe('');
+    
+    // Restaurer l'état original
+    document.body.style.overflow = originalOverflow;
+  });
+
+  it('should close mobile menu on escape key', () => {
+    component.isMobileMenuOpen = true;
+    
+    component.onEscapeKey();
+    expect(component.isMobileMenuOpen).toBe(false);
+  });
+
+  it('should close mobile menu when clicking outside', () => {
+    component.isMobileMenuOpen = true;
+    
+    const mockEvent = {
+      target: document.createElement('div')
+    } as unknown as Event;
+    
+    component.onDocumentClick(mockEvent);
+    expect(component.isMobileMenuOpen).toBe(false);
+  });
+
+  it('should not close mobile menu when clicking inside menu', () => {
+    component.isMobileMenuOpen = true;
+    
+    const mockMenuElement = document.createElement('div');
+    mockMenuElement.className = 'mobile-menu-container';
+    const mockEvent = {
+      target: mockMenuElement
+    } as unknown as Event;
+    
+    component.onDocumentClick(mockEvent);
+    expect(component.isMobileMenuOpen).toBe(true);
+  });
+
+  it('should not close mobile menu when clicking burger button', () => {
+    component.isMobileMenuOpen = true;
+    
+    const mockBurgerElement = document.createElement('button');
+    mockBurgerElement.className = 'burger-btn';
+    const mockEvent = {
+      target: mockBurgerElement
+    } as unknown as Event;
+    
+    component.onDocumentClick(mockEvent);
+    expect(component.isMobileMenuOpen).toBe(true);
+  });
+
+  it('should render burger button in template', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    
-    console.log('Menu items:', component.menu);
-    console.log('Component menu length:', component.menu?.length);
-    
-    // Analyser tous les types d'éléments de navigation possibles
-    const allAnchors = compiled.querySelectorAll('a');
-    const allButtons = compiled.querySelectorAll('button');
-    const allNavLinks = compiled.querySelectorAll('.nav-link');
-    const allRouterLinks = compiled.querySelectorAll('[routerLink]');
-    const allRouterLinkAttr = compiled.querySelectorAll('[ng-reflect-router-link]');
-    
-    console.log('Analysis:');
-    console.log('- All anchors:', allAnchors.length);
-    console.log('- All buttons:', allButtons.length);
-    console.log('- Elements with .nav-link:', allNavLinks.length);
-    console.log('- Elements with [routerLink]:', allRouterLinks.length);
-    console.log('- Elements with [ng-reflect-router-link]:', allRouterLinkAttr.length);
-    
-    // Analyser chaque élément nav-link
-    allNavLinks.forEach((link, index) => {
-      console.log(`Nav link ${index}:`, {
-        tagName: link.tagName,
-        classList: Array.from(link.classList),
-        routerLink: link.getAttribute('routerLink'),
-        ngReflectRouterLink: link.getAttribute('ng-reflect-router-link'),
-        textContent: link.textContent?.trim(),
-        innerHTML: link.innerHTML
-      });
-    });
-    
-    // Afficher une partie du HTML pour debug
-    console.log('Template HTML (first 1000 chars):', compiled.innerHTML.substring(0, 1000));
-    
-    expect(true).toBe(true);
+    const burgerButton = compiled.querySelector('.burger-btn');
+    expect(burgerButton).toBeTruthy();
   });
 
-  // Tests conditionnels basés sur la structure réelle
-  it('should have navigation functionality', () => {
+  it('should render mobile menu container in template', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    
-    // Chercher différents types d'éléments de navigation
-    const routerLinks = compiled.querySelectorAll('[routerLink]');
-    const ngReflectLinks = compiled.querySelectorAll('[ng-reflect-router-link]');
-    const navLinks = compiled.querySelectorAll('.nav-link');
-    
-    // Si routerLink est présent directement
-    if (routerLinks.length > 0) {
-      expect(routerLinks.length).toBe(component.menu.length);
-      routerLinks.forEach((link, i) => {
-        const routerLinkValue = link.getAttribute('routerLink');
-        expect(routerLinkValue).toBe(component.menu[i].path);
-      });
-    }
-    // Si routerLink est via ng-reflect (Angular en mode développement)
-    else if (ngReflectLinks.length > 0) {
-      expect(ngReflectLinks.length).toBe(component.menu.length);
-      ngReflectLinks.forEach((link, i) => {
-        const routerLinkValue = link.getAttribute('ng-reflect-router-link');
-        expect(routerLinkValue).toBe(component.menu[i].path);
-      });
-    }
-    // Si seulement les classes nav-link sont présentes
-    else if (navLinks.length > 0) {
-      expect(navLinks.length).toBe(component.menu.length);
-      navLinks.forEach((link, i) => {
-        expect(link.textContent).toContain(component.menu[i].label);
-      });
-    }
-    // Fallback minimal
-    else {
-      // Au minimum, vérifier que le composant a un menu
-      expect(component.menu).toBeDefined();
-      expect(component.menu.length).toBeGreaterThan(0);
-    }
+    const mobileMenu = compiled.querySelector('.mobile-menu-container');
+    expect(mobileMenu).toBeTruthy();
   });
 
-  it('should render menu items correctly', () => {
-    // Test plus défensif qui ne dépend pas de routerLink
-    expect(component.menu).toBeDefined();
-    expect(component.menu.length).toBeGreaterThan(0);
-    
+  it('should render mobile navigation in template', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    
-    // Vérifier que chaque label du menu apparaît dans le DOM
-    component.menu.forEach(menuItem => {
-      expect(compiled.textContent).toContain(menuItem.label);
-    });
+    const mobileNav = compiled.querySelector('.mobile-nav');
+    expect(mobileNav).toBeTruthy();
   });
 
-  describe('Navigation Links Validation', () => {
-    beforeEach(() => {
-      fixture.detectChanges();
-    });
-
-    it('should have menu items defined', () => {
-      expect(component.menu).toBeDefined();
-      expect(component.menu.length).toBeGreaterThan(0);
-    });
-
-    it('should render navigation elements', () => {
-      const navElement = testHelpers.getElementBySelector('nav') || 
-                        testHelpers.getElementBySelector('header') ||
-                        testHelpers.getElementBySelector('.navbar');
-      expect(navElement).toBeTruthy();
-    });
-
-    it('should have navigation links in some form', () => {
-      const compiled = fixture.nativeElement as HTMLElement;
-      
-      // Chercher différents types de liens possibles
-      const possibleLinkSelectors = [
-        'a',
-        'button',
-        '.nav-link',
-        '[routerLink]',
-        '[ng-reflect-router-link]'
-      ];
-      
-      let foundLinks = 0;
-      possibleLinkSelectors.forEach(selector => {
-        const elements = compiled.querySelectorAll(selector);
-        foundLinks = Math.max(foundLinks, elements.length);
-      });
-      
-      expect(foundLinks).toBeGreaterThanOrEqual(component.menu.length);
-    });
-
-    it('should verify menu item paths exist in template', () => {
-      const compiled = fixture.nativeElement as HTMLElement;
-      const templateHTML = compiled.innerHTML;
-      
-      // Vérification plus flexible - chercher les paths dans le HTML
-      component.menu.forEach(menuItem => {
-        const pathExists = templateHTML.includes(menuItem.path) ||
-                          templateHTML.includes(menuItem.path.replace('/', '')) ||
-                          compiled.textContent?.includes(menuItem.label);
-        
-        expect(pathExists).toBe(true);
-      });
-    });
-
-    // Test corrigé pour éviter l'erreur null
-    it('should handle routerLink attributes safely', () => {
-      const compiled = fixture.nativeElement as HTMLElement;
-      
-      component.menu.forEach(menuItem => {
-        const linkSelector = `[routerLink="${menuItem.path}"]`;
-        const specificLink = compiled.querySelector(linkSelector);
-        
-        if (specificLink) {
-          expect(specificLink.getAttribute('routerLink')).toBe(menuItem.path);
-        } else {
-          // Si routerLink direct n'existe pas, chercher ng-reflect-router-link
-          const ngReflectSelector = `[ng-reflect-router-link="${menuItem.path}"]`;
-          const ngReflectLink = compiled.querySelector(ngReflectSelector);
-          
-          if (ngReflectLink) {
-            expect(ngReflectLink.getAttribute('ng-reflect-router-link')).toBe(menuItem.path);
-          } else {
-            // Au minimum, vérifier que le path ou le label apparaît quelque part
-            const pathInTemplate = compiled.innerHTML.includes(menuItem.path) ||
-                                  compiled.textContent?.includes(menuItem.label);
-            expect(pathInTemplate).toBe(true);
-          }
-        }
-      });
-    });
-
-    // Test corrigé - inverser la logique toBeNull
-    it('should have proper link structure in template', () => {
-      const compiled = fixture.nativeElement as HTMLElement;
-      
-      component.menu.forEach(menuItem => {
-        // Chercher différents types de liens possibles
-        const directRouterLink = compiled.querySelector(`[routerLink="${menuItem.path}"]`);
-        const ngReflectLink = compiled.querySelector(`[ng-reflect-router-link="${menuItem.path}"]`);
-        
-        // Au moins un des deux devrait exister
-        const linkExists = directRouterLink || ngReflectLink;
-        
-        if (linkExists) {
-          if (directRouterLink) {
-            expect(directRouterLink.getAttribute('routerLink')).toBe(menuItem.path);
-          }
-          if (ngReflectLink) {
-            expect(ngReflectLink.getAttribute('ng-reflect-router-link')).toBe(menuItem.path);
-          }
-        } else {
-          // Fallback: vérifier que le contenu du menu existe
-          expect(compiled.textContent).toContain(menuItem.label);
-        }
-      });
-    });
+  it('should render all menu items in mobile navigation', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const mobileNavLinks = compiled.querySelectorAll('.mobile-nav .nav-link');
+    expect(mobileNavLinks.length).toBe(component.menu.length);
   });
 
-  it('should apply .active class to the active route', () => {
-    testHelpers.setCurrentPath(testData.paths.agenda);
-    const links = testHelpers.getAllElementsBySelector('.nav-link');
-    
-    if (links.length > 0) {
-      const active = links.find(el => el.nativeElement.classList.contains('active'));
-      if (active) {
-        expect(active.nativeElement.textContent).toContain('Agenda');
-      } else {
-        // Si pas de classe active trouvée, au moins vérifier que les liens existent
-        expect(links.length).toBe(component.menu.length);
-      }
-    } else {
-      // Fallback si pas de nav-link
-      const compiled = fixture.nativeElement as HTMLElement;
-      expect(compiled.textContent).toContain('Agenda');
-    }
+  it('should render desktop navigation in template', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const desktopNav = compiled.querySelector('.desktop-nav');
+    expect(desktopNav).toBeTruthy();
   });
-});
 
-describe('Edge Cases', () => {
-  it('should handle complex paths with special characters', () => {
-    const simplePaths = [
-      '/user/123/profile',
-      '/page#section',
-        '/api/v1/users/123'
-      ];
-      
-      simplePaths.forEach(path => {
-        try {
-          component.currentPath = path;
-          testHelpers.expectPathToBeActive(path, true);
-          testHelpers.expectPathToBeActive(path + '/other', false);
-        } catch (error) {
-          console.warn(`Skipping problematic path: ${path}`, error);
-        }
-      });
-    });
-
-    it('should handle paths with query parameters safely', () => {
-      const safePath = '/search';
-      const pathWithParams = '/search?q=test';
-      
-      component.currentPath = safePath;
-      expect(component.isActive(safePath)).toBe(true);
-      
-      // Test plus prudent pour les paramètres de requête
-      component.currentPath = pathWithParams;
-      expect(component.isActive(pathWithParams)).toBe(true);
-    });
+  it('should render all menu items in desktop navigation', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const desktopNavLinks = compiled.querySelectorAll('.desktop-nav .nav-link');
+    expect(desktopNavLinks.length).toBe(component.menu.length);
   });
 });

@@ -27,7 +27,7 @@
     /** Background-color */
     --primary-color: #FBF4E9;
     /** Button color */
-    --secondary-color: #31525B;
+    --button-color: #31525B;
     /** Button text color */
     --secondary-text-color: #FFFFFF;
     /** Button nav color */
@@ -37,20 +37,16 @@
     /** Text color */
     --text-color: #31525B;
 
+    --discret-text-color: #777; 
+
+    --vt-grey: #f5f5f5;
+    --vt-grey-border: #e0e0e0;
+    /* Border radius de référence */
+    --border-radius-base: 12px;
+
     --header-height: 13vh;
     --main-height: 77vh;
     --footer-height: 10vh;
-
-    /* Ajout pour page d'accueil */
-    --vt-blue: #3b575d;
-    --vt-orange: #FFA500;
-    --vt-orange-light: #ffb733;
-    --vt-bg: #fcfcfa;
-    --vt-grey: #f5f5f5;
-    --vt-grey-border: #e0e0e0;
-    --vt-card-border: #ececec;
-    --vt-title: #2d3a4a;
-    --vt-text: #555;
 }
 
 html, body {
@@ -58,6 +54,28 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: 'Roboto', sans-serif;
+  overflow-x: hidden; /* Empêche le scroll horizontal */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Empêche le dépassement horizontal sur tous les éléments */
+* {
+  max-width: 100%;
+}
+
+/* Assure que les conteneurs principaux ne dépassent pas */
+.app-container,
+.homepage-container,
+.content,
+.features-section {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 .mat-mdc-form-field {

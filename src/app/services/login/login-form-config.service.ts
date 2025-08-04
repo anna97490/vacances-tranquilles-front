@@ -15,7 +15,7 @@ export class LoginFormConfigService {
   createLoginForm(): FormGroup {
     return this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      userSecret: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -26,7 +26,7 @@ export class LoginFormConfigService {
   createLoginPayload(form: FormGroup): { email: string; password: string } {
     return {
       email: form.value.email,
-      password: form.value.password
+      password: form.value.userSecret // Mappé depuis userSecret vers password pour l'API
     };
   }
 }
