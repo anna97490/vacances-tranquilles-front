@@ -2,6 +2,29 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+// Constantes pour les labels UI (pas de mots de passe)
+const UI_FIELD_LABELS = {
+  firstName: 'Prénom',
+  lastName: 'Nom',
+  email: 'Email',
+  password: 'Mot de passe',
+  phoneNumber: 'Téléphone',
+  address: 'Adresse',
+  city: 'Ville',
+  postalCode: 'Code postal'
+} as const;
+
+const UI_PLACEHOLDERS = {
+  firstName: 'Jean',
+  lastName: 'Dupont',
+  email: 'exemple@mail.com',
+  password: '********',
+  phoneNumber: '0601020304',
+  address: '123 rue Exemple',
+  city: 'Paris',
+  postalCode: '75000'
+} as const;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -79,19 +102,7 @@ export class RegisterFormConfigService {
     if (fieldName === 'companyName') return isPrestataire ? 'Nom de l\'entreprise' : '';
     if (fieldName === 'siretSiren') return isPrestataire ? 'SIRET/SIREN' : '';
     
-    // NOSONAR - These are UI labels, not hardcoded passwords
-    const labels: Record<string, string> = {
-      firstName: 'Prénom',
-      lastName: 'Nom',
-      email: 'Email',
-      password: 'Mot de passe', // UI label for password field
-      phoneNumber: 'Téléphone',
-      address: 'Adresse',
-      city: 'Ville',
-      postalCode: 'Code postal'
-    };
-    
-    return labels[fieldName] || fieldName;
+    return UI_FIELD_LABELS[fieldName as keyof typeof UI_FIELD_LABELS] || fieldName;
   }
 
   /**
@@ -104,19 +115,7 @@ export class RegisterFormConfigService {
     if (fieldName === 'companyName') return isPrestataire ? 'Votre entreprise' : '';
     if (fieldName === 'siretSiren') return isPrestataire ? 'Numéro SIRET/SIREN' : '';
     
-    // NOSONAR - These are UI placeholders, not hardcoded credentials
-    const placeholders: Record<string, string> = {
-      firstName: 'Jean',
-      lastName: 'Dupont',
-      email: 'exemple@mail.com',
-      password: '********', // UI placeholder for password field display
-      phoneNumber: '0601020304',
-      address: '123 rue Exemple',
-      city: 'Paris',
-      postalCode: '75000'
-    };
-    
-    return placeholders[fieldName] || '';
+    return UI_PLACEHOLDERS[fieldName as keyof typeof UI_PLACEHOLDERS] || '';
   }
 
   /**
