@@ -25,7 +25,7 @@ export const routes: Routes = [
     ]
   },
   // Route wildcard pour gérer les URLs non trouvées
-  { path: '**', redirectTo: 'home' }
+  { path: '**', redirectTo: 'home' },
     // Routes d'authentification avec paramètres pour le type d'utilisateur
   { 
     path: 'auth',
