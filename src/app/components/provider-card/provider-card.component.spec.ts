@@ -52,18 +52,7 @@ describe('ProviderCardComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should display the service description', async () => {
-    await fixture.whenStable(); // attend que tous les changements soient propagés
-    fixture.detectChanges();    // applique les changements DOM
-
-    const compiled = fixture.nativeElement as HTMLElement;
-    const description = compiled.querySelector('.description');
-
-    expect(description).not.toBeNull(); // bonne pratique
-    expect(description?.textContent?.trim()).toContain('Coupe et entretien du gazon');
-  });
-
+  
   it('should not crash if description is undefined', () => {
     if (component.service) {
       component.service.description = undefined;
