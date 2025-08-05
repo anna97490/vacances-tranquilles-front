@@ -1,0 +1,220 @@
+// Home Component - Styles Mobile (écrans étroits)
+
+@media (max-width: 900px) {
+  .homepage-container {
+    .content {
+      max-width: 100%;
+      padding: 1.5rem 1rem 0rem 1rem;
+    }
+
+    .logo {
+      img {
+        width: 100px;
+      }
+    }
+
+    .main-icon {
+      font-size: 32px;
+    }
+
+    .title {
+      font-size: 1.4rem;
+    }
+
+    .subtitle {
+      font-size: 16px;
+    }
+
+    .intro-text {
+      font-size: 15px;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .btn {
+      width: 100%;
+      max-width: 280px;
+      padding: 0.9rem 0;
+      font-size: 0.95rem;
+    }
+
+    .features-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+      padding: 0 0.5rem;
+    }
+
+    .feature-card {
+      padding: 1.2rem;
+    }
+
+    .feature-icon {
+      font-size: 2.2rem;
+    }
+
+    .feature-title {
+      font-size: 1.1rem;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .homepage-container {
+    .content {
+      padding: 1rem 0.75rem 0rem 0.75rem;
+    }
+
+    .logo {
+      img {
+        width: 90px;
+      }
+    }
+
+    .main-icon {
+      font-size: 28px;
+    }
+
+    .title {
+      font-size: 1.2rem;
+    }
+
+    .subtitle {
+      font-size: 14px;
+    }
+
+    .intro-text {
+      font-size: 14px;
+    }
+
+    .btn {
+      max-width: 260px;
+      padding: 0.8rem 0;
+      font-size: 0.9rem;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding: 0 0.5rem;
+    }
+
+    .feature-card {
+      padding: 1rem;
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+    }
+
+    .feature-title {
+      font-size: 1rem;
+    }
+
+    .feature-desc {
+      font-size: 13px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .homepage-container {
+    padding: 0 0.5rem;
+    
+    .content {
+      padding: 1rem 0.5rem 0rem 0.5rem;
+    }
+
+    .logo {
+      img {
+        width: 80px;
+      }
+    }
+
+    .main-icon {
+      font-size: 24px;
+    }
+
+    .title {
+      font-size: 1.1rem;
+    }
+
+    .subtitle {
+      font-size: 13px;
+    }
+    
+    .btn {
+      width: 100%;
+      max-width: 240px;
+    }
+    
+    .features-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding: 0 0.5rem;
+    }
+    
+    .feature-card {
+      padding: 1rem;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .homepage-container {
+    .content {
+      padding: 0.75rem 0.25rem 0rem 0.25rem;
+    }
+
+    .logo {
+      img {
+        width: 70px;
+      }
+    }
+
+    .main-icon {
+      font-size: 20px;
+    }
+
+    .title {
+      font-size: 1rem;
+    }
+
+    .subtitle {
+      font-size: 12px;
+    }
+
+    .intro-text {
+      font-size: 13px;
+    }
+
+    .btn {
+      max-width: 220px;
+      padding: 0.7rem 0;
+      font-size: 0.85rem;
+    }
+
+    .feature-card {
+      padding: 0.75rem;
+    }
+
+    .feature-icon {
+      font-size: 1.8rem;
+    }
+
+    .feature-title {
+      font-size: 0.9rem;
+    }
+
+    .feature-desc {
+      font-size: 12px;
+    }
+  }
+} 

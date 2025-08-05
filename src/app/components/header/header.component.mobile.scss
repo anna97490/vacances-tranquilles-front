@@ -1,0 +1,113 @@
+// Header Component - Styles Mobile (écrans étroits)
+
+@media (max-width: 900px) {
+  .header {
+    background-color: var(--primary-color);
+    padding: 0 1rem;
+    position: relative;
+    
+    .desktop-nav {
+      display: none;
+    }
+
+    .burger-btn {
+      display: block;
+    }
+    
+    .mobile-menu-container {
+      display: none;
+      position: fixed;
+      top: 60px;
+      right: 0;
+      z-index: 99999;
+      
+      &.menu-visible {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+    }
+
+    .header-nav {
+      gap: 2rem;
+    }
+
+    .nav-link {
+      font-size: 0.9rem;
+      font-weight: 500;
+      
+      .icon {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0 0.75rem;
+    
+    .header-logo {
+      margin-right: 1rem;
+      
+      .logo-img {
+        height: 32px;
+      }
+    }
+    
+    .mobile-menu-container {
+      width: 200px;
+      right: 0.5rem;
+      position: fixed;
+      top: 60px;
+      z-index: 99999;
+      
+      &.menu-visible {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+    }
+
+    .header-nav {
+      gap: 1.5rem;
+    }
+
+    .nav-link {
+      font-size: 0.85rem;
+      
+      .icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .header {
+    padding: 0 0.5rem;
+    
+    .header-logo {
+      margin-right: 0.75rem;
+      
+      .logo-img {
+        height: 28px;
+      }
+    }
+
+    .header-nav {
+      gap: 1rem;
+    }
+
+    .nav-link {
+      font-size: 0.8rem;
+      
+      .icon {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+} 

@@ -12,7 +12,11 @@ import { FooterComponent } from '../../components/footer/footer.component';
   standalone: true,
   imports: [CommonModule, NgOptimizedImage, RouterModule, MatIconModule, FooterComponent],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+  styleUrls: [
+    './home.component.scss',           // Styles de base (commun)
+    './home.component.desktop.scss',   // Styles desktop
+    './home.component.mobile.scss'     // Styles mobile
+  ]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   content!: HomeContent;

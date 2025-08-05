@@ -1,17 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
+
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: [
+    './header.component.scss',           // Styles de base (commun)
+    './header.component.desktop.scss',   // Styles desktop
+    './header.component.mobile.scss'     // Styles mobile
+  ]
 })
 export class HeaderComponent implements OnInit {
   mainLogo = 'assets/pictures/logo.png';
   hoveredItem: any = null;
+  isMobileMenuOpen = false;
+  
   menu = [
     {
       label: 'Accueil',
@@ -44,8 +51,11 @@ export class HeaderComponent implements OnInit {
       path: '/assistance'
     }
   ];
+  
   currentPath: string = '';
+  
   constructor(private router: Router, public location: Location) {}
+  
   ngOnInit(): void {
     this.currentPath = this.location.path() || '/home';
     this.router.events.pipe(
@@ -54,6 +64,56 @@ export class HeaderComponent implements OnInit {
       this.currentPath = this.location.path() || '/home';
     });
   }
+
+  /**
+   * Écoute les clics en dehors du menu pour le fermer
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.mobile-menu-container') && !target.closest('.burger-btn')) {
+      this.closeMobileMenu();
+    }
+  }
+
+  /**
+   * Écoute les touches du clavier pour fermer le menu avec Escape
+   */
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    this.closeMobileMenu();
+  }
+
+  /**
+   * Bascule l'état du menu mobile
+   */
+  toggleMobileMenu(): void {
+    console.log('Toggle mobile menu - Current state:', this.isMobileMenuOpen);
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    console.log('New state:', this.isMobileMenuOpen);
+    this.toggleBodyScroll();
+  }
+
+  /**
+   * Ferme le menu mobile
+   */
+  closeMobileMenu(): void {
+    console.log('Closing mobile menu');
+    this.isMobileMenuOpen = false;
+    this.toggleBodyScroll();
+  }
+
+  /**
+   * Empêche le défilement du body quand le menu est ouvert
+   */
+  private toggleBodyScroll(): void {
+    if (this.isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+
   isActive(path: string): boolean {
     return this.currentPath === path;
   }
