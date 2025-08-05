@@ -72,28 +72,4 @@ export class User {
   constructor(data: Partial<User> = {}) {
     Object.assign(this, data);
   }
-
-  /**
-   * Vérifie si l'utilisateur est un prestataire.
-   * @returns true si le rôle est PROVIDER.
-   */
-  isProvider(): boolean {
-    return this.role === UserRole.PROVIDER;
-  }
-
-  /**
-   * Vérifie si l'utilisateur est un administrateur.
-   * @returns true si le rôle est ADMIN.
-   */
-  isAdmin(): boolean {
-    return this.role === UserRole.ADMIN;
-  }
-
-  /**
-   * Vérifie si l'utilisateur est un particulier (client).
-   * @returns true si le rôle est CLIENT.
-   */
-  isClient(): boolean {
-    return this.role === UserRole.CLIENT;
-  }
 }
