@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-service-search',
   templateUrl: './service-search.component.html',
-    styleUrls: ['./service-search.component.scss'],
+  styleUrls: ['./service-search.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -35,27 +35,27 @@ import { Router } from '@angular/router';
  */
 export class ServiceSearchComponent {
   /** Liste des jours du mois sélectionné */
-get days(): number[] {
-  // Si aucun mois n'est sélectionné, afficher tous les jours possibles (1-31)
-  if (!this.selectedMonth) {
-    return Array.from({ length: 31 }, (_, i) => i + 1);
-  }
+  get days(): number[] {
+    // Si aucun mois n'est sélectionné, afficher tous les jours possibles (1-31)
+    if (!this.selectedMonth) {
+      return Array.from({ length: 31 }, (_, i) => i + 1);
+    }
 
-  const monthIndex = this.months.indexOf(this.selectedMonth);
-  if (monthIndex === -1) {
-    return [];
-  }
+    const monthIndex = this.months.indexOf(this.selectedMonth);
+    if (monthIndex === -1) {
+      return [];
+    }
 
-  // Si aucune année n'est sélectionnée, retourner tous les jours du mois (en utilisant une année bissextile pour avoir le max)
-  if (!this.selectedYear) {
-    const daysInMonth = new Date(2024, monthIndex + 1, 0).getDate(); // Utilise 2024 (année bissextile) pour avoir le max de jours
+    // Si aucune année n'est sélectionnée, retourner tous les jours du mois (en utilisant une année bissextile pour avoir le max)
+    if (!this.selectedYear) {
+      const daysInMonth = new Date(2024, monthIndex + 1, 0).getDate(); // Utilise 2024 (année bissextile) pour avoir le max de jours
+      return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    }
+
+    // Si année et mois sont sélectionnés, retourner les jours du mois pour cette année
+    const daysInMonth = new Date(this.selectedYear, monthIndex + 1, 0).getDate();
     return Array.from({ length: daysInMonth }, (_, i) => i + 1);
   }
-
-  // Si année et mois sont sélectionnés, retourner les jours du mois pour cette année
-  const daysInMonth = new Date(this.selectedYear, monthIndex + 1, 0).getDate();
-  return Array.from({ length: daysInMonth }, (_, i) => i + 1);
-}
 
   /**
    * Vérifie si un jour donné est dans le passé
@@ -72,11 +72,13 @@ get days(): number[] {
     
     return selectedDate < today;
   }
+
   /** Liste des mois */
   months = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
   ];
+
   /** Liste des années disponibles */
   get years() {
     const currentYear = new Date().getFullYear();
@@ -139,12 +141,16 @@ get days(): number[] {
     this._selectedYear = value;
     this.checkDateInPast();
   }
+
   /** Heure de début sélectionnée */
   selectedStartHour: string | undefined;
+
   /** Heure de fin sélectionnée */
   selectedEndHour: string | undefined;
+
   /** Service sélectionné */
   selectedService: keyof typeof ServiceCategory | undefined;
+
   /** Code postal saisi */
   postalCode: string = '';
 
@@ -325,7 +331,6 @@ get days(): number[] {
       this.servicesService.searchServices(category, postalCode, date, startTime, endTime)
         .subscribe({
           next: (services) => {
-
             // Stockage des résultats dans le localStorage pour les passer à la page suivante
             localStorage.setItem('searchResults', JSON.stringify(services));
             localStorage.setItem('searchCriteria', JSON.stringify({
