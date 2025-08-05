@@ -2,15 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../../models/User';
+import { EnvService } from '../EnvService';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserInformationService {
 
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly urlApi: string;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private readonly envService: EnvService
+  ) {
+    this.urlApi = this.envService.apiUrl;
+  }
 
   /**
    * Récupère les informations d'un utilisateur par son ID
@@ -18,12 +24,18 @@ export class UserInformationService {
    * @returns Observable<User> Les informations de l'utilisateur
    */
   getUserById(userId: number): Observable<User> {
-    const url = `${this.baseUrl}/users/${userId}`;
+    const url = `${this.urlApi}/users/${userId}`;
     
     // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1NDE0MTI5OSwiZXhwIjoxNzU0MTQ0ODk5fQ.1nNAN_nisKhhNhMVgFPc1BlFAj7oUUcX1tSNYFgeIYk';
+    const token = localStorage.getItem('token');
     
-    // Configuration des headers
+    // Si pas de token, essayer d'accéder sans authentification
+    if (!token) {
+      console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
+      return this.http.get<User>(url);
+    }
+    
+    // Configuration des headers avec token
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -37,10 +49,16 @@ export class UserInformationService {
    * @returns Observable<User> Le profil de l'utilisateur
    */
   getUserProfile(): Observable<User> {
-    const url = `${this.baseUrl}/users/profile`;
+    const url = `${this.urlApi}/users/profile`;
     
     // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1NDE0MTI5OSwiZXhwIjoxNzU0MTQ0ODk5fQ.1nNAN_nisKhhNhMVgFPc1BlFAj7oUUcX1tSNYFgeIYk';
+    const token = localStorage.getItem('token');
+    
+    // Si pas de token, essayer d'accéder sans authentification
+    if (!token) {
+      console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
+      return this.http.get<User>(url);
+    }
     
     // Configuration des headers
     const headers = new HttpHeaders({
@@ -57,10 +75,16 @@ export class UserInformationService {
    * @returns Observable<User[]> Les informations des utilisateurs
    */
   getUsersByIds(userIds: number[]): Observable<User[]> {
-    const url = `${this.baseUrl}/users/batch`;
+    const url = `${this.urlApi}/users/batch`;
     
     // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1NDE0MTI5OSwiZXhwIjoxNzU0MTQ0ODk5fQ.1nNAN_nisKhhNhMVgFPc1BlFAj7oUUcX1tSNYFgeIYk';
+    const token = localStorage.getItem('token');
+    
+    // Si pas de token, essayer d'accéder sans authentification
+    if (!token) {
+      console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
+      return this.http.post<User[]>(url, { userIds });
+    }
     
     // Configuration des headers
     const headers = new HttpHeaders({

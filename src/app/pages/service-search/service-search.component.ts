@@ -288,7 +288,7 @@ get days(): number[] {
             }));
             
             // Redirection vers la page des prestataires disponibles
-            this.router.navigate(['/avalaible-providers']);
+            this.router.navigate(['/available-providers']);
           },
           error: (error) => {
             console.error('Erreur lors de la recherche:', error);

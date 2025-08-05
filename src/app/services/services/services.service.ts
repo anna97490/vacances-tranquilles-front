@@ -2,15 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Service, ServiceCategory } from '../../models/Service';
+import { EnvService } from '../EnvService';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ServicesService {
 
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly urlApi: string;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private readonly envService: EnvService
+  ) {
+    this.urlApi = this.envService.apiUrl;
+  }
 
   /**
    * Recherche des services selon les critères fournis
@@ -28,7 +34,7 @@ export class ServicesService {
     startTime: string,
     endTime: string
   ): Observable<Service[]> {
-    const url = `${this.baseUrl}/services/search`;
+    const url = `${this.urlApi}/services/search`;
 
     // Vérification que la catégorie est valide
     if (!Object.keys(ServiceCategory).includes(category)) {
@@ -44,7 +50,7 @@ export class ServicesService {
       .set('endTime', endTime);
 
     // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2Iiwicm9sZSI6IkNMSUVOVCIsImlhdCI6MTc1NDE0MTI5OSwiZXhwIjoxNzU0MTQ0ODk5fQ.1nNAN_nisKhhNhMVgFPc1BlFAj7oUUcX1tSNYFgeIYk';
+    const token = localStorage.getItem('token');
     
     // Configuration des headers
     const headers = new HttpHeaders({

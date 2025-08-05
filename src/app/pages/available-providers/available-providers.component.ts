@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProviderCardComponent } from '../../components/provider-card/provider-card.component';
 import { Service, ServiceCategory } from '../../models/Service';
-import { User } from '../../models/User';
+import { User, UserRole } from '../../models/User';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -117,6 +117,19 @@ export class AvailableProvidersComponent implements OnInit {
           },
           error: (error) => {
             console.error(`Erreur lors de la récupération du prestataire ${providerId}:`, error);
+            // Créer un objet User minimal en cas d'échec
+            const minimalUser: User = {
+              idUser: providerId,
+              firstName: `Prestataire ${providerId}`,
+              lastName: '',
+              email: '',
+              phoneNumber: '',
+              address: '',
+              city: '',
+              postalCode: 0,
+              role: UserRole.PROVIDER
+            };
+            this.providersInfo.set(providerId, minimalUser);
           }
         });
     });
