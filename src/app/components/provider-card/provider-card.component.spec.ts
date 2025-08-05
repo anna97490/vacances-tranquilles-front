@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProviderCardComponent } from './provider-card.component';
 import { ServiceCategory } from '../../models/Service';
 import { User, UserRole } from '../../models/User';
+import { SimpleChange } from '@angular/core';
 
 describe('ProviderCardComponent', () => {
   let component: ProviderCardComponent;
@@ -40,6 +41,11 @@ describe('ProviderCardComponent', () => {
     component.service = mockService;
     component.providerInfo = mockUser;
 
+    component.ngOnChanges({
+      service: new SimpleChange(null, mockService, true),
+      providerInfo: new SimpleChange(null, mockUser, true)
+    });
+
     fixture.detectChanges();
   });
 
@@ -47,16 +53,20 @@ describe('ProviderCardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the service description', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Coupe et entretien du gazon');
-  });
+it('should display the service description', () => {
+  const compiled = fixture.nativeElement as HTMLElement;
+  const description = compiled.querySelector('.description');
+
+  expect(description?.textContent).toContain('Coupe et entretien du gazon');
+});
 
   it('should not crash if description is undefined', () => {
     if (component.service) {
       component.service.description = undefined;
     }
+
     fixture.detectChanges();
+
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).not.toContain('undefined');
   });
@@ -69,7 +79,13 @@ describe('ProviderCardComponent', () => {
 
   it('should not crash if service is undefined', () => {
     component.service = undefined as any;
+
+    component.ngOnChanges({
+      service: new SimpleChange(mockService, undefined, false)
+    });
+
     fixture.detectChanges();
+
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).not.toContain('undefined');
   });
@@ -77,6 +93,12 @@ describe('ProviderCardComponent', () => {
   it('should update user when providerInfo is set after service', () => {
     component.service = mockService;
     component.providerInfo = mockUser;
+
+    component.ngOnChanges({
+      service: new SimpleChange(null, mockService, true),
+      providerInfo: new SimpleChange(null, mockUser, true)
+    });
+
     expect(component.user).toEqual(mockUser);
   });
 
