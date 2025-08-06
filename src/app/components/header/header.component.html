@@ -2,15 +2,49 @@
   <div class="header-logo">
     <img [src]="mainLogo" class="logo-img" alt="Logo" />
   </div>
-  <nav class="header-nav">
+  
+  <!-- Navigation desktop -->
+  <nav class="header-nav desktop-nav">
     <a
       *ngFor="let item of menu"
       class="nav-link"
       [class.active]="isActive(item.path)"
       [routerLink]="item.path"
+      (mouseenter)="hoveredItem = item"
+      (mouseleave)="hoveredItem = null"
     >
       <img [src]="getIcon(item)" class="icon" alt="" />
       {{ item.label }}
     </a>
   </nav>
+
+  <!-- Bouton burger menu pour mobile -->
+  <button 
+    class="burger-btn" 
+    (click)="toggleMobileMenu()"
+    [class.active]="isMobileMenuOpen"
+    aria-label="Menu de navigation"
+  >
+    <img [src]="'assets/icons/burgerMenu.svg'" class="burger-icon" alt="Menu" />
+  </button>
+
+  <!-- Menu mobile -->
+  <div 
+    class="mobile-menu-container" 
+    [class.menu-visible]="isMobileMenuOpen"
+  >
+    <nav class="mobile-nav">
+      <a
+        *ngFor="let item of menu"
+        class="nav-link"
+        [class.active]="isActive(item.path)"
+        [routerLink]="item.path"
+        (click)="closeMobileMenu()"
+      >
+        <img [src]="getIcon(item)" class="icon" alt="" />
+        <span class="nav-text">{{ item.label }}</span>
+        <img src="assets/icons/arrow-right.svg" class="arrow-icon" alt="" />
+      </a>
+    </nav>
+  </div>
 </header>

@@ -7,11 +7,10 @@
         <label class="section-label">Sélectionner une date</label>
         <div class="date-row">
           <mat-form-field appearance="outline">
-            <mat-select placeholder="Jour" [(ngModel)]="selectedDay" name="day" required #dayCtrl="ngModel">
+            <mat-select placeholder="Jour" [(ngModel)]="selectedDay" name="day" required #dayCtrl="ngModel" (selectionChange)="onDayChange()">
               <mat-option *ngFor="let day of days" [value]="day">{{ day }}</mat-option>
             </mat-select>
             <mat-error *ngIf="dayCtrl.invalid && dayCtrl.touched">Jour requis</mat-error>
-            <mat-error *ngIf="selectedMonth && selectedYear && days.length === 0">Aucune date disponible dans le passé</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-select placeholder="Mois" [(ngModel)]="selectedMonth" name="month" required #monthCtrl="ngModel" (selectionChange)="onMonthChange()">
@@ -25,6 +24,9 @@
             </mat-select>
             <mat-error *ngIf="yearCtrl.invalid && yearCtrl.touched">Année requise</mat-error>
           </mat-form-field>
+        </div>
+        <div class="date-error" *ngIf="selectedDay && selectedMonth && selectedYear && isDateInPast">
+          <mat-error>La date sélectionnée ne peut pas être dans le passé</mat-error>
         </div>
       </div>
       <div class="form-section">

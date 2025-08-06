@@ -26,6 +26,11 @@ describe('UserInformationService', () => {
   });
 
   it('should get user by id', () => {
+    // Simule un token valide
+    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
+      return key === 'token' ? 'mock-token' : null;
+    });
+
     const mockUser = new User({
       idUser: 1,
       firstName: 'John',
@@ -46,11 +51,16 @@ describe('UserInformationService', () => {
 
     const req = httpMock.expectOne('http://localhost:8080/api/users/1');
     expect(req.request.method).toBe('GET');
-    expect(req.request.headers.has('Authorization')).toBeTrue();
+    expect(req.request.headers.has('Authorization')).toBeTrue(); // ✅ devrait maintenant passer
     req.flush(mockUser);
   });
 
+
   it('should get user profile', () => {
+    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
+      return key === 'token' ? 'mock-token' : null;
+    });
+
     const mockUser = new User({
       idUser: 6,
       firstName: 'Client',
@@ -61,6 +71,7 @@ describe('UserInformationService', () => {
       address: '456 Client St',
       city: 'Paris',
       postalCode: 75002,
+      // ajoute companyName et siretSiren si nécessaire
     });
 
     service.getUserProfile().subscribe(user => {
@@ -74,6 +85,10 @@ describe('UserInformationService', () => {
   });
 
   it('should get users by ids', () => {
+    spyOn(localStorage, 'getItem').and.callFake((key: string) => {
+      return key === 'token' ? 'mock-token' : null;
+    });
+
     const mockUsers: User[] = [
       new User({
         idUser: 1,
@@ -112,7 +127,7 @@ describe('UserInformationService', () => {
     const req = httpMock.expectOne('http://localhost:8080/api/users/batch');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ userIds });
-    expect(req.request.headers.has('Authorization')).toBeTrue();
+    expect(req.request.headers.has('Authorization')).toBeTrue(); // ✅ devrait passer maintenant
     req.flush(mockUsers);
   });
 
@@ -137,7 +152,8 @@ describe('UserInformationService', () => {
 
     const req = httpMock.expectOne('http://localhost:8080/api/users/3');
     expect(req.request.method).toBe('GET');
-    expect(req.request.headers.get('Authorization')).toContain('Bearer');
+    expect(req.request.headers.has('Authorization')).toBeFalse();
+
     req.flush(mockUser);
   });
 

@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-service-search',
   templateUrl: './service-search.component.html',
-    styleUrls: ['./service-search.component.scss'],
+  styleUrls: ['./service-search.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -35,19 +35,27 @@ import { Router } from '@angular/router';
  */
 export class ServiceSearchComponent {
   /** Liste des jours du mois sélectionné */
-get days(): number[] {
-  if (!this.selectedMonth || !this.selectedYear) {
-    return [];
-  }
+  get days(): number[] {
+    // Si aucun mois n'est sélectionné, afficher tous les jours possibles (1-31)
+    if (!this.selectedMonth) {
+      return Array.from({ length: 31 }, (_, i) => i + 1);
+    }
 
-  const monthIndex = this.months.indexOf(this.selectedMonth);
-  if (monthIndex === -1) {
-    return [];
-  }
+    const monthIndex = this.months.indexOf(this.selectedMonth);
+    if (monthIndex === -1) {
+      return [];
+    }
 
-  const daysInMonth = new Date(this.selectedYear, monthIndex + 1, 0).getDate();
-  return Array.from({ length: daysInMonth }, (_, i) => i + 1);
-}
+    // Si aucune année n'est sélectionnée, retourner tous les jours du mois (en utilisant une année bissextile pour avoir le max)
+    if (!this.selectedYear) {
+      const daysInMonth = new Date(2024, monthIndex + 1, 0).getDate(); // Utilise 2024 (année bissextile) pour avoir le max de jours
+      return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    }
+
+    // Si année et mois sont sélectionnés, retourner les jours du mois pour cette année
+    const daysInMonth = new Date(this.selectedYear, monthIndex + 1, 0).getDate();
+    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  }
 
   /**
    * Vérifie si un jour donné est dans le passé
@@ -56,30 +64,21 @@ get days(): number[] {
     if (!this.selectedMonth || !this.selectedYear) return false;
     
     const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
-    const currentDay = today.getDate();
+    today.setHours(0, 0, 0, 0); // Remet à minuit pour comparer seulement la date
     
     const monthIndex = this.months.indexOf(this.selectedMonth);
+    const selectedDate = new Date(this.selectedYear, monthIndex, day);
+    selectedDate.setHours(0, 0, 0, 0); // Assure que l'heure est à minuit
     
-    // Si l'année est dans le passé
-    if (this.selectedYear < currentYear) return true;
-    
-    // Si c'est l'année actuelle mais le mois est dans le passé
-    if (this.selectedYear === currentYear && monthIndex < currentMonth) return true;
-    
-    // Si c'est le mois/année actuel, vérifier le jour
-    if (this.selectedYear === currentYear && monthIndex === currentMonth) {
-      return day < currentDay;
-    }
-    
-    return false;
+    return selectedDate < today;
   }
+
   /** Liste des mois */
   months = [
     'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
   ];
+
   /** Liste des années disponibles */
   get years() {
     const currentYear = new Date().getFullYear();
@@ -114,27 +113,74 @@ get days(): number[] {
   services = Object.entries(ServiceCategory).map(([key, value]) => ({ key, value }));
 
   /** Jour sélectionné */
-  selectedDay: number | undefined;
+  private _selectedDay: number | undefined;
+  get selectedDay(): number | undefined {
+    return this._selectedDay;
+  }
+  set selectedDay(value: number | undefined) {
+    this._selectedDay = value;
+    this.checkDateInPast();
+  }
+
   /** Mois sélectionné */
-  selectedMonth: string | undefined;
+  private _selectedMonth: string | undefined;
+  get selectedMonth(): string | undefined {
+    return this._selectedMonth;
+  }
+  set selectedMonth(value: string | undefined) {
+    this._selectedMonth = value;
+    this.checkDateInPast();
+  }
+
   /** Année sélectionnée */
-  selectedYear: number | undefined;
+  private _selectedYear: number | undefined;
+  get selectedYear(): number | undefined {
+    return this._selectedYear;
+  }
+  set selectedYear(value: number | undefined) {
+    this._selectedYear = value;
+    this.checkDateInPast();
+  }
+
   /** Heure de début sélectionnée */
   selectedStartHour: string | undefined;
+
   /** Heure de fin sélectionnée */
   selectedEndHour: string | undefined;
+
   /** Service sélectionné */
   selectedService: keyof typeof ServiceCategory | undefined;
+
   /** Code postal saisi */
   postalCode: string = '';
 
   /** Indicateur de chargement */
   isLoading = false;
 
+  /** Indicateur de date passée */
+  isDateInPast = false;
+
   constructor(
     private servicesService: ServicesService,
     private router: Router
   ) {}
+
+  /**
+   * Vérifie si la date sélectionnée est dans le passé
+   */
+  private checkDateInPast(): void {
+    if (this.selectedDay && this.selectedMonth && this.selectedYear) {
+      this.isDateInPast = this.isDayInPast(this.selectedDay);
+      console.log('Date check:', {
+        day: this.selectedDay,
+        month: this.selectedMonth,
+        year: this.selectedYear,
+        isDateInPast: this.isDateInPast
+      });
+    } else {
+      this.isDateInPast = false;
+    }
+  }
 
   /**
    * Détermine si le code postal est valide (5 chiffres).
@@ -167,7 +213,9 @@ get days(): number[] {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Remet à minuit pour comparer seulement la date
     
-    const selectedDate = new Date(this.selectedYear, this.months.indexOf(this.selectedMonth), this.selectedDay);
+    const monthIndex = this.months.indexOf(this.selectedMonth);
+    const selectedDate = new Date(this.selectedYear, monthIndex, this.selectedDay);
+    selectedDate.setHours(0, 0, 0, 0); // Assure que l'heure est à minuit
     
     return selectedDate >= today;
   }
@@ -207,7 +255,7 @@ get days(): number[] {
    */
   onMonthChange() {
     // Si le jour sélectionné n'est plus disponible, le réinitialiser
-    if (this.selectedDay && this.selectedMonth && this.selectedYear) {
+    if (this.selectedDay && this.selectedMonth) {
       const availableDays = this.days;
       if (!availableDays.includes(this.selectedDay)) {
         this.selectedDay = undefined;
@@ -226,6 +274,13 @@ get days(): number[] {
         this.selectedDay = undefined;
       }
     }
+  }
+
+  /**
+   * Gère le changement de jour et vérifie si la date est dans le passé
+   */
+  onDayChange() {
+    // La vérification est maintenant automatique via les setters
   }
 
   /**
@@ -276,7 +331,6 @@ get days(): number[] {
       this.servicesService.searchServices(category, postalCode, date, startTime, endTime)
         .subscribe({
           next: (services) => {
-
             // Stockage des résultats dans le localStorage pour les passer à la page suivante
             localStorage.setItem('searchResults', JSON.stringify(services));
             localStorage.setItem('searchCriteria', JSON.stringify({
@@ -288,7 +342,7 @@ get days(): number[] {
             }));
             
             // Redirection vers la page des prestataires disponibles
-            this.router.navigate(['/avalaible-providers']);
+            this.router.navigate(['/available-providers']);
           },
           error: (error) => {
             console.error('Erreur lors de la recherche:', error);

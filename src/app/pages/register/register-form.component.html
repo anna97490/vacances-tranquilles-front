@@ -1,0 +1,80 @@
+<div class="register-container">
+  <div class="register-header">
+    <div class="logo">
+        <img [src]="mainLogo" class="logo" alt="" />
+    </div>
+    <h2>Bienvenue sur Vacances Tranquilles</h2>
+    <div class="register-subtitle">
+      Créez votre compte pour gérer vos réservations<br>
+      Créez votre compte prestataire pour proposer vos services
+    </div>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-form">
+    <div class="form-group">
+      <label for="firstName">Prénom</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="firstName" formControlName="firstName" placeholder="Votre prénom">
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="lastName">Nom</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="lastName" formControlName="lastName" placeholder="Votre nom">
+      </mat-form-field>
+    </div>
+    <div class="form-row" *ngIf="isPrestataire">
+      <div class="form-group">
+        <label for="companyName">Nom de l'entreprise</label>
+        <mat-form-field appearance="outline" class="custom-form-field form-field">
+          <input matInput id="companyName" formControlName="companyName" placeholder="Votre entreprise">
+        </mat-form-field>
+      </div>
+      <div class="form-group">
+        <label for="siretSiren">SIRET</label>
+        <mat-form-field appearance="outline" class="custom-form-field form-field">
+          <input matInput id="siretSiren" formControlName="siretSiren" placeholder="12345678901234">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="email" formControlName="email" placeholder="entreprise@email.com">
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="phoneNumber">Téléphone</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="phoneNumber" formControlName="phoneNumber" placeholder="06 12 34 56 78">
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="address">Adresse</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="address" formControlName="address" placeholder="123 rue de la Paix">
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="postalCode">Code postal</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="postalCode" formControlName="postalCode" placeholder="75000">
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="city">Ville</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="city" formControlName="city" placeholder="Paris">
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="userSecret">Mot de passe</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
+        <input matInput id="userSecret" formControlName="userSecret" type="password" placeholder="********">
+      </mat-form-field>
+    </div>
+    <button mat-flat-button color="primary" class="register-btn styled-btn" type="submit">S'inscrire</button>
+  </form>
+  <div class="register-login">
+    Déjà un compte ? <a routerLink="/auth/login">Se connecter</a>
+  </div>
+</div> 

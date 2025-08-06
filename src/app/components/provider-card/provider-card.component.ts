@@ -8,6 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
 import { Service } from '../../models/Service';
 import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.component';
+import { OnChanges, SimpleChanges } from '@angular/core';
 
 /**
  * Composant carte prestataire (affichage d'un User de rôle PROVIDER)
@@ -20,7 +21,8 @@ import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.compon
   templateUrl: './provider-card.component.html',
   styleUrl: './provider-card.component.scss'
 })
-export class ProviderCardComponent {
+export class ProviderCardComponent implements OnChanges {
+
 
   /**
    * Prestataire (User) correspondant au service affiché.
@@ -40,15 +42,8 @@ export class ProviderCardComponent {
    * Met à jour le service et utilise les données mockées par défaut.
    */
   set service(service: Service) {
-    if (service) {
-      this._service = service;
-      // Utiliser les données du prestataire fournies ou undefined si pas disponibles
-      this.user = this._providerInfo;
-    } else {
-      this._service = undefined;
-      this.user = undefined;
-    }
-  } 
+    this._service = service;
+  }
 
   /**
    * Getter pour le service.
@@ -71,9 +66,11 @@ export class ProviderCardComponent {
    */
   set providerInfo(providerInfo: User | undefined) {
     this._providerInfo = providerInfo;
-    // Mettre à jour l'utilisateur si un service est déjà défini
-    if (this._service && providerInfo) {
-      this.user = providerInfo;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this._service && this._providerInfo) {
+      this.user = this._providerInfo;
     }
   }
 

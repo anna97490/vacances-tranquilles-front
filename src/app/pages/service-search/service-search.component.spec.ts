@@ -106,7 +106,7 @@ describe('ServiceSearchComponent', () => {
       expect(searchSpy).toHaveBeenCalled();
       expect(localStorage.setItem).toHaveBeenCalledWith('searchResults', jasmine.any(String));
       expect(localStorage.setItem).toHaveBeenCalledWith('searchCriteria', jasmine.any(String));
-      expect(navigateSpy).toHaveBeenCalledWith(['/avalaible-providers']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/available-providers']);
     });
 
     it('should alert if postal code is invalid', () => {
