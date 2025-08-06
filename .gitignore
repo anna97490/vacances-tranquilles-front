@@ -47,3 +47,6 @@ Thumbs.db
 
 # Keep .env for default values only
 .env
+
+# Configuration values
+src/assets/config.json

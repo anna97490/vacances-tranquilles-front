@@ -34,6 +34,10 @@ jobs:
       - name: Run build 
         run: npm run build 
 
+      - name: Inject config.json
+        run: |
+          echo "{ \"apiUrl\": \"${{ secrets.API_URL }}\" }" > ./dist/frontend/assets/config.json
+
       - name: Run tests with code coverage 
         run: | 
           npm run test -- --watch=false
