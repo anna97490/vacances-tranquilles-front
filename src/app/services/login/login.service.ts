@@ -13,10 +13,10 @@ import { LoginNavigationService } from './login-navigation.service';
 export class LoginService {
 
   constructor(
-    private http: HttpClient,
-    private authStorage: AuthStorageService,
-    private errorHandler: LoginErrorHandlerService,
-    private navigation: LoginNavigationService
+    private readonly http: HttpClient,
+    private readonly authStorage: AuthStorageService,
+    private readonly errorHandler: LoginErrorHandlerService,
+    private readonly navigation: LoginNavigationService
   ) {}
 
   /**

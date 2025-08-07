@@ -7,7 +7,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class LoginFormConfigService {
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private readonly fb: FormBuilder) {}
 
   /**
    * Crée un formulaire de connexion avec les validateurs appropriés

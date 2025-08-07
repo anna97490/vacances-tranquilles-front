@@ -13,7 +13,7 @@
       (mouseenter)="hoveredItem = item"
       (mouseleave)="hoveredItem = null"
     >
-      <img [src]="getIcon(item)" class="icon" alt="" />
+      <img [src]="getIcon(item)" class="icon" alt="Icône {{ item.label }}" />
       {{ item.label }}
     </a>
   </nav>
@@ -41,9 +41,9 @@
         [routerLink]="item.path"
         (click)="closeMobileMenu()"
       >
-        <img [src]="getIcon(item)" class="icon" alt="" />
+        <img [src]="getIcon(item)" class="icon" alt="Icône {{ item.label }}" />
         <span class="nav-text">{{ item.label }}</span>
-        <img src="assets/icons/arrow-right.svg" class="arrow-icon" alt="" />
+        <img src="assets/icons/arrow-right.svg" class="arrow-icon" alt="Flèche vers la droite" />
       </a>
     </nav>
   </div>

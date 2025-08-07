@@ -12,7 +12,7 @@ export class ServicesService {
   private readonly urlApi: string;
 
   constructor(
-    private http: HttpClient,
+    private readonly http: HttpClient,
     private readonly envService: EnvService
   ) {
     this.urlApi = this.envService.apiUrl;

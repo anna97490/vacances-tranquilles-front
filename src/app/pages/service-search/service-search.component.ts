@@ -161,8 +161,8 @@ export class ServiceSearchComponent {
   isDateInPast = false;
 
   constructor(
-    private servicesService: ServicesService,
-    private router: Router
+    private readonly servicesService: ServicesService,
+    private readonly router: Router
   ) {}
 
   /**
@@ -186,7 +186,7 @@ export class ServiceSearchComponent {
    * Détermine si le code postal est valide (5 chiffres).
    */
   get isPostalCodeValid(): boolean {
-    return /^[0-9]{5}$/.test(this.postalCode);
+    return /^\d{5}$/.test(this.postalCode);
   }
 
   /**

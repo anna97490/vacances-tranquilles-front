@@ -125,16 +125,25 @@ export function verifyWindowOpened(spies: WindowSpies, expectedUrl?: string): vo
 }
 
 /**
- * Helper pour vérifier qu'un warning a été loggé
- * @param consoleSpy Le spy sur console.warn
+ * Helper générique pour vérifier qu'un console method a été appelé
+ * @param consoleSpy Le spy sur la méthode console
  * @param expectedMessage Le message attendu (optionnel)
  */
-export function verifyWarningLogged(consoleSpy: jasmine.Spy, expectedMessage?: string): void {
+function verifyConsoleMethodCalled(consoleSpy: jasmine.Spy, expectedMessage?: string): void {
   if (expectedMessage) {
     expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
   } else {
     expect(consoleSpy).toHaveBeenCalled();
   }
+}
+
+/**
+ * Helper pour vérifier qu'un warning a été loggé
+ * @param consoleSpy Le spy sur console.warn
+ * @param expectedMessage Le message attendu (optionnel)
+ */
+export function verifyWarningLogged(consoleSpy: jasmine.Spy, expectedMessage?: string): void {
+  verifyConsoleMethodCalled(consoleSpy, expectedMessage);
 }
 
 /**
@@ -143,11 +152,7 @@ export function verifyWarningLogged(consoleSpy: jasmine.Spy, expectedMessage?: s
  * @param expectedMessage Le message attendu (optionnel)
  */
 export function verifyErrorLogged(consoleSpy: jasmine.Spy, expectedMessage?: string): void {
-  if (expectedMessage) {
-    expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
-  } else {
-    expect(consoleSpy).toHaveBeenCalled();
-  }
+  verifyConsoleMethodCalled(consoleSpy, expectedMessage);
 }
 
 /**
@@ -156,11 +161,7 @@ export function verifyErrorLogged(consoleSpy: jasmine.Spy, expectedMessage?: str
  * @param expectedMessage Le message attendu (optionnel)
  */
 export function verifyLogShown(consoleSpy: jasmine.Spy, expectedMessage?: string): void {
-  if (expectedMessage) {
-    expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
-  } else {
-    expect(consoleSpy).toHaveBeenCalled();
-  }
+  verifyConsoleMethodCalled(consoleSpy, expectedMessage);
 }
 
 /**
@@ -169,9 +170,5 @@ export function verifyLogShown(consoleSpy: jasmine.Spy, expectedMessage?: string
  * @param expectedMessage Le message attendu (optionnel)
  */
 export function verifyInfoLogged(consoleSpy: jasmine.Spy, expectedMessage?: string): void {
-  if (expectedMessage) {
-    expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
-  } else {
-    expect(consoleSpy).toHaveBeenCalled();
-  }
+  verifyConsoleMethodCalled(consoleSpy, expectedMessage);
 } 

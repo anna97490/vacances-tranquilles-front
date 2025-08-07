@@ -28,12 +28,6 @@ $frontend-theme: mat.define-theme((
   @include mat.all-component-themes($frontend-theme);
 }
 
-// Comment out the line below if you want to use the pre-defined typography utility classes.
-// For more information: https://material.angular.io/guide/typography#using-typography-styles-in-your-application.
-// @include mat.typography-hierarchy($frontend-theme);
-
-// Comment out the line below if you want to use the deprecated `color` inputs.
-// @include mat.color-variants-backwards-compatibility($frontend-theme);
 /* You can add global styles to this file, and also import other style files */
 
 /* Import Material Icons */
@@ -80,12 +74,8 @@ $frontend-theme: mat.define-theme((
     /** Border radius de référence */
     --border-radius-base: 12px;
 
-    --discret-text-color: #777; 
-
     --vt-grey: #f5f5f5;
     --vt-grey-border: #e0e0e0;
-    /* Border radius de référence */
-    --border-radius-base: 12px;
 
     --header-height: 13vh;
     --main-height: 77vh;

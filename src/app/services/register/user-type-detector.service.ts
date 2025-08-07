@@ -26,11 +26,39 @@ export class UserTypeDetectorService {
   }
 
   /**
+   * Récupère le titre du formulaire pour un prestataire
+   */
+  getPrestataireFormTitle(): string {
+    return 'Inscription Prestataire';
+  }
+
+  /**
+   * Récupère le titre du formulaire pour un particulier
+   */
+  getParticulierFormTitle(): string {
+    return 'Inscription Particulier';
+  }
+
+  /**
    * Récupère le titre du formulaire selon le type d'utilisateur
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
   getFormTitle(isPrestataire: boolean): string {
-    return isPrestataire ? 'Inscription Prestataire' : 'Inscription Particulier';
+    return isPrestataire ? this.getPrestataireFormTitle() : this.getParticulierFormTitle();
+  }
+
+  /**
+   * Récupère le type d'utilisateur sous forme de chaîne pour un prestataire
+   */
+  getPrestataireUserTypeString(): string {
+    return 'prestataire';
+  }
+
+  /**
+   * Récupère le type d'utilisateur sous forme de chaîne pour un particulier
+   */
+  getParticulierUserTypeString(): string {
+    return 'particulier';
   }
 
   /**
@@ -38,6 +66,6 @@ export class UserTypeDetectorService {
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
   getUserTypeString(isPrestataire: boolean): string {
-    return isPrestataire ? 'prestataire' : 'particulier';
+    return isPrestataire ? this.getPrestataireUserTypeString() : this.getParticulierUserTypeString();
   }
 }

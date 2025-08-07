@@ -1,14 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { NgForOf } from '@angular/common';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-rating-stars',
   templateUrl: './rating-stars.component.html',
   styleUrls: ['./rating-stars.component.scss'],
   standalone: true,
-  imports: [MatIconModule, NgForOf, CommonModule],
+  imports: [MatIconModule, NgForOf],
 })
 export class RatingStarsComponent {
   @Input() rating: number = 3;

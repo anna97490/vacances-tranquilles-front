@@ -4,22 +4,22 @@
   <div class="form-card">
     <form #searchForm="ngForm" autocomplete="off">
       <div class="form-section">
-        <label class="section-label">Sélectionner une date</label>
+        <label class="section-label" for="day-select">Sélectionner une date</label>
         <div class="date-row">
           <mat-form-field appearance="outline">
-            <mat-select placeholder="Jour" [(ngModel)]="selectedDay" name="day" required #dayCtrl="ngModel" (selectionChange)="onDayChange()">
+            <mat-select id="day-select" placeholder="Jour" [(ngModel)]="selectedDay" name="day" required #dayCtrl="ngModel" (selectionChange)="onDayChange()">
               <mat-option *ngFor="let day of days" [value]="day">{{ day }}</mat-option>
             </mat-select>
             <mat-error *ngIf="dayCtrl.invalid && dayCtrl.touched">Jour requis</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-select placeholder="Mois" [(ngModel)]="selectedMonth" name="month" required #monthCtrl="ngModel" (selectionChange)="onMonthChange()">
+            <mat-select id="month-select" placeholder="Mois" [(ngModel)]="selectedMonth" name="month" required #monthCtrl="ngModel" (selectionChange)="onMonthChange()">
               <mat-option *ngFor="let month of months" [value]="month">{{ month }}</mat-option>
             </mat-select>
             <mat-error *ngIf="monthCtrl.invalid && monthCtrl.touched">Mois requis</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-select placeholder="Année" [(ngModel)]="selectedYear" name="year" required #yearCtrl="ngModel" (selectionChange)="onYearChange()">
+            <mat-select id="year-select" placeholder="Année" [(ngModel)]="selectedYear" name="year" required #yearCtrl="ngModel" (selectionChange)="onYearChange()">
               <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
             </mat-select>
             <mat-error *ngIf="yearCtrl.invalid && yearCtrl.touched">Année requise</mat-error>
@@ -30,16 +30,16 @@
         </div>
       </div>
       <div class="form-section">
-        <label class="section-label">Sélectionner un horaire</label>
+        <label class="section-label" for="start-hour-select">Sélectionner un horaire</label>
         <div class="hour-row">
           <mat-form-field appearance="outline">
-            <mat-select placeholder="Heure de début" [(ngModel)]="selectedStartHour" name="startHour" [disabled]="!selectedDay || !selectedMonth || !selectedYear" #startHourCtrl="ngModel" (selectionChange)="onStartHourChange()">
+            <mat-select id="start-hour-select" placeholder="Heure de début" [(ngModel)]="selectedStartHour" name="startHour" [disabled]="!selectedDay || !selectedMonth || !selectedYear" #startHourCtrl="ngModel" (selectionChange)="onStartHourChange()">
               <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
             </mat-select>
             <mat-error *ngIf="startHourCtrl.invalid && startHourCtrl.touched">Heure de début requise</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-select placeholder="Heure de fin" [(ngModel)]="selectedEndHour" name="endHour" [disabled]="!selectedStartHour" #endHourCtrl="ngModel">
+            <mat-select id="end-hour-select" placeholder="Heure de fin" [(ngModel)]="selectedEndHour" name="endHour" [disabled]="!selectedStartHour" #endHourCtrl="ngModel">
               <mat-option *ngFor="let hour of availableEndHours" [value]="hour">{{ hour }}</mat-option>
             </mat-select>
             <mat-error *ngIf="endHourCtrl.invalid && endHourCtrl.touched">Heure de fin requise</mat-error>
@@ -49,14 +49,14 @@
       </div>
       <div class="form-section">
         <mat-form-field appearance="outline" class="full-width">
-          <input matInput placeholder="Entrez votre code postal" [(ngModel)]="postalCode" name="postalCode" maxlength="5" pattern="^[0-9]{5}$" required #postalCtrl="ngModel">
+          <input matInput id="postal-code-input" placeholder="Entrez votre code postal" [(ngModel)]="postalCode" name="postalCode" maxlength="5" pattern="^[0-9]{5}$" required #postalCtrl="ngModel">
           <mat-error *ngIf="postalCtrl.invalid && postalCtrl.touched">Code postal requis (5 chiffres)</mat-error>
           <mat-error *ngIf="postalCode && !isPostalCodeValid">Code postal invalide</mat-error>
         </mat-form-field>
       </div>
       <div class="form-section">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-select placeholder="Choisissez un service" [(ngModel)]="selectedService" name="service" required #serviceCtrl="ngModel">
+          <mat-select id="service-select" placeholder="Choisissez un service" [(ngModel)]="selectedService" name="service" required #serviceCtrl="ngModel">
             <mat-option *ngFor="let service of services" [value]="service.key">{{ service.value }}</mat-option>
           </mat-select>
           <mat-error *ngIf="serviceCtrl.invalid && serviceCtrl.touched">Service requis</mat-error>

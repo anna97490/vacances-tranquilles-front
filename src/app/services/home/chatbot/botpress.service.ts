@@ -10,7 +10,7 @@ export class BotpressService {
   private readonly maxRetries = 10;
   private readonly retryInterval = 500;
 
-  constructor(private secureIdGenerator: SecureIdGeneratorService) {}
+  constructor(private readonly secureIdGenerator: SecureIdGeneratorService) {}
 
   /**
    * Envoie un message d'accueil au chatbot Botpress
@@ -26,7 +26,7 @@ export class BotpressService {
         try {
           const bpWebChat = (window as any).botpressWebChat;
           
-          if (bpWebChat && bpWebChat.conversationId) {
+          if (bpWebChat?.conversationId) {
             const success = await this.sendMessage(bpWebChat.conversationId, message);
             if (success) {
               clearInterval(interval);
@@ -88,7 +88,7 @@ export class BotpressService {
    */
   isBotpressAvailable(): boolean {
     const bpWebChat = (window as any).botpressWebChat;
-    return !!(bpWebChat && bpWebChat.conversationId);
+    return !!(bpWebChat?.conversationId);
   }
 
   /**
