@@ -1,13 +1,47 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AvailableProvidersComponent } from './available-providers.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Service, ServiceCategory } from '../../models/Service';
 import { User, UserRole } from '../../models/User';
 import { of, throwError } from 'rxjs';
 import { ServicesService } from '../../services/services/services.service';
 import { UserInformationService } from '../../services/user-information/user-information.service';
 
-const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+const routerSpy = jasmine.createSpyObj('Router', ['navigate'], {
+  events: of({}),
+  url: '/test',
+  createUrlTree: jasmine.createSpy('createUrlTree').and.returnValue({}),
+  parseUrl: jasmine.createSpy('parseUrl').and.returnValue({}),
+  serializeUrl: jasmine.createSpy('serializeUrl').and.returnValue(''),
+  createUrlTreeFromSegment: jasmine.createSpy('createUrlTreeFromSegment').and.returnValue({}),
+  routerState: {
+    snapshot: {
+      root: {
+        children: []
+      }
+    }
+  }
+});
+
+const activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', [], {
+  url: of([]),
+  params: of({}),
+  queryParams: of({}),
+  fragment: of(''),
+  data: of({}),
+  outlet: 'primary',
+  component: null,
+  snapshot: {
+    url: [],
+    params: {},
+    queryParams: {},
+    fragment: '',
+    data: {},
+    outlet: 'primary',
+    component: null
+  }
+});
+
 const servicesServiceSpy = jasmine.createSpyObj('ServicesService', ['searchServices']);
 const userInfoServiceSpy = jasmine.createSpyObj('UserInformationService', ['getUserById']);
 
@@ -44,6 +78,7 @@ const mockUser: User = new User({
       imports: [AvailableProvidersComponent],
       providers: [
         { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: activatedRouteSpy },
         { provide: ServicesService, useValue: servicesServiceSpy },
         { provide: UserInformationService, useValue: userInfoServiceSpy }
       ]

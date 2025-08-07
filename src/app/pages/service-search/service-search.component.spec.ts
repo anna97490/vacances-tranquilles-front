@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ServiceSearchComponent } from './service-search.component';
 import { ServicesService } from '../../services/services/services.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceCategory } from '../../models/Service';
@@ -12,6 +12,38 @@ class MockServicesService {
 
 class MockRouter {
   navigate = jasmine.createSpy();
+  events = of({});
+  url = '/test';
+  createUrlTree = jasmine.createSpy('createUrlTree').and.returnValue({});
+  parseUrl = jasmine.createSpy('parseUrl').and.returnValue({});
+  serializeUrl = jasmine.createSpy('serializeUrl').and.returnValue('');
+  createUrlTreeFromSegment = jasmine.createSpy('createUrlTreeFromSegment').and.returnValue({});
+  routerState = {
+    snapshot: {
+      root: {
+        children: []
+      }
+    }
+  };
+}
+
+class MockActivatedRoute {
+  url = of([]);
+  params = of({});
+  queryParams = of({});
+  fragment = of('');
+  data = of({});
+  outlet = 'primary';
+  component = null;
+  snapshot = {
+    url: [],
+    params: {},
+    queryParams: {},
+    fragment: '',
+    data: {},
+    outlet: 'primary',
+    component: null
+  };
 }
 
 describe('ServiceSearchComponent', () => {
@@ -26,7 +58,8 @@ describe('ServiceSearchComponent', () => {
       ],
       providers: [
         { provide: ServicesService, useClass: MockServicesService },
-        { provide: Router, useClass: MockRouter }
+        { provide: Router, useClass: MockRouter },
+        { provide: ActivatedRoute, useClass: MockActivatedRoute }
       ]
     }).compileComponents();
 
