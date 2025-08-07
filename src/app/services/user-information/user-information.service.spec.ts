@@ -7,10 +7,15 @@ describe('UserInformationService', () => {
   let service: UserInformationService;
   let httpMock: HttpTestingController;
 
+  const mockConfig = { apiUrl: 'http://localhost:8080/api' };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [UserInformationService]
+      providers: [
+        UserInformationService,
+        { provide: 'APP_CONFIG', useValue: mockConfig }
+      ]
     });
 
     service = TestBed.inject(UserInformationService);
