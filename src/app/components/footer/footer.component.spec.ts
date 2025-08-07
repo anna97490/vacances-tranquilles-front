@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { MatListModule } from '@angular/material/list';
 import { FooterComponent } from './footer.component';
 import { provideRouter } from '@angular/router';

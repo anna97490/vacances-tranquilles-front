@@ -10,10 +10,11 @@
       class="nav-link"
       [class.active]="isActive(item.path)"
       [routerLink]="item.path"
+      [attr.aria-label]="'Navigation vers ' + item.label"
       (mouseenter)="hoveredItem = item"
       (mouseleave)="hoveredItem = null"
     >
-      <img [src]="getIcon(item)" class="icon" alt="Icône {{ item.label }}" />
+      <img [src]="getIcon(item)" class="icon" alt="" />
       {{ item.label }}
     </a>
   </nav>
@@ -39,11 +40,12 @@
         class="nav-link"
         [class.active]="isActive(item.path)"
         [routerLink]="item.path"
+        [attr.aria-label]="'Navigation vers ' + item.label"
         (click)="closeMobileMenu()"
       >
-        <img [src]="getIcon(item)" class="icon" alt="Icône {{ item.label }}" />
+        <img [src]="getIcon(item)" class="icon" alt="" />
         <span class="nav-text">{{ item.label }}</span>
-        <img src="assets/icons/arrow-right.svg" class="arrow-icon" alt="Flèche vers la droite" />
+        <img src="assets/icons/arrow-right.svg" class="arrow-icon" alt="" />
       </a>
     </nav>
   </div>
