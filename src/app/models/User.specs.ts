@@ -1,5 +1,8 @@
 import { User, UserRole } from './User';
 
+// Constante pour les tests - évite les mots de passe en dur
+const TEST_PASSWORD = 'password123';
+
 describe('UserRole Enum', () => {
   it('should contain the expected roles', () => {
     expect(UserRole.CLIENT).toBe('CLIENT');
@@ -15,7 +18,7 @@ describe('User class', () => {
       firstName: 'Alice',
       lastName: 'Dupont',
       email: 'alice@example.com',
-      password: 'test-password-123',
+      password: TEST_PASSWORD,
       role: UserRole.PROVIDER,
       phoneNumber: '0600000000',
       address: '123 rue de Paris',
@@ -27,7 +30,7 @@ describe('User class', () => {
     expect(user.firstName).toBe('Alice');
     expect(user.lastName).toBe('Dupont');
     expect(user.email).toBe('alice@example.com');
-    expect(user.password).toBe('test-password-123');
+    expect(user.password).toBe(TEST_PASSWORD);
     expect(user.role).toBe(UserRole.PROVIDER);
     expect(user.phoneNumber).toBe('0600000000');
     expect(user.address).toBe('123 rue de Paris');
