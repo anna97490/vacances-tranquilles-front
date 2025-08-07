@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../../models/User';
-import { EnvService } from '../EnvService';
+import { ConfigService } from '../config/config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +13,9 @@ export class UserInformationService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly envService: EnvService
+    private readonly configService: ConfigService
   ) {
-    this.urlApi = this.envService.apiUrl;
+    this.urlApi = this.configService.apiUrl;
   }
 
   /**

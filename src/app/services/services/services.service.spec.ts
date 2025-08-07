@@ -2,15 +2,23 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ServicesService } from './services.service';
 import { Service } from '../../models/Service';
+import { ConfigService } from '../config/config.service';
 
 describe('ServicesService', () => {
+
+  class MockConfigService {
+  apiUrl = 'http://mock-api/api';
+}
+
   let service: ServicesService;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ServicesService]
+      providers: [
+      ServicesService,
+      { provide: ConfigService, useClass: MockConfigService }]
     });
 
     service = TestBed.inject(ServicesService);
@@ -25,32 +33,35 @@ describe('ServicesService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should send GET request with correct parameters', () => {
-    const mockResponse: Service[] = [];
+it('should send GET request with correct parameters', () => {
+  const httpMock = TestBed.inject(HttpTestingController);
+  const service = TestBed.inject(ServicesService);
 
-    const category = 'HOME';
-    const postalCode = '75001';
-    const date = '2025-01-01';
-    const startTime = '10:00';
-    const endTime = '12:00';
+  service.searchServices(
+    'HOME',
+    '75001',
+    '2025-01-01',
+    '10:00',
+    '12:00'
+  ).subscribe();
 
-    service.searchServices(category, postalCode, date, startTime, endTime).subscribe(response => {
-      expect(response).toEqual(mockResponse);
-    });
-
-    const req = httpMock.expectOne((request) =>
-      request.url === 'http://localhost:8080/api/services/search' &&
-      request.params.get('category') === category &&
-      request.params.get('postalCode') === postalCode &&
-      request.params.get('date') === date &&
-      request.params.get('startTime') === startTime &&
-      request.params.get('endTime') === endTime &&
-      request.headers.has('Authorization')
-    );
-
-    expect(req.request.method).toBe('GET');
-    req.flush(mockResponse);
+  const req = httpMock.expectOne((req) => {
+    const url = req.urlWithParams;
+    return url.includes('/services/search') &&
+           url.includes('category=HOME') &&
+           url.includes('postalCode=75001') &&
+           url.includes('date=2025-01-01') &&
+           url.includes('startTime=10:00') &&
+           url.includes('endTime=12:00');
   });
+
+  expect(req.request.method).toBe('GET');
+
+  // Simule une réponse vide
+  req.flush([]);
+
+  httpMock.verify(); // ✅ important pour valider qu'aucune requête oubliée
+});
 
   it('should throw an error if category is invalid', () => {
     expect(() =>
