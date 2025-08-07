@@ -12,7 +12,8 @@ import { MatOptionModule } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { ServicesService } from '../../services/services/services.service';
 import { UserInformationService } from '../../services/user-information/user-information.service';
-
+import { FooterComponent } from '../../components/footer/footer.component';
+import { HeaderComponent } from '../../components/header/header.component';
 /**
  * Composant listant les prestataires disponibles.
  * Fournit la liste des services disponibles au composant provider-card.
@@ -28,7 +29,9 @@ import { UserInformationService } from '../../services/user-information/user-inf
     MatIconModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatOptionModule],
+    MatOptionModule,
+    FooterComponent,
+    HeaderComponent],
   templateUrl: './available-providers.component.html',
   styleUrl: './available-providers.component.scss'
 })

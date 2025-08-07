@@ -10,6 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { ServiceCategory } from '../../models/Service';
 import { ServicesService } from '../../services/services/services.service';
 import { Router } from '@angular/router';
+import { FooterComponent } from '../../components/footer/footer.component';
+import { HeaderComponent } from '../../components/header/header.component';
 
 @Component({
   selector: 'app-service-search',
@@ -24,7 +26,9 @@ import { Router } from '@angular/router';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    MatInputModule
+    MatInputModule,
+    FooterComponent,
+    HeaderComponent
   ]
 })
 
