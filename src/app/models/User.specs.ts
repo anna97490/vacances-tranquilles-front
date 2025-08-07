@@ -15,7 +15,7 @@ describe('User class', () => {
       firstName: 'Alice',
       lastName: 'Dupont',
       email: 'alice@example.com',
-      password: 'secret',
+      password: 'test-password-123',
       role: UserRole.PROVIDER,
       phoneNumber: '0600000000',
       address: '123 rue de Paris',
@@ -27,7 +27,7 @@ describe('User class', () => {
     expect(user.firstName).toBe('Alice');
     expect(user.lastName).toBe('Dupont');
     expect(user.email).toBe('alice@example.com');
-    expect(user.password).toBe('secret');
+    expect(user.password).toBe('test-password-123');
     expect(user.role).toBe(UserRole.PROVIDER);
     expect(user.phoneNumber).toBe('0600000000');
     expect(user.address).toBe('123 rue de Paris');

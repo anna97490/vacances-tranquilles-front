@@ -9,7 +9,6 @@ import { CommonModule } from '@angular/common';
 import { Service } from '../../models/Service';
 import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.component';
 import { OnChanges, SimpleChanges } from '@angular/core';
-
 /**
  * Composant carte prestataire (affichage d'un User de rôle PROVIDER)
  * @example <app-provider-card [user]="user"></app-provider-card>
@@ -22,7 +21,6 @@ import { OnChanges, SimpleChanges } from '@angular/core';
   styleUrl: './provider-card.component.scss'
 })
 export class ProviderCardComponent implements OnChanges {
-
 
   /**
    * Prestataire (User) correspondant au service affiché.

@@ -118,4 +118,74 @@ describe('ProviderCardComponent', () => {
     const reserveBtn = compiled.querySelector('.reserve-btn');
     expect(reserveBtn).not.toBeNull();
   });
+
+  it('should not update user when service is undefined in ngOnChanges', () => {
+    component.user = undefined;
+    component.service = undefined as any;
+    component.providerInfo = mockUser;
+
+    component.ngOnChanges({
+      service: new SimpleChange(mockService, undefined, false),
+      providerInfo: new SimpleChange(null, mockUser, true)
+    });
+
+    expect(component.user).toBeUndefined();
+  });
+
+  it('should not update user when providerInfo is undefined in ngOnChanges', () => {
+    component.user = undefined;
+    component.service = mockService;
+    component.providerInfo = undefined;
+
+    component.ngOnChanges({
+      service: new SimpleChange(null, mockService, true),
+      providerInfo: new SimpleChange(mockUser, undefined, false)
+    });
+
+    expect(component.user).toBeUndefined();
+  });
+
+  it('should not update user when both service and providerInfo are undefined in ngOnChanges', () => {
+    component.user = undefined;
+    component.service = undefined as any;
+    component.providerInfo = undefined;
+
+    component.ngOnChanges({
+      service: new SimpleChange(mockService, undefined, false),
+      providerInfo: new SimpleChange(mockUser, undefined, false)
+    });
+
+    expect(component.user).toBeUndefined();
+  });
+
+  it('should set service through setter', () => {
+    const newService = { ...mockService, id: 3, title: 'Nouveau service' };
+    component.service = newService;
+    expect(component.service).toEqual(newService);
+  });
+
+  it('should set providerInfo through setter', () => {
+    const newUser = new User({
+      idUser: 102,
+      firstName: 'Jean',
+      lastName: 'Martin',
+      email: 'jean@test.com',
+      phoneNumber: '0600000002',
+      address: '20 rue du Test',
+      role: UserRole.PROVIDER,
+      city: 'Paris',
+      postalCode: 75000,
+      password: ''
+    });
+    component.providerInfo = newUser;
+    expect(component.providerInfo).toEqual(newUser);
+  });
+
+  it('should get service through getter', () => {
+    expect(component.service).toEqual(mockService);
+  });
+
+  it('should get providerInfo through getter', () => {
+    expect(component.providerInfo).toEqual(mockUser);
+  });
 });
