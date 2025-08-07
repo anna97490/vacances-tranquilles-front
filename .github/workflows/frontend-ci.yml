@@ -61,6 +61,18 @@ jobs:
           SONAR_PROJECT_KEY: anna97490_vacances-tranquilles-front 
           SONAR_ORGANIZATION: anna97490 
 
+      - name: Generate TypeDoc documentation
+        run: npm run docs
+
+      - name: Vérification de la documentation générée
+        run: ls -lh ./docs
+
+      - name: Upload documentation as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-docs
+          path: ./docs
+
   deploy-to-render: 
     if: github.ref == 'refs/heads/main' 
     runs-on: 
