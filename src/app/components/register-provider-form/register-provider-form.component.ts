@@ -23,7 +23,7 @@ import { RegisterApiBuilderService } from '../../services/register/register-api-
 import { RegisterService } from '../../services/register/register.service';
 
 @Component({
-  selector: 'app-register-form',
+  selector: 'app-register-provider-form',
   standalone: true,
   imports: [
     CommonModule,
@@ -34,14 +34,14 @@ import { RegisterService } from '../../services/register/register.service';
     MatIconModule,
     RouterModule
   ],
-  templateUrl: './register-form.component.html',
-  styleUrl: './register-form.component.scss',
+  templateUrl: './register-provider-form.component.html',
+  styleUrl: './register-provider-form.component.scss',
   encapsulation: ViewEncapsulation.None
 })
-export class RegisterFormComponent implements OnDestroy {
+export class RegisterProviderFormComponent implements OnDestroy {
   form!: FormGroup;
-  isPrestataire = false;
-  mainLogo = './assets/pictures/logo.png';
+  isPrestataire = true; // Ce composant est spécifiquement pour les prestataires
+  beach_access = './assets/icons/beach_access_FFA101.svg';
   apiError: string | null = null; // Pour stocker l'erreur d'API
   private readonly routerSubscription?: Subscription;
   urlApi: string;
@@ -56,15 +56,7 @@ export class RegisterFormComponent implements OnDestroy {
     private readonly registerService: RegisterService
   ) {
     this.urlApi = this.configService.apiUrl;
-    this.detectUserType();
     this.initializeForm();
-  }
-
-  /**
-   * Détermine le type d'utilisateur à partir de l'URL
-   */
-  private detectUserType(): void {
-    this.isPrestataire = this.userTypeDetector.detectUserTypeFromUrl();
   }
 
   /**
@@ -92,7 +84,7 @@ export class RegisterFormComponent implements OnDestroy {
    * Gère les cas où le formulaire est invalide
    */
   private handleInvalidForm(): void {
-    console.warn('Formulaire d\'inscription invalide');
+    console.warn('Formulaire d\'inscription prestataire invalide');
     this.form.markAllAsTouched();
 
     // Vérifier si tous les champs requis sont remplis
@@ -108,9 +100,7 @@ export class RegisterFormComponent implements OnDestroy {
    * Récupère la liste des champs manquants pour l'affichage
    */
   private getMissingFields(): string[] {
-    const requiredFields = this.isPrestataire
-      ? ['firstName', 'lastName', 'email', 'userSecret', 'phoneNumber', 'address', 'city', 'postalCode', 'companyName', 'siretSiren']
-      : ['firstName', 'lastName', 'email', 'userSecret', 'phoneNumber', 'address', 'city', 'postalCode'];
+    const requiredFields = ['firstName', 'lastName', 'email', 'userSecret', 'phoneNumber', 'address', 'city', 'postalCode', 'companyName', 'siretSiren'];
 
     const missingFields: string[] = [];
     const fieldLabels: { [key: string]: string } = {
@@ -196,19 +186,15 @@ export class RegisterFormComponent implements OnDestroy {
    * Récupère le titre du formulaire selon le type d'utilisateur
    */
   getFormTitle(): string {
-    return this.isPrestataire ?
-      this.userTypeDetector.getPrestataireFormTitle() :
-      this.userTypeDetector.getParticulierFormTitle();
+    return this.userTypeDetector.getPrestataireFormTitle();
   }
 
   /**
    * Retourne le type d'utilisateur sous forme de chaîne pour affichage.
-   * @returns Le type d'utilisateur détecté (par ex. 'prestataire' ou 'particulier').
+   * @returns Le type d'utilisateur détecté (par ex. 'prestataire').
    */
   getUserTypeString(): string {
-    return this.isPrestataire ?
-      this.userTypeDetector.getPrestataireUserTypeString() :
-      this.userTypeDetector.getParticulierUserTypeString();
+    return this.userTypeDetector.getPrestataireUserTypeString();
   }
 
   /**

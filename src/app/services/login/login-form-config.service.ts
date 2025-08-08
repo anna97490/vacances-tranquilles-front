@@ -1,6 +1,38 @@
 // Service de configuration du formulaire de connexion
 import { Injectable } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+
+// Validateur spécifique pour les emails (autorise @ et .)
+function emailInjectionPreventionValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+
+  const value = control.value.toString();
+
+  // Pattern pour les emails - autorise @ . _ % + - mais bloque les vrais caractères dangereux
+  const dangerousPattern = /[<>'"&;{}()\[\]\\|`~#$%^*=]/;
+
+  if (dangerousPattern.test(value)) {
+    return { injectionPrevention: true };
+  }
+
+  return null;
+}
+
+// Validateur pour empêcher les caractères spéciaux d'injection (strict)
+function injectionPreventionValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+
+  const value = control.value.toString();
+
+  // Pattern pour détecter les caractères vraiment dangereux pour les injections
+  const dangerousPattern = /[<>'"&;{}()\[\]\\|`~#$%^*+=]/;
+
+  if (dangerousPattern.test(value)) {
+    return { injectionPrevention: true };
+  }
+
+  return null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +46,8 @@ export class LoginFormConfigService {
    */
   createLoginForm(): FormGroup {
     return this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      userSecret: ['', [Validators.required, Validators.minLength(6)]]
+      email: ['', [Validators.required, Validators.email, emailInjectionPreventionValidator]],
+      userSecret: ['', [Validators.required, Validators.minLength(6), injectionPreventionValidator]]
     });
   }
 

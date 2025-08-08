@@ -42,18 +42,19 @@ export class LoginService {
    */
   handleLoginSuccess(response: HttpResponse<LoginResponse>): void {
     const responseBody = response.body;
-    
+
     if (!responseBody?.token) {
-      this.showErrorMessage('Token manquant dans la réponse du serveur');
+      this.logError('Token manquant dans la réponse du serveur');
       return;
     }
 
     // Stockage des données d'authentification
     this.authStorage.storeAuthenticationData(responseBody.token, responseBody.userRole);
-    
-    this.showSuccessMessage();
+
+    // Log non intrusif au lieu d'une popup
+    this.logInfo('Connexion réussie');
     this.navigation.redirectAfterLogin(responseBody.userRole);
-    
+
     // Actualiser la page uniquement en environnement browser (pas pendant les tests)
     this.reloadPageIfBrowser();
   }
@@ -64,17 +65,17 @@ export class LoginService {
    */
   private handleSuccessWithParseError(error: HttpErrorResponse): void {
     console.log('Gestion spéciale pour erreur de parsing avec status 200:', error);
-    
+
     const token = this.errorHandler.extractTokenFromErrorResponse(error);
     if (token) {
       this.authStorage.storeAuthenticationData(token, '');
-      this.showSuccessMessage();
+      this.logInfo('Connexion réussie');
       this.navigation.redirectAfterLogin();
-      
+
       // Actualiser la page uniquement en environnement browser
       this.reloadPageIfBrowser();
     } else {
-      this.showErrorMessage('Token manquant dans la réponse du serveur');
+      this.logError('Token manquant dans la réponse du serveur');
     }
   }
 
@@ -95,7 +96,7 @@ export class LoginService {
   private isTestEnvironment(): boolean {
     return typeof window !== 'undefined' && (
       // Détection Karma/Jasmine
-      (window as any).jasmine !== undefined || 
+      (window as any).jasmine !== undefined ||
       (window as any).__karma__ !== undefined ||
       // Détection navigateur headless
       navigator.userAgent.includes('HeadlessChrome') ||
@@ -136,29 +137,15 @@ export class LoginService {
    */
   private processActualError(error: HttpErrorResponse): void {
     const errorMessage = this.errorHandler.getLoginErrorMessage(error);
-    this.showErrorMessage(errorMessage);
+    this.logError(errorMessage);
   }
 
-  /**
-   * Affiche un message de succès
-   */
-  private showSuccessMessage(): void {
-    if (!this.isTestEnvironment()) {
-      alert('Connexion réussie !');
-    } else {
-      console.log('Connexion réussie !'); // Pour les tests
-    }
+  /** Log helpers sans popup **/
+  private logInfo(message: string): void {
+    console.log(message);
   }
 
-  /**
-   * Affiche un message d'erreur
-   * @param message Le message d'erreur
-   */
-  private showErrorMessage(message: string): void {
-    if (!this.isTestEnvironment()) {
-      alert(`Erreur lors de la connexion : ${message}`);
-    } else {
-      console.error(`Erreur lors de la connexion : ${message}`); // Pour les tests
-    }
+  private logError(message: string): void {
+    console.error(`Erreur lors de la connexion : ${message}`);
   }
 }

@@ -5,19 +5,69 @@
     </div>
     <h2>Bienvenue sur Vacances Tranquilles</h2>
   </div>
+
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+     <!-- Zone d'annonces d'erreurs (ARIA) -->
+     <div class="error-summary" aria-live="assertive" role="alert"
+          *ngIf="apiError || emailError || passwordError || ((form.get('email')?.invalid && form.get('email')?.touched) || (form.get('userSecret')?.invalid && form.get('userSecret')?.touched))">
+       <p *ngIf="apiError">{{ apiError }}</p>
+       <ul>
+         <li *ngIf="form.get('email')?.errors?.['required'] && form.get('email')?.touched">
+           L'email est requis. Indiquez une adresse au format nom&#64;domaine.com.
+         </li>
+         <li *ngIf="form.get('email')?.errors?.['email'] && form.get('email')?.touched">
+           Format d'email invalide. Exemple : nom&#64;exemple.com.
+         </li>
+         <li *ngIf="form.get('email')?.errors?.['injectionPrevention'] && form.get('email')?.touched">
+           L'email ne doit pas contenir de caractères spéciaux dangereux. Retirez les caractères comme &lt;, &gt;, &#123;, &#125;.
+         </li>
+         <li *ngIf="form.get('userSecret')?.errors?.['required'] && form.get('userSecret')?.touched">
+           Le mot de passe est requis. Saisissez votre mot de passe.
+         </li>
+         <li *ngIf="form.get('userSecret')?.errors?.['minlength'] && form.get('userSecret')?.touched">
+           Le mot de passe doit contenir au moins 6 caractères.
+         </li>
+         <li *ngIf="form.get('userSecret')?.errors?.['injectionPrevention'] && form.get('userSecret')?.touched">
+           Le mot de passe ne doit pas contenir de caractères spéciaux dangereux. Retirez les caractères comme &lt;, &gt;, &#123;, &#125;.
+         </li>
+         <li *ngIf="emailError">{{ emailError }}</li>
+         <li *ngIf="passwordError">{{ passwordError }}</li>
+       </ul>
+     </div>
      <div class="form-group">
       <label for="email">Email professionnel</label>
       <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="email" formControlName="email" placeholder="entreprise@email.com">
+        <input matInput id="email" formControlName="email" placeholder="entreprise@email.com"
+               [attr.aria-invalid]="(form.get('email')?.invalid && form.get('email')?.touched) ? 'true' : 'false'"
+               aria-describedby="email-errors email-api-error">
       </mat-form-field>
+      <div id="email-errors" class="error-message" *ngIf="form.get('email')?.invalid && form.get('email')?.touched" role="alert">
+        <span *ngIf="form.get('email')?.errors?.['required']">L'email est requis</span>
+        <span *ngIf="form.get('email')?.errors?.['email']">Format d'email invalide. Exemple : nom&#64;exemple.com.</span>
+        <span *ngIf="form.get('email')?.errors?.['injectionPrevention']">L'email ne doit pas contenir de caractères spéciaux dangereux</span>
+      </div>
+      <!-- Erreur d'API pour l'email -->
+      <div id="email-api-error" class="error-message" *ngIf="emailError" role="alert">
+        <span>{{ emailError }}</span>
+      </div>
     </div>
     <div class="form-group">
       <label for="userSecret">Mot de passe</label>
       <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="userSecret" formControlName="userSecret" type="password" placeholder="********">
+        <input matInput id="userSecret" formControlName="userSecret" type="password" placeholder="********"
+               [attr.aria-invalid]="(form.get('userSecret')?.invalid && form.get('userSecret')?.touched) ? 'true' : 'false'"
+               aria-describedby="password-errors password-api-error">
       </mat-form-field>
+      <div id="password-errors" class="error-message" *ngIf="form.get('userSecret')?.invalid && form.get('userSecret')?.touched" role="alert">
+        <span *ngIf="form.get('userSecret')?.errors?.['required']">Le mot de passe est requis</span>
+        <span *ngIf="form.get('userSecret')?.errors?.['minlength']">Le mot de passe doit contenir au moins 6 caractères</span>
+        <span *ngIf="form.get('userSecret')?.errors?.['injectionPrevention']">Le mot de passe ne doit pas contenir de caractères spéciaux dangereux</span>
+      </div>
+      <!-- Erreur d'API pour le mot de passe -->
+      <div id="password-api-error" class="error-message" *ngIf="passwordError" role="alert">
+        <span>{{ passwordError }}</span>
+      </div>
     </div>
     <button mat-flat-button color="primary" class="login-btn" type="submit">Se connecter</button>
   </form>
-</div> 
+</div>

@@ -33,6 +33,9 @@ export class LoginFormComponent {
   form!: FormGroup;
   mainLogo = './assets/pictures/logo.png';
   urlApi: string;
+  apiError: string | null = null; // Pour stocker l'erreur d'API
+  emailError: string | null = null; // Erreur spécifique à l'email
+  passwordError: string | null = null; // Erreur spécifique au mot de passe
 
   constructor(
     private readonly configService: ConfigService,
@@ -55,6 +58,9 @@ export class LoginFormComponent {
    * Gestion de la soumission du formulaire de connexion
    */
   onSubmit(): void {
+    // Réinitialiser les erreurs précédentes
+    this.clearErrors();
+
     if (!this.validationService.isFormValid(this.form)) {
       this.handleInvalidForm();
       return;
@@ -65,13 +71,22 @@ export class LoginFormComponent {
   }
 
   /**
+   * Efface toutes les erreurs
+   */
+  private clearErrors(): void {
+    this.apiError = null;
+    this.emailError = null;
+    this.passwordError = null;
+  }
+
+  /**
    * Gère les cas où le formulaire est invalide
    */
   private handleInvalidForm(): void {
     this.validationService.markAllFieldsAsTouched(this.form);
-    
+
     const errorMessage = this.validationService.getValidationErrorMessage(this.form);
-    alert(errorMessage);
+    this.apiError = errorMessage;
   }
 
   /**
@@ -88,9 +103,35 @@ export class LoginFormComponent {
     this.loginService.performLogin(payload, this.urlApi).subscribe({
       next: (response) => this.loginService.handleLoginSuccess(response),
       error: (error) => {
-        this.loginService.handleLoginError(error);
+        this.handleLoginError(error);
         this.validationService.resetPasswordField(this.form);
       }
     });
+  }
+
+  /**
+   * Gère les erreurs de connexion
+   */
+  private handleLoginError(error: any): void {
+    // Réinitialiser les erreurs spécifiques
+    this.emailError = null;
+    this.passwordError = null;
+
+    // Gérer les erreurs selon le type
+    if (error.status === 401) {
+      // Erreur d'authentification - email ou mot de passe incorrect
+      this.emailError = 'Email ou mot de passe incorrect';
+      this.passwordError = 'Email ou mot de passe incorrect';
+    } else if (error.status === 403) {
+      this.apiError = 'Accès non autorisé';
+    } else if (error.status === 404) {
+      this.apiError = 'Service de connexion non disponible';
+    } else if (error.status === 500) {
+      this.apiError = 'Erreur interne du serveur';
+    } else if (error.status === 0) {
+      this.apiError = 'Impossible de contacter le serveur';
+    } else {
+      this.apiError = error.error?.message || 'Erreur de connexion inconnue';
+    }
   }
 }
