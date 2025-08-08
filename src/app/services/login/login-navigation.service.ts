@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 })
 export class LoginNavigationService {
 
-  constructor(private router: Router) {}
+  constructor(private readonly router: Router) {}
 
   /**
    * Redirige l'utilisateur après une connexion réussie
