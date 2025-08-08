@@ -74,7 +74,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       btnPrestataire: 'Inscription Prestataires',
       btnParticulier: 'Inscription Particuliers',
       btnConnexion: 'Connexion',
-      featuresTitle: 'Pourquoi Nous Choisir',
+      featuresTitle: 'Pourquoi nous choisir',
       iconType: 'custom',
       mainIcon: 'assets/icons/beach_access_FFA101.svg',
       features: []

@@ -5,8 +5,8 @@
     </div>
     <h2>Bienvenue sur Vacances Tranquilles</h2>
     <div class="register-provider-subtitle">
-      Créez votre compte pour gérer vos réservations<br>
-      Créez votre compte prestataire pour proposer vos services
+      <p *ngIf="isPrestataire">Créez votre compte prestataire pour proposer vos services aux vacanciers</p>
+      <p *ngIf="!isPrestataire">Rejoignez Vacances Tranquilles<br>pour confier votre logement à des professionnels</p>
     </div>
   </div>
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-provider-form">

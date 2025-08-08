@@ -43,9 +43,10 @@
     }
 
     .features-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 2rem;
-      max-width: 1200px;
+      width: 100%;
+      // max-width: 1200px;
     }
 
     .feature-card {
@@ -103,9 +104,10 @@
     }
 
     .features-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 2.5rem;
-      max-width: 1400px;
+      width: 100%;
+      // max-width: 1400px;
     }
 
     .feature-card {
@@ -163,9 +165,10 @@
     }
 
     .features-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 3rem;
-      max-width: 1600px;
+      width: 80%;
+      // max-width: 1600px;
     }
 
     .feature-card {

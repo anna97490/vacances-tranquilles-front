@@ -5,8 +5,8 @@
     </div>
     <h2>Bienvenue sur Vacances Tranquilles</h2>
     <div class="register-subtitle">
-      Créez votre compte pour gérer vos réservations<br>
-      Créez votre compte prestataire pour proposer vos services
+      <p *ngIf="isPrestataire">Créez votre compte prestataire pour proposer vos services aux vacanciers</p>
+      <p *ngIf="!isPrestataire">Rejoignez Vacances Tranquilles<br>pour confier votre logement à des professionnels</p>
     </div>
   </div>
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-form">
@@ -22,19 +22,17 @@
         <input matInput id="lastName" formControlName="lastName" placeholder="Votre nom">
       </mat-form-field>
     </div>
-    <div class="form-row" *ngIf="isPrestataire">
-      <div class="form-group">
-        <label for="companyName">Nom de l'entreprise</label>
-        <mat-form-field appearance="outline" class="custom-form-field form-field">
-          <input matInput id="companyName" formControlName="companyName" placeholder="Votre entreprise">
-        </mat-form-field>
-      </div>
-      <div class="form-group">
-        <label for="siretSiren">SIRET</label>
-        <mat-form-field appearance="outline" class="custom-form-field form-field">
-          <input matInput id="siretSiren" formControlName="siretSiren" placeholder="12345678901234">
-        </mat-form-field>
-      </div>
+    <div class="form-group" *ngIf="isPrestataire">
+      <label for="companyName">Nom de l'entreprise</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field">
+        <input matInput id="companyName" formControlName="companyName" placeholder="Votre entreprise">
+      </mat-form-field>
+    </div>
+    <div class="form-group" *ngIf="isPrestataire">
+      <label for="siretSiren">SIRET</label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field">
+        <input matInput id="siretSiren" formControlName="siretSiren" placeholder="12345678901234">
+      </mat-form-field>
     </div>
     <div class="form-group">
       <label for="email">Email</label>
