@@ -18,7 +18,7 @@ export class HeaderComponent implements OnInit {
   mainLogo = 'assets/pictures/logo.png';
   hoveredItem: any = null;
   isMobileMenuOpen = false;
-  
+
   menu = [
     {
       label: 'Accueil',
@@ -31,6 +31,12 @@ export class HeaderComponent implements OnInit {
       icon: 'assets/icons/person_24dp_FFFFFF.svg',
       iconActive: 'assets/icons/person_24dp_FFA101.svg',
       path: '/profil'
+    },
+    {
+      label: 'Mes réservations',
+      icon: 'assets/icons/calendar_month_24dp_FFFFF.svg',
+      iconActive: 'assets/icons/calendar_FFA101.svg',
+      path: '/reservations'
     },
     {
       label: 'Messagerie',
@@ -51,11 +57,11 @@ export class HeaderComponent implements OnInit {
       path: '/assistance'
     }
   ];
-  
+
   currentPath: string = '';
-  
+
   constructor(private router: Router, public location: Location) {}
-  
+
   ngOnInit(): void {
     this.currentPath = this.location.path() || '/home';
     this.router.events.pipe(

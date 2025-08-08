@@ -61,22 +61,23 @@
       &.active,
       &:hover {
         color: var(--quaternary-color);
-        
+
         .icon {
           filter: brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2500%) hue-rotate(5deg);
         }
       }
 
-      &.active::after {
-        content: '';
-        position: absolute;
-        bottom: -8px;
-        left: 0;
-        right: 0;
-        height: 4px;
-        border-radius: 2px;
-        background: var(--tertiary-color);
-      }
+      // Barre de soulignement supprimée pour un style uniforme
+      // &.active::after {
+      //   content: '';
+      //   position: absolute;
+      //   bottom: -8px;
+      //   left: 0;
+      //   right: 0;
+      //   height: 4px;
+      //   border-radius: 2px;
+      //   background: var(--tertiary-color);
+      // }
     }
   }
 
@@ -179,7 +180,7 @@
         &.active {
           color: #FFA101;
           background-color: rgba(255, 161, 1, 0.05);
-          
+
           .icon {
             filter: brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2500%) hue-rotate(5deg);
           }
@@ -188,7 +189,7 @@
         &:hover:not(.active) {
           background-color: #F8F9FA;
           color: #FFA101;
-          
+
           .icon {
             filter: brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2500%) hue-rotate(5deg);
           }
