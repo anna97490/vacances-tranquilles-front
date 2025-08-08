@@ -52,7 +52,7 @@ export class LoginService {
     this.authStorage.storeAuthenticationData(responseBody.token, responseBody.userRole);
 
     // Log non intrusif au lieu d'une popup
-    this.logInfo('Connexion réussie');
+    this.logInfo('Connexion réussie !');
     this.navigation.redirectAfterLogin(responseBody.userRole);
 
     // Actualiser la page uniquement en environnement browser (pas pendant les tests)
@@ -69,7 +69,7 @@ export class LoginService {
     const token = this.errorHandler.extractTokenFromErrorResponse(error);
     if (token) {
       this.authStorage.storeAuthenticationData(token, '');
-      this.logInfo('Connexion réussie');
+      this.logInfo('Connexion réussie !');
       this.navigation.redirectAfterLogin();
 
       // Actualiser la page uniquement en environnement browser

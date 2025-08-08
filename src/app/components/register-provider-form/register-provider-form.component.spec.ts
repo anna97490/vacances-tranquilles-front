@@ -2,8 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { RegisterProviderFormComponent } from './register-provider-form.component';
+import { RouterTestingModule } from '@angular/router/testing';
 import { ConfigService } from '../../services/config/config.service';
 import { RegisterValidationService } from '../../services/register/register-validation.service';
 import { RegisterFormConfigService } from '../../services/register/register-form-config.service';
@@ -28,7 +30,16 @@ describe('RegisterProviderFormComponent', () => {
 
   beforeEach(async () => {
     testForm = new FormGroup({
-      email: new FormControl('test@example.com')
+      firstName: new FormControl(''),
+      lastName: new FormControl(''),
+      email: new FormControl('test@example.com'),
+      userSecret: new FormControl(''),
+      phoneNumber: new FormControl(''),
+      address: new FormControl(''),
+      city: new FormControl(''),
+      postalCode: new FormControl(''),
+      companyName: new FormControl(''),
+      siretSiren: new FormControl('')
     });
 
     configServiceMock = { apiUrl: 'http://api.test' } as ConfigService;
@@ -100,7 +111,7 @@ describe('RegisterProviderFormComponent', () => {
     registerServiceMock.handleRegistrationError.and.returnValue(null);
 
     await TestBed.configureTestingModule({
-      imports: [RegisterProviderFormComponent, ReactiveFormsModule],
+      imports: [RegisterProviderFormComponent, ReactiveFormsModule, RouterTestingModule, NoopAnimationsModule],
       providers: [
         { provide: ConfigService, useValue: configServiceMock },
         { provide: RegisterValidationService, useValue: validationServiceMock },
