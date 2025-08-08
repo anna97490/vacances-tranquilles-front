@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { EnvService } from './../../services/EnvService';
+import { ConfigService } from '../../services/config/config.service';
 import { RegisterValidationService } from '../../services/register/register-validation.service';
 import { RegisterFormConfigService } from '../../services/register/register-form-config.service';
 import { UserTypeDetectorService } from '../../services/register/user-type-detector.service';
@@ -47,14 +47,14 @@ export class RegisterFormComponent implements OnDestroy {
 
   constructor(
     private readonly renderer: Renderer2,
-    private readonly envService: EnvService,
+    private readonly configService: ConfigService,
     private readonly validationService: RegisterValidationService,
     private readonly formConfigService: RegisterFormConfigService,
     private readonly userTypeDetector: UserTypeDetectorService,
     private readonly apiBuilder: RegisterApiBuilderService,
     private readonly registerService: RegisterService
   ) {
-    this.urlApi = this.envService.apiUrl;
+    this.urlApi = this.configService.apiUrl;
     this.detectUserType();
     this.initializeForm();
   }
@@ -174,6 +174,6 @@ export class RegisterFormComponent implements OnDestroy {
   }
 
   getApiUrl(): string {
-    return this.envService.apiUrl;
+    return this.configService.apiUrl;
   }
 }

@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, RouterLink } from '@angular/router';
 import { LoginPayload } from './../../models/Login';
-import { EnvService } from './../../services/EnvService';
+import { ConfigService } from '../../services/config/config.service';
 import { LoginValidationService } from '../../services/login/login-validation.service';
 import { LoginFormConfigService } from '../../services/login/login-form-config.service';
 import { LoginService } from '../../services/login/login.service';
@@ -35,12 +35,12 @@ export class LoginFormComponent {
   urlApi: string;
 
   constructor(
-    private readonly envService: EnvService,
+    private readonly configService: ConfigService,
     private readonly validationService: LoginValidationService,
     private readonly formConfigService: LoginFormConfigService,
     private readonly loginService: LoginService
   ) {
-    this.urlApi = this.envService.apiUrl;
+    this.urlApi = this.configService.apiUrl;
     this.initializeForm();
   }
 

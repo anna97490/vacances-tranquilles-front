@@ -13,7 +13,7 @@ import { Component } from '@angular/core';
 import { of, throwError } from 'rxjs';
 
 import { LoginFormComponent } from './login-form.component';
-import { EnvService } from '../../services/EnvService';
+import { ConfigService } from '../../services/config/config.service';
 import { LoginValidationService } from '../../services/login/login-validation.service';
 import { LoginFormConfigService } from '../../services/login/login-form-config.service';
 import { LoginService } from '../../services/login/login.service';
@@ -53,6 +53,11 @@ describe('LoginFormComponent', () => {
     statusText: 'OK'
   } as HttpResponse<any>;
 
+  // Mock config pour APP_CONFIG
+  const mockAppConfig = {
+    apiUrl: 'http://localhost:8080/api'
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
@@ -71,13 +76,14 @@ describe('LoginFormComponent', () => {
       declarations: [MockHomeComponent],
       providers: [
         FormBuilder,
-        EnvService,
+        ConfigService,
         LoginValidationService,
         LoginFormConfigService,
         LoginService,
         AuthStorageService,
         LoginErrorHandlerService,
-        LoginNavigationService
+        LoginNavigationService,
+        { provide: 'APP_CONFIG', useValue: mockAppConfig }
       ]
     }).compileComponents();
 
