@@ -128,7 +128,15 @@ export class RegisterFormComponent implements OnDestroy {
    * Récupère le titre du formulaire selon le type d'utilisateur
    */
   getFormTitle(): string {
-    return this.userTypeDetector.getFormTitle(this.isPrestataire);
+    return this.isPrestataire ? 
+      this.userTypeDetector.getPrestataireFormTitle() : 
+      this.userTypeDetector.getParticulierFormTitle();
+  }
+
+  getUserTypeString(): string {
+    return this.isPrestataire ? 
+      this.userTypeDetector.getPrestataireUserTypeString() : 
+      this.userTypeDetector.getParticulierUserTypeString();
   }
 
   /**
@@ -167,10 +175,6 @@ export class RegisterFormComponent implements OnDestroy {
 
   detectUserTypeFromString(str: string): boolean {
     return this.userTypeDetector.detectUserTypeFromString(str);
-  }
-
-  getUserTypeString(): string {
-    return this.userTypeDetector.getUserTypeString(this.isPrestataire);
   }
 
   getApiUrl(): string {
