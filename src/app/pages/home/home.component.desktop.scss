@@ -1,5 +1,3 @@
-// Home Component - Styles Desktop (écrans larges)
-
 @media (min-width: 901px) {
   .homepage-container {
     .content {
@@ -46,7 +44,6 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 2rem;
       width: 100%;
-      // max-width: 1200px;
     }
 
     .feature-card {
@@ -107,7 +104,6 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 2.5rem;
       width: 100%;
-      // max-width: 1400px;
     }
 
     .feature-card {
@@ -168,7 +164,6 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 3rem;
       width: 80%;
-      // max-width: 1600px;
     }
 
     .feature-card {

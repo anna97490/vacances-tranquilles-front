@@ -14,11 +14,11 @@ import { LoginNavigationService } from './login-navigation.service';
 export class LoginService {
 
   constructor(
-    private http: HttpClient,
-    private authStorage: AuthStorageService,
-    private errorHandler: LoginErrorHandlerService,
-    private navigation: LoginNavigationService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    private readonly http: HttpClient,
+    private readonly authStorage: AuthStorageService,
+    private readonly errorHandler: LoginErrorHandlerService,
+    private readonly navigation: LoginNavigationService,
+    @Inject(PLATFORM_ID) private readonly platformId: Object
   ) {}
 
   /**
@@ -122,7 +122,7 @@ export class LoginService {
    */
   handleLoginError(error: HttpErrorResponse): void {
     // Vérifier si c'est un succès avec erreur de parsing
-    if (this.errorHandler.isPotentialParseError && this.errorHandler.isPotentialParseError(error)) {
+    if (this.errorHandler.isPotentialParseError?.(error)) {
       this.handleSuccessWithParseError(error);
     } else {
       // Traiter comme une vraie erreur

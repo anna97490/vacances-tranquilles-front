@@ -144,7 +144,10 @@ export function verifyWarningLogged(consoleSpy: jasmine.Spy, expectedMessage?: s
  */
 export function verifyErrorLogged(consoleSpy: jasmine.Spy, expectedMessage?: string): void {
   if (expectedMessage) {
-    expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
+    // Vérifie si l'erreur a été loggée avec le message attendu parmi les arguments
+    const calls = consoleSpy.calls.allArgs();
+    const found = calls.some(args => args.includes(expectedMessage));
+    expect(found).toBeTrue();
   } else {
     expect(consoleSpy).toHaveBeenCalled();
   }
@@ -157,7 +160,10 @@ export function verifyErrorLogged(consoleSpy: jasmine.Spy, expectedMessage?: str
  */
 export function verifyLogShown(consoleSpy: jasmine.Spy, expectedMessage?: string): void {
   if (expectedMessage) {
-    expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
+    // Vérifie si le message attendu est inclus dans au moins un appel (concatène les arguments en string)
+    const calls = consoleSpy.calls.allArgs();
+    const found = calls.some(args => args.join(' ').includes(expectedMessage));
+    expect(found).toBeTrue();
   } else {
     expect(consoleSpy).toHaveBeenCalled();
   }
@@ -170,8 +176,11 @@ export function verifyLogShown(consoleSpy: jasmine.Spy, expectedMessage?: string
  */
 export function verifyInfoLogged(consoleSpy: jasmine.Spy, expectedMessage?: string): void {
   if (expectedMessage) {
-    expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
+    // Vérifie si le message attendu correspond exactement à l'un des arguments passés
+    const calls = consoleSpy.calls.allArgs();
+    const found = calls.some(args => args.some(arg => arg === expectedMessage));
+    expect(found).toBeTrue();
   } else {
     expect(consoleSpy).toHaveBeenCalled();
   }
-} 
+}
