@@ -37,7 +37,7 @@ const PASSWORD_VALIDATORS = [
 })
 export class RegisterFormConfigService {
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private readonly fb: FormBuilder) {}
 
   /**
    * Crée un formulaire d'inscription avec les validateurs de base

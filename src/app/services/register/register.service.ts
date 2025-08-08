@@ -76,7 +76,9 @@ export class RegisterService {
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
   private showSuccessMessage(isPrestataire: boolean): void {
-    const userType = this.userTypeDetector.getUserTypeString(isPrestataire);
+  const userType = isPrestataire ? 
+    this.userTypeDetector.getPrestataireUserTypeString() : 
+    this.userTypeDetector.getParticulierUserTypeString();
     alert(`Inscription ${userType} réussie ! Vous pouvez maintenant vous connecter.`);
   }
 

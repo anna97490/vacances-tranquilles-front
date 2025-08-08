@@ -1,12 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
 
-  constructor(@Inject('APP_CONFIG') private config: any, private http: HttpClient) {}
+  constructor(@Inject('APP_CONFIG') private config: any, private readonly http: HttpClient) {}
 
   get apiUrl(): string {
     return this.config?.apiUrl || '';
