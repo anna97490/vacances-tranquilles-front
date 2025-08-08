@@ -26,8 +26,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   @HostBinding('style.height') height = '100%';
 
   constructor(
-    private homeContentService: HomeContentService,
-    private homeInitializationService: HomeInitializationService
+    private readonly homeContentService: HomeContentService,
+    private readonly homeInitializationService: HomeInitializationService
   ) {}
 
   ngOnInit(): void {

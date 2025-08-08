@@ -4,7 +4,7 @@
   </div>
   
   <!-- Navigation desktop -->
-  <nav class="header-nav desktop-nav">
+  <nav class="header-nav desktop-nav" aria-label="Navigation principale">
     <a
       *ngFor="let item of menu"
       class="nav-link"
@@ -33,7 +33,7 @@
     class="mobile-menu-container" 
     [class.menu-visible]="isMobileMenuOpen"
   >
-    <nav class="mobile-nav">
+    <nav class="mobile-nav" aria-label="Menu de navigation">
       <a
         *ngFor="let item of menu"
         class="nav-link"
