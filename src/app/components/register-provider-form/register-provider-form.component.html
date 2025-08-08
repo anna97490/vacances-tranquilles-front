@@ -5,8 +5,8 @@
     </div>
     <h2>Bienvenue sur Vacances Tranquilles</h2>
     <div class="register-provider-subtitle">
-      Créez votre compte pour gérer vos réservations<br>
-      Créez votre compte prestataire pour proposer vos services
+      <p *ngIf="isPrestataire">Créez votre compte prestataire pour proposer vos services aux vacanciers</p>
+      <p *ngIf="!isPrestataire">Rejoignez Vacances Tranquilles<br>pour confier votre logement à des professionnels</p>
     </div>
   </div>
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-provider-form">
@@ -49,9 +49,9 @@
       </mat-form-field>
     </div>
     <div class="form-group">
-      <label for="password">Mot de passe</label>
+      <label for="userSecret">Mot de passe</label>
       <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="password" formControlName="password" type="password" placeholder="********">
+        <input matInput id="userSecret" formControlName="userSecret" type="password" placeholder="********">
       </mat-form-field>
     </div>
     <button mat-flat-button color="primary" class="register-btn styled-btn" type="submit">S'inscrire</button>

@@ -1,12 +1,4 @@
-export interface TermsSection {
-  title: string;
-  content: { text: string }[];
-}
-export interface TermsContent {
-  title: string;
-  date: string;
-  sections: TermsSection[];
-}
+import { TermsContent } from './../../models/Terms';
 
 // Fonction utilitaire pour formatage des puces
 const bullet = (lines: string[]) => lines.map(text => ({ text: `• ${text}` }));

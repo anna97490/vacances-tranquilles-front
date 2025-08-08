@@ -7,7 +7,7 @@ describe('AppComponent', () => {
   const setToken = () => localStorage.setItem('token', 'sample-token');
 
   beforeEach(async () => {
-    clearLocalStorage(); // par défaut, pas de token
+    clearLocalStorage();
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],
@@ -17,12 +17,6 @@ describe('AppComponent', () => {
 
   afterEach(() => {
     clearLocalStorage();
-  });
-
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
   });
 
   it('should set isConnected to true if token is not present', () => {

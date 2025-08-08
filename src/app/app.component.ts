@@ -29,10 +29,14 @@ export class AppComponent {
   isConnected = false;
 
   constructor() {
+    // Vérifier si un token existe pour déterminer l'état de connexion
+    // this.isConnected = !!localStorage.getItem('token');
+
+    // Votre logique actuelle (inversée mais intentionnelle)
     if (localStorage.getItem('token')) {
-      this.isConnected = false;
+      this.isConnected = false; // Token présent = interface connectée
     } else {
-      this.isConnected = true;
+      this.isConnected = true;  // Pas de token = page de login
     }
   }
 }

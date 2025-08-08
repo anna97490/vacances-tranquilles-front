@@ -5,9 +5,9 @@
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --port 4200",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "watch": "ng build --watch",
     "test": "ng test --code-coverage --browsers=ChromeHeadless",
-    "docs": "typedoc src/app --out docs/typedoc"
+    "docs": "typedoc src/app --out docs/typedoc --entryPointStrategy expand"
   },
   "private": true,
   "dependencies": {
@@ -29,6 +29,7 @@
     "@angular-devkit/build-angular": "^18.2.9",
     "@angular/cli": "^18.2.9",
     "@angular/compiler-cli": "^18.2.0",
+    "@ngx-env/builder": "^18.0.2",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",

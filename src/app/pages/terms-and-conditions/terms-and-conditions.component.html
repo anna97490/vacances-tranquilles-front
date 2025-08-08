@@ -1,0 +1,25 @@
+<div class="terms-and-conditions-container">
+    <ng-container *ngIf="isShowingCGU()">
+        <h2>Conditions Générales d'Utilisation (CGU)</h2>
+        <div *ngFor="let section of cguContent.sections">
+            <h3>{{ section.title }}</h3>
+            <div *ngFor="let content of section.content">
+                <p>{{ content.text }}</p>
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="isShowingCGV()">
+        <h2>Conditions Générales de Vente (CGV)</h2>
+        <div *ngFor="let section of cgvContent.sections">
+            <h3>{{ section.title }}</h3>
+            <div *ngFor="let content of section.content">
+                <p>{{ content.text }}</p>
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="!isShowingCGU() && !isShowingCGV()">
+        <p>Aucune condition à afficher.</p>
+    </ng-container>
+</div>

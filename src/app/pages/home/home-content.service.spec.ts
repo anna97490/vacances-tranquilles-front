@@ -1,4 +1,5 @@
-import { HomeContentService, HomeContent } from './../../services/home-content.service';
+import { HomeContentService } from './../../services/home-content.service';
+import { HomeContent } from './../../models/Home';
 
 describe('HomeContentService', () => {
   let service: HomeContentService;
@@ -23,7 +24,7 @@ describe('HomeContentService', () => {
     expect(content.btnPrestataire).toContain('Prestataires');
     expect(content.btnParticulier).toContain('Particuliers');
     expect(content.btnConnexion).toBe('Connexion');
-    expect(content.featuresTitle).toContain('Choisir');
+    expect(content.featuresTitle).toContain('choisir');
 
     expect(Array.isArray(content.features)).toBeTrue();
     expect(content.features.length).toBeGreaterThan(0);
