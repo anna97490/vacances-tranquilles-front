@@ -1,7 +1,7 @@
 import { User, UserRole } from './User';
 
 // Constante pour les tests - évite les mots de passe en dur
-const TEST_PASSWORD = 'password123';
+const TEST_PASSWORD = '';
 
 describe('UserRole Enum', () => {
   it('should contain the expected roles', () => {
