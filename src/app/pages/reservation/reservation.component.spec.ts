@@ -108,13 +108,14 @@ describe('ReservationComponent', () => {
   it('should map status labels and colors and canUpdateStatus branches', () => {
     expect(component.getStatusLabel('PENDING')).toBe('En attente');
     expect(component.getStatusLabel('IN_PROGRESS')).toBe('En cours');
-    expect(component.getStatusLabel('CLOSED')).toBe('Terminée');
+    expect(component.getStatusLabel('CLOSED')).toBe('Clôturée');
     expect(component.getStatusLabel('CANCELLED')).toBe('Annulée');
 
-    expect(component.getStatusColor('PENDING')).toBe('#FFA500');
-    expect(component.getStatusColor('IN_PROGRESS')).toBe('#007BFF');
-    expect(component.getStatusColor('CLOSED')).toBe('#28A745');
-    expect(component.getStatusColor('CANCELLED')).toBe('#DC3545');
+    expect(component.getStatusColor('PENDING')).toBe('#f39c12');
+    // IN_PROGRESS mapped via detail color -> list fallback keeps same meaning
+    expect(component.getStatusColor('IN_PROGRESS')).toBe('#27ae60');
+    expect(component.getStatusColor('CLOSED')).toBe('#3498db');
+    expect(component.getStatusColor('CANCELLED')).toBe('#e74c3c');
 
     component.isProvider = true;
     expect(component.canUpdateStatus({ status: 'PENDING' } as any)).toBeTrue();

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { mapStatusColor, mapStatusLabel } from '../../models/reservation-status';
+import { take } from 'rxjs/operators';
 import { ReservationService, ReservationResponseDTO, UpdateReservationStatusDTO } from '../../services/reservation/reservation.service';
 
 // Utilise les interfaces du service
@@ -42,6 +44,7 @@ export class ReservationComponent implements OnInit {
     this.error = '';
 
     this.reservationService.getAllReservations()
+      .pipe(take(1))
       .subscribe({
         next: (data: Reservation[]) => {
           this.reservations = data;
@@ -107,23 +110,14 @@ export class ReservationComponent implements OnInit {
   }
 
   getStatusColor(status: string): string {
-    switch (status) {
-      case 'PENDING': return '#FFA500'; // Orange
-      case 'IN_PROGRESS': return '#007BFF'; // Bleu
-      case 'CLOSED': return '#28A745'; // Vert
-      case 'CANCELLED': return '#DC3545'; // Rouge
-      default: return '#6C757D'; // Gris
-    }
+    // Adapter à la charte couleur de la liste (proches du détail)
+    const color = mapStatusColor(status);
+    if (color === '#95a5a6') return '#6C757D';
+    return color;
   }
 
   getStatusLabel(status: string): string {
-    switch (status) {
-      case 'PENDING': return 'En attente';
-      case 'IN_PROGRESS': return 'En cours';
-      case 'CLOSED': return 'Terminée';
-      case 'CANCELLED': return 'Annulée';
-      default: return status;
-    }
+    return mapStatusLabel(status);
   }
 
   canUpdateStatus(reservation: Reservation): boolean {

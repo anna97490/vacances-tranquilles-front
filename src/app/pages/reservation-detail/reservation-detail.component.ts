@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
-import { ReservationService } from '../../services/reservation/reservation.service';
+import { ReservationService, ReservationResponseDTO } from '../../services/reservation/reservation.service';
+import { mapStatusColor, mapStatusLabel } from '../../models/reservation-status';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -12,7 +14,7 @@ import { ReservationService } from '../../services/reservation/reservation.servi
   styleUrl: './reservation-detail.component.scss'
 })
 export class ReservationDetailComponent implements OnInit {
-  reservation: any = null;
+  reservation: ReservationResponseDTO | null = null;
   isLoading = true;
   error: string | null = null;
   isUpdating = false;
@@ -45,7 +47,7 @@ export class ReservationDetailComponent implements OnInit {
       return;
     }
 
-    this.reservationService.getReservationById(parseInt(reservationId)).subscribe({
+    this.reservationService.getReservationById(parseInt(reservationId)).pipe(take(1)).subscribe({
       next: (response) => {
         this.reservation = response;
         this.isLoading = false;
@@ -88,23 +90,11 @@ export class ReservationDetailComponent implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    const statusLabels: { [key: string]: string } = {
-      'PENDING': 'En attente',
-      'IN_PROGRESS': 'En cours',
-      'CANCELLED': 'Annulée',
-      'CLOSED': 'Clôturée'
-    };
-    return statusLabels[status] || status;
+    return mapStatusLabel(status);
   }
 
   getStatusColor(status: string): string {
-    const statusColors: { [key: string]: string } = {
-      'PENDING': '#f39c12',
-      'IN_PROGRESS': '#27ae60',
-      'CANCELLED': '#e74c3c',
-      'CLOSED': '#3498db'
-    };
-    return statusColors[status] || '#95a5a6';
+    return mapStatusColor(status);
   }
 
   updateStatus(newStatus: 'IN_PROGRESS' | 'CANCELLED' | 'CLOSED'): void {
@@ -119,6 +109,7 @@ export class ReservationDetailComponent implements OnInit {
     this.error = null;
     this.reservationService
       .updateReservationStatus(this.reservation.id, { status: newStatus })
+      .pipe(take(1))
       .subscribe({
         next: (updated) => {
           this.reservation = updated;
