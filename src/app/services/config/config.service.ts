@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
 
   private config: any = {};
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {
+    this.loadConfig();
+  }
 
   get apiUrl(): string {
     return this.config?.apiUrl || '';
@@ -21,12 +24,23 @@ export class ConfigService {
     try {
       const config = await firstValueFrom(this.http.get('/assets/config.json'));
       this.config = config;
+      console.log('Configuration chargée:', this.config);
     } catch (error) {
-      console.warn('Impossible de charger config.json, utilisation des valeurs par défaut');
-      // Utiliser les valeurs par défaut si le fichier config.json n'existe pas
+      console.warn('Impossible de charger config.json, utilisation des variables d\'environnement');
+      // Utiliser les variables d'environnement si le fichier config.json n'existe pas
       this.config = {
-        apiUrl: 'http://localhost:8080/api'
+        apiUrl: environment.apiUrl
       };
+      console.log('Configuration d\'environnement utilisée:', this.config);
+    }
+  }
+
+  /**
+   * Attend que la configuration soit chargée
+   */
+  async waitForConfig(): Promise<void> {
+    if (!this.config.apiUrl) {
+      await this.loadConfig();
     }
   }
 }
