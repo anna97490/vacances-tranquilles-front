@@ -61,11 +61,11 @@ export const EMAILJS_CONFIG = {
 
 ## Avantages de cette solution
 
-✅ **Aucun backend requis** - Tout fonctionne côté client  
-✅ **Envoi direct** - L'email est envoyé immédiatement à votre adresse  
-✅ **Templates personnalisables** - Vous pouvez modifier le format des emails  
-✅ **Gratuit** - 200 emails/mois avec le plan gratuit  
-✅ **Sécurisé** - Utilise des clés API sécurisées  
+**Aucun backend requis** - Tout fonctionne côté client  
+**Envoi direct** - L'email est envoyé immédiatement à votre adresse  
+**Templates personnalisables** - Vous pouvez modifier le format des emails  
+**Gratuit** - 200 emails/mois avec le plan gratuit  
+**Sécurisé** - Utilise des clés API sécurisées  
 
 ## Test
 

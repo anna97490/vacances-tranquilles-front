@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FooterComponent } from '../../components/footer/footer.component';
-import emailjs from '@emailjs/browser';
+import * as emailjs from '@emailjs/browser';
 import { EMAILJS_CONFIG } from '../../config/emailjs.config';
 
 @Component({

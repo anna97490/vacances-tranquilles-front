@@ -1,10 +1,10 @@
 # Service de Diagnostic du Chatbot Botpress
 
-## 📋 Vue d'ensemble
+## Vue d'ensemble
 
 Le `ChatbotOpenerService` a été étendu avec des fonctionnalités de diagnostic pour vérifier l'état du chatbot Botpress et identifier les problèmes potentiels.
 
-## 🔧 Fonctionnalités de diagnostic
+## Fonctionnalités de diagnostic
 
 ### 1. Vérification automatique
 - **Script chargé** : Vérifie si le script Botpress est présent dans le DOM
@@ -24,7 +24,7 @@ interface ChatbotDiagnostic {
 }
 ```
 
-## 🚀 Utilisation
+## Utilisation
 
 ### Dans un composant Angular
 
@@ -53,25 +53,25 @@ export class MonComposant {
 }
 ```
 
-## 📊 États possibles
+## États possibles
 
-### ✅ Disponible
+### Disponible
 - Script Botpress chargé
 - Objet `botpressWebChat` initialisé
 - Méthode `open()` accessible
 - Chatbot prêt à être utilisé
 
-### ⚠️ Non disponible
+### Non disponible
 - Script chargé mais objet non initialisé
 - Objet présent mais méthode manquante
 - Problèmes de configuration
 
-### ❌ Erreur
+### Erreur
 - Erreurs JavaScript lors de l'initialisation
 - Conflits avec d'autres scripts
 - Problèmes de réseau ou de chargement
 
-## 🔍 Méthodes de diagnostic
+## Méthodes de diagnostic
 
 ### `runDiagnostic()`
 Effectue une vérification complète et retourne un objet `ChatbotDiagnostic`.
@@ -85,7 +85,7 @@ Vérification rapide de la disponibilité (boolean).
 ### `logDiagnostic()`
 Affiche les informations de diagnostic dans la console du navigateur.
 
-## 🛠️ Dépannage
+## Dépannage
 
 ### Script non chargé
 - Vérifier que le script Botpress est inclus dans `index.html`
@@ -102,7 +102,7 @@ Affiche les informations de diagnostic dans la console du navigateur.
 - Contrôler la configuration du webchat
 - Vérifier les conflits avec d'autres scripts
 
-## 📱 Intégration dans l'interface
+## Intégration dans l'interface
 
 Le composant FAQ inclut maintenant :
 - **Indicateur de statut** visuel avec icônes
@@ -111,14 +111,14 @@ Le composant FAQ inclut maintenant :
 - **Grille de diagnostic** avec tous les paramètres
 - **Gestion des erreurs** avec messages explicatifs
 
-## 🔄 Actualisation automatique
+## Actualisation automatique
 
 Le diagnostic est effectué :
 - Au chargement de la page
 - Avant l'ouverture du chatbot
 - Sur demande manuelle (bouton actualiser)
 
-## 📝 Logs de console
+## Logs de console
 
 Le service génère des logs détaillés dans la console :
 - État général du chatbot
@@ -126,7 +126,7 @@ Le service génère des logs détaillés dans la console :
 - Horodatage des vérifications
 - Messages d'erreur éventuels
 
-## 🎯 Bonnes pratiques
+## Bonnes pratiques
 
 1. **Vérifier l'état** avant d'essayer d'ouvrir le chatbot
 2. **Logger les diagnostics** en cas de problème
