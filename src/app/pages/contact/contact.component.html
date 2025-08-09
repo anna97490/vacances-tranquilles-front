@@ -1,0 +1,100 @@
+<div class="contact-container">
+  <div class="contact-card">
+    <h1 class="contact-title">Contactez-nous</h1>
+    
+    <p class="contact-description">
+      Laissez-nous vos coordonnées et nous vous recontacterons dans les 24 heures
+    </p>
+
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+      <!-- Nom -->
+      <div class="form-group">
+        <label for="nom" class="form-label">Nom *</label>
+        <input
+          type="text"
+          id="nom"
+          formControlName="nom"
+          class="form-input"
+          [class.error]="nom?.invalid && nom?.touched"
+          placeholder="Votre nom"
+        />
+        <div *ngIf="nom?.invalid && nom?.touched" class="error-message">
+          {{ getFieldError('nom') }}
+        </div>
+      </div>
+
+      <!-- Prénom -->
+      <div class="form-group">
+        <label for="prenom" class="form-label">Prénom *</label>
+        <input
+          type="text"
+          id="prenom"
+          formControlName="prenom"
+          class="form-input"
+          [class.error]="prenom?.invalid && prenom?.touched"
+          placeholder="Votre prénom"
+        />
+        <div *ngIf="prenom?.invalid && prenom?.touched" class="error-message">
+          {{ getFieldError('prenom') }}
+        </div>
+      </div>
+
+      <!-- Objet -->
+      <div class="form-group">
+        <label for="objet" class="form-label">Objet *</label>
+        <input
+          type="text"
+          id="objet"
+          formControlName="objet"
+          class="form-input"
+          [class.error]="objet?.invalid && objet?.touched"
+          placeholder="Objet de votre demande"
+        />
+        <div *ngIf="objet?.invalid && objet?.touched" class="error-message">
+          {{ getFieldError('objet') }}
+        </div>
+      </div>
+
+      <!-- Demande -->
+      <div class="form-group">
+        <label for="demande" class="form-label">Demande *</label>
+        <textarea
+          id="demande"
+          formControlName="demande"
+          class="form-textarea"
+          [class.error]="demande?.invalid && demande?.touched"
+          placeholder="Décrivez votre demande..."
+          rows="6"
+        ></textarea>
+        <div class="textarea-footer">
+          <div *ngIf="demande?.invalid && demande?.touched" class="error-message">
+            {{ getFieldError('demande') }}
+          </div>
+          <div class="character-count" [class.warning]="remainingCharacters <= 100">
+            {{ remainingCharacters }} caractères restants
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages de succès/erreur -->
+      <div *ngIf="submitSuccess" class="success-message">
+        Votre message a été envoyé avec succès à vacancestranquilles&#64;outlook.fr ! Nous vous recontacterons dans les 24 heures.
+      </div>
+      
+      <div *ngIf="submitError" class="error-message global-error">
+        {{ submitError }}
+      </div>
+
+      <!-- Bouton d'envoi -->
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="isSubmitting || contactForm.invalid"
+      >
+        <span *ngIf="!isSubmitting">Envoyer</span>
+        <span *ngIf="isSubmitting">Envoi en cours...</span>
+      </button>
+    </form>
+  </div>
+</div>
+<app-footer></app-footer>

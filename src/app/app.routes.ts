@@ -20,6 +20,18 @@ export const routes: Routes = [
       }
     ]
   },
+  // Route pour l'assistance (FAQ)
+  { 
+    path: 'assistance', 
+    loadComponent: () => import('./pages/faq/faq.component')
+      .then(m => m.FAQComponent)
+  },
+  // Route pour le formulaire de contact
+  { 
+    path: 'contact', 
+    loadComponent: () => import('./pages/contact/contact.component')
+      .then(m => m.ContactComponent)
+  },
     // Routes d'authentification avec paramètres pour le type d'utilisateur
   { 
     path: 'auth',

@@ -1,0 +1,61 @@
+// Section d'aide
+.help-section {
+    padding: 3rem 2rem;
+    text-align: center;
+    background-color: var(--secondary-text-color);
+  }
+  
+  .help-title {
+    font-size: 1.75rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  
+  .help-description {
+    color: var(--discret-text-color);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    font-size: 1.05rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .help-button {
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    
+    &.contact-button {
+      background-color: var(--tertiary-color);
+      color: var(--secondary-text-color);
+      
+      &:hover {
+        background-color: var(--tertiary-color);
+        transform: translateY(-2px);
+      }
+    }
+  }
+  // Responsive
+@media (max-width: 768px) {
+      
+      .faq-answer.show {
+        padding: 0 1.5rem 1.25rem 1.5rem;
+      }
+      
+      .help-section {
+        padding: 2rem 1.5rem;
+      }
+      
+      .help-button {
+        min-width: 200px;
+        padding: 0.875rem 2rem;
+      }
+  }

@@ -1,0 +1,79 @@
+<!-- Header avec Material Toolbar -->
+<mat-toolbar class="faq-header">
+  <div class="header-content">
+    <h1 class="faq-title">
+      Foire <span class="title-highlight">aux</span> Questions
+    </h1>
+    <p class="faq-subtitle">
+      Trouvez rapidement les réponses à vos questions
+    </p>
+  </div>
+</mat-toolbar>
+
+<div class="faq-container">
+
+  <!-- Contenu principal dans une Material Card -->
+  <mat-card class="faq-content">
+
+    <!-- Résultats de recherche -->
+    <div class="search-results" *ngIf="searchQuery.trim()">
+      <p class="results-count">
+        {{ filteredFAQItems.length }} résultat(s) trouvé(s) pour "{{ searchQuery }}"
+      </p>
+    </div>
+
+    <!-- Liste des FAQ avec Material Expansion Panel -->
+    <mat-accordion class="faq-accordion">
+      <mat-expansion-panel 
+        *ngFor="let item of filteredFAQItems; let i = index; trackBy: trackByFn"
+        class="faq-panel"
+        [expanded]="item.isExpanded"
+      >
+        <mat-expansion-panel-header class="faq-header">
+          <mat-panel-title class="question-text">
+            {{ item.question }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        
+        <div class="faq-answer">
+          <p>{{ item.reponse }}</p>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <!-- Message si aucun résultat -->
+    <div class="no-results" *ngIf="filteredFAQItems.length === 0 && (searchQuery.trim() || selectedCategory !== 'all')">
+      <mat-card class="no-results-card">
+        <mat-card-content>
+          <mat-icon class="no-results-icon">search_off</mat-icon>
+          <h3>Aucune FAQ trouvée</h3>
+          <p>Aucune question ne correspond à vos critères de recherche.</p>
+          <button 
+            mat-raised-button 
+            color="primary"
+            (click)="resetFilters()"
+          >
+            Voir toutes les FAQ
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </mat-card>
+
+  <!-- Séparateur Material -->
+  <mat-divider class="faq-divider"></mat-divider>
+
+  <!-- Section d'aide simplifiée -->
+  <div class="help-section">
+    <h2 class="help-title">Besoin d'aide supplémentaire ?</h2>
+    <button 
+      mat-raised-button 
+      color="accent"
+      (click)="goToContactForm()"
+      class="contact-button"
+    >
+      Remplir le formulaire
+    </button>
+  </div>
+</div>
+<app-footer></app-footer>
