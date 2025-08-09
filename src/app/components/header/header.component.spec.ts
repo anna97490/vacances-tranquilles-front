@@ -76,28 +76,25 @@ describe('HeaderComponent', () => {
   });
 
   it('should initialize with correct menu items', () => {
-    expect(component.menu.length).toBe(5);
+    expect(component.menu.length).toBe(4);
     expect(component.menu[0].label).toBe('Accueil');
     expect(component.menu[1].label).toBe('Profil');
     expect(component.menu[2].label).toBe('Messagerie');
-    expect(component.menu[3].label).toBe('Agenda');
-    expect(component.menu[4].label).toBe('Assistance');
+    expect(component.menu[3].label).toBe('Assistance');
   });
 
   it('should have correct paths for menu items', () => {
     expect(component.menu[0].path).toBe('/home');
     expect(component.menu[1].path).toBe('/profil');
     expect(component.menu[2].path).toBe('/messagerie');
-    expect(component.menu[3].path).toBe('/agenda');
-    expect(component.menu[4].path).toBe('/assistance');
+    expect(component.menu[3].path).toBe('/assistance');
   });
 
   it('should have correct icons for menu items', () => {
     expect(component.menu[0].icon).toContain('cottage');
     expect(component.menu[1].icon).toContain('person');
     expect(component.menu[2].icon).toContain('chat_bubble');
-    expect(component.menu[3].icon).toContain('calendar');
-    expect(component.menu[4].icon).toContain('contact_support');
+    expect(component.menu[3].icon).toContain('contact_support');
   });
 
   it('should have active icons for menu items', () => {
@@ -105,7 +102,6 @@ describe('HeaderComponent', () => {
     expect(component.menu[1].iconActive).toContain('FFA101');
     expect(component.menu[2].iconActive).toContain('FFA101');
     expect(component.menu[3].iconActive).toContain('FFA101');
-    expect(component.menu[4].iconActive).toContain('FFA101');
   });
 
   it('should initialize with correct logo path', () => {

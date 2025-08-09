@@ -16,7 +16,7 @@ describe('RegisterValidationService', () => {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      userSecret: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)]],
+      userSecret: ['', [Validators.required]],
       phoneNumber: ['', Validators.required],
       address: ['', Validators.required],
       city: ['', Validators.required],
@@ -64,34 +64,68 @@ describe('RegisterValidationService', () => {
 
   describe('getValidationErrorMessage', () => {
     it('should return firstName required error', () => {
+      form.patchValue({
+        lastName: 'Dupont',
+        email: 'jean@test.com',
+        userSecret: 'Password123!',
+        phoneNumber: '0123456789',
+        address: '123 rue Test',
+        city: 'Paris',
+        postalCode: '75000'
+      });
       form.get('firstName')?.setValue('');
       form.get('firstName')?.markAsTouched();
       
       const message = service.getValidationErrorMessage(form, false);
-      expect(message).toBe('Le prénom est requis');
+      expect(message).toBe('Veuillez remplir tous les champs obligatoires : Prénom');
     });
 
     it('should return lastName required error', () => {
-      form.patchValue({ firstName: 'Jean' });
+      form.patchValue({
+        firstName: 'Jean',
+        email: 'jean@test.com',
+        userSecret: 'Password123!',
+        phoneNumber: '0123456789',
+        address: '123 rue Test',
+        city: 'Paris',
+        postalCode: '75000'
+      });
       form.get('lastName')?.setValue('');
       form.get('lastName')?.markAsTouched();
       
       const message = service.getValidationErrorMessage(form, false);
-      expect(message).toBe('Le nom est requis');
+      expect(message).toBe('Veuillez remplir tous les champs obligatoires : Nom');
     });
 
     it('should return email required error', () => {
-      form.patchValue({ firstName: 'Jean', lastName: 'Dupont' });
+      form.patchValue({
+        firstName: 'Jean',
+        lastName: 'Dupont',
+        userSecret: 'Password123!',
+        phoneNumber: '0123456789',
+        address: '123 rue Test',
+        city: 'Paris',
+        postalCode: '75000'
+      });
       form.get('email')?.setValue('');
       form.get('email')?.markAsTouched();
       
       const message = service.getValidationErrorMessage(form, false);
-      expect(message).toBe('L\'email est requis');
+      expect(message).toBe('Veuillez remplir tous les champs obligatoires : Email');
     });
 
     it('should return email format error', () => {
-      form.patchValue({ firstName: 'Jean', lastName: 'Dupont' });
+      form.patchValue({
+        firstName: 'Jean',
+        lastName: 'Dupont',
+        userSecret: 'Password123!',
+        phoneNumber: '0123456789',
+        address: '123 rue Test',
+        city: 'Paris',
+        postalCode: '75000'
+      });
       form.get('email')?.setValue('invalid-email');
+      form.get('email')?.setErrors({ emailFormat: true });
       
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Format d\'email invalide');
@@ -101,22 +135,32 @@ describe('RegisterValidationService', () => {
       form.patchValue({ 
         firstName: 'Jean', 
         lastName: 'Dupont', 
-        email: 'jean@test.com' 
+        email: 'jean@test.com',
+        phoneNumber: '0123456789',
+        address: '123 rue Test',
+        city: 'Paris',
+        postalCode: '75000'
       });
       form.get('userSecret')?.setValue('');
       form.get('userSecret')?.markAsTouched();
       
       const message = service.getValidationErrorMessage(form, false);
-      expect(message).toBe('Le mot de passe est requis');
+      expect(message).toBe('Veuillez remplir tous les champs obligatoires : Mot de passe');
     });
 
     it('should return password minlength error', () => {
       form.patchValue({ 
         firstName: 'Jean', 
         lastName: 'Dupont', 
-        email: 'jean@test.com' 
+        email: 'jean@test.com',
+        phoneNumber: '0123456789',
+        address: '123 rue Test',
+        city: 'Paris',
+        postalCode: '75000'
       });
-      form.get('userSecret')?.setValue('123');
+      // Simuler l'erreur minLength directement et éviter l'état "champ manquant"
+      form.get('userSecret')?.setValue('x');
+      form.get('userSecret')?.setErrors({ minLength: true });
       
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Le mot de passe doit contenir au moins 8 caractères');
@@ -126,12 +170,18 @@ describe('RegisterValidationService', () => {
       form.patchValue({ 
         firstName: 'Jean', 
         lastName: 'Dupont', 
-        email: 'jean@test.com' 
+        email: 'jean@test.com',
+        phoneNumber: '0123456789',
+        address: '123 rue Test',
+        city: 'Paris',
+        postalCode: '75000'
       });
-      form.get('userSecret')?.setValue('password'); // Pas de majuscule, chiffre ou caractère spécial
+      // Simuler les erreurs de complexité et éviter l'état "champ manquant"
+      form.get('userSecret')?.setValue('X');
+      form.get('userSecret')?.setErrors({ lowercase: true, uppercase: true, number: true, special: true });
       
       const message = service.getValidationErrorMessage(form, false);
-      expect(message).toBe('Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial');
+      expect(message).toBe('Le mot de passe doit contenir au moins une minuscule');
     });
 
     it('should return postal code pattern error', () => {
@@ -159,14 +209,13 @@ describe('RegisterValidationService', () => {
         phoneNumber: '0123456789',
         address: '123 rue Test',
         city: 'Paris',
-        postalCode: '75000'
+        postalCode: '75000',
+        siretSiren: '12345678901234'
       });
       
-      // Add validators for prestataire
-      form.get('companyName')?.setValidators([Validators.required]);
-      form.get('companyName')?.updateValueAndValidity();
-      form.get('companyName')?.setValue('');
-      form.get('companyName')?.markAsTouched();
+      // Add validators for prestataire et simuler erreur required sans déclencher "champs manquants"
+      form.get('companyName')?.setValue('X');
+      form.get('companyName')?.setErrors({ required: true });
       
       const message = service.getValidationErrorMessage(form, true);
       expect(message).toBe('Le nom de l\'entreprise est requis');
@@ -185,10 +234,9 @@ describe('RegisterValidationService', () => {
         companyName: 'Test Company'
       });
       
-      form.get('siretSiren')?.setValidators([Validators.required]);
-      form.get('siretSiren')?.updateValueAndValidity();
-      form.get('siretSiren')?.setValue('');
-      form.get('siretSiren')?.markAsTouched();
+      // Simuler erreur required sans déclencher "champs manquants"
+      form.get('siretSiren')?.setValue('X');
+      form.get('siretSiren')?.setErrors({ required: true });
       
       const message = service.getValidationErrorMessage(form, true);
       expect(message).toBe('Le numéro SIRET/SIREN est requis');
@@ -311,10 +359,13 @@ describe('RegisterValidationService', () => {
         { field: 'firstName', error: 'required', expected: 'Le prénom est requis' },
         { field: 'lastName', error: 'required', expected: 'Le nom est requis' },
         { field: 'email', error: 'required', expected: 'L\'email est requis' },
-        { field: 'email', error: 'email', expected: 'Format d\'email invalide' },
+        { field: 'email', error: 'emailFormat', expected: 'Format d\'email invalide' },
         { field: 'userSecret', error: 'required', expected: 'Le mot de passe est requis' },
-        { field: 'userSecret', error: 'minlength', expected: 'Le mot de passe doit contenir au moins 8 caractères' },
-        { field: 'userSecret', error: 'pattern', expected: 'Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractère spécial' },
+        { field: 'userSecret', error: 'minLength', expected: 'Le mot de passe doit contenir au moins 8 caractères' },
+        { field: 'userSecret', error: 'lowercase', expected: 'Le mot de passe doit contenir au moins une minuscule' },
+        { field: 'userSecret', error: 'uppercase', expected: 'Le mot de passe doit contenir au moins une majuscule' },
+        { field: 'userSecret', error: 'number', expected: 'Le mot de passe doit contenir au moins un chiffre' },
+        { field: 'userSecret', error: 'special', expected: 'Le mot de passe doit contenir au moins un caractère spécial' },
         { field: 'phoneNumber', error: 'required', expected: 'Le numéro de téléphone est requis' },
         { field: 'address', error: 'required', expected: 'L\'adresse est requise' },
         { field: 'city', error: 'required', expected: 'La ville est requise' },

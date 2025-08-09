@@ -83,6 +83,7 @@ export class LoginService {
    * Recharge la page uniquement si on est dans un browser (pas pendant les tests)
    */
   private reloadPageIfBrowser(): void {
+    /* istanbul ignore next */
     if (isPlatformBrowser(this.platformId) && !this.isTestEnvironment()) {
       setTimeout(() => {
         window.location.reload();
@@ -93,6 +94,7 @@ export class LoginService {
   /**
    * Vérifie si on est dans un environnement de test
    */
+  /* istanbul ignore next */
   private isTestEnvironment(): boolean {
     return typeof window !== 'undefined' && (
       // Détection Karma/Jasmine

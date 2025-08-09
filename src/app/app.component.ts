@@ -12,31 +12,23 @@ import { CommonModule } from '@angular/common';
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet, 
-    HeaderComponent, 
-    ReactiveFormsModule, 
-    MatFormFieldModule, 
-    MatInputModule, 
-    MatButtonModule, 
-    MatIconModule, 
+    RouterOutlet,
+    HeaderComponent,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
     CommonModule
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title = 'frontend';
-  isConnected = false;
 
-  constructor() {
-    // Vérifier si un token existe pour déterminer l'état de connexion
-    // this.isConnected = !!localStorage.getItem('token');
-
-    // Votre logique actuelle (inversée mais intentionnelle)
-    if (localStorage.getItem('token')) {
-      this.isConnected = false; // Token présent = interface connectée
-    } else {
-      this.isConnected = true;  // Pas de token = page de login
-    }
+  isAuthenticated(): boolean {
+    // Simple check: considère connecté si un token est présent (ajuste si besoin)
+    return !!localStorage.getItem('token');
   }
 }

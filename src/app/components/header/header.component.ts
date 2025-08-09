@@ -39,12 +39,6 @@ export class HeaderComponent implements OnInit {
       path: '/messagerie'
     },
     {
-      label: 'Agenda',
-      icon: 'assets/icons/calendar_month_24dp_FFFFF.svg',
-      iconActive: 'assets/icons/calendar_FFA101.svg',
-      path: '/agenda'
-    },
-    {
       label: 'Assistance',
       icon: 'assets/icons/contact_support_24dp_FFFFF.svg',
       iconActive: 'assets/icons/contact_support_24dp_FFA101.svg',
@@ -98,6 +92,7 @@ export class HeaderComponent implements OnInit {
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
     this.toggleBodyScroll();
+    setTimeout(() => this.focusMobileMenu(), 0);
   }
 
   /**
@@ -116,6 +111,14 @@ export class HeaderComponent implements OnInit {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+    }
+  }
+
+  private focusMobileMenu(): void {
+    const menu = document.getElementById('mobile-menu');
+    if (this.isMobileMenuOpen && menu) {
+      menu.setAttribute('tabindex', '-1');
+      (menu as HTMLElement).focus();
     }
   }
 

@@ -146,8 +146,7 @@ describe('RegisterFormConfigService', () => {
       const emailControl = form.get('email');
 
       emailControl?.setValue('invalid-email');
-      // Angular met l'erreur 'email'
-      expect(emailControl?.hasError('email')).toBeTrue();
+      expect(emailControl?.hasError('emailFormat')).toBeTrue();
 
       emailControl?.setValue('valid@email.com');
       expect(emailControl?.valid).toBeTruthy();
@@ -168,9 +167,8 @@ describe('RegisterFormConfigService', () => {
       const form = service.createRegistrationForm();
       const userSecretControl = form.get('userSecret');
 
-      // Test validators actuels (minLength + required)
       userSecretControl?.setValue('123');
-      expect(userSecretControl?.hasError('minlength')).toBeTrue();
+      expect(userSecretControl?.hasError('minLength')).toBeTrue();
 
       userSecretControl?.setValue('Password123!');
       expect(userSecretControl?.valid).toBeTruthy();

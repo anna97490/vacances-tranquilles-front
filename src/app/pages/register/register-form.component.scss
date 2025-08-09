@@ -1,11 +1,41 @@
+.back-btn {
+  top: 2rem;
+  left: 2rem;
+  color:  var(--button-color);
+  background-color: var(--primary-color);
+  border: none;
+  padding: 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--tertiary-color);
+  }
+
+  &:focus-visible {
+    outline: 3px solid #1f5f8b;
+    outline-offset: 2px;
+  }
+}
+
 .register-container {
-  min-height: 100vh;
+  min-height: 100%;
+  height: 100%;
+  overflow-y: auto;
   background: var(--primary-color);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding-top: 2.5rem;
+  box-sizing: border-box;
 }
 
 h2 {
@@ -15,6 +45,7 @@ h2 {
 .mat-mdc-text-field-wrapper {
   height: 56px !important;
 }
+
 .register-header {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -43,24 +74,6 @@ h2 {
   top: 10px;
 }
 
-// Styles pour le message d'erreur général
-.general-error-message {
-  background-color: #ffebee;
-  border: 1px solid #d32f2f;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  width: 100%;
-  max-width: 35vw;
-  text-align: center;
-}
-
-.general-error-message span {
-  color: #d32f2f;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
 .register-form {
   background: var(--secondary-text-color);
   border-radius: 12px;
@@ -71,6 +84,7 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  box-sizing: border-box;
 }
 
 .form-row {
@@ -112,7 +126,8 @@ h2 {
 
 .register-login {
   text-align: center;
-  margin-top: 1.2rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
   color: var(--text-color);
   font-size: 1rem;
 }
@@ -123,10 +138,21 @@ h2 {
   font-weight: 500;
 }
 
+.register-container > app-footer {
+  margin-top: auto;
+}
+
 .logo {
   height: 80px;
   margin-bottom: 0.7rem;
 }
+
+.required-asterisk {
+  color: #d32f2f;
+  font-weight: 700;
+}
+
+
 
 @media (max-width: 1024px) {
   .register-form {

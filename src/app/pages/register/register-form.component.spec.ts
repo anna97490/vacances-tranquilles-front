@@ -23,6 +23,7 @@ describe('RegisterFormComponent', () => {
   let userTypeDetectorMock: jasmine.SpyObj<UserTypeDetectorService>;
   let apiBuilderMock: jasmine.SpyObj<RegisterApiBuilderService>;
   let registerServiceMock: jasmine.SpyObj<RegisterService>;
+  let confirmSpy: jasmine.Spy;
 
   let testForm: FormGroup;
 
@@ -126,6 +127,9 @@ describe('RegisterFormComponent', () => {
     fixture = TestBed.createComponent(RegisterFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    // Spy on native confirm for CGU consent
+    confirmSpy = spyOn(window, 'confirm');
   });
 
   it('should create', () => {
@@ -147,9 +151,10 @@ describe('RegisterFormComponent', () => {
     expect(registerServiceMock.performRegistration).not.toHaveBeenCalled();
   });
 
-  it('should submit when form is valid and handle success', () => {
+  it('should submit when form is valid, user accepts CGU, and handle success', () => {
     validationServiceMock.isFormValid.and.returnValue(true);
     registerServiceMock.performRegistration.and.returnValue(of(new HttpResponse({ status: 200, body: 'OK' })));
+    confirmSpy.and.returnValue(true);
 
     component.onSubmit();
 
@@ -158,8 +163,19 @@ describe('RegisterFormComponent', () => {
     expect(registerServiceMock.handleRegistrationSuccess).toHaveBeenCalledWith(jasmine.any(HttpResponse), false);
   });
 
+  it('should not submit when user declines CGU', () => {
+    validationServiceMock.isFormValid.and.returnValue(true);
+    confirmSpy.and.returnValue(false);
+
+    component.onSubmit();
+
+    expect(apiBuilderMock.buildApiConfig).not.toHaveBeenCalled();
+    expect(registerServiceMock.performRegistration).not.toHaveBeenCalled();
+  });
+
   it('should mark email as taken and set apiError on 409 error', () => {
     validationServiceMock.isFormValid.and.returnValue(true);
+    confirmSpy.and.returnValue(true);
     registerServiceMock.performRegistration.and.returnValue(throwError(() => new HttpErrorResponse({ status: 409 })));
     registerServiceMock.handleRegistrationError.and.returnValue('Email déjà utilisé');
 

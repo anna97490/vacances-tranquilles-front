@@ -1,6 +1,7 @@
 <div class="app-container">
-  <app-header></app-header>
-  <main>
+  <a class="skip-link" href="#main-content">Aller au contenu</a>
+  <app-header *ngIf="isAuthenticated()"></app-header>
+  <main id="main-content" tabindex="-1">
     <router-outlet></router-outlet>
   </main>
 </div>

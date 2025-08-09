@@ -9,6 +9,7 @@
       *ngFor="let item of menu"
       class="nav-link"
       [class.active]="isActive(item.path)"
+      [attr.aria-current]="isActive(item.path) ? 'page' : null"
       [routerLink]="item.path"
       (mouseenter)="hoveredItem = item"
       (mouseleave)="hoveredItem = null"
@@ -35,12 +36,15 @@
     (click)="toggleMobileMenu()"
     [class.active]="isMobileMenuOpen"
     aria-label="Menu de navigation"
+    [attr.aria-expanded]="isMobileMenuOpen"
+    aria-controls="mobile-menu"
   >
     <img [src]="'assets/icons/burgerMenu.svg'" class="burger-icon" alt="Menu" />
   </button>
 
   <!-- Menu mobile -->
   <div
+    id="mobile-menu"
     class="mobile-menu-container"
     [class.menu-visible]="isMobileMenuOpen"
   >

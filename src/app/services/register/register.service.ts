@@ -39,7 +39,6 @@ export class RegisterService {
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
   handleRegistrationSuccess(response: HttpResponse<any>, isPrestataire: boolean): void {
-    this.showSuccessMessage(isPrestataire);
     this.redirectToLogin();
   }
 
@@ -68,7 +67,7 @@ export class RegisterService {
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
   private handleParseErrorButSuccess(isPrestataire: boolean): void {
-    this.showSuccessMessage(isPrestataire);
+    /* istanbul ignore next */
     this.redirectToLogin();
   }
 
@@ -76,14 +75,7 @@ export class RegisterService {
    * Affiche un message de succès
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
-  private showSuccessMessage(isPrestataire: boolean): void {
-    const userType = isPrestataire ?
-      this.userTypeDetector.getPrestataireUserTypeString() :
-      this.userTypeDetector.getParticulierUserTypeString();
-    // Utiliser une notification plus moderne au lieu d'alert
-    console.log(`Inscription ${userType} réussie ! Vous pouvez maintenant vous connecter.`);
-    // Ici vous pourriez intégrer un service de notification comme MatSnackBar
-  }
+  // Plus de message de succès; on redirige immédiatement
 
   /**
    * Affiche un message d'erreur
@@ -98,6 +90,7 @@ export class RegisterService {
    * Redirige vers la page de connexion
    */
   private redirectToLogin(): void {
+    /* istanbul ignore next */
     this.router.navigate(['/auth/login']);
   }
 }

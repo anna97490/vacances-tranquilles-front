@@ -1,3 +1,10 @@
+<div>
+  <!-- Bouton retour -->
+  <button class="back-btn" aria-label="Retour" type="button" (click)="goBack()">
+    ←
+  </button>
+</div>
+
 <div class="register-container">
   <div class="register-header">
     <div class="logo">
@@ -11,122 +18,124 @@
   </div>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-form">
+
     <div class="form-group">
-      <label for="firstName">Prénom</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="firstName" formControlName="firstName" placeholder="Votre prénom">
+      <label for="firstName">Prénom <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('firstName')?.invalid && form.get('firstName')?.touched">
+        <input matInput id="firstName" name="firstName" formControlName="firstName" placeholder="Votre prénom" [required]="true"
+               type="text" autocomplete="given-name" inputmode="text">
+        <mat-error *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
+          {{ getFieldErrorText('firstName') }}
+        </mat-error>
       </mat-form-field>
-      <div class="error-message" *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
-        <span *ngIf="form.get('firstName')?.errors?.['required']">Le prénom est requis</span>
-        <span *ngIf="form.get('firstName')?.errors?.['lettersOnly']">Le prénom ne doit contenir que des lettres</span>
-        <span *ngIf="form.get('firstName')?.errors?.['injectionPrevention']">Le prénom ne doit pas contenir de caractères spéciaux dangereux</span>
-      </div>
     </div>
     <div class="form-group">
-      <label for="lastName">Nom</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="lastName" formControlName="lastName" placeholder="Votre nom">
+      <label for="lastName">Nom <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('lastName')?.invalid && form.get('lastName')?.touched">
+        <input matInput id="lastName" name="lastName" formControlName="lastName" placeholder="Votre nom" [required]="true"
+               type="text" autocomplete="family-name" inputmode="text">
+        <mat-error *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
+          {{ getFieldErrorText('lastName') }}
+        </mat-error>
       </mat-form-field>
-      <div class="error-message" *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
-        <span *ngIf="form.get('lastName')?.errors?.['required']">Le nom est requis</span>
-        <span *ngIf="form.get('lastName')?.errors?.['lettersOnly']">Le nom ne doit contenir que des lettres</span>
-        <span *ngIf="form.get('lastName')?.errors?.['injectionPrevention']">Le nom ne doit pas contenir de caractères spéciaux dangereux</span>
-      </div>
     </div>
     <div class="form-group" *ngIf="isPrestataire">
-      <label for="companyName">Nom de l'entreprise</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field">
-        <input matInput id="companyName" formControlName="companyName" placeholder="Votre entreprise">
+      <label for="companyName">Nom de l'entreprise <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field"
+                      [class.mat-mdc-form-field-invalid]="form.get('companyName')?.invalid && form.get('companyName')?.touched">
+        <input matInput id="companyName" name="companyName" formControlName="companyName" placeholder="Votre entreprise" [required]="isPrestataire"
+               type="text" autocomplete="organization" inputmode="text">
+        <mat-error *ngIf="form.get('companyName')?.invalid && form.get('companyName')?.touched">
+          {{ getFieldErrorText('companyName') }}
+        </mat-error>
       </mat-form-field>
-      <div class="error-message" *ngIf="form.get('companyName')?.invalid && form.get('companyName')?.touched">
-        <span *ngIf="form.get('companyName')?.errors?.['required']">Le nom de l'entreprise est requis</span>
-        <span *ngIf="form.get('companyName')?.errors?.['injectionPrevention']">Le nom de l'entreprise ne doit pas contenir de caractères spéciaux dangereux</span>
-      </div>
     </div>
     <div class="form-group" *ngIf="isPrestataire">
-      <label for="siretSiren">SIRET</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field">
-        <input matInput id="siretSiren" formControlName="siretSiren" placeholder="12345678901234">
+      <label for="siretSiren">SIRET <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field"
+                      [class.mat-mdc-form-field-invalid]="form.get('siretSiren')?.invalid && form.get('siretSiren')?.touched">
+        <input matInput id="siretSiren" name="siretSiren" formControlName="siretSiren" placeholder="12345678901234" [required]="isPrestataire"
+               type="text" inputmode="numeric" autocomplete="off">
+        <mat-error *ngIf="form.get('siretSiren')?.invalid && form.get('siretSiren')?.touched">
+          {{ getFieldErrorText('siretSiren') }}
+        </mat-error>
       </mat-form-field>
-      <div class="error-message" *ngIf="form.get('siretSiren')?.invalid && form.get('siretSiren')?.touched">
-        <span *ngIf="form.get('siretSiren')?.errors?.['required']">Le numéro SIRET est requis</span>
-        <span *ngIf="form.get('siretSiren')?.errors?.['pattern']">Le SIRET doit contenir 14 chiffres</span>
-        <span *ngIf="form.get('siretSiren')?.errors?.['injectionPrevention']">Le SIRET ne doit pas contenir de caractères spéciaux dangereux</span>
-      </div>
     </div>
     <div class="form-group">
-      <label for="email">Email</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="email" formControlName="email" placeholder="entreprise@email.com">
+      <label for="email">Email <span class="required-asterisk" aria-hidden="true">*</span><span class="sr-only"></span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('email')?.invalid && form.get('email')?.touched">
+        <input matInput id="email" name="email" formControlName="email" placeholder="entreprise@email.com" [required]="true"
+               type="email" autocomplete="email" inputmode="email"
+               aria-describedby="register-email-hint">
+        <mat-hint id="register-email-hint">Exemple: nom&#64;domaine.com</mat-hint>
+        <mat-error *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+          {{ getFieldErrorText('email') }}
+        </mat-error>
       </mat-form-field>
-      <div class="error-message" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-        <span *ngIf="form.get('email')?.errors?.['required']">L'email est requis</span>
-        <span *ngIf="form.get('email')?.errors?.['emailFormat']">Format d'email invalide</span>
-        <span *ngIf="form.get('email')?.errors?.['injectionPrevention']">L'email ne doit pas contenir de caractères spéciaux dangereux</span>
-        <span *ngIf="form.get('email')?.errors?.['emailTaken']">Cet email est déjà utilisé</span>
-      </div>
     </div>
     <div class="form-group">
-      <label for="phoneNumber">Téléphone</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="phoneNumber" formControlName="phoneNumber" placeholder="06 12 34 56 78">
+      <label for="phoneNumber">Téléphone <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('phoneNumber')?.invalid && form.get('phoneNumber')?.touched">
+        <input matInput id="phoneNumber" name="phoneNumber" formControlName="phoneNumber" placeholder="06 12 34 56 78" [required]="true"
+               type="tel" inputmode="tel" autocomplete="tel">
+        <mat-error *ngIf="form.get('phoneNumber')?.invalid && form.get('phoneNumber')?.touched">
+          {{ getFieldErrorText('phoneNumber') }}
+        </mat-error>
       </mat-form-field>
-              <div class="error-message" *ngIf="form.get('phoneNumber')?.invalid && form.get('phoneNumber')?.touched">
-          <span *ngIf="form.get('phoneNumber')?.errors?.['required']">Le numéro de téléphone est requis</span>
-          <span *ngIf="form.get('phoneNumber')?.errors?.['phoneNumberLength']">Le numéro de téléphone doit contenir exactement 10 chiffres</span>
-          <span *ngIf="form.get('phoneNumber')?.errors?.['numbersOnly']">Le numéro de téléphone ne doit contenir que des chiffres</span>
-          <span *ngIf="form.get('phoneNumber')?.errors?.['injectionPrevention']">Le numéro de téléphone ne doit pas contenir de caractères spéciaux dangereux</span>
-        </div>
     </div>
     <div class="form-group">
-      <label for="address">Adresse</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="address" formControlName="address" placeholder="123 rue de la Paix">
+      <label for="address">Adresse <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('address')?.invalid && form.get('address')?.touched">
+        <input matInput id="address" name="address" formControlName="address" placeholder="123 rue de la Paix" [required]="true"
+               type="text" autocomplete="address-line1" inputmode="text">
+        <mat-error *ngIf="form.get('address')?.invalid && form.get('address')?.touched">
+          {{ getFieldErrorText('address') }}
+        </mat-error>
       </mat-form-field>
-      <div class="error-message" *ngIf="form.get('address')?.invalid && form.get('address')?.touched">
-        <span *ngIf="form.get('address')?.errors?.['required']">L'adresse est requise</span>
-        <span *ngIf="form.get('address')?.errors?.['injectionPrevention']">L'adresse ne doit pas contenir de caractères spéciaux dangereux</span>
-      </div>
     </div>
     <div class="form-group">
-      <label for="postalCode">Code postal</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="postalCode" formControlName="postalCode" placeholder="75000">
+      <label for="postalCode">Code postal <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('postalCode')?.invalid && form.get('postalCode')?.touched">
+        <input matInput id="postalCode" name="postalCode" formControlName="postalCode" placeholder="75000" [required]="true"
+               type="text" autocomplete="postal-code" inputmode="numeric">
+        <mat-error *ngIf="form.get('postalCode')?.invalid && form.get('postalCode')?.touched">
+          {{ getFieldErrorText('postalCode') }}
+        </mat-error>
       </mat-form-field>
-      <div class="error-message" *ngIf="form.get('postalCode')?.invalid && form.get('postalCode')?.touched">
-        <span *ngIf="form.get('postalCode')?.errors?.['required']">Le code postal est requis</span>
-        <span *ngIf="form.get('postalCode')?.errors?.['pattern']">Le code postal doit contenir 5 chiffres</span>
-        <span *ngIf="form.get('postalCode')?.errors?.['injectionPrevention']">Le code postal ne doit pas contenir de caractères spéciaux dangereux</span>
-      </div>
     </div>
     <div class="form-group">
-      <label for="city">Ville</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="city" formControlName="city" placeholder="Paris">
+      <label for="city">Ville <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('city')?.invalid && form.get('city')?.touched">
+        <input matInput id="city" name="city" formControlName="city" placeholder="Paris" [required]="true"
+               type="text" autocomplete="address-level2" inputmode="text">
+        <mat-error *ngIf="form.get('city')?.invalid && form.get('city')?.touched">
+          {{ getFieldErrorText('city') }}
+        </mat-error>
       </mat-form-field>
-      <div class="error-message" *ngIf="form.get('city')?.invalid && form.get('city')?.touched">
-        <span *ngIf="form.get('city')?.errors?.['required']">La ville est requise</span>
-        <span *ngIf="form.get('city')?.errors?.['lettersOnly']">La ville ne doit contenir que des lettres</span>
-        <span *ngIf="form.get('city')?.errors?.['injectionPrevention']">La ville ne doit pas contenir de caractères spéciaux dangereux</span>
-      </div>
     </div>
     <div class="form-group">
-      <label for="userSecret">Mot de passe</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="userSecret" formControlName="userSecret" type="password" placeholder="********">
+      <label for="userSecret">Mot de passe <span class="required-asterisk" aria-hidden="true">*</span><span class="sr-only"> (obligatoire)</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('userSecret')?.invalid && form.get('userSecret')?.touched">
+        <input matInput id="userSecret" name="userSecret" formControlName="userSecret" type="password" placeholder="********" [required]="true"
+               autocomplete="new-password" aria-describedby="register-password-hint">
+        <mat-hint id="register-password-hint">8+ caractères, 1 minuscule, 1 majuscule, 1 chiffre, 1 spécial (&#64;$!%*?&)</mat-hint>
+        <mat-error *ngIf="form.get('userSecret')?.invalid && form.get('userSecret')?.touched">
+          {{ getPasswordErrorText() }}
+        </mat-error>
       </mat-form-field>
-      <div class="error-message" *ngIf="form.get('userSecret')?.invalid && form.get('userSecret')?.touched">
-        <span *ngIf="form.get('userSecret')?.errors?.['required']">Le mot de passe est requis</span>
-        <span *ngIf="form.get('userSecret')?.errors?.['minLength']">Le mot de passe doit contenir au moins 8 caractères</span>
-        <span *ngIf="form.get('userSecret')?.errors?.['lowercase']">Le mot de passe doit contenir au moins une minuscule</span>
-        <span *ngIf="form.get('userSecret')?.errors?.['uppercase']">Le mot de passe doit contenir au moins une majuscule</span>
-        <span *ngIf="form.get('userSecret')?.errors?.['number']">Le mot de passe doit contenir au moins un chiffre</span>
-        <span *ngIf="form.get('userSecret')?.errors?.['special']">Le mot de passe doit contenir au moins un caractère spécial</span>
-      </div>
     </div>
     <button mat-flat-button color="primary" class="register-btn styled-btn" type="submit">S'inscrire</button>
   </form>
   <div class="register-login">
     Déjà un compte ? <a routerLink="/auth/login">Se connecter</a>
   </div>
+  <app-footer></app-footer>
 </div>

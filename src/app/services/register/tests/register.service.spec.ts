@@ -79,7 +79,6 @@ describe('RegisterService', () => {
 
   it('should handle registration success for particulier', () => {
     // Arrange
-    spyOn(console, 'log');
     userTypeDetector.getParticulierUserTypeString.and.returnValue('particulier');
     const mockResponse = { status: 200 } as any;
 
@@ -87,14 +86,11 @@ describe('RegisterService', () => {
     service.handleRegistrationSuccess(mockResponse, false);
 
     // Assert
-    expect(console.log).toHaveBeenCalledWith('Inscription particulier réussie ! Vous pouvez maintenant vous connecter.');
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
-    expect(userTypeDetector.getParticulierUserTypeString).toHaveBeenCalled();
   });
 
   it('should handle registration success for prestataire', () => {
     // Arrange
-    spyOn(console, 'log');
     userTypeDetector.getPrestataireUserTypeString.and.returnValue('prestataire');
     const mockResponse = { status: 200 } as any;
 
@@ -102,18 +98,14 @@ describe('RegisterService', () => {
     service.handleRegistrationSuccess(mockResponse, true);
 
     // Assert
-    expect(console.log).toHaveBeenCalledWith('Inscription prestataire réussie ! Vous pouvez maintenant vous connecter.');
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
-    expect(userTypeDetector.getPrestataireUserTypeString).toHaveBeenCalled();
   });
 
   it('should handle registration error with parse error but success for particulier', () => {
     // Arrange
-    spyOn(console, 'log');
     spyOn(console, 'error');
     const error = new HttpErrorResponse({ status: 200 });
     errorHandler.isSuccessfulButParseFailed.and.returnValue(true);
-    // Utiliser la nouvelle méthode spécifique
     userTypeDetector.getParticulierUserTypeString.and.returnValue('particulier');
 
     // Act
@@ -121,18 +113,14 @@ describe('RegisterService', () => {
 
     // Assert
     expect(console.error).toHaveBeenCalledWith('Erreur d\'inscription:', error);
-    expect(console.log).toHaveBeenCalledWith('Inscription particulier réussie ! Vous pouvez maintenant vous connecter.');
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
-    expect(userTypeDetector.getParticulierUserTypeString).toHaveBeenCalled();
   });
 
   it('should handle registration error with parse error but success for prestataire', () => {
     // Arrange
-    spyOn(console, 'log');
     spyOn(console, 'error');
     const error = new HttpErrorResponse({ status: 200 });
     errorHandler.isSuccessfulButParseFailed.and.returnValue(true);
-    // Utiliser la nouvelle méthode spécifique
     userTypeDetector.getPrestataireUserTypeString.and.returnValue('prestataire');
 
     // Act
@@ -140,9 +128,7 @@ describe('RegisterService', () => {
 
     // Assert
     expect(console.error).toHaveBeenCalledWith('Erreur d\'inscription:', error);
-    expect(console.log).toHaveBeenCalledWith('Inscription prestataire réussie ! Vous pouvez maintenant vous connecter.');
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
-    expect(userTypeDetector.getPrestataireUserTypeString).toHaveBeenCalled();
   });
 
   it('should handle registration error with real error', () => {
@@ -166,7 +152,6 @@ describe('RegisterService', () => {
   describe('User Type Detection Integration', () => {
     it('should use correct method for particulier registration', () => {
       // Arrange
-      spyOn(console, 'log');
       userTypeDetector.getParticulierUserTypeString.and.returnValue('particulier');
       const mockResponse = { status: 200 } as any;
 
@@ -174,13 +159,11 @@ describe('RegisterService', () => {
       service.handleRegistrationSuccess(mockResponse, false);
 
       // Assert
-      expect(userTypeDetector.getParticulierUserTypeString).toHaveBeenCalledTimes(1);
-      expect(userTypeDetector.getPrestataireUserTypeString).not.toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
 
     it('should use correct method for prestataire registration', () => {
       // Arrange
-      spyOn(window, 'alert');
       userTypeDetector.getPrestataireUserTypeString.and.returnValue('prestataire');
       const mockResponse = { status: 200 } as any;
 
@@ -188,15 +171,13 @@ describe('RegisterService', () => {
       service.handleRegistrationSuccess(mockResponse, true);
 
       // Assert
-      expect(userTypeDetector.getPrestataireUserTypeString).toHaveBeenCalledTimes(1);
-      expect(userTypeDetector.getParticulierUserTypeString).not.toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
   });
 
   describe('Edge Cases', () => {
     it('should handle undefined response in success handler', () => {
       // Arrange
-      spyOn(window, 'alert');
       userTypeDetector.getParticulierUserTypeString.and.returnValue('particulier');
 
       // Act
@@ -205,12 +186,11 @@ describe('RegisterService', () => {
       }).not.toThrow();
 
       // Assert
-      expect(userTypeDetector.getParticulierUserTypeString).toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
 
     it('should handle null response in success handler', () => {
       // Arrange
-      spyOn(window, 'alert');
       userTypeDetector.getPrestataireUserTypeString.and.returnValue('prestataire');
 
       // Act
@@ -219,7 +199,7 @@ describe('RegisterService', () => {
       }).not.toThrow();
 
       // Assert
-      expect(userTypeDetector.getPrestataireUserTypeString).toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
   });
 });

@@ -2,7 +2,9 @@ import {
   Component,
   OnDestroy,
   ViewEncapsulation,
-  Renderer2
+  Renderer2,
+  ElementRef,
+  ViewChild
 } from '@angular/core';
 import {
   FormGroup,
@@ -13,8 +15,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { FooterComponent } from '../../components/footer/footer.component';
 import { ConfigService } from '../../services/config/config.service';
 import { RegisterValidationService } from '../../services/register/register-validation.service';
 import { RegisterFormConfigService } from '../../services/register/register-form-config.service';
@@ -32,10 +35,11 @@ import { RegisterService } from '../../services/register/register.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    RouterModule
+    RouterModule,
+    FooterComponent
   ],
   templateUrl: './register-form.component.html',
-  styleUrl: './register-form.component.scss',
+  styleUrls: ['./register-form.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class RegisterFormComponent implements OnDestroy {
@@ -45,6 +49,9 @@ export class RegisterFormComponent implements OnDestroy {
   apiError: string | null = null; // Pour stocker l'erreur d'API
   private readonly routerSubscription?: Subscription;
   urlApi: string;
+  showErrorSummary = false;
+  errorSummaryItems: { id: string; label: string; message: string }[] = [];
+  @ViewChild('registerErrorSummary') errorSummaryRef?: ElementRef<HTMLDivElement>;
 
   constructor(
     private readonly renderer: Renderer2,
@@ -53,7 +60,8 @@ export class RegisterFormComponent implements OnDestroy {
     private readonly formConfigService: RegisterFormConfigService,
     private readonly userTypeDetector: UserTypeDetectorService,
     private readonly apiBuilder: RegisterApiBuilderService,
-    private readonly registerService: RegisterService
+    private readonly registerService: RegisterService,
+    private readonly router: Router
   ) {
     this.urlApi = this.configService.apiUrl;
     this.detectUserType();
@@ -84,8 +92,12 @@ export class RegisterFormComponent implements OnDestroy {
       return;
     }
 
-    const apiConfig = this.apiBuilder.buildApiConfig(this.form, this.isPrestataire, this.urlApi);
-    this.performRegistration(apiConfig);
+    // Demander le consentement CGU via alerte/confirm
+    const accepted = window.confirm("En continuant, vous confirmez avoir lu et accepté nos CGU.\nVoulez-vous poursuivre ?");
+    if (accepted) {
+      const apiConfig = this.apiBuilder.buildApiConfig(this.form, this.isPrestataire, this.urlApi);
+      this.performRegistration(apiConfig);
+    }
   }
 
   /**
@@ -94,14 +106,12 @@ export class RegisterFormComponent implements OnDestroy {
   private handleInvalidForm(): void {
     console.warn('Formulaire d\'inscription invalide');
     this.form.markAllAsTouched();
-
-    // Vérifier si tous les champs requis sont remplis
-    if (!this.validationService.areAllRequiredFieldsFilled(this.form, this.isPrestataire)) {
-      const missingFields = this.getMissingFields();
-      console.error(`Champs manquants : ${missingFields.join(', ')}`);
-    }
-
-    // Les erreurs s'affichent maintenant directement dans le template
+    this.buildErrorSummary();
+    this.showErrorSummary = this.errorSummaryItems.length > 0;
+    setTimeout(() => {
+      this.errorSummaryRef?.nativeElement.focus();
+      this.focusFirstInvalidField();
+    }, 0);
   }
 
   /**
@@ -174,6 +184,134 @@ export class RegisterFormComponent implements OnDestroy {
         }
       }
     });
+  }
+
+  /**
+   * Construit un message unique pour les erreurs du mot de passe (comme login)
+   */
+  getPasswordErrorText(): string {
+    const control = this.form?.get('userSecret');
+    if (!control || !control.errors || !control.touched) return '';
+
+    if (control.errors['required']) {
+      return 'Le mot de passe est requis';
+    }
+
+    const constraints: string[] = [];
+    if (control.errors['minLength']) constraints.push('au moins 8 caractères');
+    if (control.errors['lowercase']) constraints.push('une minuscule');
+    if (control.errors['uppercase']) constraints.push('une majuscule');
+    if (control.errors['number']) constraints.push('un chiffre');
+    if (control.errors['special']) constraints.push('un caractère spécial');
+
+    if (constraints.length === 0) return '';
+
+    const last = constraints.pop();
+    const prefix = constraints.length > 0 ? constraints.join(', ') + ' et ' : '';
+    return `Le mot de passe doit contenir ${prefix}${last}`;
+  }
+
+  /**
+   * Construit un message unique pour un champ donné (même style que login)
+   */
+  getFieldErrorText(fieldName: string): string {
+    const control = this.form?.get(fieldName);
+    if (!control || !control.errors || !control.touched) return '';
+
+    switch (fieldName) {
+      case 'firstName':
+        if (control.errors['required']) return 'Le prénom est requis';
+        if (control.errors['lettersOnly']) return 'Le prénom ne doit contenir que des lettres';
+        if (control.errors['injectionPrevention']) return 'Le prénom ne doit pas contenir de caractères spéciaux dangereux';
+        break;
+      case 'lastName':
+        if (control.errors['required']) return 'Le nom est requis';
+        if (control.errors['lettersOnly']) return 'Le nom ne doit contenir que des lettres';
+        if (control.errors['injectionPrevention']) return 'Le nom ne doit pas contenir de caractères spéciaux dangereux';
+        break;
+      case 'companyName':
+        if (control.errors['required']) return "Le nom de l'entreprise est requis";
+        if (control.errors['injectionPrevention']) return "Le nom de l'entreprise ne doit pas contenir de caractères spéciaux dangereux";
+        break;
+      case 'siretSiren':
+        if (control.errors['required']) return 'Le numéro SIRET est requis';
+        if (control.errors['pattern']) return 'Le SIRET doit contenir 14 chiffres';
+        if (control.errors['injectionPrevention']) return 'Le SIRET ne doit pas contenir de caractères spéciaux dangereux';
+        break;
+      case 'email':
+        if (control.errors['required']) return "L'email est requis";
+        if (control.errors['emailFormat']) return "Format d'email invalide";
+        if (control.errors['injectionPrevention']) return "L'email ne doit pas contenir de caractères spéciaux dangereux";
+        if (control.errors['emailTaken']) return 'Cet email est déjà utilisé';
+        break;
+      case 'phoneNumber':
+        if (control.errors['required']) return 'Le numéro de téléphone est requis';
+        if (control.errors['phoneNumberLength']) return 'Le numéro de téléphone doit contenir exactement 10 chiffres';
+        if (control.errors['numbersOnly']) return 'Le numéro de téléphone ne doit contenir que des chiffres';
+        if (control.errors['injectionPrevention']) return 'Le numéro de téléphone ne doit pas contenir de caractères spéciaux dangereux';
+        break;
+      case 'address':
+        if (control.errors['required']) return "L'adresse est requise";
+        if (control.errors['injectionPrevention']) return "L'adresse ne doit pas contenir de caractères spéciaux dangereux";
+        break;
+      case 'postalCode':
+        if (control.errors['required']) return 'Le code postal est requis';
+        if (control.errors['pattern']) return 'Le code postal doit contenir 5 chiffres';
+        if (control.errors['injectionPrevention']) return 'Le code postal ne doit pas contenir de caractères spéciaux dangereux';
+        break;
+      case 'city':
+        if (control.errors['required']) return 'La ville est requise';
+        if (control.errors['lettersOnly']) return 'La ville ne doit contenir que des lettres';
+        if (control.errors['injectionPrevention']) return 'La ville ne doit pas contenir de caractères spéciaux dangereux';
+        break;
+    }
+
+    return '';
+  }
+
+  private buildErrorSummary(): void {
+    const items: { id: string; label: string; message: string }[] = [];
+    const add = (id: string, label: string, message: string | null) => {
+      if (message) items.push({ id, label, message });
+    };
+    const getMsg = (name: string) => this.getFieldErrorText(name);
+
+    const fields = this.isPrestataire
+      ? ['firstName','lastName','companyName','siretSiren','email','phoneNumber','address','postalCode','city','userSecret']
+      : ['firstName','lastName','email','phoneNumber','address','postalCode','city','userSecret'];
+
+    const labels: Record<string,string> = {
+      firstName: 'Prénom', lastName: 'Nom', companyName: "Nom de l'entreprise",
+      siretSiren: 'SIRET', email: 'Email', phoneNumber: 'Téléphone', address: 'Adresse',
+      postalCode: 'Code postal', city: 'Ville', userSecret: 'Mot de passe'
+    };
+
+    for (const f of fields) {
+      const ctrl = this.form.get(f);
+      if (ctrl && ctrl.invalid) {
+        const msg = f === 'userSecret' ? this.getPasswordErrorText() : getMsg(f);
+        add(f, labels[f], msg);
+      }
+    }
+
+    this.errorSummaryItems = items;
+  }
+
+  focusField(fieldId: string): void {
+    const el = document.getElementById(fieldId) as HTMLElement | null;
+    if (el) el.focus();
+  }
+
+  private focusFirstInvalidField(): void {
+    const first = this.errorSummaryItems[0];
+    if (first) this.focusField(first.id);
+  }
+
+  /**
+   * Bouton retour: ramène vers la page d'accueil
+   */
+  goBack(): void {
+    this.router.navigate(['/home']);
   }
 
   /**

@@ -18,6 +18,15 @@ function emailInjectionPreventionValidator(control: AbstractControl): Validation
   return null;
 }
 
+// Validateur de format d'email plus strict (exige un TLD, ex: domaine.com)
+function strictEmailFormatValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const isValid = emailPattern.test(control.value);
+  return isValid ? null : { email: true };
+}
+
 // Validateur pour empêcher les caractères spéciaux d'injection (strict)
 function injectionPreventionValidator(control: AbstractControl): ValidationErrors | null {
   if (!control.value) return null;
@@ -34,6 +43,32 @@ function injectionPreventionValidator(control: AbstractControl): ValidationError
   return null;
 }
 
+// Validateur personnalisé pour le mot de passe (règles de complexité) — aligné sur l'inscription prestataire
+function passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+
+  const password = control.value;
+  const errors: ValidationErrors = {};
+
+  if (password.length < 8) {
+    errors['minLength'] = true;
+  }
+  if (!/[a-z]/.test(password)) {
+    errors['lowercase'] = true;
+  }
+  if (!/[A-Z]/.test(password)) {
+    errors['uppercase'] = true;
+  }
+  if (!/\d/.test(password)) {
+    errors['number'] = true;
+  }
+  if (!/[@$!%*?&]/.test(password)) {
+    errors['special'] = true;
+  }
+
+  return Object.keys(errors).length > 0 ? errors : null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -46,8 +81,8 @@ export class LoginFormConfigService {
    */
   createLoginForm(): FormGroup {
     return this.fb.group({
-      email: ['', [Validators.required, Validators.email, emailInjectionPreventionValidator]],
-      userSecret: ['', [Validators.required, Validators.minLength(6), injectionPreventionValidator]]
+      email: ['', [Validators.required, strictEmailFormatValidator, emailInjectionPreventionValidator]],
+      userSecret: ['', [Validators.required, Validators.minLength(8), passwordComplexityValidator]]
     });
   }
 

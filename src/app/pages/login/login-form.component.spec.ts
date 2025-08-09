@@ -41,7 +41,7 @@ describe('LoginFormComponent', () => {
   // Mock data pour les tests
   const validLoginData = {
     email: 'test@example.com',
-    userSecret: 'password123'
+    userSecret: 'Password1!'
   };
 
   const mockLoginResponse = {
@@ -108,10 +108,8 @@ describe('LoginFormComponent', () => {
   });
 
   describe('Form Validation', () => {
-    it('should handle invalid form submission', fakeAsync(() => {
+    it('should handle invalid form submission with error summary', fakeAsync(() => {
       // Arrange
-      spyOn(loginValidationService, 'getValidationErrorMessage')
-        .and.returnValue('Format d\'email invalide');
       const invalidData = { email: 'invalid-email', userSecret: '' };
       component.form.patchValue(invalidData);
 
@@ -120,8 +118,12 @@ describe('LoginFormComponent', () => {
       tick();
 
       // Assert
-      expect(component.form.valid).toBeFalsy();
-      expect(component.apiError).toBe('Format d\'email invalide');
+      expect(component.form.valid).toBeFalse();
+      expect(component.showErrorSummary).toBeTrue();
+      // Email message present
+      expect(component.errorSummaryItems.some(e => e.label === 'Email' && e.message.includes('Format'))).toBeTrue();
+      // Password required present
+      expect(component.errorSummaryItems.some(e => e.label === 'Mot de passe')).toBeTrue();
     }));
 
     it('should validate email format correctly', () => {
@@ -163,7 +165,7 @@ describe('LoginFormComponent', () => {
       // Assert
       expect(loginService.performLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password1!'
       }, component.urlApi);
       expect(loginService.handleLoginSuccess).toHaveBeenCalledWith(mockLoginResponse);
       verifyNoAlertsShown(spies);
@@ -177,7 +179,6 @@ describe('LoginFormComponent', () => {
         statusText: 'Unauthorized'
       });
       spyOn(loginService, 'performLogin').and.returnValue(throwError(() => errorResponse));
-      spyOn(loginValidationService, 'resetPasswordField');
       component.form.patchValue(validLoginData);
 
       // Act
@@ -187,11 +188,10 @@ describe('LoginFormComponent', () => {
       // Assert
       expect(loginService.performLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password1!'
       }, component.urlApi);
       expect(component.emailError).toBe('Email ou mot de passe incorrect');
       expect(component.passwordError).toBe('Email ou mot de passe incorrect');
-      expect(loginValidationService.resetPasswordField).toHaveBeenCalledWith(component.form);
       verifyNoAlertsShown(spies);
     }));
   });
@@ -289,7 +289,7 @@ describe('LoginFormComponent', () => {
       // Assert
       expect(loginService.performLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password1!'
       }, component.urlApi);
       expect(loginService.handleLoginSuccess).toHaveBeenCalledWith(mockLoginResponse);
       verifyNoAlertsShown(spies);
@@ -312,7 +312,7 @@ describe('LoginFormComponent', () => {
       // Assert
       expect(loginService.performLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password1!'
       }, component.urlApi);
       expect(component.apiError).toBe('Erreur interne du serveur');
       verifyNoAlertsShown(spies);
