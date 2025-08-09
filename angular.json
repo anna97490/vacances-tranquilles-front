@@ -102,11 +102,7 @@
               "src/app/utils/test-helpers.ts",
               "src/app/services/home/chatbot/botpress.service.ts",
               "src/app/services/register/register-error-handler.service.ts",
-              "src/app/services/login/login-navigation.service.ts",
-              "src/app/pages/login/login-form.component.ts",
-              "src/app/pages/register/register-form.component.ts",
-              "src/app/components/header/header.component.ts",
-              "src/app/services/login/login.service.ts"
+              "src/app/services/login/login-navigation.service.ts"
             ]
           }
         }

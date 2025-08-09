@@ -148,6 +148,17 @@ describe('RegisterService', () => {
     // Pas d'appel aux méthodes userTypeDetector car c'est une vraie erreur
   });
 
+  it('should map various HTTP errors via error handler', () => {
+    const statuses = [0, 401, 403, 404, 422, 500];
+    statuses.forEach(status => {
+      const error = new HttpErrorResponse({ status });
+      errorHandler.isSuccessfulButParseFailed.and.returnValue(false);
+      errorHandler.getRegistrationErrorMessage.and.returnValue('mapped');
+      const result = service.handleRegistrationError(error, false);
+      expect(result).toBe('mapped');
+    });
+  });
+
   // Tests additionnels pour couvrir les différents scénarios
   describe('User Type Detection Integration', () => {
     it('should use correct method for particulier registration', () => {

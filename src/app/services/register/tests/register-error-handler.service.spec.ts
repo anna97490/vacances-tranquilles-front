@@ -149,6 +149,16 @@ describe('RegisterErrorHandlerService', () => {
       const error = new HttpErrorResponse({ status: 400, error: 'bad request' as any });
       expect(service.getRegistrationErrorMessage(error)).toBe('Données de validation incorrectes');
     });
+
+    it('should handle 400 with missing required field code without message', () => {
+      const error = new HttpErrorResponse({ status: 400, error: { code: 'MISSING_REQUIRED_FIELD' } as any });
+      expect(service.getRegistrationErrorMessage(error)).toBe('Champ obligatoire manquant');
+    });
+
+    it('should handle 400 with empty error object', () => {
+      const error = new HttpErrorResponse({ status: 400, error: {} as any });
+      expect(service.getRegistrationErrorMessage(error)).toBe('Données de validation incorrectes');
+    });
   });
 
   describe('extractTokenFromErrorResponse', () => {
@@ -224,6 +234,11 @@ describe('RegisterErrorHandlerService', () => {
 
       // Assert
       expect(result).toBeNull();
+    });
+
+    it('should handle null/undefined inputs', () => {
+      expect(service.extractTokenFromErrorResponse(null as any)).toBeNull();
+      expect(service.extractTokenFromErrorResponse(undefined as any)).toBeNull();
     });
   });
 });

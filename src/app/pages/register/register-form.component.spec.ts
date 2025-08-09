@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -188,6 +188,117 @@ describe('RegisterFormComponent', () => {
       apiBuilderMock.buildApiConfig.calls.reset();
       registerServiceMock.performRegistration.calls.reset();
       registerServiceMock.handleRegistrationSuccess.calls.reset();
+    });
+  });
+
+  it('should build error summary and focus first invalid field', fakeAsync(() => {
+    validationServiceMock.isFormValid.and.returnValue(false);
+    const focusSpy = spyOn<any>(component, 'focusFirstInvalidField');
+    component.onSubmit();
+    tick();
+    expect(component.showErrorSummary).toBeTrue();
+    expect(focusSpy).toHaveBeenCalled();
+  }));
+
+  it('should compose field and password error messages via helpers', () => {
+    // Mark controls touched and set errors
+    const emailCtrl = component.form.get('email');
+    emailCtrl?.markAsTouched();
+    emailCtrl?.setErrors({ emailFormat: true });
+    expect(component.getFieldErrorText('email')).toContain('Format');
+
+    const pwdCtrl = component.form.get('userSecret');
+    pwdCtrl?.markAsTouched();
+    pwdCtrl?.setErrors({ minLength: true, lowercase: true });
+    expect(component.getPasswordErrorText()).toContain('Le mot de passe doit contenir');
+  });
+
+  it('should return empty password error when untouched or no errors', () => {
+    const pwdCtrl = component.form.get('userSecret');
+    // untouched with errors
+    pwdCtrl?.setErrors({ minLength: true });
+    expect(component.getPasswordErrorText()).toBe('');
+    // touched with no errors
+    pwdCtrl?.markAsTouched();
+    pwdCtrl?.setErrors(null);
+    expect(component.getPasswordErrorText()).toBe('');
+  });
+
+  it('should build summary variants for email-only and password-only invalid', fakeAsync(() => {
+    // email only invalid (set errors directly to simulate invalid)
+    const emailCtrl = component.form.get('email');
+    const pwdCtrl = component.form.get('userSecret');
+    emailCtrl?.setErrors({ emailFormat: true });
+    emailCtrl?.markAsTouched();
+    pwdCtrl?.setErrors(null);
+    pwdCtrl?.markAsTouched();
+    component.onSubmit();
+    tick();
+    expect(component.showErrorSummary).toBeTrue();
+    expect(component.errorSummaryItems.some(i => i.id === 'email')).toBeTrue();
+    expect(component.errorSummaryItems.some(i => i.id === 'userSecret')).toBeFalse();
+
+    // reset and test password only invalid
+    component.showErrorSummary = false;
+    component.errorSummaryItems = [];
+    emailCtrl?.setErrors(null);
+    emailCtrl?.markAsTouched();
+    pwdCtrl?.setErrors({ minLength: true });
+    pwdCtrl?.markAsTouched();
+    component.onSubmit();
+    tick();
+    expect(component.showErrorSummary).toBeTrue();
+    expect(component.errorSummaryItems.some(i => i.id === 'email')).toBeFalse();
+    expect(component.errorSummaryItems.some(i => i.id === 'userSecret')).toBeTrue();
+  }));
+
+  describe('Field error text branches', () => {
+    interface Case { field: string; errors: any; expectEmpty?: boolean }
+    const cases: Case[] = [
+      { field: 'firstName', errors: { required: true } },
+      { field: 'firstName', errors: { lettersOnly: true } },
+      { field: 'firstName', errors: { injectionPrevention: true } },
+      { field: 'lastName', errors: { required: true } },
+      { field: 'email', errors: { required: true } },
+      { field: 'email', errors: { emailFormat: true } },
+      { field: 'email', errors: { injectionPrevention: true } },
+      { field: 'email', errors: { emailTaken: true } },
+      { field: 'phoneNumber', errors: { required: true } },
+      { field: 'phoneNumber', errors: { phoneNumberLength: true } },
+      { field: 'phoneNumber', errors: { numbersOnly: true } },
+      { field: 'phoneNumber', errors: { injectionPrevention: true } },
+      { field: 'address', errors: { required: true } },
+      { field: 'address', errors: { injectionPrevention: true } },
+      { field: 'postalCode', errors: { required: true } },
+      { field: 'postalCode', errors: { pattern: true } },
+      { field: 'postalCode', errors: { injectionPrevention: true } },
+      { field: 'city', errors: { required: true } },
+      { field: 'city', errors: { lettersOnly: true } },
+      { field: 'city', errors: { injectionPrevention: true } },
+      { field: 'companyName', errors: { required: true } },
+      { field: 'companyName', errors: { injectionPrevention: true } },
+      { field: 'siretSiren', errors: { required: true } },
+      { field: 'siretSiren', errors: { pattern: true } },
+      { field: 'siretSiren', errors: { injectionPrevention: true } },
+      { field: 'unknownField', errors: { required: true }, expectEmpty: true }
+    ];
+
+    it('should return appropriate messages for each field error', () => {
+      cases.forEach(({ field, errors, expectEmpty }) => {
+        const ctrl = component.form.get(field);
+        if (ctrl) {
+          ctrl.setErrors(errors);
+          ctrl.markAsTouched();
+        }
+        const msg = component.getFieldErrorText(field);
+        if (expectEmpty) {
+          expect(msg).toBe('');
+        } else {
+          expect(msg).toBeTruthy();
+        }
+        // clear for next iteration
+        if (ctrl) ctrl.setErrors(null);
+      });
     });
   });
 

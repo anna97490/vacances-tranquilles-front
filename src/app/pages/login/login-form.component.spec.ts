@@ -149,6 +149,15 @@ describe('LoginFormComponent', () => {
       userSecretControl?.setValue('password123');
       expect(userSecretControl?.errors?.['required']).toBeFalsy();
     });
+
+    it('should build error summary and focus first invalid field', fakeAsync(() => {
+      component.form.patchValue({ email: 'invalid', userSecret: '' });
+      spyOn(component as any, 'focusFirstInvalidField');
+      component.onSubmit();
+      tick();
+      expect(component.showErrorSummary).toBeTrue();
+      expect((component as any).focusFirstInvalidField).toHaveBeenCalled();
+    }));
   });
 
   describe('LoginService Integration', () => {
@@ -335,6 +344,75 @@ describe('LoginFormComponent', () => {
       component.onSubmit();
       tick();
       expect(component.emailError).toBe('Email ou mot de passe incorrect');
+    }));
+  });
+
+  describe('Helpers', () => {
+    it('should compose consolidated password error text', () => {
+      const ctrl = component.form.get('userSecret');
+      ctrl?.markAsTouched();
+      ctrl?.setErrors({ minLength: true, lowercase: true, uppercase: true, number: true, special: true });
+      const text = component.getPasswordErrorText();
+      expect(text).toContain('Le mot de passe doit contenir');
+    });
+
+    it('should navigate back to home on goBack', () => {
+      const router = TestBed.inject(RouterTestingModule);
+      const routerNav = TestBed.inject<any>(RouterTestingModule as any);
+      const spyNav = spyOn((component as any).router, 'navigate');
+      component.goBack();
+      expect(spyNav).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should return empty password error when control untouched', () => {
+      const ctrl = component.form.get('userSecret');
+      ctrl?.setErrors({ minLength: true });
+      // untouched → no message
+      const text = component.getPasswordErrorText();
+      expect(text).toBe('');
+    });
+
+    it('should return empty password error when no errors', () => {
+      const ctrl = component.form.get('userSecret');
+      ctrl?.markAsTouched();
+      ctrl?.setErrors(null);
+      const text = component.getPasswordErrorText();
+      expect(text).toBe('');
+    });
+
+    it('should compose message with a single constraint', () => {
+      const ctrl = component.form.get('userSecret');
+      ctrl?.markAsTouched();
+      ctrl?.setErrors({ special: true });
+      const text = component.getPasswordErrorText();
+      expect(text).toContain('un caractère spécial');
+    });
+  });
+
+  describe('Error summary variants', () => {
+    it('should build summary with only email invalid', fakeAsync(() => {
+      const emailCtrl = component.form.get('email');
+      emailCtrl?.setValue('invalid');
+      const pwdCtrl = component.form.get('userSecret');
+      pwdCtrl?.setValue('Password1!');
+      component.onSubmit();
+      tick();
+      expect(component.showErrorSummary).toBeTrue();
+      expect(component.errorSummaryItems.length).toBeGreaterThan(0);
+      expect(component.errorSummaryItems.some(i => i.id === 'email')).toBeTrue();
+      expect(component.errorSummaryItems.some(i => i.id === 'userSecret')).toBeFalse();
+    }));
+
+    it('should build summary with only password invalid', fakeAsync(() => {
+      const emailCtrl = component.form.get('email');
+      emailCtrl?.setValue('valid@email.com');
+      const pwdCtrl = component.form.get('userSecret');
+      pwdCtrl?.setValue('short');
+      component.onSubmit();
+      tick();
+      expect(component.showErrorSummary).toBeTrue();
+      expect(component.errorSummaryItems.some(i => i.id === 'email')).toBeFalse();
+      expect(component.errorSummaryItems.some(i => i.id === 'userSecret')).toBeTrue();
     }));
   });
 });

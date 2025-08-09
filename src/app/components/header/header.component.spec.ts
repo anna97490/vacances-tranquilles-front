@@ -160,6 +160,20 @@ describe('HeaderComponent', () => {
     expect(icon).toBe(menuItem.icon);
   });
 
+  it('should clear localStorage and navigate on logout without triggering real reload', () => {
+    const clearSpy = spyOn(localStorage, 'clear');
+    (component as any).router = router;
+    // Freeze timers so the scheduled reload does not execute
+    jasmine.clock().install();
+    try {
+      component.logout();
+      expect(clearSpy).toHaveBeenCalled();
+      expect((router.navigate as jasmine.Spy)).toHaveBeenCalledWith(['/home']);
+    } finally {
+      jasmine.clock().uninstall();
+    }
+  });
+
   // Tests pour le burger menu
   it('should toggle mobile menu when toggleMobileMenu is called', () => {
     expect(component.isMobileMenuOpen).toBe(false);
