@@ -128,6 +128,27 @@ describe('RegisterErrorHandlerService', () => {
       // Assert
       expect(result).toContain('Erreur');
     });
+
+    it('should return message for network error (status 0)', () => {
+      const error = new HttpErrorResponse({ status: 0 });
+      expect(service.getRegistrationErrorMessage(error)).toBe('Impossible de contacter le serveur');
+    });
+
+    it('should return message for 401/403/404 statuses', () => {
+      expect(service.getRegistrationErrorMessage(new HttpErrorResponse({ status: 401 }))).toBe('Non autorisé');
+      expect(service.getRegistrationErrorMessage(new HttpErrorResponse({ status: 403 }))).toBe('Accès refusé');
+      expect(service.getRegistrationErrorMessage(new HttpErrorResponse({ status: 404 }))).toBe('Ressource non trouvée');
+    });
+
+    it('should handle null/undefined status as invalid data', () => {
+      expect(service.getRegistrationErrorMessage({} as any)).toBe('Données invalides - vérifiez vos informations');
+      expect(service.getRegistrationErrorMessage({ status: undefined } as any)).toBe('Données invalides - vérifiez vos informations');
+    });
+
+    it('should handle 400 with non-object error body', () => {
+      const error = new HttpErrorResponse({ status: 400, error: 'bad request' as any });
+      expect(service.getRegistrationErrorMessage(error)).toBe('Données de validation incorrectes');
+    });
   });
 
   describe('extractTokenFromErrorResponse', () => {

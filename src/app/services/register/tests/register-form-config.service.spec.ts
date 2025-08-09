@@ -202,6 +202,117 @@ describe('RegisterFormConfigService', () => {
     });
   });
 
+  describe('Validators - parameterized branches', () => {
+    it('should validate email format with mixed cases and edge formats', () => {
+      const form = service.createRegistrationForm();
+      const email = form.get('email');
+
+      const validEmails = [
+        'TeSt@ExAmPlE.CoM',
+        'name.sur+alias@example-domain.com',
+        'a.b@cde.fr'
+      ];
+      validEmails.forEach(v => {
+        email?.setValue(v);
+        expect(email?.hasError('emailFormat')).toBeFalse();
+      });
+
+      const invalidEmails = [
+        'anna@d',
+        'nom@',
+        '@domaine.com',
+        'nom@domaine',
+        'inv alid@mail.com'
+      ];
+      invalidEmails.forEach(v => {
+        email?.setValue(v);
+        expect(email?.hasError('emailFormat')).toBeTrue();
+      });
+    });
+
+    it('should validate phone number with boundary cases', () => {
+      const form = service.createRegistrationForm();
+      const phone = form.get('phoneNumber');
+
+      phone?.setValue('012345678'); // 9 digits
+      expect(phone?.hasError('phoneNumberLength')).toBeTrue();
+
+      phone?.setValue('01234567890'); // 11 digits
+      expect(phone?.hasError('phoneNumberLength')).toBeTrue();
+
+      phone?.setValue('01 23-45 67-89'); // formats with separators
+      expect(phone?.errors).toBeNull();
+
+      phone?.setValue('01234abc89'); // letters
+      expect(phone?.hasError('numbersOnly') || phone?.hasError('phoneNumberLength')).toBeTrue();
+    });
+
+    it('should block dangerous characters via injectionPrevention on address and city', () => {
+      const form = service.createRegistrationForm();
+      const address = form.get('address');
+      const city = form.get('city');
+
+      ['<script>', '{x}', 'name&drop', 'street`'].forEach(val => {
+        address?.setValue(val);
+        expect(address?.hasError('injectionPrevention')).toBeTrue();
+      });
+
+      ["O'Hara", 'Saint-Étienne', 'Le-Havre'].forEach(val => {
+        city?.setValue(val);
+        expect(city?.hasError('lettersOnly')).toBeFalse();
+      });
+
+      ['Paris1', 'N@ntes'].forEach(val => {
+        city?.setValue(val);
+        expect(city?.hasError('lettersOnly') || city?.hasError('injectionPrevention')).toBeTrue();
+      });
+    });
+
+    it('should flip all password complexity branches', () => {
+      const form = service.createRegistrationForm();
+      const pwd = form.get('userSecret');
+
+      // Too short
+      pwd?.setValue('Aa1!aaa');
+      expect(pwd?.hasError('minLength')).toBeTrue();
+
+      // Missing lowercase
+      pwd?.setValue('AAAAAAA1!');
+      expect(pwd?.hasError('lowercase')).toBeTrue();
+
+      // Missing uppercase
+      pwd?.setValue('aaaaaaa1!');
+      expect(pwd?.hasError('uppercase')).toBeTrue();
+
+      // Missing number
+      pwd?.setValue('Aaaaaaaa!');
+      expect(pwd?.hasError('number')).toBeTrue();
+
+      // Missing special
+      pwd?.setValue('Aaaaaaaa1');
+      expect(pwd?.hasError('special')).toBeTrue();
+
+      // Valid
+      pwd?.setValue('Password1!');
+      expect(pwd?.errors).toBeNull();
+    });
+
+    it('should validate postal code boundaries', () => {
+      const form = service.createRegistrationForm();
+      const cp = form.get('postalCode');
+
+      ['1234', '123456', '12a45'].forEach(v => {
+        cp?.setValue(v);
+        expect(cp?.hasError('pattern')).toBeTrue();
+      });
+
+      ['00000', '99999', '75000'].forEach(v => {
+        cp?.setValue(v);
+        expect(cp?.errors).toBeNull();
+      });
+    });
+  });
+
   describe('updateValidatorsBasedOnUserType', () => {
     let form: any;
 

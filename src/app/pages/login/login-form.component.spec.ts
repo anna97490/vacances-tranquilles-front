@@ -318,4 +318,23 @@ describe('LoginFormComponent', () => {
       verifyNoAlertsShown(spies);
     }));
   });
+
+  describe('Confirm and Router branches (mocked at service level)', () => {
+    it('should hit both success and error paths for performLogin', fakeAsync(() => {
+      const successResponse = mockLoginResponse;
+      const errorResponse = new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' });
+
+      spyOn(loginService, 'performLogin').and.returnValues(of(successResponse), throwError(() => errorResponse));
+      spyOn(loginService, 'handleLoginSuccess');
+
+      component.form.patchValue({ email: 'test@example.com', userSecret: 'Password1!' });
+      component.onSubmit();
+      tick();
+      expect(loginService.handleLoginSuccess).toHaveBeenCalledWith(successResponse);
+
+      component.onSubmit();
+      tick();
+      expect(component.emailError).toBe('Email ou mot de passe incorrect');
+    }));
+  });
 });

@@ -173,6 +173,24 @@ describe('RegisterFormComponent', () => {
     expect(registerServiceMock.performRegistration).not.toHaveBeenCalled();
   });
 
+  it('should handle confirm CGU accept and decline via parameterized tests', () => {
+    validationServiceMock.isFormValid.and.returnValue(true);
+
+    [true, false].forEach(choice => {
+      confirmSpy.and.returnValue(choice);
+      component.onSubmit();
+      if (choice) {
+        expect(apiBuilderMock.buildApiConfig).toHaveBeenCalled();
+      } else {
+        expect(apiBuilderMock.buildApiConfig).not.toHaveBeenCalled();
+      }
+      // reset spies between iterations
+      apiBuilderMock.buildApiConfig.calls.reset();
+      registerServiceMock.performRegistration.calls.reset();
+      registerServiceMock.handleRegistrationSuccess.calls.reset();
+    });
+  });
+
   it('should mark email as taken and set apiError on 409 error', () => {
     validationServiceMock.isFormValid.and.returnValue(true);
     confirmSpy.and.returnValue(true);
