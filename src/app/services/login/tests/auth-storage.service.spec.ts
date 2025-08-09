@@ -94,4 +94,37 @@ describe('AuthStorageService', () => {
       expect(localStorage.getItem('userRole')).toBeNull();
     });
   });
+
+  describe('getUserId', () => {
+    it('should return userId from JWT token', () => {
+      // Créer un token JWT avec userId dans le payload
+      const payload = { userId: 42 };
+      const encodedPayload = btoa(JSON.stringify(payload));
+      const token = `header.${encodedPayload}.signature`;
+      
+      localStorage.setItem('token', token);
+      
+      expect(service.getUserId()).toBe(42);
+    });
+
+    it('should return null when no token exists', () => {
+      expect(service.getUserId()).toBeNull();
+    });
+
+    it('should return null when token is invalid', () => {
+      localStorage.setItem('token', 'invalid-token');
+      
+      expect(service.getUserId()).toBeNull();
+    });
+
+    it('should return null when userId is not in token payload', () => {
+      const payload = { otherField: 'value' };
+      const encodedPayload = btoa(JSON.stringify(payload));
+      const token = `header.${encodedPayload}.signature`;
+      
+      localStorage.setItem('token', token);
+      
+      expect(service.getUserId()).toBeNull();
+    });
+  });
 });

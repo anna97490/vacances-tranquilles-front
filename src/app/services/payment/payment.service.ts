@@ -10,17 +10,21 @@ export class PaymentService {
   constructor(private readonly configService: ConfigService) { }
 
   async redirectToStripe(sessionId: string) {
-    const stripePublicKey = this.configService.stripePublicKey;
-    if (!stripePublicKey) {
-      console.error('Stripe public key not found in configuration');
-      return;
-    }
-    
-    const stripe = await loadStripe(stripePublicKey);
-    if (stripe) {
-      await stripe.redirectToCheckout({ sessionId });
-    } else {
-      console.error('Stripe could not be loaded');
+    try {
+      const stripePublicKey = this.configService.stripePublicKey;
+      if (!stripePublicKey || stripePublicKey.trim() === '') {
+        console.warn('Stripe public key not configured. Payment functionality will be disabled.');
+        return;
+      }
+      
+      const stripe = await loadStripe(stripePublicKey);
+      if (stripe) {
+        await stripe.redirectToCheckout({ sessionId });
+      } else {
+        console.error('Stripe could not be loaded');
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de Stripe:', error);
     }
   }
 }

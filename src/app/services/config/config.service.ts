@@ -1,19 +1,42 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
 
-  constructor(@Inject('APP_CONFIG') private config: any, private readonly http: HttpClient) {}
+  private config: any = {};
+
+  constructor(private readonly http: HttpClient) {
+    this.loadConfig();
+  }
 
   get apiUrl(): string {
     return this.config?.apiUrl || '';
   }
 
+  get stripePublicKey(): string {
+    return this.config?.NG_APP_STRIPE_PUBLIC_KEY || '';
+  }
+
   async loadConfig(): Promise<void> {
-    const config = await firstValueFrom(this.http.get('/assets/config.json'));
-    this.config = config;
+    try {
+      const config = await firstValueFrom(this.http.get('/assets/config.json'));
+      this.config = config;
+      console.log('Configuration chargée:', this.config);
+    } catch (error) {
+      console.error('Erreur lors du chargement de config.json:', error);
+      throw new Error('Impossible de charger la configuration. Vérifiez que le fichier config.json existe dans /assets/');
+    }
+  }
+
+  /**
+   * Attend que la configuration soit chargée
+   */
+  async waitForConfig(): Promise<void> {
+    if (!this.config.apiUrl) {
+      await this.loadConfig();
+    }
   }
 }
 

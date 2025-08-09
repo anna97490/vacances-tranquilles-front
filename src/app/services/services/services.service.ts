@@ -9,14 +9,10 @@ import { ConfigService } from '../config/config.service';
 })
 export class ServicesService {
 
-  private readonly urlApi: string;
-
   constructor(
     private readonly http: HttpClient,
     private readonly configService: ConfigService
-  ) {
-    this.urlApi = this.configService.apiUrl;
-  }
+  ) {}
 
   /**
    * Recherche des services selon les critères fournis
@@ -34,7 +30,7 @@ export class ServicesService {
     startTime: string,
     endTime: string
   ): Observable<Service[]> {
-    const url = `${this.urlApi}/services/search`;
+    const url = `${this.configService.apiUrl}/services/search`;
 
     // Vérification que la catégorie est valide
     if (!Object.keys(ServiceCategory).includes(category)) {
@@ -49,15 +45,7 @@ export class ServicesService {
       .set('startTime', startTime)
       .set('endTime', endTime);
 
-    // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token');
-    
-    // Configuration des headers
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
-
-    return this.http.get<Service[]>(url, { params, headers });
+    // L'intercepteur gère automatiquement l'authentification
+    return this.http.get<Service[]>(url, { params });
   }
 }
