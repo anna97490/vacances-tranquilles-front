@@ -19,6 +19,7 @@ export class ReservationComponent implements OnInit {
   isLoading = false;
   error = '';
   isProvider = false; // À déterminer selon le rôle de l'utilisateur
+  liveMessage = '';
 
   constructor(
     private reservationService: ReservationService,
@@ -61,6 +62,14 @@ export class ReservationComponent implements OnInit {
     this.selectedReservation = null;
   }
 
+  onCardKeydown(event: KeyboardEvent, reservation: Reservation): void {
+    const key = event.key;
+    if (key === 'Enter' || key === ' ') {
+      event.preventDefault();
+      this.selectReservation(reservation);
+    }
+  }
+
   viewReservationDetails(reservation: Reservation): void {
     this.router.navigate(['/reservations', reservation.id]);
   }
@@ -88,6 +97,7 @@ export class ReservationComponent implements OnInit {
           }
 
           alert('Statut mis à jour avec succès');
+          this.liveMessage = `Statut mis à jour: ${this.getStatusLabel(updatedReservation.status)}`;
         },
         error: (err: any) => {
           alert('Erreur lors de la mise à jour du statut');

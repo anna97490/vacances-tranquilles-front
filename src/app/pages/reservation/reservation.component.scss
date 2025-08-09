@@ -126,7 +126,7 @@
     color: var(--text-color);
   }
 
-  .profile-btn {
+    a.profile-btn {
     margin-left: auto;
     background: var(--button-color);
     color: var(--secondary-text-color);
@@ -139,9 +139,11 @@
     transition: background-color 0.3s ease;
     width: 100%;
     height: 40px;
+      text-decoration: none;
 
     &:hover {
       background: var(--tertiary-color);
+        text-decoration: none;
     }
   }
 }
@@ -267,7 +269,10 @@
     }
   }
 
-  .profile-btn {
+  a.profile-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: var(--button-color);
     color: var(--secondary-text-color);
     border-radius: var(--border-radius-base);
@@ -279,9 +284,17 @@
     transition: background-color 0.3s ease;
     width: 100%;
     height: 40px;
+    text-decoration: none;
 
     &:hover {
       background: var(--tertiary-color);
+      text-decoration: none;
+    }
+
+    &:focus-visible {
+      outline: 3px solid #1f5f8b;
+      outline-offset: 2px;
+      text-decoration: none;
     }
   }
 }
@@ -498,7 +511,7 @@
     gap: 6px;
   }
 
-  .profile-btn {
+  .top-line a.profile-btn {
     position: absolute;
     top: 0;
     right: 0;

@@ -1,12 +1,14 @@
 <div>
   <!-- Bouton retour -->
-  <button class="back-btn" (click)="goBack()">
+  <button class="back-btn" aria-label="Retour" type="button" (click)="goBack()">
     ←
   </button>
 </div>
 
 
 <div class="reservation-detail-container">
+  <!-- Région d'annonce accessible -->
+  <div class="sr-only" aria-live="polite" [textContent]="liveMessage"></div>
 
   <!-- Header de la page -->
   <div class="detail-header">
@@ -14,14 +16,14 @@
   </div>
 
   <!-- Message d'erreur -->
-  <div *ngIf="error" class="error-message">
+  <div *ngIf="error" class="error-message" role="alert" aria-live="assertive">
     {{ error }}
   </div>
 
   <!-- Loading spinner -->
-  <div *ngIf="isLoading" class="loading-container">
+  <div *ngIf="isLoading" class="loading-container" aria-busy="true">
     <div class="loading-spinner"></div>
-    <p>Chargement des détails...</p>
+    <output aria-live="polite">Chargement des détails…</output>
   </div>
 
   <!-- Contenu principal -->
@@ -30,7 +32,7 @@
     <div class="reservation-card">
       <div class="card-header">
         <div class="reservation-info">
-          <h2>Réservation #{{ reservation.id }}</h2>
+          <h2>Réservation</h2>
           <div class="status-badge" [style.color]="getStatusColor(reservation.status)">
             {{ getStatusLabel(reservation.status) }}
           </div>
@@ -51,12 +53,12 @@
               <span class="value">{{ formatDate(reservation.reservationDate) }}</span>
             </div>
             <div class="info-item">
-              <span class="label">Date de début:</span>
-              <span class="value">{{ formatDate(reservation.startDate) }}</span>
+              <span class="label">Début:</span>
+              <span class="value">{{ formatTime(reservation.startDate) }}</span>
             </div>
             <div class="info-item">
-              <span class="label">Date de fin:</span>
-              <span class="value">{{ formatDate(reservation.endDate) }}</span>
+              <span class="label">Fin:</span>
+              <span class="value">{{ formatTime(reservation.endDate) }}</span>
             </div>
           </div>
         </div>
@@ -73,10 +75,6 @@
               <span class="label">Prestataire:</span>
               <span class="value">{{ reservation.providerName || 'Non spécifié' }}</span>
             </div>
-            <div class="info-item">
-              <span class="label">Propriété:</span>
-              <span class="value">{{ reservation.propertyName || 'Non spécifié' }}</span>
-            </div>
           </div>
         </div>
 
@@ -89,13 +87,26 @@
           </div>
         </div>
 
-        <!-- Commentaires -->
-        <div *ngIf="reservation.comments" class="info-section">
-          <h3>Commentaires</h3>
-          <div class="comments">
-            {{ reservation.comments }}
-          </div>
+        <!-- Actions prestataire -->
+        <div class="actions-section" *ngIf="isProvider">
+          <!-- Si statut PENDING: Accepter / Refuser -->
+          <ng-container *ngIf="reservation.status === 'PENDING'">
+            <button class="profile-btn" type="button" [disabled]="isUpdating" (click)="updateStatus('IN_PROGRESS')">
+              {{ isUpdating ? 'Traitement...' : 'Accepter' }}
+            </button>
+            <button class="profile-btn" type="button" [disabled]="isUpdating" (click)="updateStatus('CANCELLED')">
+              {{ isUpdating ? 'Traitement...' : 'Refuser' }}
+            </button>
+          </ng-container>
+
+          <!-- Si statut IN_PROGRESS: Clore la réservation -->
+          <ng-container *ngIf="reservation.status === 'IN_PROGRESS'">
+            <button class="profile-btn" type="button" [disabled]="isUpdating" (click)="updateStatus('CLOSED')">
+              {{ isUpdating ? 'Traitement...' : 'Clore la réservation' }}
+            </button>
+          </ng-container>
         </div>
+
       </div>
     </div>
   </div>
