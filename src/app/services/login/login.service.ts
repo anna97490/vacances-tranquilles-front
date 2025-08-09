@@ -47,7 +47,10 @@ export class LoginService {
     }
 
     // Stockage des données d'authentification
-    this.authStorage.storeAuthenticationData(responseBody.token, responseBody.userRole);
+    this.authStorage.storeAuthenticationData(
+      responseBody.token, 
+      responseBody.userRole, 
+    );
     
     this.showSuccessMessage();
     this.navigation.redirectAfterLogin(responseBody.userRole);

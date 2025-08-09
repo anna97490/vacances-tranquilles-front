@@ -319,6 +319,14 @@ export class ServiceSearchComponent {
       return;
     }
 
+    // Vérification de l'authentification
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Vous devez être connecté pour effectuer cette recherche. Veuillez vous connecter.');
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
     this.isLoading = true;
 
     try {
@@ -346,7 +354,13 @@ export class ServiceSearchComponent {
           },
           error: (error) => {
             console.error('Erreur lors de la recherche:', error);
-            alert('Erreur lors de la recherche. Veuillez réessayer.');
+            
+            if (error.status === 401) {
+              alert('Vous devez être connecté pour effectuer cette recherche. Veuillez vous connecter.');
+              this.router.navigate(['/auth/login']);
+            } else {
+              alert('Erreur lors de la recherche. Veuillez réessayer.');
+            }
           },
           complete: () => {
             this.isLoading = false;

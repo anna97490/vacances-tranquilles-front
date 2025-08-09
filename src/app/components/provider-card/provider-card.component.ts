@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Injector } from '@angular/core';
 import { User } from '../../models/User';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,18 @@ import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
 import { Service } from '../../models/Service';
 import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.component';
+import { HttpClient } from '@angular/common/http';
+import { PaymentService } from '../../services/payment/payment.service';
+import { ConfigService } from '../../services/config/config.service';
+import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { firstValueFrom } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 import { OnChanges, SimpleChanges } from '@angular/core';
 
 /**
@@ -17,11 +29,26 @@ import { OnChanges, SimpleChanges } from '@angular/core';
 @Component({
   selector: 'app-provider-card',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, MatDividerModule, RatingStarsComponent],
+  imports: [
+    CommonModule, 
+    MatCardModule, 
+    MatButtonModule, 
+    MatIconModule, 
+    MatChipsModule, 
+    MatDividerModule, 
+    RatingStarsComponent,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule
+  ],
   templateUrl: './provider-card.component.html',
   styleUrl: './provider-card.component.scss'
 })
 export class ProviderCardComponent implements OnChanges {
+
 
 
   /**
@@ -68,6 +95,17 @@ export class ProviderCardComponent implements OnChanges {
     this._providerInfo = providerInfo;
   }
 
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigService,
+    private authStorage: AuthStorageService,
+    private injector: Injector
+  ) {}
+
+  private get paymentService(): PaymentService {
+    return this.injector.get(PaymentService);
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (this._service && this._providerInfo) {
       this.user = this._providerInfo;
@@ -80,5 +118,100 @@ export class ProviderCardComponent implements OnChanges {
    */
   get providerInfo(): User | undefined {
     return this._providerInfo;
+  }
+
+
+
+  /**
+   * Calcule la durée en heures à partir des heures de début et fin
+   */
+  calculateDuration(startTime: string, endTime: string): number {
+    const start = new Date(`2000-01-01T${startTime}`);
+    const end = new Date(`2000-01-01T${endTime}`);
+    const diffMs = end.getTime() - start.getTime();
+    return Math.round((diffMs / (1000 * 60 * 60)) * 100) / 100;
+  }
+
+  /**
+   * Calcule le prix total à partir des heures de début et fin
+   */
+  calculateTotalPrice(startTime: string, endTime: string): number {
+    const duration = this.calculateDuration(startTime, endTime);
+    const pricePerHour = this.service?.price || 0;
+    return duration * pricePerHour;
+  }
+
+
+
+  /**
+   * Crée une session de paiement Stripe et redirige vers le checkout
+   */
+  async createCheckoutSession(): Promise<void> {
+    if (!this.service || !this.providerInfo) {
+      console.error('Service ou prestataire non défini');
+      return;
+    }
+
+    // Récupérer l'ID du client connecté depuis le service d'authentification
+    const customerId = this.authStorage.getUserId();
+    
+    if (!customerId) {
+      console.error('Utilisateur non connecté');
+      return;
+    }
+
+    const providerId = this.providerInfo?.idUser ? Number(this.providerInfo.idUser) : 
+                      this.service.providerId ? Number(this.service.providerId) : null;
+
+    // Récupérer les critères de recherche depuis le localStorage
+    const searchCriteriaStr = localStorage.getItem('searchCriteria');
+    if (!searchCriteriaStr) {
+      console.error('Aucun critère de recherche trouvé. Veuillez effectuer une recherche d\'abord.');
+      return;
+    }
+
+    const searchCriteria = JSON.parse(searchCriteriaStr);
+    const { date, startTime, endTime } = searchCriteria;
+
+    // Vérifier que les données de recherche sont présentes
+    if (!date || !startTime || !endTime) {
+      console.error('Critères de recherche incomplets');
+      return;
+    }
+
+    const payload = {
+      serviceId: Number(this.service.id),
+      customerId: Number(customerId),
+      providerId: providerId,
+      date: date,                             // Date de recherche
+      startTime: startTime,                   // Heure de début de recherche
+      endTime: endTime,                       // Heure de fin de recherche
+      duration: this.calculateDuration(startTime, endTime), // Durée calculée
+      totalPrice: this.calculateTotalPrice(startTime, endTime) // Prix total calculé
+    };
+
+    console.log('Payload envoyé:', payload);
+
+    try {
+      const token = this.authStorage.getToken();
+      const headers = { 'Authorization': `Bearer ${token}` };
+
+      const response = await firstValueFrom(
+        this.http.post<{ [key: string]: string }>(
+          `${this.configService.apiUrl}/stripe/create-checkout-session`,
+          payload,
+          { headers }
+        )
+      );
+
+      const sessionId = response['sessionId'];
+      if (sessionId) {
+        await this.paymentService.redirectToStripe(sessionId);
+      } else {
+        console.error('Session ID non reçu');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la création de la session de paiement:', error);
+    }
   }
 }

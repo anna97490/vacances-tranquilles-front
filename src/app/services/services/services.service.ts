@@ -49,15 +49,7 @@ export class ServicesService {
       .set('startTime', startTime)
       .set('endTime', endTime);
 
-    // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token');
-    
-    // Configuration des headers
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
-
-    return this.http.get<Service[]>(url, { params, headers });
+    // L'intercepteur gère automatiquement l'authentification
+    return this.http.get<Service[]>(url, { params });
   }
 }
