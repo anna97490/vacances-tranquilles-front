@@ -2,51 +2,78 @@
   <div class="header-logo">
     <img [src]="mainLogo" class="logo-img" alt="Logo" />
   </div>
-  
+
   <!-- Navigation desktop -->
-  <nav class="header-nav desktop-nav">
-    <a
+  <nav class="header-nav desktop-nav" aria-label="Navigation principale">
+    <button
       *ngFor="let item of menu"
       class="nav-link"
       [class.active]="isActive(item.path)"
-      [routerLink]="item.path"
+      [attr.aria-current]="isActive(item.path) ? 'page' : null"
       [attr.aria-label]="'Navigation vers ' + item.label"
+      (click)="onMenuNavigation(item)"
       (mouseenter)="hoveredItem = item"
       (mouseleave)="hoveredItem = null"
+      type="button"
     >
-      <img [src]="getIcon(item)" class="icon" alt="" />
+      <img [src]="getIcon(item)" class="icon" [alt]="'Icône ' + item.label" />
       {{ item.label }}
-    </a>
+    </button>
+
+    <!-- Bouton de déconnexion -->
+    <button
+      class="nav-link logout-btn"
+      (click)="onMenuItemClick(logoutItem)"
+      (mouseenter)="hoveredItem = logoutItem"
+      (mouseleave)="hoveredItem = null"
+    >
+      <img [src]="getIcon(logoutItem)" class="icon" alt="Icône déconnexion" />
+      {{ logoutItem.label }}
+    </button>
   </nav>
 
   <!-- Bouton burger menu pour mobile -->
-  <button 
-    class="burger-btn" 
+  <button
+    class="burger-btn"
     (click)="toggleMobileMenu()"
     [class.active]="isMobileMenuOpen"
     aria-label="Menu de navigation"
+    [attr.aria-expanded]="isMobileMenuOpen"
+    aria-controls="mobile-menu"
   >
     <img [src]="'assets/icons/burgerMenu.svg'" class="burger-icon" alt="Menu" />
   </button>
 
   <!-- Menu mobile -->
-  <div 
-    class="mobile-menu-container" 
+  <div
+    id="mobile-menu"
+    class="mobile-menu-container"
     [class.menu-visible]="isMobileMenuOpen"
   >
-    <nav class="mobile-nav">
-      <a
+    <nav class="mobile-nav" aria-label="Menu de navigation">
+      <button
         *ngFor="let item of menu"
         class="nav-link"
         [class.active]="isActive(item.path)"
-        [routerLink]="item.path"
+        [attr.aria-current]="isActive(item.path) ? 'page' : null"
         [attr.aria-label]="'Navigation vers ' + item.label"
-        (click)="closeMobileMenu()"
+        (click)="onMenuNavigation(item)"
+        type="button"
       >
-        <img [src]="getIcon(item)" class="icon" alt="" />
+        <img [src]="getIcon(item)" class="icon" [alt]="'Icône ' + item.label" />
         <span class="nav-text">{{ item.label }}</span>
-        <img src="assets/icons/arrow-right.svg" class="arrow-icon" alt="" />
-      </a>
+        <img src="assets/icons/arrow-right.svg" class="arrow-icon" alt="Flèche vers la droite" />
+      </button>
+
+      <!-- Bouton de déconnexion mobile -->
+      <button
+        class="nav-link logout-btn"
+        (click)="onMenuItemClick(logoutItem)"
+      >
+        <img [src]="getIcon(logoutItem)" class="icon" alt="Icône déconnexion" />
+        <span class="nav-text">{{ logoutItem.label }}</span>
+        <img src="assets/icons/arrow-right.svg" class="arrow-icon" alt="Flèche vers la droite" />
+      </button>
     </nav>
   </div>
 </header>

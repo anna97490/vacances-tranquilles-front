@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host 0.0.0.0 --port 4200 --configuration development",
+    "start": "ng serve --host 0.0.0.0 --port 4200",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "watch": "ng build --watch",
     "test": "ng test --code-coverage --browsers=ChromeHeadless",
     "docs": "typedoc src/app --out docs/typedoc --entryPointStrategy expand"
   },

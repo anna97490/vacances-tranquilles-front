@@ -13,6 +13,8 @@ export class CustomValidators {
     private static readonly postalCodePattern = /^[0-9]{5}$/;
     // SIRET (14 digits) or SIREN (9 digits)
     private static readonly siretSirenPattern = /^[0-9]{9,14}$/;
+    // Pattern pour détecter les caractères dangereux pour les injections
+    private static readonly injectionPattern = /[<>'"&;{}()\[\]\\\/|`~!@#$%^&*+=]/;
 
     // Validator functions
     static nameValidator(value: string): boolean {
@@ -33,5 +35,15 @@ export class CustomValidators {
 
     static siretSirenValidator(value: string): boolean {
         return this.siretSirenPattern.test(value);
+    }
+
+    /**
+     * Validateur pour empêcher les caractères spéciaux d'injection
+     * @param value La valeur à valider
+     * @returns true si la valeur ne contient pas de caractères dangereux, false sinon
+     */
+    static injectionPreventionValidator(value: string): boolean {
+        if (!value) return true;
+        return !this.injectionPattern.test(value);
     }
 }

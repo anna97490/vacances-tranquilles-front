@@ -48,6 +48,16 @@
       font-weight: 400;
       position: relative;
       transition: color 0.2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      
+      &:focus-visible {
+        outline: 2px solid var(--tertiary-color);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
 
       .icon {
         margin-right: 10px;
@@ -61,7 +71,7 @@
       &.active,
       &:hover {
         color: var(--quaternary-color);
-        
+
         .icon {
           filter: brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2500%) hue-rotate(5deg);
         }
@@ -76,6 +86,24 @@
         height: 4px;
         border-radius: 2px;
         background: var(--tertiary-color);
+      }
+
+      // Styles spécifiques pour le bouton de déconnexion
+      &.logout-btn {
+        color: var(--secondary-text-color); // blanc
+        font-weight: 600;
+
+        &:hover {
+          color: var(--quaternary-color);
+        }
+
+        .icon {
+          filter: none;
+        }
+
+        &:hover .icon {
+          filter: brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2500%) hue-rotate(5deg);
+        }
       }
     }
   }
@@ -151,6 +179,8 @@
         box-sizing: border-box;
         cursor: pointer;
         pointer-events: auto;
+        background: none;
+        border: none;
 
         .icon {
           margin-right: 12px;
@@ -179,7 +209,7 @@
         &.active {
           color: #FFA101;
           background-color: rgba(255, 161, 1, 0.05);
-          
+
           .icon {
             filter: brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2500%) hue-rotate(5deg);
           }
@@ -188,10 +218,33 @@
         &:hover:not(.active) {
           background-color: #F8F9FA;
           color: #FFA101;
-          
+
           .icon {
             filter: brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2500%) hue-rotate(5deg);
           }
+        }
+
+        // Styles spécifiques pour le bouton de déconnexion mobile
+        &.logout-btn {
+          color: #ff6b6b;
+
+          &:hover {
+            background-color: #fff5f5;
+            color: #ff5252;
+          }
+
+          .icon {
+            filter: brightness(0) saturate(100%) invert(50%) sepia(100%) saturate(2000%) hue-rotate(340deg);
+          }
+
+          &:hover .icon {
+            filter: brightness(0) saturate(100%) invert(40%) sepia(100%) saturate(2000%) hue-rotate(340deg);
+          }
+        }
+
+        /* Force la couleur rouge si d'autres règles l'écrasent (mobile) */
+        &.logout-btn {
+          color: #ff6b6b !important;
         }
       }
     }

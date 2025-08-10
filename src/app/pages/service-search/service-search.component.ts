@@ -11,7 +11,7 @@ import { ServiceCategory } from '../../models/Service';
 import { ServicesService } from '../../services/services/services.service';
 import { Router } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { HeaderComponent } from '../../components/header/header.component';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'app-service-search',
@@ -28,7 +28,6 @@ import { HeaderComponent } from '../../components/header/header.component';
     MatMenuModule,
     MatInputModule,
     FooterComponent,
-    HeaderComponent
   ]
 })
 
@@ -166,7 +165,8 @@ export class ServiceSearchComponent {
 
   constructor(
     private readonly servicesService: ServicesService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly notificationService: NotificationService
   ) {}
 
   /**
@@ -359,11 +359,12 @@ export class ServiceSearchComponent {
           error: (error) => {
             console.error('Erreur lors de la recherche:', error);
             
-            if (error.status === 401) {
-              alert('Vous devez être connecté pour effectuer cette recherche. Veuillez vous connecter.');
-              this.router.navigate(['/auth/login']);
+            // Vérifier si c'est une erreur d'authentification ou de session expirée
+            if (error.status === 403 || error.status === 401 || error.message?.includes('Session expirée')) {
+              this.notificationService.sessionExpired();
+              // La redirection sera gérée automatiquement par l'intercepteur
             } else {
-              alert('Erreur lors de la recherche. Veuillez réessayer.');
+              this.notificationService.error('Erreur lors de la recherche. Veuillez réessayer.');
             }
           },
           complete: () => {

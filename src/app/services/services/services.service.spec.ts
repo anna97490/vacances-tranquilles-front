@@ -3,26 +3,38 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { ServicesService } from './services.service';
 import { Service } from '../../models/Service';
 import { ConfigService } from '../config/config.service';
+import { TokenValidatorService } from '../auth/token-validator.service';
+import { Router } from '@angular/router';
 
 describe('ServicesService', () => {
 
   class MockConfigService {
-  apiUrl = 'http://mock-api/api';
-}
+    apiUrl = 'http://mock-api/api';
+  }
 
   let service: ServicesService;
   let httpMock: HttpTestingController;
+  let tokenValidatorSpy: jasmine.SpyObj<TokenValidatorService>;
+  let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(() => {
+    const tokenValidatorSpyObj = jasmine.createSpyObj('TokenValidatorService', ['isTokenValid']);
+    const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
+
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-      ServicesService,
-      { provide: ConfigService, useClass: MockConfigService }]
+        ServicesService,
+        { provide: ConfigService, useClass: MockConfigService },
+        { provide: TokenValidatorService, useValue: tokenValidatorSpyObj },
+        { provide: Router, useValue: routerSpyObj }
+      ]
     });
 
     service = TestBed.inject(ServicesService);
     httpMock = TestBed.inject(HttpTestingController);
+    tokenValidatorSpy = TestBed.inject(TokenValidatorService) as jasmine.SpyObj<TokenValidatorService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   afterEach(() => {
@@ -34,8 +46,11 @@ describe('ServicesService', () => {
   });
 
 it('should send GET request with correct parameters', () => {
-  const httpMock = TestBed.inject(HttpTestingController);
-  const service = TestBed.inject(ServicesService);
+  // Configurer le spy pour retourner true (token valide)
+  tokenValidatorSpy.isTokenValid.and.returnValue(true);
+  
+  // Configurer localStorage pour avoir un token
+  spyOn(localStorage, 'getItem').and.returnValue('mock-token');
 
   service.searchServices(
     'HOME',
@@ -64,8 +79,23 @@ it('should send GET request with correct parameters', () => {
 });
 
   it('should throw an error if category is invalid', () => {
+    // Configurer le spy pour retourner true (token valide)
+    tokenValidatorSpy.isTokenValid.and.returnValue(true);
+    
     expect(() =>
       service.searchServices('INVALID' as any, '75001', '2025-01-01', '10:00', '12:00')
     ).toThrowError('Catégorie inconnue : INVALID');
+  });
+
+  it('should redirect to login when token is invalid', () => {
+    // Configurer le spy pour retourner false (token invalide)
+    tokenValidatorSpy.isTokenValid.and.returnValue(false);
+
+    service.searchServices('HOME', '75001', '2025-01-01', '10:00', '12:00').subscribe({
+      error: (error) => {
+        expect(error.message).toBe('Session expirée. Veuillez vous reconnecter.');
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/auth/login']);
+      }
+    });
   });
 });

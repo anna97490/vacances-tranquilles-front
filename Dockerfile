@@ -12,6 +12,6 @@ FROM node:18-alpine
 
 WORKDIR /app
 RUN npm install -g serve
-COPY --from=build /app/dist/frontend/browser /app
+COPY --from=build /app/dist/frontend /app
 EXPOSE 80
 CMD ["serve", "-s", ".", "-l", "80"]

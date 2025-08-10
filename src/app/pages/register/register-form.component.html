@@ -1,80 +1,141 @@
+<div>
+  <!-- Bouton retour -->
+  <button class="back-btn" aria-label="Retour" type="button" (click)="goBack()">
+    ←
+  </button>
+</div>
+
 <div class="register-container">
   <div class="register-header">
     <div class="logo">
-        <img [src]="mainLogo" class="logo" alt="" />
+        <img [src]="mainLogo" class="logo" alt="Logo Vacances Tranquilles" />
     </div>
     <h2>Bienvenue sur Vacances Tranquilles</h2>
     <div class="register-subtitle">
-      Créez votre compte pour gérer vos réservations<br>
-      Créez votre compte prestataire pour proposer vos services
+      <p *ngIf="isPrestataire">Créez votre compte prestataire pour proposer vos services aux vacanciers</p>
+      <p *ngIf="!isPrestataire">Rejoignez Vacances Tranquilles<br>pour confier votre logement à des professionnels</p>
     </div>
   </div>
+
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-form">
+
     <div class="form-group">
-      <label for="firstName">Prénom</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="firstName" formControlName="firstName" placeholder="Votre prénom">
+      <label for="firstName">Prénom <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('firstName')?.invalid && form.get('firstName')?.touched">
+        <input matInput id="firstName" name="firstName" formControlName="firstName" placeholder="Votre prénom" [required]="true"
+               type="text" autocomplete="given-name" inputmode="text">
+        <mat-error *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
+          {{ getFieldErrorText('firstName') }}
+        </mat-error>
       </mat-form-field>
     </div>
     <div class="form-group">
-      <label for="lastName">Nom</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="lastName" formControlName="lastName" placeholder="Votre nom">
+      <label for="lastName">Nom <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('lastName')?.invalid && form.get('lastName')?.touched">
+        <input matInput id="lastName" name="lastName" formControlName="lastName" placeholder="Votre nom" [required]="true"
+               type="text" autocomplete="family-name" inputmode="text">
+        <mat-error *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
+          {{ getFieldErrorText('lastName') }}
+        </mat-error>
       </mat-form-field>
     </div>
-    <div class="form-row" *ngIf="isPrestataire">
-      <div class="form-group">
-        <label for="companyName">Nom de l'entreprise</label>
-        <mat-form-field appearance="outline" class="custom-form-field form-field">
-          <input matInput id="companyName" formControlName="companyName" placeholder="Votre entreprise">
-        </mat-form-field>
-      </div>
-      <div class="form-group">
-        <label for="siretSiren">SIRET</label>
-        <mat-form-field appearance="outline" class="custom-form-field form-field">
-          <input matInput id="siretSiren" formControlName="siretSiren" placeholder="12345678901234">
-        </mat-form-field>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="email">Email</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="email" formControlName="email" placeholder="entreprise@email.com">
+    <div class="form-group" *ngIf="isPrestataire">
+      <label for="companyName">Nom de l'entreprise <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field"
+                      [class.mat-mdc-form-field-invalid]="form.get('companyName')?.invalid && form.get('companyName')?.touched">
+        <input matInput id="companyName" name="companyName" formControlName="companyName" placeholder="Votre entreprise" [required]="isPrestataire"
+               type="text" autocomplete="organization" inputmode="text">
+        <mat-error *ngIf="form.get('companyName')?.invalid && form.get('companyName')?.touched">
+          {{ getFieldErrorText('companyName') }}
+        </mat-error>
       </mat-form-field>
     </div>
-    <div class="form-group">
-      <label for="phoneNumber">Téléphone</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="phoneNumber" formControlName="phoneNumber" placeholder="06 12 34 56 78">
-      </mat-form-field>
-    </div>
-    <div class="form-group">
-      <label for="address">Adresse</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="address" formControlName="address" placeholder="123 rue de la Paix">
+    <div class="form-group" *ngIf="isPrestataire">
+      <label for="siretSiren">SIRET <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field"
+                      [class.mat-mdc-form-field-invalid]="form.get('siretSiren')?.invalid && form.get('siretSiren')?.touched">
+        <input matInput id="siretSiren" name="siretSiren" formControlName="siretSiren" placeholder="12345678901234" [required]="isPrestataire"
+               type="text" inputmode="numeric" autocomplete="off">
+        <mat-error *ngIf="form.get('siretSiren')?.invalid && form.get('siretSiren')?.touched">
+          {{ getFieldErrorText('siretSiren') }}
+        </mat-error>
       </mat-form-field>
     </div>
     <div class="form-group">
-      <label for="postalCode">Code postal</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="postalCode" formControlName="postalCode" placeholder="75000">
+      <label for="email">Email <span class="required-asterisk" aria-hidden="true">*</span><span class="sr-only"></span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('email')?.invalid && form.get('email')?.touched">
+        <input matInput id="email" name="email" formControlName="email" placeholder="entreprise@email.com" [required]="true"
+               type="email" autocomplete="email" inputmode="email"
+               aria-describedby="register-email-hint">
+        <mat-hint id="register-email-hint">Exemple: nom&#64;domaine.com</mat-hint>
+        <mat-error *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+          {{ getFieldErrorText('email') }}
+        </mat-error>
       </mat-form-field>
     </div>
     <div class="form-group">
-      <label for="city">Ville</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="city" formControlName="city" placeholder="Paris">
+      <label for="phoneNumber">Téléphone <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('phoneNumber')?.invalid && form.get('phoneNumber')?.touched">
+        <input matInput id="phoneNumber" name="phoneNumber" formControlName="phoneNumber" placeholder="06 12 34 56 78" [required]="true"
+               type="tel" inputmode="tel" autocomplete="tel">
+        <mat-error *ngIf="form.get('phoneNumber')?.invalid && form.get('phoneNumber')?.touched">
+          {{ getFieldErrorText('phoneNumber') }}
+        </mat-error>
       </mat-form-field>
     </div>
     <div class="form-group">
-      <label for="userSecret">Mot de passe</label>
-      <mat-form-field appearance="outline" class="custom-form-field form-field full-width">
-        <input matInput id="userSecret" formControlName="userSecret" type="password" placeholder="********">
+      <label for="address">Adresse <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('address')?.invalid && form.get('address')?.touched">
+        <input matInput id="address" name="address" formControlName="address" placeholder="123 rue de la Paix" [required]="true"
+               type="text" autocomplete="address-line1" inputmode="text">
+        <mat-error *ngIf="form.get('address')?.invalid && form.get('address')?.touched">
+          {{ getFieldErrorText('address') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="postalCode">Code postal <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('postalCode')?.invalid && form.get('postalCode')?.touched">
+        <input matInput id="postalCode" name="postalCode" formControlName="postalCode" placeholder="75000" [required]="true"
+               type="text" autocomplete="postal-code" inputmode="numeric">
+        <mat-error *ngIf="form.get('postalCode')?.invalid && form.get('postalCode')?.touched">
+          {{ getFieldErrorText('postalCode') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="city">Ville <span class="required-asterisk" aria-hidden="true">*</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('city')?.invalid && form.get('city')?.touched">
+        <input matInput id="city" name="city" formControlName="city" placeholder="Paris" [required]="true"
+               type="text" autocomplete="address-level2" inputmode="text">
+        <mat-error *ngIf="form.get('city')?.invalid && form.get('city')?.touched">
+          {{ getFieldErrorText('city') }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <div class="form-group">
+      <label for="userSecret">Mot de passe <span class="required-asterisk" aria-hidden="true">*</span><span class="sr-only"> (obligatoire)</span></label>
+      <mat-form-field appearance="outline" class="custom-form-field form-field full-width"
+                      [class.mat-mdc-form-field-invalid]="form.get('userSecret')?.invalid && form.get('userSecret')?.touched">
+        <input matInput id="userSecret" name="userSecret" formControlName="userSecret" type="password" placeholder="********" [required]="true"
+               autocomplete="new-password" aria-describedby="register-password-hint">
+        <mat-hint id="register-password-hint">8+ caractères, 1 minuscule, 1 majuscule, 1 chiffre, 1 spécial (&#64;$!%*?&)</mat-hint>
+        <mat-error *ngIf="form.get('userSecret')?.invalid && form.get('userSecret')?.touched">
+          {{ getPasswordErrorText() }}
+        </mat-error>
       </mat-form-field>
     </div>
     <button mat-flat-button color="primary" class="register-btn styled-btn" type="submit">S'inscrire</button>
   </form>
   <div class="register-login">
-    Déjà un compte ? <a routerLink="/auth/login">Se connecter</a>
+    Déjà un compte ? <a routerLink="/auth/login" aria-label="Aller à la page de connexion">Se connecter</a>
   </div>
-</div> 
+  <app-footer></app-footer>
+</div>

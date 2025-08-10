@@ -13,28 +13,26 @@ import { ConfigService } from './services/config/config.service';
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet, 
-    HeaderComponent, 
-    ReactiveFormsModule, 
-    MatFormFieldModule, 
-    MatInputModule, 
-    MatButtonModule, 
-    MatIconModule, 
+    RouterOutlet,
+    HeaderComponent,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
     CommonModule
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
   title = 'frontend';
-  isConnected = false;
 
-  constructor(private configService: ConfigService) {
-    if (localStorage.getItem('token')) {
-      this.isConnected = false;
-    } else {
-      this.isConnected = true;
-    }
+  constructor(private readonly configService: ConfigService) {}
+
+  isAuthenticated(): boolean {
+    // Simple check: considère connecté si un token est présent (ajuste si besoin)
+    return !!localStorage.getItem('token');
   }
 
   ngOnInit() {

@@ -230,18 +230,18 @@ describe('FooterComponent', () => {
 
   describe('CSS Classes', () => {
     const cssTests = [
-      { 
-        selector: selectors.footer, 
+      {
+        selector: selectors.footer,
         expectedClasses: ['footer-mockup'],
         description: 'footer elements'
       },
-      { 
-        selector: selectors.footerContent, 
+      {
+        selector: selectors.footerContent,
         expectedClasses: ['footer-content'],
         description: 'footer content'
       },
-      { 
-        selector: selectors.footerCopyright, 
+      {
+        selector: selectors.footerCopyright,
         expectedClasses: ['footer-copyright'],
         description: 'footer copyright'
       }
@@ -417,9 +417,8 @@ describe('FooterComponent', () => {
       expect(textContent).toContain(footerData.companyInfo.description);
       expect(textContent).toContain(footerData.companyInfo.year);
 
-      // Approche plus robuste pour vérifier la structure
-      const hasLineBreaks = innerHTML.includes('<br>') || 
-                          innerHTML.includes('<br/>') || 
+      const hasLineBreaks = innerHTML.includes('<br>') ||
+                          innerHTML.includes('<br/>') ||
                           innerHTML.includes('<br />') ||
                           innerHTML.includes('\n') ||
                           element.children.length > 0;
@@ -427,7 +426,6 @@ describe('FooterComponent', () => {
       expect(hasLineBreaks).toBe(true);
     });
 
-    // Test alternatif plus défensif
     it('should display company information correctly', () => {
       const footerText = getElements.single(selectors.footerText);
       expect(footerText).toBeTruthy();
@@ -436,19 +434,16 @@ describe('FooterComponent', () => {
       const textContent = element.textContent || '';
       const innerHTML = element.innerHTML;
 
-      // Tests essentiels
       expect(textContent).toContain(footerData.companyInfo.description);
       expect(textContent).toContain(footerData.companyInfo.year);
 
-      // Test de structure plus flexible
-      const hasStructure = innerHTML.length > textContent.length || 
+      const hasStructure = innerHTML.length > textContent.length ||
                           element.childNodes.length > 1 ||
                           innerHTML !== textContent;
 
       expect(hasStructure).toBe(true);
     });
 
-    // Test de debug pour comprendre la structure réelle
     it('should debug footer text structure', () => {
       const footerText = getElements.single(selectors.footerText);
 
@@ -459,7 +454,6 @@ describe('FooterComponent', () => {
         console.log('Footer text childNodes count:', element.childNodes.length);
         console.log('Footer text children count:', element.children.length);
 
-        // Analyser les noeuds enfants
         Array.from(element.childNodes).forEach((node, index) => {
           const n = node as Node;
           console.log(`Child node ${index}:`, {

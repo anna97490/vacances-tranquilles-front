@@ -14,5 +14,5 @@ fetch('/assets/config.json')
       ]
     });
   })
-  .catch((err) => console.error('Erreur au démarrage de l\'app :', err));
+  .catch((err) => console.error('Erreur au démarrage de l’app :', err));
 

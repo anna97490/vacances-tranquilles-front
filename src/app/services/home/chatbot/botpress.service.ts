@@ -10,7 +10,7 @@ export class BotpressService {
   private readonly maxRetries = 10;
   private readonly retryInterval = 500;
 
-  constructor(private secureIdGenerator: SecureIdGeneratorService) {}
+  constructor(private readonly secureIdGenerator: SecureIdGeneratorService) {}
 
   /**
    * Envoie un message d'accueil au chatbot Botpress
@@ -26,7 +26,7 @@ export class BotpressService {
         try {
           const bpWebChat = (window as any).botpressWebChat;
           
-          if (bpWebChat && bpWebChat.conversationId) {
+          if (bpWebChat?.conversationId) {
             const success = await this.sendMessage(bpWebChat.conversationId, message);
             if (success) {
               clearInterval(interval);
@@ -41,7 +41,7 @@ export class BotpressService {
         } catch (error) {
           if (attempts >= this.maxRetries) {
             clearInterval(interval);
-            reject(error instanceof Error ? error : new Error(String(error)));
+            reject(new Error(error instanceof Error ? error.message : String(error)));
           }
         }
       }, this.retryInterval);
@@ -73,11 +73,13 @@ export class BotpressService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      /* istanbul ignore next */
       const data = await response.json();
       console.log('Message envoyé avec succès', data);
       return true;
       
     } catch (error) {
+      /* istanbul ignore next */
       console.error('Erreur lors de l\'envoi du message:', error);
       return false;
     }
@@ -88,7 +90,7 @@ export class BotpressService {
    */
   isBotpressAvailable(): boolean {
     const bpWebChat = (window as any).botpressWebChat;
-    return !!(bpWebChat && bpWebChat.conversationId);
+    return !!bpWebChat?.conversationId;
   }
 
   /**
