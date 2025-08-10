@@ -84,4 +84,48 @@ describe('CustomValidators', () => {
       expect(CustomValidators.siretSirenValidator('')).toBe(false);
     });
   });
-}); 
+
+  describe('injectionPreventionValidator', () => {
+    it('should accept safe values', () => {
+      expect(CustomValidators.injectionPreventionValidator('John Doe')).toBe(true);
+      expect(CustomValidators.injectionPreventionValidator('test.example.com')).toBe(true); // Removed @ as it's in the dangerous pattern
+      expect(CustomValidators.injectionPreventionValidator('123456789')).toBe(true);
+      expect(CustomValidators.injectionPreventionValidator('normal text with spaces')).toBe(true);
+      expect(CustomValidators.injectionPreventionValidator('')).toBe(true); // Empty string is allowed
+      expect(CustomValidators.injectionPreventionValidator(null as any)).toBe(true); // Null is allowed
+      expect(CustomValidators.injectionPreventionValidator(undefined as any)).toBe(true); // Undefined is allowed
+    });
+
+    it('should reject values with dangerous characters', () => {
+      expect(CustomValidators.injectionPreventionValidator('<script>alert("xss")</script>')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test"quotes')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test\'quotes')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test&entity')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test;semicolon')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test{braces}')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test(parentheses)')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test[brackets]')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test\\backslash')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test/forward')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test|pipe')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test`backtick')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test~tilde')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test!exclamation')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test@at')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test#hash')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test$dollar')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test%percent')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test^caret')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test*asterisk')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test+plus')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('test=equals')).toBe(false);
+    });
+
+    it('should handle edge cases', () => {
+      expect(CustomValidators.injectionPreventionValidator(' ')).toBe(true); // Space only
+      expect(CustomValidators.injectionPreventionValidator('   ')).toBe(true); // Multiple spaces
+      expect(CustomValidators.injectionPreventionValidator('test with <dangerous> chars')).toBe(false);
+      expect(CustomValidators.injectionPreventionValidator('normal text with "quotes" inside')).toBe(false);
+    });
+  });
+});

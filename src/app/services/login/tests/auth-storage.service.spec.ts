@@ -7,8 +7,7 @@ describe('AuthStorageService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(AuthStorageService);
-    
-    // Clear localStorage before each test
+
     localStorage.clear();
 
     // Supprimer tous les logs console pour chaque test
@@ -28,14 +27,14 @@ describe('AuthStorageService', () => {
   describe('storeAuthenticationData', () => {
     it('should store token and userRole', () => {
       service.storeAuthenticationData('test-token', 'CLIENT');
-      
+
       expect(localStorage.getItem('token')).toBe('test-token');
       expect(localStorage.getItem('userRole')).toBe('CLIENT');
     });
 
     it('should store token with empty userRole by default', () => {
       service.storeAuthenticationData('test-token');
-      
+
       expect(localStorage.getItem('token')).toBe('test-token');
       expect(localStorage.getItem('userRole')).toBe('');
     });
@@ -44,7 +43,7 @@ describe('AuthStorageService', () => {
   describe('getToken', () => {
     it('should return stored token', () => {
       localStorage.setItem('token', 'test-token');
-      
+
       expect(service.getToken()).toBe('test-token');
     });
 
@@ -56,7 +55,7 @@ describe('AuthStorageService', () => {
   describe('getUserRole', () => {
     it('should return stored user role', () => {
       localStorage.setItem('userRole', 'ADMIN');
-      
+
       expect(service.getUserRole()).toBe('ADMIN');
     });
 
@@ -68,7 +67,7 @@ describe('AuthStorageService', () => {
   describe('isAuthenticated', () => {
     it('should return true when token exists', () => {
       localStorage.setItem('token', 'test-token');
-      
+
       expect(service.isAuthenticated()).toBeTruthy();
     });
 
@@ -78,7 +77,7 @@ describe('AuthStorageService', () => {
 
     it('should return false when token is empty string', () => {
       localStorage.setItem('token', '');
-      
+
       expect(service.isAuthenticated()).toBeFalsy();
     });
   });
@@ -87,9 +86,9 @@ describe('AuthStorageService', () => {
     it('should remove token and userRole from localStorage', () => {
       localStorage.setItem('token', 'test-token');
       localStorage.setItem('userRole', 'CLIENT');
-      
+
       service.clearAuthenticationData();
-      
+
       expect(localStorage.getItem('token')).toBeNull();
       expect(localStorage.getItem('userRole')).toBeNull();
     });

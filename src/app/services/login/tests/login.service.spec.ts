@@ -23,8 +23,8 @@ describe('LoginService', () => {
   beforeEach(() => {
     const authStorageSpyObj = jasmine.createSpyObj('AuthStorageService', ['storeAuthenticationData']);
     const errorHandlerSpyObj = jasmine.createSpyObj('LoginErrorHandlerService', [
-      'isPotentialParseError', 
-      'extractTokenFromErrorResponse', 
+      'isPotentialParseError',
+      'extractTokenFromErrorResponse',
       'getLoginErrorMessage'
     ]);
     const navigationSpyObj = jasmine.createSpyObj('LoginNavigationService', ['redirectAfterLogin']);
@@ -78,7 +78,7 @@ describe('LoginService', () => {
 
       expect(authStorageSpy.storeAuthenticationData).toHaveBeenCalledWith('fake-token', 'CLIENT');
       expect(navigationSpy.redirectAfterLogin).toHaveBeenCalledWith('CLIENT');
-      
+
       // En environnement de test, le service utilise console.log au lieu d'alert
       expect(consoleSpy).toHaveBeenCalledWith('Connexion réussie !');
     });
@@ -93,7 +93,7 @@ describe('LoginService', () => {
 
       expect(authStorageSpy.storeAuthenticationData).not.toHaveBeenCalled();
       expect(navigationSpy.redirectAfterLogin).not.toHaveBeenCalled();
-      
+
       // En environnement de test, le service utilise console.error au lieu d'alert
       expect(consoleErrorSpy).toHaveBeenCalledWith('Erreur lors de la connexion : Token manquant dans la réponse du serveur');
     });
@@ -109,7 +109,7 @@ describe('LoginService', () => {
 
       expect(authStorageSpy.storeAuthenticationData).not.toHaveBeenCalled();
       expect(navigationSpy.redirectAfterLogin).not.toHaveBeenCalled();
-      
+
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Erreur lors de la connexion : Token manquant dans la réponse du serveur');
     });
@@ -239,7 +239,7 @@ describe('LoginService', () => {
       expect(() => {
         (service as any).reloadPageIfBrowser();
       }).not.toThrow();
-      
+
       expect(reloadPageIfBrowserSpy).toHaveBeenCalled();
     });
 
@@ -247,16 +247,16 @@ describe('LoginService', () => {
       // Temporairement permettre l'exécution de la vraie méthode
       reloadPageIfBrowserSpy.and.callThrough();
       isTestEnvironmentSpy.calls.reset(); // Reset le compteur
-      
+
       // Configurer le retour de isTestEnvironment
       isTestEnvironmentSpy.and.returnValue(true);
-      
+
       // Appeler la méthode
       (service as any).reloadPageIfBrowser();
-      
+
       // Vérifier que isTestEnvironment a été appelé
       expect(isTestEnvironmentSpy).toHaveBeenCalledTimes(1);
-      
+
       // Remettre le mock
       reloadPageIfBrowserSpy.and.callFake(() => {
         console.log('reloadPageIfBrowser called but mocked in test');
@@ -266,10 +266,10 @@ describe('LoginService', () => {
     it('should detect test environment correctly', () => {
       // Test de la vraie méthode isTestEnvironment
       isTestEnvironmentSpy.and.callThrough();
-      
+
       const result = (service as any).isTestEnvironment();
       expect(result).toBe(true);
-      
+
       // Remettre le mock
       isTestEnvironmentSpy.and.returnValue(true);
     });
@@ -278,13 +278,13 @@ describe('LoginService', () => {
       // Vérifier que le mock fonctionne avec différentes valeurs d'environnement
       isTestEnvironmentSpy.and.returnValue(true);
       expect(() => (service as any).reloadPageIfBrowser()).not.toThrow();
-      
+
       isTestEnvironmentSpy.and.returnValue(false);
       expect(() => (service as any).reloadPageIfBrowser()).not.toThrow();
-      
+
       // Vérifier que la méthode a été appelée
       expect(reloadPageIfBrowserSpy).toHaveBeenCalledTimes(2);
-      
+
       // Vérifier que isTestEnvironment n'a pas été appelé (car on utilise le mock)
       expect(isTestEnvironmentSpy).not.toHaveBeenCalled();
     });
@@ -295,11 +295,10 @@ describe('LoginService', () => {
     const apiUrl = 'http://localhost:8080/api';
     const mockResponse: LoginResponse = { token: 'test-token', userRole: 'CLIENT' };
 
-    // Subscribe to the observable and handle the HttpResponse
     service.performLogin(payload, apiUrl).subscribe((httpResponse: HttpResponse<LoginResponse>) => {
       // Pass the complete HttpResponse object, not just the body
       service.handleLoginSuccess(httpResponse);
-      
+
       expect(authStorageSpy.storeAuthenticationData).toHaveBeenCalledWith('test-token', 'CLIENT');
       expect(navigationSpy.redirectAfterLogin).toHaveBeenCalledWith('CLIENT');
       expect(consoleSpy).toHaveBeenCalledWith('Connexion réussie !');
@@ -309,8 +308,7 @@ describe('LoginService', () => {
     const req = httpMock.expectOne(`${apiUrl}/auth/login`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(payload);
-    
-    // Flush with the response body - this creates the complete HttpResponse
+
     req.flush(mockResponse);
   });
 
@@ -319,26 +317,22 @@ describe('LoginService', () => {
     const apiUrl = 'http://localhost:8080/api';
     const errorMessage = 'Unauthorized';
 
-    // Mock error handler
     errorHandlerSpy.isPotentialParseError.and.returnValue(false);
     errorHandlerSpy.getLoginErrorMessage.and.returnValue(errorMessage);
 
-    // Subscribe and handle error
     service.performLogin(payload, apiUrl).subscribe({
       next: () => fail('Should have errored'),
       error: (error: HttpErrorResponse) => {
         service.handleLoginError(error);
-        
+
         expect(errorHandlerSpy.isPotentialParseError).toHaveBeenCalledWith(error);
         expect(errorHandlerSpy.getLoginErrorMessage).toHaveBeenCalledWith(error);
         expect(consoleErrorSpy).toHaveBeenCalledWith('Erreur lors de la connexion : Unauthorized');
       }
     });
 
-    // Mock the HTTP request that will error
     const req = httpMock.expectOne(`${apiUrl}/auth/login`);
-    
-    // Flush with error
+
     req.flush(errorMessage, { status: 401, statusText: 'Unauthorized' });
   });
   });

@@ -25,9 +25,11 @@ export class LoginValidationService {
 
     if (emailControl?.hasError('required')) return 'L\'email est requis';
     if (emailControl?.hasError('email')) return 'Format d\'email invalide';
+    if (emailControl?.hasError('injectionPrevention')) return 'L\'email ne doit pas contenir de caractères spéciaux dangereux';
     if (userSecretControl?.hasError('required')) return 'Le mot de passe est requis';
     if (userSecretControl?.hasError('minlength')) return 'Le mot de passe doit contenir au moins 6 caractères';
-    
+    if (userSecretControl?.hasError('injectionPrevention')) return 'Le mot de passe ne doit pas contenir de caractères spéciaux dangereux';
+
     return 'Formulaire invalide - vérifiez vos données';
   }
 

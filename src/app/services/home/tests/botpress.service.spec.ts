@@ -8,18 +8,17 @@ describe('BotpressService', () => {
 
   beforeEach(() => {
     const spy = jasmine.createSpyObj('SecureIdGeneratorService', ['generateSecureRandomId']);
-    
+
     TestBed.configureTestingModule({
       providers: [
         BotpressService,
         { provide: SecureIdGeneratorService, useValue: spy }
       ]
     });
-    
+
     service = TestBed.inject(BotpressService);
     secureIdGeneratorSpy = TestBed.inject(SecureIdGeneratorService) as jasmine.SpyObj<SecureIdGeneratorService>;
-    
-    // Clean up any existing Botpress
+
     delete (window as any).botpressWebChat;
   });
 
@@ -35,8 +34,8 @@ describe('BotpressService', () => {
     it('should resolve when botpress is available and message sent successfully', async () => {
       // Arrange
       (window as any).botpressWebChat = { conversationId: 'test-id' };
-      spyOn<any>(service, 'sendMessage').and.resolveTo(true);
-      
+      spyOn<any>(service, 'sendMessage').and.returnValue(Promise.resolve(true));
+
       // Act & Assert
       await expectAsync(service.sendWelcomeMessage()).toBeResolved();
     });
@@ -44,8 +43,8 @@ describe('BotpressService', () => {
     it('should resolve when botpress is available and custom message sent successfully', async () => {
       // Arrange
       (window as any).botpressWebChat = { conversationId: 'test-id' };
-      spyOn<any>(service, 'sendMessage').and.resolveTo(true);
-      
+      spyOn<any>(service, 'sendMessage').and.returnValue(Promise.resolve(true));
+
       // Act & Assert
       await expectAsync(service.sendWelcomeMessage('Hello')).toBeResolved();
     });
@@ -202,15 +201,14 @@ describe('BotpressService', () => {
     it('should return true when botpress becomes available during wait', async () => {
       // Arrange
       delete (window as any).botpressWebChat;
-      
+
       // Act
       const promise = service.waitForBotpress(1000);
-      
-      // Simulate botpress becoming available after a short delay
+
       setTimeout(() => {
         (window as any).botpressWebChat = { conversationId: 'test-id' };
       }, 50);
-      
+
       const result = await promise;
 
       // Assert
