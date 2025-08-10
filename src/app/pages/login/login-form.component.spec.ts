@@ -5,9 +5,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { of, throwError } from 'rxjs';
@@ -20,7 +20,7 @@ import { LoginService } from '../../services/login/login.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { LoginErrorHandlerService } from '../../services/login/login-error-handler.service';
 import { LoginNavigationService } from '../../services/login/login-navigation.service';
-import { createWindowSpies, verifyAlertShown, verifyNoAlertsShown } from '../../utils/test-helpers';
+import { createWindowSpies, verifyNoAlertsShown } from '../../utils/test-helpers';
 
 // Mock component pour les tests de navigation
 @Component({
@@ -31,8 +31,8 @@ class MockHomeComponent { }
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
   let fixture: ComponentFixture<LoginFormComponent>;
-  let httpTestingController: HttpTestingController;
-  
+
+
   // Services
   let loginValidationService: LoginValidationService;
   let loginService: LoginService;
@@ -41,7 +41,7 @@ describe('LoginFormComponent', () => {
   // Mock data pour les tests
   const validLoginData = {
     email: 'test@example.com',
-    userSecret: 'password123'
+    userSecret: 'Password1!'
   };
 
   const mockLoginResponse = {
@@ -67,13 +67,8 @@ describe('LoginFormComponent', () => {
         MatInputModule,
         MatButtonModule,
         MatIconModule,
-        RouterTestingModule.withRoutes([
-          { path: 'home', component: MockHomeComponent }
-        ]),
-        NoopAnimationsModule,
-        HttpClientTestingModule
+        NoopAnimationsModule
       ],
-      declarations: [MockHomeComponent],
       providers: [
         FormBuilder,
         ConfigService,
@@ -83,14 +78,17 @@ describe('LoginFormComponent', () => {
         AuthStorageService,
         LoginErrorHandlerService,
         LoginNavigationService,
-        { provide: 'APP_CONFIG', useValue: mockAppConfig }
+        { provide: 'APP_CONFIG', useValue: mockAppConfig },
+        provideRouter([
+          { path: 'home', component: MockHomeComponent }
+        ]),
+        provideHttpClient(withFetch())
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginFormComponent);
     component = fixture.componentInstance;
-    httpTestingController = TestBed.inject(HttpTestingController);
-    
+
     // Injection des services
     loginValidationService = TestBed.inject(LoginValidationService);
     loginService = TestBed.inject(LoginService);
@@ -99,37 +97,39 @@ describe('LoginFormComponent', () => {
     spies = createWindowSpies();
   });
 
-  afterEach(() => {
-    httpTestingController.verify();
-  });
+
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   describe('Form Validation', () => {
-    it('should handle invalid form submission', fakeAsync(() => {
+    it('should handle invalid form submission with error summary', fakeAsync(() => {
       // Arrange
-      const invalidData = { email: 'invalid-email', password: '' };
+      const invalidData = { email: 'invalid-email', userSecret: '' };
       component.form.patchValue(invalidData);
-      
+
       // Act
       component.onSubmit();
       tick();
-      
+
       // Assert
-      expect(component.form.valid).toBeFalsy();
-      verifyAlertShown(spies, 'Format d\'email invalide');
+      expect(component.form.valid).toBeFalse();
+      expect(component.showErrorSummary).toBeTrue();
+      // Email message present
+      expect(component.errorSummaryItems.some(e => e.label === 'Email' && e.message.includes('Format'))).toBeTrue();
+      // Password required present
+      expect(component.errorSummaryItems.some(e => e.label === 'Mot de passe')).toBeTrue();
     }));
 
     it('should validate email format correctly', () => {
       // Arrange
       const emailControl = component.form.get('email');
-      
+
       // Act & Assert
       emailControl?.setValue('invalid-email');
       expect(emailControl?.errors?.['email']).toBeTruthy();
-      
+
       emailControl?.setValue('valid@email.com');
       expect(emailControl?.errors?.['email']).toBeFalsy();
     });
@@ -137,14 +137,23 @@ describe('LoginFormComponent', () => {
     it('should require password field', () => {
       // Arrange
       const userSecretControl = component.form.get('userSecret');
-      
+
       // Act & Assert
       userSecretControl?.setValue('');
       expect(userSecretControl?.errors?.['required']).toBeTruthy();
-      
+
       userSecretControl?.setValue('password123');
       expect(userSecretControl?.errors?.['required']).toBeFalsy();
     });
+
+    it('should build error summary and focus first invalid field', fakeAsync(() => {
+      component.form.patchValue({ email: 'invalid', userSecret: '' });
+      spyOn(component as any, 'focusFirstInvalidField');
+      component.onSubmit();
+      tick();
+      expect(component.showErrorSummary).toBeTrue();
+      expect((component as any).focusFirstInvalidField).toHaveBeenCalled();
+    }));
   });
 
   describe('LoginService Integration', () => {
@@ -153,15 +162,15 @@ describe('LoginFormComponent', () => {
       spyOn(loginService, 'performLogin').and.returnValue(of(mockLoginResponse));
       spyOn(loginService, 'handleLoginSuccess');
       component.form.patchValue(validLoginData);
-      
+
       // Act
       component.onSubmit();
       tick();
-      
+
       // Assert
       expect(loginService.performLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password1!'
       }, component.urlApi);
       expect(loginService.handleLoginSuccess).toHaveBeenCalledWith(mockLoginResponse);
       verifyNoAlertsShown(spies);
@@ -175,21 +184,19 @@ describe('LoginFormComponent', () => {
         statusText: 'Unauthorized'
       });
       spyOn(loginService, 'performLogin').and.returnValue(throwError(() => errorResponse));
-      spyOn(loginService, 'handleLoginError');
-      spyOn(loginValidationService, 'resetPasswordField');
       component.form.patchValue(validLoginData);
-      
+
       // Act
       component.onSubmit();
       tick();
-      
+
       // Assert
       expect(loginService.performLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password1!'
       }, component.urlApi);
-      expect(loginService.handleLoginError).toHaveBeenCalledWith(errorResponse);
-      expect(loginValidationService.resetPasswordField).toHaveBeenCalledWith(component.form);
+      expect(component.emailError).toBe('Email ou mot de passe incorrect');
+      expect(component.passwordError).toBe('Email ou mot de passe incorrect');
       verifyNoAlertsShown(spies);
     }));
   });
@@ -203,15 +210,15 @@ describe('LoginFormComponent', () => {
         statusText: 'Unauthorized'
       });
       spyOn(loginService, 'performLogin').and.returnValue(throwError(() => errorResponse));
-      spyOn(loginService, 'handleLoginError');
       component.form.patchValue(validLoginData);
-      
+
       // Act
       component.onSubmit();
       tick();
-      
+
       // Assert
-      expect(loginService.handleLoginError).toHaveBeenCalledWith(errorResponse);
+      expect(component.emailError).toBe('Email ou mot de passe incorrect');
+      expect(component.passwordError).toBe('Email ou mot de passe incorrect');
       verifyNoAlertsShown(spies);
     }));
 
@@ -223,15 +230,14 @@ describe('LoginFormComponent', () => {
         statusText: 'Network Error'
       });
       spyOn(loginService, 'performLogin').and.returnValue(throwError(() => networkError));
-      spyOn(loginService, 'handleLoginError');
       component.form.patchValue(validLoginData);
-      
+
       // Act
       component.onSubmit();
       tick();
-      
+
       // Assert
-      expect(loginService.handleLoginError).toHaveBeenCalledWith(networkError);
+      expect(component.apiError).toBe('Impossible de contacter le serveur');
       verifyNoAlertsShown(spies);
     }));
 
@@ -243,15 +249,14 @@ describe('LoginFormComponent', () => {
         statusText: 'OK'
       });
       spyOn(loginService, 'performLogin').and.returnValue(throwError(() => parseError));
-      spyOn(loginService, 'handleLoginError');
       component.form.patchValue(validLoginData);
-      
+
       // Act
       component.onSubmit();
       tick();
-      
+
       // Assert
-      expect(loginService.handleLoginError).toHaveBeenCalledWith(parseError);
+      expect(component.apiError).toBe('Erreur de connexion inconnue');
       verifyNoAlertsShown(spies);
     }));
 
@@ -263,15 +268,14 @@ describe('LoginFormComponent', () => {
         statusText: 'OK'
       });
       spyOn(loginService, 'performLogin').and.returnValue(throwError(() => parseErrorWithoutToken));
-      spyOn(loginService, 'handleLoginError');
       component.form.patchValue(validLoginData);
-      
+
       // Act
       component.onSubmit();
       tick();
-      
+
       // Assert
-      expect(loginService.handleLoginError).toHaveBeenCalledWith(parseErrorWithoutToken);
+      expect(component.apiError).toBe('Erreur de connexion inconnue');
       verifyNoAlertsShown(spies);
     }));
   });
@@ -282,15 +286,15 @@ describe('LoginFormComponent', () => {
       spyOn(loginService, 'performLogin').and.returnValue(of(mockLoginResponse));
       spyOn(loginService, 'handleLoginSuccess');
       component.form.patchValue(validLoginData);
-      
+
       // Act
       component.onSubmit();
       tick();
-      
+
       // Assert
       expect(loginService.performLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password1!'
       }, component.urlApi);
       expect(loginService.handleLoginSuccess).toHaveBeenCalledWith(mockLoginResponse);
       verifyNoAlertsShown(spies);
@@ -304,20 +308,106 @@ describe('LoginFormComponent', () => {
         statusText: 'Internal Server Error'
       });
       spyOn(loginService, 'performLogin').and.returnValue(throwError(() => errorResponse));
-      spyOn(loginService, 'handleLoginError');
       component.form.patchValue(validLoginData);
-      
+
       // Act
       component.onSubmit();
       tick();
-      
+
       // Assert
       expect(loginService.performLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password1!'
       }, component.urlApi);
-      expect(loginService.handleLoginError).toHaveBeenCalledWith(errorResponse);
+      expect(component.apiError).toBe('Erreur interne du serveur');
       verifyNoAlertsShown(spies);
+    }));
+  });
+
+  describe('Confirm and Router branches (mocked at service level)', () => {
+    it('should hit both success and error paths for performLogin', fakeAsync(() => {
+      const successResponse = mockLoginResponse;
+      const errorResponse = new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' });
+
+      spyOn(loginService, 'performLogin').and.returnValues(of(successResponse), throwError(() => errorResponse));
+      spyOn(loginService, 'handleLoginSuccess');
+
+      component.form.patchValue({ email: 'test@example.com', userSecret: 'Password1!' });
+      component.onSubmit();
+      tick();
+      expect(loginService.handleLoginSuccess).toHaveBeenCalledWith(successResponse);
+
+      component.onSubmit();
+      tick();
+      expect(component.emailError).toBe('Email ou mot de passe incorrect');
+    }));
+  });
+
+  describe('Helpers', () => {
+    it('should compose consolidated password error text', () => {
+      const ctrl = component.form.get('userSecret');
+      ctrl?.markAsTouched();
+      ctrl?.setErrors({ minLength: true, lowercase: true, uppercase: true, number: true, special: true });
+      const text = component.getPasswordErrorText();
+      expect(text).toContain('Le mot de passe doit contenir');
+    });
+
+    it('should navigate back to home on goBack', () => {
+      const router = TestBed.inject(Router);
+      const spyNav = spyOn((component as any).router, 'navigate');
+      component.goBack();
+      expect(spyNav).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should return empty password error when control untouched', () => {
+      const ctrl = component.form.get('userSecret');
+      ctrl?.setErrors({ minLength: true });
+      // untouched → no message
+      const text = component.getPasswordErrorText();
+      expect(text).toBe('');
+    });
+
+    it('should return empty password error when no errors', () => {
+      const ctrl = component.form.get('userSecret');
+      ctrl?.markAsTouched();
+      ctrl?.setErrors(null);
+      const text = component.getPasswordErrorText();
+      expect(text).toBe('');
+    });
+
+    it('should compose message with a single constraint', () => {
+      const ctrl = component.form.get('userSecret');
+      ctrl?.markAsTouched();
+      ctrl?.setErrors({ special: true });
+      const text = component.getPasswordErrorText();
+      expect(text).toContain('un caractère spécial');
+    });
+  });
+
+  describe('Error summary variants', () => {
+    it('should build summary with only email invalid', fakeAsync(() => {
+      const emailCtrl = component.form.get('email');
+      emailCtrl?.setValue('invalid');
+      const pwdCtrl = component.form.get('userSecret');
+      pwdCtrl?.setValue('Password1!');
+      component.onSubmit();
+      tick();
+      expect(component.showErrorSummary).toBeTrue();
+      expect(component.errorSummaryItems.length).toBeGreaterThan(0);
+      expect(component.errorSummaryItems.some(i => i.id === 'email')).toBeTrue();
+      expect(component.errorSummaryItems.some(i => i.id === 'userSecret')).toBeFalse();
+    }));
+
+    it('should build summary with only password invalid', fakeAsync(() => {
+      const emailCtrl = component.form.get('email');
+      emailCtrl?.setValue('valid@email.com');
+      const pwdCtrl = component.form.get('userSecret');
+      pwdCtrl?.setValue('short');
+      component.onSubmit();
+      tick();
+      expect(component.showErrorSummary).toBeTrue();
+      expect(component.errorSummaryItems.some(i => i.id === 'email')).toBeFalse();
+      expect(component.errorSummaryItems.some(i => i.id === 'userSecret')).toBeTrue();
     }));
   });
 });

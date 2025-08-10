@@ -69,6 +69,23 @@ describe('LoginErrorHandlerService', () => {
       const error = { status: 999, error: null } as HttpErrorResponse;
       expect(service.getLoginErrorMessage(error)).toBe('Erreur de connexion inconnue');
     });
+
+    it('should return server message when provided for unknown status', () => {
+      const error = { status: 999, error: { message: 'Server says no' } } as HttpErrorResponse;
+      expect(service.getLoginErrorMessage(error)).toBe('Server says no');
+    });
+  });
+
+  describe('robustness for malformed/empty errors', () => {
+    it('should handle null/undefined error objects gracefully', () => {
+      expect(service.getLoginErrorMessage({} as any)).toBe('Erreur de connexion inconnue');
+      expect(service.extractTokenFromErrorResponse({} as any)).toBeNull();
+    });
+
+    it('should handle non-JSON error.text strings', () => {
+      const error = { error: { text: 'not json' } } as HttpErrorResponse;
+      expect(service.extractTokenFromErrorResponse(error)).toBeNull();
+    });
   });
 
   describe('extractTokenFromErrorResponse', () => {

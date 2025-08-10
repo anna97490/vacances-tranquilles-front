@@ -40,7 +40,6 @@ describe('LoginFormConfigService', () => {
     it('should have email validator on email field', () => {
       const emailControl = form.get('email');
       emailControl?.setValue('invalid-email');
-      
       expect(emailControl?.hasError('email')).toBeTruthy();
     });
 
@@ -61,7 +60,7 @@ describe('LoginFormConfigService', () => {
     it('should accept valid email and password', () => {
       form.patchValue({
         email: 'test@example.com',
-        userSecret: 'password123'
+        userSecret: 'Password1!'
       });
       
       expect(form.valid).toBeTruthy();
@@ -76,14 +75,14 @@ describe('LoginFormConfigService', () => {
     it('should create payload with form values', () => {
       form.patchValue({
         email: 'test@example.com',
-        userSecret: 'password123'
+        userSecret: 'Password1!'
       });
       
       const payload = service.createLoginPayload(form);
       
       expect(payload).toEqual({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password1!'
       });
     });
 

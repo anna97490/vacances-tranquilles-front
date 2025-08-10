@@ -24,7 +24,7 @@ describe('RegisterApiBuilderService', () => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(RegisterApiBuilderService);
     fb = TestBed.inject(FormBuilder);
-    
+
     form = fb.group({
       firstName: [mockFormData.firstName],
       lastName: [mockFormData.lastName],
@@ -53,7 +53,7 @@ describe('RegisterApiBuilderService', () => {
 
     it('should build correct config for particulier', () => {
       const config = service.buildApiConfig(form, false, apiUrl);
-      
+
       expect(config.url).toBe(`${apiUrl}/auth/register/client`);
       expect(config.payload).toEqual({
         firstName: 'Jean',
@@ -71,7 +71,7 @@ describe('RegisterApiBuilderService', () => {
 
     it('should build correct config for prestataire', () => {
       const config = service.buildApiConfig(form, true, apiUrl);
-      
+
       expect(config.url).toBe(`${apiUrl}/auth/register/provider`);
       expect(config.payload).toEqual({
         firstName: 'Jean',
@@ -93,11 +93,11 @@ describe('RegisterApiBuilderService', () => {
         'http://localhost:8080/api/v1',
         'https://prod-api.company.com/v2'
       ];
-      
+
       testUrls.forEach(url => {
         const config = service.buildApiConfig(form, false, url);
         expect(config.url).toBe(`${url}/auth/register/client`);
-        
+
         const configPrestataire = service.buildApiConfig(form, true, url);
         expect(configPrestataire.url).toBe(`${url}/auth/register/provider`);
       });
@@ -116,9 +116,9 @@ describe('RegisterApiBuilderService', () => {
         companyName: [''],
         siretSiren: ['']
       });
-      
+
       const config = service.buildApiConfig(emptyForm, false, apiUrl);
-      
+
       expect(config.payload).toEqual({
         firstName: '',
         lastName: '',
@@ -138,7 +138,7 @@ describe('RegisterApiBuilderService', () => {
       } as any;
 
       const result = service.buildApiConfig(formWithNulls, false, 'http://test.com');
-      
+
       // Ajuster selon le comportement attendu
       expect(result.payload.email).toBeNull(); // ou toBeUndefined() selon l'implémentation
       expect(result.payload.firstName).toBeUndefined(); // ou toBeNull() selon l'implémentation
@@ -157,9 +157,9 @@ describe('RegisterApiBuilderService', () => {
         companyName: ['Société "Test" & Co.'],
         siretSiren: ['12345678901234']
       });
-      
+
       const config = service.buildApiConfig(specialForm, true, apiUrl);
-      
+
       expect(config.payload.firstName).toBe('Jean-François');
       expect(config.payload.lastName).toBe('O\'Connor');
       expect(config.payload.companyName).toBe('Société "Test" & Co.');
@@ -167,22 +167,21 @@ describe('RegisterApiBuilderService', () => {
 
     it('should preserve exact form values without transformation', () => {
       const testData = {
-        firstName: '  Jean  ', // with spaces
-        lastName: 'DUPONT', // uppercase
-        email: 'Jean.Dupont@EXAMPLE.COM', // mixed case
+        firstName: '  Jean  ',
+        lastName: 'DUPONT',
+        email: 'Jean.Dupont@EXAMPLE.COM',
         userSecret: 'Password123!',
-        phoneNumber: '01.23.45.67.89', // with dots
+        phoneNumber: '01.23.45.67.89',
         address: '123 RUE DE LA PAIX',
-        city: 'paris', // lowercase
+        city: 'paris',
         postalCode: '75000',
         companyName: 'Test Company Ltd.',
         siretSiren: '12345678901234'
       };
-      
+
       const testForm = fb.group(testData);
       const config = service.buildApiConfig(testForm, true, apiUrl);
-      
-      // Values should be preserved exactly as entered
+
       expect(config.payload.firstName).toBe('  Jean  ');
       expect(config.payload.lastName).toBe('DUPONT');
       expect(config.payload.email).toBe('Jean.Dupont@EXAMPLE.COM');
@@ -193,11 +192,10 @@ describe('RegisterApiBuilderService', () => {
       const incompleteForm = fb.group({
         firstName: ['Jean'],
         email: ['jean@test.com']
-        // Missing other required fields
       });
-      
+
       const config = service.buildApiConfig(incompleteForm, false, apiUrl);
-      
+
       expect(config.payload.firstName).toBe('Jean');
       expect(config.payload.email).toBe('jean@test.com');
       expect(config.payload.lastName).toBeUndefined();
@@ -223,12 +221,12 @@ describe('RegisterApiBuilderService', () => {
 
     it('should build payload with only specified fields', () => {
       const config = service.buildApiConfig(form, false, 'http://localhost:3000');
-      
+
       const expectedFields = [
         'firstName', 'lastName', 'email', 'password',
         'phoneNumber', 'address', 'city', 'postalCode'
       ];
-      
+
       const actualFields = Object.keys(config.payload);
       expect(actualFields).toEqual(expectedFields);
     });
@@ -236,10 +234,10 @@ describe('RegisterApiBuilderService', () => {
     it('should include company fields only for prestataire', () => {
       const particulierConfig = service.buildApiConfig(form, false, 'http://localhost:3000');
       const prestataireConfig = service.buildApiConfig(form, true, 'http://localhost:3000');
-      
+
       expect(particulierConfig.payload.hasOwnProperty('companyName')).toBeFalsy();
       expect(particulierConfig.payload.hasOwnProperty('siretSiren')).toBeFalsy();
-      
+
       expect(prestataireConfig.payload.hasOwnProperty('companyName')).toBeTruthy();
       expect(prestataireConfig.payload.hasOwnProperty('siretSiren')).toBeTruthy();
     });
@@ -247,14 +245,14 @@ describe('RegisterApiBuilderService', () => {
     it('should create new payload objects for each call', () => {
       const config1 = service.buildApiConfig(form, false, 'http://localhost:3000');
       const config2 = service.buildApiConfig(form, false, 'http://localhost:3000');
-      
-      expect(config1.payload).not.toBe(config2.payload); // Different object references
-      expect(config1.payload).toEqual(config2.payload); // Same content
+
+      expect(config1.payload).not.toBe(config2.payload);
+      expect(config1.payload).toEqual(config2.payload);
     });
 
     it('should handle concurrent calls correctly', () => {
       const results: any[] = [];
-      
+
       // Tester avec un pattern cohérent
       for (let i = 0; i < 10; i++) {
         const isProvider = i % 2 === 0; // Pattern alterné cohérent
@@ -262,7 +260,7 @@ describe('RegisterApiBuilderService', () => {
         const result = service.buildApiConfig(mockForm, isProvider, `http://api${i}.com`);
         results.push(result);
       }
-      
+
       results.forEach((result, index) => {
         const expectedPath = index % 2 === 0 ? 'provider' : 'client';
         expect(result.url).toContain(expectedPath);

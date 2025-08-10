@@ -45,18 +45,20 @@ export class HeaderComponent implements OnInit {
       path: '/messagerie'
     },
     {
-      label: 'Agenda',
-      icon: 'assets/icons/calendar_month_24dp_FFFFF.svg',
-      iconActive: 'assets/icons/calendar_FFA101.svg',
-      path: '/agenda'
-    },
-    {
       label: 'Assistance',
       icon: 'assets/icons/contact_support_24dp_FFFFF.svg',
       iconActive: 'assets/icons/contact_support_24dp_FFA101.svg',
       path: '/assistance'
     }
   ];
+
+  // Bouton de déconnexion
+  logoutItem = {
+    label: 'Se déconnecter',
+    icon: 'assets/icons/logout_24dp_FFFFFF.svg',
+    iconActive: 'assets/icons/logout_24dp_FFA101.svg',
+    action: 'logout'
+  };
 
   currentPath: string = '';
 
@@ -94,17 +96,15 @@ export class HeaderComponent implements OnInit {
    * Bascule l'état du menu mobile
    */
   toggleMobileMenu(): void {
-    console.log('Toggle mobile menu - Current state:', this.isMobileMenuOpen);
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    console.log('New state:', this.isMobileMenuOpen);
     this.toggleBodyScroll();
+    setTimeout(() => this.focusMobileMenu(), 0);
   }
 
   /**
    * Ferme le menu mobile
    */
   closeMobileMenu(): void {
-    console.log('Closing mobile menu');
     this.isMobileMenuOpen = false;
     this.toggleBodyScroll();
   }
@@ -120,6 +120,14 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  private focusMobileMenu(): void {
+    const menu = document.getElementById('mobile-menu');
+    if (this.isMobileMenuOpen && menu) {
+      menu.setAttribute('tabindex', '-1');
+      (menu as HTMLElement).focus();
+    }
+  }
+
   isActive(path: string): boolean {
     return this.currentPath === path;
   }
@@ -130,5 +138,28 @@ export class HeaderComponent implements OnInit {
       return item.iconActive;
     }
     return item.icon;
+  }
+
+  /**
+   * Gère le clic sur un élément du menu (dont le logout)
+   */
+  onMenuItemClick(item: any): void {
+    if (item.action === 'logout') {
+      this.logout();
+    } else {
+      this.closeMobileMenu();
+    }
+  }
+
+  /**
+   * Déconnecte l'utilisateur
+   */
+  logout(): void {
+    localStorage.clear();
+    this.closeMobileMenu();
+    this.router.navigate(['/home']);
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   }
 }
