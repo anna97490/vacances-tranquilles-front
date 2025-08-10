@@ -6,7 +6,7 @@ import { AuthStorageService } from '../login/auth-storage.service';
 })
 export class TokenValidatorService {
 
-  constructor(private authStorage: AuthStorageService) {}
+  constructor(private readonly authStorage: AuthStorageService) {}
 
   /**
    * Vérifie si le token est présent et valide

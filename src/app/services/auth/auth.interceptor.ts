@@ -25,7 +25,7 @@ export function authInterceptor(
     notificationService = inject(NotificationService);
   } catch (error) {
     // En cas d'erreur d'injection (par exemple dans les tests), on utilise des valeurs par défaut
-    console.warn('Injection context not available, using fallback');
+    console.warn('Injection context not available, using fallback', error);
     return next(request);
   }
 

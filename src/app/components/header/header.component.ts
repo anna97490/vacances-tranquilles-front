@@ -59,9 +59,9 @@ export class HeaderComponent implements OnInit {
   currentPath: string = '';
   
   constructor(
-    private router: Router, 
+    private readonly router: Router, 
     public location: Location,
-    private authStorage: AuthStorageService
+    private readonly authStorage: AuthStorageService
   ) {}
   
   ngOnInit(): void {
