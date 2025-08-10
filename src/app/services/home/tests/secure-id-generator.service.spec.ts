@@ -8,10 +8,10 @@ describe('SecureIdGeneratorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(SecureIdGeneratorService);
-    
+
     // Sauvegarder le crypto original
     originalCrypto = window.crypto;
-    
+
     // Supprimer tous les logs console pour chaque test
     spyOn(console, 'warn').and.stub();
     spyOn(console, 'error').and.stub();
@@ -301,7 +301,6 @@ describe('SecureIdGeneratorService', () => {
       );
     });
 
-    // Test edge case pour Math.ceil dans generateCryptoSubtleFallback
     it('should handle odd lengths correctly in crypto subtle method', async () => {
       const mockCrypto = {
         subtle: {
@@ -439,7 +438,7 @@ describe('SecureIdGeneratorService', () => {
       // Test avec toutes les propriétés définies
       delete (window as any).crypto;
 
-      // Forcer des valeurs spécifiques pour couvrir les branches || 
+      // Forcer des valeurs spécifiques pour couvrir les branches ||
       const originalHardware = navigator.hardwareConcurrency;
       const originalTouch = navigator.maxTouchPoints;
 

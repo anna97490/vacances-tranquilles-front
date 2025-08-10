@@ -11,7 +11,6 @@ import { ServiceCategory } from '../../models/Service';
 import { ServicesService } from '../../services/services/services.service';
 import { Router } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { HeaderComponent } from '../../components/header/header.component';
 
 @Component({
   selector: 'app-service-search',
@@ -28,7 +27,6 @@ import { HeaderComponent } from '../../components/header/header.component';
     MatMenuModule,
     MatInputModule,
     FooterComponent,
-    HeaderComponent
   ]
 })
 

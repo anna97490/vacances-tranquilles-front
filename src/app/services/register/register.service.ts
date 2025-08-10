@@ -39,7 +39,6 @@ export class RegisterService {
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
   handleRegistrationSuccess(response: HttpResponse<any>, isPrestataire: boolean): void {
-    this.showSuccessMessage(isPrestataire);
     this.redirectToLogin();
   }
 
@@ -47,19 +46,20 @@ export class RegisterService {
    * Gère les erreurs d'inscription
    * @param error L'erreur HTTP
    * @param isPrestataire Si l'utilisateur est un prestataire
+   * @returns Le message d'erreur à afficher
    */
-  handleRegistrationError(error: HttpErrorResponse, isPrestataire: boolean): void {
+  handleRegistrationError(error: HttpErrorResponse, isPrestataire: boolean): string | null {
     console.error('Erreur d\'inscription:', error);
 
     // Gérer les "fausses erreurs" (succès avec erreur de parsing)
     if (this.errorHandler.isSuccessfulButParseFailed(error)) {
       this.handleParseErrorButSuccess(isPrestataire);
-      return;
+      return null;
     }
 
     // Gérer les vraies erreurs
     const errorMessage = this.errorHandler.getRegistrationErrorMessage(error);
-    this.showErrorMessage(errorMessage);
+    return errorMessage;
   }
 
   /**
@@ -67,7 +67,6 @@ export class RegisterService {
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
   private handleParseErrorButSuccess(isPrestataire: boolean): void {
-    this.showSuccessMessage(isPrestataire);
     this.redirectToLogin();
   }
 
@@ -75,23 +74,22 @@ export class RegisterService {
    * Affiche un message de succès
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
-  private showSuccessMessage(isPrestataire: boolean): void {
-    const userType = this.userTypeDetector.getUserTypeString(isPrestataire);
-    alert(`Inscription ${userType} réussie ! Vous pouvez maintenant vous connecter.`);
-  }
+  // Plus de message de succès; on redirige immédiatement
 
   /**
    * Affiche un message d'erreur
    * @param message Le message d'erreur
    */
   private showErrorMessage(message: string): void {
-    alert('Erreur lors de l\'inscription : ' + message);
+    console.error('Erreur lors de l\'inscription : ' + message);
+    // Ici vous pourriez intégrer un service de notification comme MatSnackBar
   }
 
   /**
    * Redirige vers la page de connexion
    */
   private redirectToLogin(): void {
+    /* istanbul ignore next */
     this.router.navigate(['/auth/login']);
   }
 }

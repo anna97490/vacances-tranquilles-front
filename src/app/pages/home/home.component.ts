@@ -2,7 +2,7 @@ import { Component, HostBinding, OnInit, OnDestroy } from '@angular/core';
 import { HomeContent } from './../../models/Home';
 import { HomeContentService } from './../../services/home-content.service';
 import { HomeInitializationService } from './../../services/home/home-initilization.service';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -10,7 +10,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterModule, MatIconModule, FooterComponent],
+  imports: [CommonModule, RouterModule, MatIconModule, FooterComponent],
   templateUrl: './home.component.html',
   styleUrls: [
     './home.component.scss',           // Styles de base (commun)
@@ -21,7 +21,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
 export class HomeComponent implements OnInit, OnDestroy {
   content!: HomeContent;
   mainLogo = 'assets/pictures/logo.png';
-  
+
   @HostBinding('style.display') display = 'block';
   @HostBinding('style.height') height = '100%';
 
@@ -74,7 +74,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       btnPrestataire: 'Inscription Prestataires',
       btnParticulier: 'Inscription Particuliers',
       btnConnexion: 'Connexion',
-      featuresTitle: 'Pourquoi Nous Choisir',
+      featuresTitle: 'Pourquoi nous choisir',
       iconType: 'custom',
       mainIcon: 'assets/icons/beach_access_FFA101.svg',
       features: []

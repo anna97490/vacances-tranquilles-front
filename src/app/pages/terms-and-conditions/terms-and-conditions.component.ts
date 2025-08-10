@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// Modifiez ces imports pour importer des objets et non des types
 import { CGU_DATA } from './../../services/terms-and-conditions/cgu';
 import { CGV_DATA } from './../../services/terms-and-conditions/cgv';
 import { LocationService } from './../../services/terms-and-conditions/location.service';
@@ -47,7 +46,6 @@ export class TermsAndConditionsComponent {
     // Retourner un objet vide mais avec la structure attendue
     return { title: '', date: '', sections: [] };
   }
-  // Ajouter cette méthode à votre classe TermsAndConditionsComponent
   isArray(content: string | string[]): boolean {
     return Array.isArray(content);
   }

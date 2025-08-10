@@ -13,7 +13,7 @@ export class HomeContentService {
       btnPrestataire: 'Inscription Prestataires',
       btnParticulier: 'Inscription Particuliers',
       btnConnexion: 'Connexion',
-      featuresTitle: 'Pourquoi Nous Choisir',
+      featuresTitle: 'Pourquoi nous choisir',
       features: [
         {
           iconType: 'custom',
