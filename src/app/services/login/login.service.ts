@@ -94,7 +94,6 @@ export class LoginService {
   /**
    * Vérifie si on est dans un environnement de test
    */
-  /* istanbul ignore next */
   private isTestEnvironment(): boolean {
     return typeof window !== 'undefined' && (
       // Détection Karma/Jasmine

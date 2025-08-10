@@ -11,7 +11,7 @@ describe('RegisterValidationService', () => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(RegisterValidationService);
     fb = TestBed.inject(FormBuilder);
-    
+
     form = fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -47,7 +47,7 @@ describe('RegisterValidationService', () => {
         city: 'Paris',
         postalCode: '75000'
       });
-      
+
       expect(service.isFormValid(form)).toBeTruthy();
     });
 
@@ -57,7 +57,7 @@ describe('RegisterValidationService', () => {
         lastName: 'Dupont',
         email: 'invalid-email'
       });
-      
+
       expect(service.isFormValid(form)).toBeFalsy();
     });
   });
@@ -75,7 +75,7 @@ describe('RegisterValidationService', () => {
       });
       form.get('firstName')?.setValue('');
       form.get('firstName')?.markAsTouched();
-      
+
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Veuillez remplir tous les champs obligatoires : Prénom');
     });
@@ -92,7 +92,7 @@ describe('RegisterValidationService', () => {
       });
       form.get('lastName')?.setValue('');
       form.get('lastName')?.markAsTouched();
-      
+
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Veuillez remplir tous les champs obligatoires : Nom');
     });
@@ -109,7 +109,7 @@ describe('RegisterValidationService', () => {
       });
       form.get('email')?.setValue('');
       form.get('email')?.markAsTouched();
-      
+
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Veuillez remplir tous les champs obligatoires : Email');
     });
@@ -126,15 +126,15 @@ describe('RegisterValidationService', () => {
       });
       form.get('email')?.setValue('invalid-email');
       form.get('email')?.setErrors({ emailFormat: true });
-      
+
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Format d\'email invalide');
     });
 
     it('should return password required error', () => {
-      form.patchValue({ 
-        firstName: 'Jean', 
-        lastName: 'Dupont', 
+      form.patchValue({
+        firstName: 'Jean',
+        lastName: 'Dupont',
         email: 'jean@test.com',
         phoneNumber: '0123456789',
         address: '123 rue Test',
@@ -143,15 +143,15 @@ describe('RegisterValidationService', () => {
       });
       form.get('userSecret')?.setValue('');
       form.get('userSecret')?.markAsTouched();
-      
+
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Veuillez remplir tous les champs obligatoires : Mot de passe');
     });
 
     it('should return password minlength error', () => {
-      form.patchValue({ 
-        firstName: 'Jean', 
-        lastName: 'Dupont', 
+      form.patchValue({
+        firstName: 'Jean',
+        lastName: 'Dupont',
         email: 'jean@test.com',
         phoneNumber: '0123456789',
         address: '123 rue Test',
@@ -161,15 +161,15 @@ describe('RegisterValidationService', () => {
       // Simuler l'erreur minLength directement et éviter l'état "champ manquant"
       form.get('userSecret')?.setValue('x');
       form.get('userSecret')?.setErrors({ minLength: true });
-      
+
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Le mot de passe doit contenir au moins 8 caractères');
     });
 
     it('should return password pattern error', () => {
-      form.patchValue({ 
-        firstName: 'Jean', 
-        lastName: 'Dupont', 
+      form.patchValue({
+        firstName: 'Jean',
+        lastName: 'Dupont',
         email: 'jean@test.com',
         phoneNumber: '0123456789',
         address: '123 rue Test',
@@ -179,7 +179,7 @@ describe('RegisterValidationService', () => {
       // Simuler les erreurs de complexité et éviter l'état "champ manquant"
       form.get('userSecret')?.setValue('X');
       form.get('userSecret')?.setErrors({ lowercase: true, uppercase: true, number: true, special: true });
-      
+
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Le mot de passe doit contenir au moins une minuscule');
     });
@@ -195,7 +195,7 @@ describe('RegisterValidationService', () => {
         city: 'Paris'
       });
       form.get('postalCode')?.setValue('123');
-      
+
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Le code postal doit contenir 5 chiffres');
     });
@@ -212,11 +212,10 @@ describe('RegisterValidationService', () => {
         postalCode: '75000',
         siretSiren: '12345678901234'
       });
-      
-      // Add validators for prestataire et simuler erreur required sans déclencher "champs manquants"
+
       form.get('companyName')?.setValue('X');
       form.get('companyName')?.setErrors({ required: true });
-      
+
       const message = service.getValidationErrorMessage(form, true);
       expect(message).toBe('Le nom de l\'entreprise est requis');
     });
@@ -233,11 +232,11 @@ describe('RegisterValidationService', () => {
         postalCode: '75000',
         companyName: 'Test Company'
       });
-      
+
       // Simuler erreur required sans déclencher "champs manquants"
       form.get('siretSiren')?.setValue('X');
       form.get('siretSiren')?.setErrors({ required: true });
-      
+
       const message = service.getValidationErrorMessage(form, true);
       expect(message).toBe('Le numéro SIRET/SIREN est requis');
     });
@@ -254,14 +253,14 @@ describe('RegisterValidationService', () => {
         postalCode: '75000',
         companyName: 'Test Company'
       });
-      
+
       form.get('siretSiren')?.setValidators([
         Validators.required,
         Validators.pattern(/^\d{14}$/)
       ]);
       form.get('siretSiren')?.updateValueAndValidity();
       form.get('siretSiren')?.setValue('123');
-      
+
       const message = service.getValidationErrorMessage(form, true);
       expect(message).toBe('Le SIRET/SIREN doit contenir 14 chiffres');
     });
@@ -277,10 +276,9 @@ describe('RegisterValidationService', () => {
         city: 'Paris',
         postalCode: '75000'
       });
-      
-      // Force a custom error
+
       form.get('email')?.setErrors({ 'customError': true });
-      
+
       const message = service.getValidationErrorMessage(form, false);
       expect(message).toBe('Formulaire invalide - vérifiez vos données');
     });
@@ -290,14 +288,14 @@ describe('RegisterValidationService', () => {
     it('should return field-error class for invalid touched field', () => {
       form.get('email')?.setValue('');
       form.get('email')?.markAsTouched();
-      
+
       const classes = service.getFieldClasses(form, 'email');
       expect(classes).toBe('field-error');
     });
 
     it('should return empty string for valid field', () => {
       form.get('email')?.setValue('valid@email.com');
-      
+
       const classes = service.getFieldClasses(form, 'email');
       expect(classes).toBe('');
     });
@@ -309,8 +307,7 @@ describe('RegisterValidationService', () => {
 
     it('should return empty string for invalid but untouched field', () => {
       form.get('email')?.setValue('');
-      // Field is not touched
-      
+
       const classes = service.getFieldClasses(form, 'email');
       expect(classes).toBe('');
     });
@@ -320,9 +317,9 @@ describe('RegisterValidationService', () => {
     it('should reset password field value and touch state', () => {
       form.get('userSecret')?.setValue('test-password');
       form.get('userSecret')?.markAsTouched();
-      
+
       service.resetPasswordField(form);
-      
+
       expect(form.get('userSecret')?.value).toBe('');
       expect(form.get('userSecret')?.untouched).toBeTruthy();
     });
@@ -331,20 +328,17 @@ describe('RegisterValidationService', () => {
       const formWithoutPassword = fb.group({
         email: ['', Validators.required]
       });
-      
+
       expect(() => service.resetPasswordField(formWithoutPassword)).not.toThrow();
     });
   });
 
   describe('private methods coverage', () => {
-    // Extracted to avoid deep nesting
     function runTestCase(controls: any, field: string, error: string, expected: string, service: any) {
-      // Reset all controls
       Object.keys(controls).forEach(key => {
         controls[key].setErrors(null);
       });
 
-      // Set specific error
       controls[field].setErrors({ [error]: true });
 
       const result = service.checkCommonFieldErrors(controls);
@@ -353,8 +347,7 @@ describe('RegisterValidationService', () => {
 
     it('should check all common field errors', () => {
       const controls = form.controls;
-      
-      // Test each field error individually
+
       const testCases = [
         { field: 'firstName', error: 'required', expected: 'Le prénom est requis' },
         { field: 'lastName', error: 'required', expected: 'Le nom est requis' },
@@ -389,15 +382,14 @@ describe('RegisterValidationService', () => {
         city: 'Paris',
         postalCode: '75000'
       });
-      
+
       const result = (service as any).checkCommonFieldErrors(form.controls);
       expect(result).toBeNull();
     });
 
     it('should check prestataire field errors', () => {
       const controls = form.controls;
-      
-      // Add prestataire validators
+
       controls['companyName'].setValidators([Validators.required]);
       controls['siretSiren'].setValidators([
         Validators.required,
@@ -405,18 +397,17 @@ describe('RegisterValidationService', () => {
       ]);
       controls['companyName'].updateValueAndValidity();
       controls['siretSiren'].updateValueAndValidity();
-      
-      // Test company name required
+
       controls['companyName'].setErrors({ 'required': true });
       let result = (service as any).checkPrestataireErrors(controls, true);
       expect(result).toBe('Le nom de l\'entreprise est requis');
-      
+
       // Test SIRET required
       controls['companyName'].setErrors(null);
       controls['siretSiren'].setErrors({ 'required': true });
       result = (service as any).checkPrestataireErrors(controls, true);
       expect(result).toBe('Le numéro SIRET/SIREN est requis');
-      
+
       // Test SIRET pattern
       controls['siretSiren'].setErrors({ 'pattern': true });
       result = (service as any).checkPrestataireErrors(controls, true);
@@ -426,7 +417,7 @@ describe('RegisterValidationService', () => {
     it('should return null for prestataire errors when isPrestataire is false', () => {
       const controls = form.controls;
       controls['companyName'].setErrors({ 'required': true });
-      
+
       const result = (service as any).checkPrestataireErrors(controls, false);
       expect(result).toBeNull();
     });
@@ -435,7 +426,7 @@ describe('RegisterValidationService', () => {
       const controls = form.controls;
       controls['companyName'].setErrors(null);
       controls['siretSiren'].setErrors(null);
-      
+
       const result = (service as any).checkPrestataireErrors(controls, true);
       expect(result).toBeNull();
     });

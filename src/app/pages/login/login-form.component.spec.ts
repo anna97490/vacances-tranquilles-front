@@ -5,9 +5,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { of, throwError } from 'rxjs';
@@ -31,7 +31,7 @@ class MockHomeComponent { }
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
   let fixture: ComponentFixture<LoginFormComponent>;
-  let httpTestingController: HttpTestingController;
+
 
   // Services
   let loginValidationService: LoginValidationService;
@@ -67,13 +67,8 @@ describe('LoginFormComponent', () => {
         MatInputModule,
         MatButtonModule,
         MatIconModule,
-        RouterTestingModule.withRoutes([
-          { path: 'home', component: MockHomeComponent }
-        ]),
-        NoopAnimationsModule,
-        HttpClientTestingModule
+        NoopAnimationsModule
       ],
-      declarations: [MockHomeComponent],
       providers: [
         FormBuilder,
         ConfigService,
@@ -83,13 +78,16 @@ describe('LoginFormComponent', () => {
         AuthStorageService,
         LoginErrorHandlerService,
         LoginNavigationService,
-        { provide: 'APP_CONFIG', useValue: mockAppConfig }
+        { provide: 'APP_CONFIG', useValue: mockAppConfig },
+        provideRouter([
+          { path: 'home', component: MockHomeComponent }
+        ]),
+        provideHttpClient(withFetch())
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginFormComponent);
     component = fixture.componentInstance;
-    httpTestingController = TestBed.inject(HttpTestingController);
 
     // Injection des services
     loginValidationService = TestBed.inject(LoginValidationService);
@@ -99,9 +97,7 @@ describe('LoginFormComponent', () => {
     spies = createWindowSpies();
   });
 
-  afterEach(() => {
-    httpTestingController.verify();
-  });
+
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -357,8 +353,7 @@ describe('LoginFormComponent', () => {
     });
 
     it('should navigate back to home on goBack', () => {
-      const router = TestBed.inject(RouterTestingModule);
-      const routerNav = TestBed.inject<any>(RouterTestingModule as any);
+      const router = TestBed.inject(Router);
       const spyNav = spyOn((component as any).router, 'navigate');
       component.goBack();
       expect(spyNav).toHaveBeenCalledWith(['/home']);

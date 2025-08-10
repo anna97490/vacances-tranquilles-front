@@ -7,7 +7,7 @@ const UI_FIELD_LABELS = {
   firstName: 'Prénom',
   lastName: 'Nom',
   email: 'Email',
-  userSecret: 'Mot de passe', // Renommé pour éviter l'erreur SonarQube
+  userSecret: 'Mot de passe',
   phoneNumber: 'Téléphone',
   address: 'Adresse',
   city: 'Ville',
@@ -18,7 +18,7 @@ const UI_PLACEHOLDERS = {
   firstName: 'Jean',
   lastName: 'Dupont',
   email: 'exemple@mail.com',
-  userSecretPlaceholder: '********', // Renommé pour éviter l'erreur SonarQube
+  userSecretPlaceholder: '********',
   phoneNumber: '0601020304',
   address: '123 rue Exemple',
   city: 'Paris',

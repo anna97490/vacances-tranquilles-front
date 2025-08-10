@@ -7,7 +7,6 @@ describe('ScriptLoaderService', () => {
   let mockRenderer: jasmine.SpyObj<Renderer2>;
   let mockRendererFactory: jasmine.SpyObj<RendererFactory2>;
 
-  // Helper functions to reduce nesting
   const createMockScript = () => ({
     onload: null as any,
     onerror: null as any,
@@ -68,7 +67,7 @@ describe('ScriptLoaderService', () => {
   beforeEach(() => {
     const rendererSpy = jasmine.createSpyObj('Renderer2', ['createElement', 'appendChild']);
     const rendererFactorySpy = jasmine.createSpyObj('RendererFactory2', ['createRenderer']);
-    
+
     rendererFactorySpy.createRenderer.and.returnValue(rendererSpy);
 
     TestBed.configureTestingModule({
@@ -239,10 +238,10 @@ describe('ScriptLoaderService', () => {
     });
 
     it('should only remove scripts with valid parentNode', () => {
-      const validScript = { 
-        parentNode: { 
-          removeChild: jasmine.createSpy('removeChild') 
-        } 
+      const validScript = {
+        parentNode: {
+          removeChild: jasmine.createSpy('removeChild')
+        }
       };
       const invalidScript1 = { parentNode: null };
       const invalidScript2 = { parentNode: undefined };
@@ -293,7 +292,7 @@ describe('ScriptLoaderService', () => {
     it('should load scripts and track them for cleanup', async () => {
       const scripts = ['script1.js', 'script2.js'];
       const mockScripts = scripts.map(() => createMockScript());
-      
+
       let createCallCount = 0;
       mockRenderer.createElement.and.callFake(() => {
         return mockScripts[createCallCount++];
@@ -308,16 +307,16 @@ describe('ScriptLoaderService', () => {
       await Promise.all(loadPromises);
 
       expect((service as any).scriptElements.length).toBe(2);
-      
+
       service.cleanupScripts();
-      
+
       expect((service as any).scriptElements.length).toBe(0);
     });
 
     it('should handle mixed success and error scenarios', async () => {
       const successScript = createMockScript();
       const errorScript = createMockScript();
-      
+
       let callCount = 0;
       mockRenderer.createElement.and.callFake(() => {
         return callCount++ === 0 ? successScript : errorScript;
@@ -336,13 +335,13 @@ describe('ScriptLoaderService', () => {
     it('should handle script elements with various states', async () => {
       const scriptWithParent = createMockScript();
       const scriptWithoutParent = createMockScript();
-      
+
       const mockParentNode = {
         removeChild: jasmine.createSpy('removeChild').and.callFake(() => {
           scriptWithParent.parentNode = null;
         })
       };
-      
+
       scriptWithParent.parentNode = mockParentNode;
       scriptWithoutParent.parentNode = null;
 
@@ -358,7 +357,7 @@ describe('ScriptLoaderService', () => {
     it('should handle scripts array modification during cleanup', () => {
       const script1 = { parentNode: { removeChild: jasmine.createSpy() } };
       const script2 = { parentNode: { removeChild: jasmine.createSpy() } };
-      
+
       script1.parentNode.removeChild.and.callFake(() => {
         // Simuler une modification du tableau pendant le cleanup
         (service as any).scriptElements.push({ parentNode: null });
@@ -395,10 +394,10 @@ describe('ScriptLoaderService', () => {
     });
 
     it('should handle DOM manipulation errors during cleanup', () => {
-      const script = { 
-        parentNode: { 
-          removeChild: jasmine.createSpy().and.throwError('DOM error') 
-        } 
+      const script = {
+        parentNode: {
+          removeChild: jasmine.createSpy().and.throwError('DOM error')
+        }
       };
 
       (service as any).scriptElements = [script];
@@ -415,7 +414,7 @@ describe('ScriptLoaderService', () => {
 
       const promise = service.addScript('tracked.js');
       simulateScriptLoad(mockScript);
-      
+
       await promise;
 
       expect((service as any).scriptElements).toContain(mockScript);

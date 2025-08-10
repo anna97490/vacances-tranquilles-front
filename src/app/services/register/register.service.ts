@@ -67,7 +67,6 @@ export class RegisterService {
    * @param isPrestataire Si l'utilisateur est un prestataire
    */
   private handleParseErrorButSuccess(isPrestataire: boolean): void {
-    /* istanbul ignore next */
     this.redirectToLogin();
   }
 

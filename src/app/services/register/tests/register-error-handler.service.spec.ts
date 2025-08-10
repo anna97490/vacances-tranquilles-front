@@ -162,6 +162,10 @@ describe('RegisterErrorHandlerService', () => {
   });
 
   describe('extractTokenFromErrorResponse', () => {
+    beforeEach(() => {
+      spyOn(console, 'warn');
+    });
+
     it('should extract token from valid JSON text', () => {
       // Arrange
       const error = new HttpErrorResponse({

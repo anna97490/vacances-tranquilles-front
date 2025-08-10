@@ -127,7 +127,7 @@ describe('HeaderComponent', () => {
   it('should return default icon when not hovered', () => {
     const menuItem = component.menu[0];
     component.hoveredItem = null;
-    component.currentPath = '/profil'; // Définir une route différente pour éviter l'état actif
+    component.currentPath = '/profil';
 
     const icon = component.getIcon(menuItem);
     expect(icon).toBe(menuItem.icon);
@@ -163,7 +163,6 @@ describe('HeaderComponent', () => {
   it('should clear localStorage and navigate on logout without triggering real reload', () => {
     const clearSpy = spyOn(localStorage, 'clear');
     (component as any).router = router;
-    // Freeze timers so the scheduled reload does not execute
     jasmine.clock().install();
     try {
       component.logout();

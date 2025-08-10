@@ -73,7 +73,6 @@ export class LoginFormComponent {
 
     if (constraints.length === 0) return '';
 
-    // Joindre avec virgules et "et" avant le dernier élément
     const last = constraints.pop();
     const prefix = constraints.length > 0 ? constraints.join(', ') + ' et ' : '';
     return `Le mot de passe doit contenir ${prefix}${last}`;
@@ -119,7 +118,6 @@ export class LoginFormComponent {
     this.validationService.markAllFieldsAsTouched(this.form);
     this.buildErrorSummary();
     this.showErrorSummary = this.errorSummaryItems.length > 0;
-    // Focus résumé puis premier champ invalide
     setTimeout(() => {
       this.errorSummaryRef?.nativeElement.focus();
       this.focusFirstInvalidField();
@@ -141,7 +139,6 @@ export class LoginFormComponent {
       next: (response) => this.loginService.handleLoginSuccess(response),
       error: (error) => {
         this.handleLoginError(error);
-        // Conserver la saisie utilisateur après erreur pour l'accessibilité
       }
     });
   }
@@ -172,6 +169,10 @@ export class LoginFormComponent {
     }
   }
 
+  /**
+   * Construit le résumé des erreurs du formulaire
+   * Récupère les erreurs des champs email et mot de passe et les ajoute à errorSummaryItems
+   */
   private buildErrorSummary(): void {
     this.errorSummaryItems = [];
     const controls: Array<{ id: string; label: string; message: string }> = [];
@@ -186,7 +187,6 @@ export class LoginFormComponent {
 
     const passCtrl = this.form.get('userSecret');
     if (passCtrl && passCtrl.invalid) {
-      // Reuse helper to compose message
       const message = this.getPasswordErrorText() || 'Mot de passe invalide';
       controls.push({ id: 'userSecret', label: 'Mot de passe', message });
     }
@@ -194,6 +194,10 @@ export class LoginFormComponent {
     this.errorSummaryItems = controls;
   }
 
+  /**
+   * Met le focus sur un champ spécifique du formulaire
+   * @param fieldId - L'ID du champ à focaliser
+   */
   focusField(fieldId: string): void {
     const el = document.getElementById(fieldId) as HTMLElement | null;
     if (el) {
@@ -201,6 +205,10 @@ export class LoginFormComponent {
     }
   }
 
+  /**
+   * Met le focus sur le premier champ invalide du formulaire
+   * Utilise le premier élément de errorSummaryItems pour déterminer quel champ focaliser
+   */
   private focusFirstInvalidField(): void {
     const first = this.errorSummaryItems[0];
     if (first) this.focusField(first.id);

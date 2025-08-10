@@ -240,10 +240,10 @@ describe('RegisterFormConfigService', () => {
       phone?.setValue('01234567890'); // 11 digits
       expect(phone?.hasError('phoneNumberLength')).toBeTrue();
 
-      phone?.setValue('01 23-45 67-89'); // formats with separators
+      phone?.setValue('01 23-45 67-89');
       expect(phone?.errors).toBeNull();
 
-      phone?.setValue('01234abc89'); // letters
+      phone?.setValue('01234abc89');
       expect(phone?.hasError('numbersOnly') || phone?.hasError('phoneNumberLength')).toBeTrue();
     });
 
@@ -373,14 +373,11 @@ describe('RegisterFormConfigService', () => {
       companyNameControl?.setValue('');
       siretSirenControl?.setValue('');
 
-      // Initially should be valid (no validators)
       expect(companyNameControl?.valid).toBeTruthy();
       expect(siretSirenControl?.valid).toBeTruthy();
 
-      // Add validators
       service.updateValidatorsBasedOnUserType(form, true);
 
-      // Should now be invalid
       expect(companyNameControl?.valid).toBeFalsy();
       expect(siretSirenControl?.valid).toBeFalsy();
     });
@@ -437,12 +434,12 @@ describe('RegisterFormConfigService', () => {
 
     it('should return correct validators for postalCode field', () => {
       const validators = service.getFieldValidators('postalCode');
-      expect(validators.length).toBe(2); // required, pattern
+      expect(validators.length).toBe(2);
     });
 
     it('should return default validators for unknown field', () => {
       const validators = service.getFieldValidators('unknownField');
-      expect(validators.length).toBe(1); // required only
+      expect(validators.length).toBe(1);
     });
   });
 
@@ -451,7 +448,7 @@ describe('RegisterFormConfigService', () => {
       const form1 = service.createRegistrationForm();
       const form2 = service.createRegistrationForm();
 
-      expect(form1).not.toBe(form2); // Different instances
+      expect(form1).not.toBe(form2);
       expect(Object.keys(form1.controls)).toEqual(Object.keys(form2.controls));
     });
 
@@ -475,7 +472,6 @@ describe('RegisterFormConfigService', () => {
 
       const siretControl = form.get('siretSiren');
 
-      // Test edge cases for SIRET pattern
       const testCases = [
         { value: '1234567890123', valid: false }, // 13 digits
         { value: '12345678901234', valid: true },  // 14 digits

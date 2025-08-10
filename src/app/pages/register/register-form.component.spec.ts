@@ -5,7 +5,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
 
 import { RegisterFormComponent } from './register-form.component';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter } from '@angular/router';
 import { ConfigService } from '../../services/config/config.service';
 import { RegisterValidationService } from '../../services/register/register-validation.service';
 import { RegisterFormConfigService } from '../../services/register/register-form-config.service';
@@ -113,14 +113,15 @@ describe('RegisterFormComponent', () => {
     registerServiceMock.handleRegistrationError.and.returnValue(null);
 
     await TestBed.configureTestingModule({
-      imports: [RegisterFormComponent, ReactiveFormsModule, RouterTestingModule, NoopAnimationsModule],
+      imports: [RegisterFormComponent, ReactiveFormsModule, NoopAnimationsModule],
       providers: [
         { provide: ConfigService, useValue: configServiceMock },
         { provide: RegisterValidationService, useValue: validationServiceMock },
         { provide: RegisterFormConfigService, useValue: formConfigServiceMock },
         { provide: UserTypeDetectorService, useValue: userTypeDetectorMock },
         { provide: RegisterApiBuilderService, useValue: apiBuilderMock },
-        { provide: RegisterService, useValue: registerServiceMock }
+        { provide: RegisterService, useValue: registerServiceMock },
+        provideRouter([])
       ]
     }).compileComponents();
 
@@ -128,7 +129,6 @@ describe('RegisterFormComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    // Spy on native confirm for CGU consent
     confirmSpy = spyOn(window, 'confirm');
   });
 
@@ -184,7 +184,6 @@ describe('RegisterFormComponent', () => {
       } else {
         expect(apiBuilderMock.buildApiConfig).not.toHaveBeenCalled();
       }
-      // reset spies between iterations
       apiBuilderMock.buildApiConfig.calls.reset();
       registerServiceMock.performRegistration.calls.reset();
       registerServiceMock.handleRegistrationSuccess.calls.reset();
@@ -201,7 +200,6 @@ describe('RegisterFormComponent', () => {
   }));
 
   it('should compose field and password error messages via helpers', () => {
-    // Mark controls touched and set errors
     const emailCtrl = component.form.get('email');
     emailCtrl?.markAsTouched();
     emailCtrl?.setErrors({ emailFormat: true });
@@ -215,17 +213,14 @@ describe('RegisterFormComponent', () => {
 
   it('should return empty password error when untouched or no errors', () => {
     const pwdCtrl = component.form.get('userSecret');
-    // untouched with errors
     pwdCtrl?.setErrors({ minLength: true });
     expect(component.getPasswordErrorText()).toBe('');
-    // touched with no errors
     pwdCtrl?.markAsTouched();
     pwdCtrl?.setErrors(null);
     expect(component.getPasswordErrorText()).toBe('');
   });
 
   it('should build summary variants for email-only and password-only invalid', fakeAsync(() => {
-    // email only invalid (set errors directly to simulate invalid)
     const emailCtrl = component.form.get('email');
     const pwdCtrl = component.form.get('userSecret');
     emailCtrl?.setErrors({ emailFormat: true });
@@ -238,7 +233,6 @@ describe('RegisterFormComponent', () => {
     expect(component.errorSummaryItems.some(i => i.id === 'email')).toBeTrue();
     expect(component.errorSummaryItems.some(i => i.id === 'userSecret')).toBeFalse();
 
-    // reset and test password only invalid
     component.showErrorSummary = false;
     component.errorSummaryItems = [];
     emailCtrl?.setErrors(null);
@@ -296,7 +290,6 @@ describe('RegisterFormComponent', () => {
         } else {
           expect(msg).toBeTruthy();
         }
-        // clear for next iteration
         if (ctrl) ctrl.setErrors(null);
       });
     });
@@ -335,6 +328,353 @@ describe('RegisterFormComponent', () => {
     component.routerSubscription = { unsubscribe: unsubscribeSpy } as any;
     component.ngOnDestroy();
     expect(unsubscribeSpy).toHaveBeenCalled();
+  });
+
+  it('should handle missing fields detection', () => {
+    // Test avec des champs manquants
+    const emailCtrl = component.form.get('email');
+    emailCtrl?.setValue('');
+    emailCtrl?.markAsTouched();
+
+    expect(component.hasMissingFields()).toBeTrue();
+    expect(component.getMissingFieldsText()).toContain('Email');
+  });
+
+  it('should handle no missing fields', () => {
+    // Utiliser le mock existant au lieu de créer un nouveau spy
+    validationServiceMock.areAllRequiredFieldsFilled.and.returnValue(true);
+
+    // Remplir tous les champs requis
+    component.form.patchValue({
+      firstName: 'John',
+      lastName: 'Doe',
+      userSecret: 'Password123!',
+      phoneNumber: '0123456789',
+      address: '123 Test Street',
+      city: 'Test City',
+      postalCode: '12345'
+    });
+    // L'email a déjà une valeur par défaut 'user@example.com'
+
+    // Vérifier que le mock est bien appelé avec les bons paramètres
+    expect(component.hasMissingFields()).toBeFalse();
+    expect(validationServiceMock.areAllRequiredFieldsFilled).toHaveBeenCalledWith(component.form, false);
+    expect(component.getMissingFieldsText()).toBe('');
+  });
+
+  it('should handle missing fields for prestataire', () => {
+    userTypeDetectorMock.detectUserTypeFromUrl.and.returnValue(true);
+    // Réinitialiser le composant avec les nouveaux mocks
+    fixture = TestBed.createComponent(RegisterFormComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const emailCtrl = component.form.get('email');
+    emailCtrl?.setValue('');
+    emailCtrl?.markAsTouched();
+
+    expect(component.hasMissingFields()).toBeTrue();
+    expect(component.getMissingFieldsText()).toContain('Email');
+  });
+
+  it('should focus field when focusField is called', () => {
+    const focusSpy = spyOn(document, 'getElementById').and.returnValue({
+      focus: jasmine.createSpy('focus')
+    } as any);
+
+    component.focusField('testField');
+
+    expect(focusSpy).toHaveBeenCalledWith('testField');
+  });
+
+  it('should handle focusField when element is null', () => {
+    spyOn(document, 'getElementById').and.returnValue(null);
+
+    expect(() => component.focusField('nonexistent')).not.toThrow();
+  });
+
+  it('should navigate back to home', () => {
+    const navigateSpy = spyOn(component['router'], 'navigate');
+
+    component.goBack();
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/home']);
+  });
+
+  it('should delegate form configuration methods correctly', () => {
+    expect(component.shouldShowField('testField')).toBeTrue();
+    expect(formConfigServiceMock.shouldShowField).toHaveBeenCalledWith('testField', false);
+
+    expect(component.getFieldLabel('testField')).toBe('');
+    expect(formConfigServiceMock.getFieldLabel).toHaveBeenCalledWith('testField', false);
+
+    expect(component.getFieldPlaceholder('testField')).toBe('');
+    expect(formConfigServiceMock.getFieldPlaceholder).toHaveBeenCalledWith('testField', false);
+
+    expect(component.getFieldType('testField')).toBe('text');
+    expect(formConfigServiceMock.getFieldType).toHaveBeenCalledWith('testField', false);
+
+    expect(component.getFieldRequired('testField')).toBeTrue();
+    expect(formConfigServiceMock.getFieldRequired).toHaveBeenCalledWith('testField', false);
+  });
+
+  it('should delegate validation methods correctly', () => {
+    expect(component.getFieldClasses('testField')).toBe('');
+    expect(validationServiceMock.getFieldClasses).toHaveBeenCalledWith(testForm, 'testField');
+  });
+
+  it('should delegate user type detection methods correctly', () => {
+    userTypeDetectorMock.detectUserTypeFromString.and.returnValue(false);
+
+    expect(component.detectUserTypeFromUrl()).toBeFalse();
+    expect(userTypeDetectorMock.detectUserTypeFromUrl).toHaveBeenCalled();
+
+    expect(component.detectUserTypeFromString('prestataire')).toBeFalse();
+    expect(userTypeDetectorMock.detectUserTypeFromString).toHaveBeenCalledWith('prestataire');
+  });
+
+    it('should handle prestataire user type correctly', () => {
+    userTypeDetectorMock.detectUserTypeFromUrl.and.returnValue(true);
+    userTypeDetectorMock.getPrestataireFormTitle.and.returnValue('Inscription Prestataire');
+    userTypeDetectorMock.getPrestataireUserTypeString.and.returnValue('prestataire');
+
+    // Réinitialiser le composant avec les nouveaux mocks
+    fixture = TestBed.createComponent(RegisterFormComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.getFormTitle()).toBe('Inscription Prestataire');
+    expect(component.getUserTypeString()).toBe('prestataire');
+  });
+
+    it('should handle error summary building for prestataire', () => {
+    userTypeDetectorMock.detectUserTypeFromUrl.and.returnValue(true);
+    // Réinitialiser le composant avec les nouveaux mocks
+    fixture = TestBed.createComponent(RegisterFormComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const companyNameCtrl = component.form.get('companyName');
+    companyNameCtrl?.setErrors({ required: true });
+    companyNameCtrl?.markAsTouched();
+
+    validationServiceMock.isFormValid.and.returnValue(false);
+    component.onSubmit();
+
+    expect(component.showErrorSummary).toBeTrue();
+    expect(component.errorSummaryItems.some(item => item.id === 'companyName')).toBeTrue();
+  });
+
+  it('should handle password error text with multiple constraints', () => {
+    const pwdCtrl = component.form.get('userSecret');
+    pwdCtrl?.setErrors({ minLength: true, uppercase: true, number: true });
+    pwdCtrl?.markAsTouched();
+
+    const errorText = component.getPasswordErrorText();
+    expect(errorText).toContain('Le mot de passe doit contenir');
+    expect(errorText).toContain('au moins 8 caractères');
+    expect(errorText).toContain('une majuscule');
+    expect(errorText).toContain('un chiffre');
+  });
+
+  it('should handle password error text with single constraint', () => {
+    const pwdCtrl = component.form.get('userSecret');
+    pwdCtrl?.setErrors({ lowercase: true });
+    pwdCtrl?.markAsTouched();
+
+    const errorText = component.getPasswordErrorText();
+    expect(errorText).toBe('Le mot de passe doit contenir une minuscule');
+  });
+
+  it('should handle password error text with required error', () => {
+    const pwdCtrl = component.form.get('userSecret');
+    pwdCtrl?.setErrors({ required: true });
+    pwdCtrl?.markAsTouched();
+
+    const errorText = component.getPasswordErrorText();
+    expect(errorText).toBe('Le mot de passe est requis');
+  });
+
+  it('should handle buildErrorSummary with no errors', () => {
+    // Réinitialiser le formulaire sans erreurs
+    component.form.patchValue({
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@example.com',
+      userSecret: 'Password123!',
+      phoneNumber: '0123456789',
+      address: '123 Test Street',
+      city: 'Test City',
+      postalCode: '12345'
+    });
+
+    validationServiceMock.isFormValid.and.returnValue(false);
+    component.onSubmit();
+
+    expect(component.errorSummaryItems.length).toBe(0);
+  });
+
+  it('should handle buildErrorSummary with multiple errors', () => {
+    // Créer plusieurs erreurs
+    const firstNameCtrl = component.form.get('firstName');
+    const emailCtrl = component.form.get('email');
+    const pwdCtrl = component.form.get('userSecret');
+
+    firstNameCtrl?.setErrors({ required: true });
+    firstNameCtrl?.markAsTouched();
+    emailCtrl?.setErrors({ emailFormat: true });
+    emailCtrl?.markAsTouched();
+    pwdCtrl?.setErrors({ minLength: true });
+    pwdCtrl?.markAsTouched();
+
+    validationServiceMock.isFormValid.and.returnValue(false);
+    component.onSubmit();
+
+    expect(component.errorSummaryItems.length).toBeGreaterThan(0);
+    expect(component.errorSummaryItems.some(item => item.id === 'firstName')).toBeTrue();
+    expect(component.errorSummaryItems.some(item => item.id === 'email')).toBeTrue();
+    expect(component.errorSummaryItems.some(item => item.id === 'userSecret')).toBeTrue();
+  });
+
+  it('should handle buildErrorSummary for prestataire with company fields', () => {
+    userTypeDetectorMock.detectUserTypeFromUrl.and.returnValue(true);
+    // Réinitialiser le composant avec les nouveaux mocks
+    fixture = TestBed.createComponent(RegisterFormComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const companyNameCtrl = component.form.get('companyName');
+    const siretCtrl = component.form.get('siretSiren');
+
+    companyNameCtrl?.setErrors({ required: true });
+    companyNameCtrl?.markAsTouched();
+    siretCtrl?.setErrors({ pattern: true });
+    siretCtrl?.markAsTouched();
+
+    validationServiceMock.isFormValid.and.returnValue(false);
+    component.onSubmit();
+
+    expect(component.errorSummaryItems.some(item => item.id === 'companyName')).toBeTrue();
+    expect(component.errorSummaryItems.some(item => item.id === 'siretSiren')).toBeTrue();
+  });
+
+  it('should handle focusFirstInvalidField with error summary items', () => {
+    const focusSpy = spyOn(component, 'focusField');
+    component.errorSummaryItems = [{ id: 'testField', label: 'Test', message: 'Error' }];
+
+    // @ts-expect-error - accès direct pour test
+    component.focusFirstInvalidField();
+
+    expect(focusSpy).toHaveBeenCalledWith('testField');
+  });
+
+  it('should handle focusFirstInvalidField with empty error summary', () => {
+    const focusSpy = spyOn(component, 'focusField');
+    component.errorSummaryItems = [];
+
+    // @ts-expect-error - accès direct pour test
+    component.focusFirstInvalidField();
+
+    expect(focusSpy).not.toHaveBeenCalled();
+  });
+
+  it('should handle getMissingFields with empty values', () => {
+    // Vider tous les champs
+    component.form.patchValue({
+      firstName: '',
+      lastName: '',
+      email: '',
+      userSecret: '',
+      phoneNumber: '',
+      address: '',
+      city: '',
+      postalCode: ''
+    });
+
+    const missingFields = component.getMissingFieldsText();
+    expect(missingFields).toContain('Prénom');
+    expect(missingFields).toContain('Nom');
+    expect(missingFields).toContain('Email');
+    expect(missingFields).toContain('Mot de passe');
+    expect(missingFields).toContain('Téléphone');
+    expect(missingFields).toContain('Adresse');
+    expect(missingFields).toContain('Ville');
+    expect(missingFields).toContain('Code postal');
+  });
+
+  it('should handle getMissingFields with whitespace values', () => {
+    // Remplir avec des espaces
+    component.form.patchValue({
+      firstName: '   ',
+      lastName: '   ',
+      email: '   ',
+      userSecret: '   ',
+      phoneNumber: '   ',
+      address: '   ',
+      city: '   ',
+      postalCode: '   '
+    });
+
+    const missingFields = component.getMissingFieldsText();
+    expect(missingFields).toContain('Prénom');
+    expect(missingFields).toContain('Nom');
+    expect(missingFields).toContain('Email');
+    expect(missingFields).toContain('Mot de passe');
+    expect(missingFields).toContain('Téléphone');
+    expect(missingFields).toContain('Adresse');
+    expect(missingFields).toContain('Ville');
+    expect(missingFields).toContain('Code postal');
+  });
+
+    it('should handle getMissingFields for prestataire with additional fields', () => {
+    userTypeDetectorMock.detectUserTypeFromUrl.and.returnValue(true);
+    // Réinitialiser le composant avec les nouveaux mocks
+    fixture = TestBed.createComponent(RegisterFormComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Vider les champs spécifiques au prestataire
+    component.form.patchValue({
+      companyName: '',
+      siretSiren: ''
+    });
+
+    const missingFields = component.getMissingFieldsText();
+    expect(missingFields).toContain("Nom de l'entreprise");
+    expect(missingFields).toContain('SIRET');
+  });
+
+  it('should handle registration error without status', () => {
+    validationServiceMock.isFormValid.and.returnValue(true);
+    confirmSpy.and.returnValue(true);
+    registerServiceMock.performRegistration.and.returnValue(throwError(() => new Error('Network error')));
+    registerServiceMock.handleRegistrationError.and.returnValue('Erreur réseau');
+
+    component.onSubmit();
+
+    expect(component.apiError).toBe('Erreur réseau');
+  });
+
+  it('should handle registration error with null response', () => {
+    validationServiceMock.isFormValid.and.returnValue(true);
+    confirmSpy.and.returnValue(true);
+    registerServiceMock.performRegistration.and.returnValue(throwError(() => null));
+    registerServiceMock.handleRegistrationError.and.returnValue('Erreur inconnue');
+
+    component.onSubmit();
+
+    expect(component.apiError).toBe('Erreur inconnue');
+  });
+
+  it('should handle registration success without error', () => {
+    validationServiceMock.isFormValid.and.returnValue(true);
+    confirmSpy.and.returnValue(true);
+    registerServiceMock.performRegistration.and.returnValue(of(new HttpResponse({ status: 200, body: 'OK' })));
+    registerServiceMock.handleRegistrationError.and.returnValue(null);
+
+    component.onSubmit();
+
+    expect(component.apiError).toBeNull();
   });
 });
 

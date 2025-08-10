@@ -269,6 +269,11 @@ export class RegisterFormComponent implements OnDestroy {
     return '';
   }
 
+  /**
+   * Construit le résumé des erreurs du formulaire d'inscription
+   * Parcourt tous les champs du formulaire et ajoute les erreurs à errorSummaryItems
+   * Gère différemment les champs selon le type d'utilisateur (particulier/prestataire)
+   */
   private buildErrorSummary(): void {
     const items: { id: string; label: string; message: string }[] = [];
     const add = (id: string, label: string, message: string | null) => {
@@ -297,11 +302,19 @@ export class RegisterFormComponent implements OnDestroy {
     this.errorSummaryItems = items;
   }
 
+  /**
+   * Met le focus sur un champ spécifique du formulaire
+   * @param fieldId - L'ID du champ à focaliser
+   */
   focusField(fieldId: string): void {
     const el = document.getElementById(fieldId) as HTMLElement | null;
     if (el) el.focus();
   }
 
+  /**
+   * Met le focus sur le premier champ invalide du formulaire
+   * Utilise le premier élément de errorSummaryItems pour déterminer quel champ focaliser
+   */
   private focusFirstInvalidField(): void {
     const first = this.errorSummaryItems[0];
     if (first) this.focusField(first.id);
