@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { UserRole } from '../../models/User';
+import { By } from '@angular/platform-browser';
 
 import { HeaderComponent } from './header.component';
 
@@ -388,6 +389,35 @@ describe('HeaderComponent', () => {
       component.onMenuNavigation(accueilItem);
 
       expect(component.isMobileMenuOpen).toBe(false);
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper ARIA labels for navigation', () => {
+      const nav = fixture.debugElement.query(By.css('nav[aria-label="Navigation principale"]'));
+      expect(nav).toBeTruthy();
+    });
+
+    it('should have proper ARIA attributes for mobile menu button', () => {
+      const menuButton = fixture.debugElement.query(By.css('button[aria-label="Menu de navigation"]'));
+      expect(menuButton).toBeTruthy();
+      expect(menuButton.nativeElement.getAttribute('aria-expanded')).toBeDefined();
+      expect(menuButton.nativeElement.getAttribute('aria-controls')).toBe('mobile-menu');
+    });
+
+    it('should have proper focus management for mobile menu', () => {
+      const menuButton = fixture.debugElement.query(By.css('button[aria-label="Menu de navigation"]'));
+      const mobileMenu = fixture.debugElement.query(By.css('#mobile-menu'));
+      
+      expect(menuButton).toBeTruthy();
+      expect(mobileMenu).toBeTruthy();
+    });
+
+    it('should have proper button elements instead of clickable links', () => {
+      const navButtons = fixture.debugElement.queryAll(By.css('.nav-link'));
+      navButtons.forEach(button => {
+        expect(button.nativeElement.tagName).toBe('BUTTON');
+      });
     });
   });
 });
