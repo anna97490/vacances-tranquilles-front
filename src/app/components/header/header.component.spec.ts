@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
+import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { UserRole } from '../../models/User';
 
 import { HeaderComponent } from './header.component';
 
@@ -10,8 +12,14 @@ describe('HeaderComponent', () => {
   let fixture: ComponentFixture<HeaderComponent>;
   let router: Router;
   let location: Location;
+  let authStorage: jasmine.SpyObj<AuthStorageService>;
 
   beforeEach(async () => {
+    const authStorageSpy = jasmine.createSpyObj('AuthStorageService', [
+      'isAuthenticated', 
+      'getUserRole'
+    ]);
+
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
       providers: [
@@ -60,6 +68,10 @@ describe('HeaderComponent', () => {
           useValue: {
             path: jasmine.createSpy('path').and.returnValue('/home')
           }
+        },
+        {
+          provide: AuthStorageService,
+          useValue: authStorageSpy
         }
       ]
     }).compileComponents();
@@ -68,6 +80,7 @@ describe('HeaderComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
+    authStorage = TestBed.inject(AuthStorageService) as jasmine.SpyObj<AuthStorageService>;
     fixture.detectChanges();
   });
 
@@ -293,5 +306,88 @@ describe('HeaderComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const desktopNavLinks = compiled.querySelectorAll('.desktop-nav .nav-link');
     expect(desktopNavLinks.length).toBe(component.menu.length + 1); // +1 for logout
+  });
+
+  describe('Navigation conditionnelle pour les clients', () => {
+    it('should navigate to service-search when client clicks on Accueil', () => {
+      // Simuler un utilisateur client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+
+      const accueilItem = component.menu[0]; // Accueil
+      component.onMenuNavigation(accueilItem);
+
+      expect(router.navigate).toHaveBeenCalledWith(['/service-search']);
+    });
+
+    it('should navigate to home when non-client user clicks on Accueil', () => {
+      // Simuler un utilisateur non-client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
+
+      const accueilItem = component.menu[0]; // Accueil
+      component.onMenuNavigation(accueilItem);
+
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should navigate to home when non-authenticated user clicks on Accueil', () => {
+      // Simuler un utilisateur non connecté
+      authStorage.isAuthenticated.and.returnValue(false);
+
+      const accueilItem = component.menu[0]; // Accueil
+      component.onMenuNavigation(accueilItem);
+
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should navigate to original path for non-Accueil menu items', () => {
+      // Simuler un utilisateur client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+
+      const profilItem = component.menu[1]; // Profil
+      component.onMenuNavigation(profilItem);
+
+      expect(router.navigate).toHaveBeenCalledWith(['/profil']);
+    });
+
+    it('should consider Accueil as active when client is on service-search page', () => {
+      // Simuler un utilisateur client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+      
+      // Simuler que l'utilisateur est sur la page service-search
+      component.currentPath = '/service-search';
+
+      const isAccueilActive = component.isActive('/home');
+      expect(isAccueilActive).toBe(true);
+    });
+
+    it('should not consider Accueil as active when non-client is on service-search page', () => {
+      // Simuler un utilisateur non-client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
+      
+      // Simuler que l'utilisateur est sur la page service-search
+      component.currentPath = '/service-search';
+
+      const isAccueilActive = component.isActive('/home');
+      expect(isAccueilActive).toBe(false);
+    });
+
+    it('should close mobile menu after navigation', () => {
+      // Simuler un utilisateur client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+      
+      // Ouvrir le menu mobile
+      component.isMobileMenuOpen = true;
+
+      const accueilItem = component.menu[0]; // Accueil
+      component.onMenuNavigation(accueilItem);
+
+      expect(component.isMobileMenuOpen).toBe(false);
+    });
   });
 });

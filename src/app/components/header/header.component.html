@@ -10,10 +10,11 @@
       class="nav-link"
       [class.active]="isActive(item.path)"
       [attr.aria-current]="isActive(item.path) ? 'page' : null"
-      [routerLink]="item.path"
       [attr.aria-label]="'Navigation vers ' + item.label"
+      (click)="onMenuNavigation(item)"
       (mouseenter)="hoveredItem = item"
       (mouseleave)="hoveredItem = null"
+      style="cursor: pointer;"
     >
       <img [src]="getIcon(item)" class="icon" alt="" />
       {{ item.label }}
@@ -54,8 +55,8 @@
         *ngFor="let item of menu"
         class="nav-link"
         [class.active]="isActive(item.path)"
-        [routerLink]="item.path"
-        (click)="closeMobileMenu()"
+        (click)="onMenuNavigation(item)"
+        style="cursor: pointer;"
       >
         <img [src]="getIcon(item)" class="icon" alt="" />
         <span class="nav-text">{{ item.label }}</span>
