@@ -37,13 +37,6 @@ export class ServicesService {
     startTime: string,
     endTime: string
   ): Observable<Service[]> {
-    // Vérifier la validité du token avant d'effectuer la requête
-    if (!this.tokenValidator.isTokenValid()) {
-      console.warn('Token invalide ou expiré, redirection vers la page de connexion');
-      this.router.navigate(['/auth/login']);
-      return throwError(() => new Error('Session expirée. Veuillez vous reconnecter.'));
-    }
-
     const url = `${this.urlApi}/services/search`;
 
     // Vérification que la catégorie est valide
@@ -59,7 +52,7 @@ export class ServicesService {
       .set('startTime', startTime)
       .set('endTime', endTime);
 
-    // L'intercepteur gère automatiquement l'authentification
+    // L'intercepteur gère automatiquement l'authentification et les erreurs 401/403
     return this.http.get<Service[]>(url, { params });
   }
 }

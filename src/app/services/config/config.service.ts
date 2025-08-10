@@ -15,20 +15,27 @@ export class ConfigService {
   get apiUrl(): string {
     if (!this.config?.apiUrl) {
       // Charger la configuration de manière synchrone si elle n'est pas encore chargée
-      this.loadConfigTest();
+      this.loadConfigSync();
     }
     return this.config?.apiUrl || '';
   }
 
-  private loadConfigTest(): void {
-    // Chargement synchrone pour les tests
+  private loadConfigSync(): void {
+    // Chargement synchrone pour éviter les erreurs pendant l'initialisation
     if (!this.config?.apiUrl) {
-      // Utiliser une URL par défaut pour les tests
-      this.config = { apiUrl: 'http://test-api.example.com/api' };
+      // Utiliser l'URL de développement par défaut
+      this.config = { 
+        apiUrl: 'http://localhost:8080/api',
+        NG_APP_STRIPE_PUBLIC_KEY: 'pk_test_51ABC123DEF456GHI789JKL012MNO345PQR678STU901VWX234YZA567BCD890EFG'
+      };
     }
   }
 
   get stripePublicKey(): string {
+    if (!this.config?.NG_APP_STRIPE_PUBLIC_KEY) {
+      // Charger la configuration de manière synchrone si elle n'est pas encore chargée
+      this.loadConfigSync();
+    }
     return this.config?.NG_APP_STRIPE_PUBLIC_KEY || '';
   }
 
