@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { Service, ServiceCategory } from '../../models/Service';
 import { ConfigService } from '../config/config.service';
+import { TokenValidatorService } from '../auth/token-validator.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,9 @@ export class ServicesService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly tokenValidator: TokenValidatorService,
+    private readonly router: Router
   ) {
     this.urlApi = this.configService.apiUrl;
   }
@@ -34,6 +38,13 @@ export class ServicesService {
     startTime: string,
     endTime: string
   ): Observable<Service[]> {
+    // Vérifier la validité du token avant d'effectuer la requête
+    if (!this.tokenValidator.isTokenValid()) {
+      console.warn('Token invalide ou expiré, redirection vers la page de connexion');
+      this.router.navigate(['/auth/login']);
+      return throwError(() => new Error('Session expirée. Veuillez vous reconnecter.'));
+    }
+
     const url = `${this.urlApi}/services/search`;
 
     // Vérification que la catégorie est valide
