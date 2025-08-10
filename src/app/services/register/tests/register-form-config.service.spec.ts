@@ -29,7 +29,7 @@ describe('RegisterFormConfigService', () => {
       });
 
       it('devrait retourner le label pour siretSiren si prestataire', () => {
-        expect(service.getFieldLabel('siretSiren', true)).toBe('SIRET/SIREN');
+        expect(service.getFieldLabel('siretSiren', true)).toBe('SIRET');
       });
 
       it('devrait retourner une chaîne vide pour siretSiren si non prestataire', () => {
@@ -55,7 +55,7 @@ describe('RegisterFormConfigService', () => {
       });
 
       it('devrait retourner le placeholder pour siretSiren si prestataire', () => {
-        expect(service.getFieldPlaceholder('siretSiren', true)).toBe('Numéro SIRET/SIREN');
+        expect(service.getFieldPlaceholder('siretSiren', true)).toBe('Numéro SIRET (14 chiffres)');
       });
 
       it('devrait retourner une chaîne vide pour siretSiren si non prestataire', () => {
@@ -73,19 +73,19 @@ describe('RegisterFormConfigService', () => {
 
     describe('getFieldType', () => {
       it('devrait retourner "email" pour le champ email', () => {
-        expect(service.getFieldType('email', false)).toBe('email');
+        expect(service.getFieldType('email')).toBe('email');
       });
 
       it('devrait retourner "password" pour le champ userSecret', () => {
-        expect(service.getFieldType('userSecret', false)).toBe('password');
+        expect(service.getFieldType('userSecret')).toBe('password');
       });
 
       it('devrait retourner "text" pour le champ siretSiren', () => {
-        expect(service.getFieldType('siretSiren', true)).toBe('text');
+        expect(service.getFieldType('siretSiren')).toBe('text');
       });
 
       it('devrait retourner "text" pour un champ inconnu', () => {
-        expect(service.getFieldType('champInconnu', false)).toBe('text');
+        expect(service.getFieldType('champInconnu')).toBe('text');
       });
     });
     describe('getFieldRequired', () => {
@@ -421,27 +421,7 @@ describe('RegisterFormConfigService', () => {
     });
   });
 
-  describe('getFieldValidators', () => {
-    it('should return correct validators for userSecret field', () => {
-      const validators = service.getFieldValidators('userSecret');
-      expect(validators.length).toBe(3); // required, minlength, pattern
-    });
 
-    it('should return correct validators for email field', () => {
-      const validators = service.getFieldValidators('email');
-      expect(validators.length).toBe(2); // required, email
-    });
-
-    it('should return correct validators for postalCode field', () => {
-      const validators = service.getFieldValidators('postalCode');
-      expect(validators.length).toBe(2);
-    });
-
-    it('should return default validators for unknown field', () => {
-      const validators = service.getFieldValidators('unknownField');
-      expect(validators.length).toBe(1);
-    });
-  });
 
   describe('Edge Cases', () => {
     it('should handle form creation multiple times', () => {

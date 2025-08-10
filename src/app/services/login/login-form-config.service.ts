@@ -2,78 +2,52 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
-// Validateur spécifique pour les emails (autorise @ et .)
-function emailInjectionPreventionValidator(control: AbstractControl): ValidationErrors | null {
+/**
+ * Exécute une validation uniquement si la valeur est non vide
+ */
+function validateIfNotEmpty(control: AbstractControl, fn: (value: string) => ValidationErrors | null): ValidationErrors | null {
   if (!control.value) return null;
-
-  const value = control.value.toString();
-
-  // Pattern pour les emails - autorise @ . _ % + - mais bloque les vrais caractères dangereux
-  const dangerousPattern = /[<>'"&;{}()\[\]\\|`~#$%^*=]/;
-
-  if (dangerousPattern.test(value)) {
-    return { injectionPrevention: true };
-  }
-
-  return null;
+  return fn(control.value.toString());
 }
+
+/**
+ * Crée un validateur qui détecte les caractères dangereux
+ */
+function createInjectionPreventionValidator(pattern: RegExp) {
+  return (control: AbstractControl): ValidationErrors | null =>
+    validateIfNotEmpty(control, value =>
+      pattern.test(value) ? { injectionPrevention: true } : null
+    );
+}
+
+// Validateur spécifique pour les emails (autorise @ et .)
+const emailInjectionPreventionValidator = createInjectionPreventionValidator(/[<>'"&;{}()\[\]\\|`~#$%^*=]/);
 
 // Validateur de format d'email plus strict (exige un TLD, ex: domaine.com)
 function strictEmailFormatValidator(control: AbstractControl): ValidationErrors | null {
-  if (!control.value) return null;
-
-  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const isValid = emailPattern.test(control.value);
-  return isValid ? null : { email: true };
+  return validateIfNotEmpty(control, value => {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(value) ? null : { email: true };
+  });
 }
 
-// Validateur pour empêcher les caractères spéciaux d'injection (strict)
-function injectionPreventionValidator(control: AbstractControl): ValidationErrors | null {
-  if (!control.value) return null;
-
-  const value = control.value.toString();
-
-  // Pattern pour détecter les caractères vraiment dangereux pour les injections
-  const dangerousPattern = /[<>'"&;{}()\[\]\\|`~#$%^*+=]/;
-
-  if (dangerousPattern.test(value)) {
-    return { injectionPrevention: true };
-  }
-
-  return null;
-}
-
-// Validateur personnalisé pour le mot de passe (règles de complexité) — aligné sur l'inscription prestataire
+// Validateur personnalisé pour le mot de passe (règles de complexité)
 function passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
-  if (!control.value) return null;
-
-  const password = control.value;
-  const errors: ValidationErrors = {};
-
-  if (password.length < 8) {
-    errors['minLength'] = true;
-  }
-  if (!/[a-z]/.test(password)) {
-    errors['lowercase'] = true;
-  }
-  if (!/[A-Z]/.test(password)) {
-    errors['uppercase'] = true;
-  }
-  if (!/\d/.test(password)) {
-    errors['number'] = true;
-  }
-  if (!/[@$!%*?&]/.test(password)) {
-    errors['special'] = true;
-  }
-
-  return Object.keys(errors).length > 0 ? errors : null;
+  return validateIfNotEmpty(control, value => {
+    const errors: ValidationErrors = {};
+    if (value.length < 8) errors['minLength'] = true;
+    if (!/[a-z]/.test(value)) errors['lowercase'] = true;
+    if (!/[A-Z]/.test(value)) errors['uppercase'] = true;
+    if (!/\d/.test(value)) errors['number'] = true;
+    if (!/[@$!%*?&]/.test(value)) errors['special'] = true;
+    return Object.keys(errors).length > 0 ? errors : null;
+  });
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginFormConfigService {
-
   constructor(private readonly fb: FormBuilder) {}
 
   /**

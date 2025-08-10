@@ -6,10 +6,7 @@ import {
   ElementRef,
   ViewChild
 } from '@angular/core';
-import {
-  FormGroup,
-  ReactiveFormsModule
-} from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -47,10 +44,11 @@ export class RegisterFormComponent implements OnDestroy {
   isPrestataire = false;
   mainLogo = './assets/pictures/logo.png';
   apiError: string | null = null; // Pour stocker l'erreur d'API
-  private readonly routerSubscription?: Subscription;
+  private readonly routerSubscription?: Subscription; // conservé pour compat
   urlApi: string;
   showErrorSummary = false;
   errorSummaryItems: { id: string; label: string; message: string }[] = [];
+
   @ViewChild('registerErrorSummary') errorSummaryRef?: ElementRef<HTMLDivElement>;
 
   constructor(
@@ -69,10 +67,10 @@ export class RegisterFormComponent implements OnDestroy {
   }
 
   /**
-   * Détermine le type d'utilisateur à partir de l'URL
+   * Détermine le type d'utilisateur (unifié via la méthode publique)
    */
   private detectUserType(): void {
-    this.isPrestataire = this.userTypeDetector.detectUserTypeFromUrl();
+    this.isPrestataire = this.detectUserTypeFromUrl();
   }
 
   /**
@@ -91,9 +89,9 @@ export class RegisterFormComponent implements OnDestroy {
       this.handleInvalidForm();
       return;
     }
-
-    // Demander le consentement CGU via alerte/confirm
-    const accepted = window.confirm("En continuant, vous confirmez avoir lu et accepté nos CGU.\nVoulez-vous poursuivre ?");
+    const accepted = window.confirm(
+      "En continuant, vous confirmez avoir lu et accepté nos CGU.\nVoulez-vous poursuivre ?"
+    );
     if (accepted) {
       const apiConfig = this.apiBuilder.buildApiConfig(this.form, this.isPrestataire, this.urlApi);
       this.performRegistration(apiConfig);
@@ -104,7 +102,7 @@ export class RegisterFormComponent implements OnDestroy {
    * Gère les cas où le formulaire est invalide
    */
   private handleInvalidForm(): void {
-    console.warn('Formulaire d\'inscription invalide');
+    console.warn("Formulaire d'inscription invalide");
     this.form.markAllAsTouched();
     this.buildErrorSummary();
     this.showErrorSummary = this.errorSummaryItems.length > 0;
@@ -115,35 +113,22 @@ export class RegisterFormComponent implements OnDestroy {
   }
 
   /**
-   * Récupère la liste des champs manquants pour l'affichage
+   * Récupère la liste des champs manquants (source unique via service)
    */
   private getMissingFields(): string[] {
-    const requiredFields = this.isPrestataire
-      ? ['firstName', 'lastName', 'email', 'userSecret', 'phoneNumber', 'address', 'city', 'postalCode', 'companyName', 'siretSiren']
-      : ['firstName', 'lastName', 'email', 'userSecret', 'phoneNumber', 'address', 'city', 'postalCode'];
+    const fields = this.formConfigService.getRegistrationFields(this.isPrestataire);
+    const labels = this.formConfigService.getFieldLabels();
 
-    const missingFields: string[] = [];
-    const fieldLabels: { [key: string]: string } = {
-      firstName: 'Prénom',
-      lastName: 'Nom',
-      email: 'Email',
-      userSecret: 'Mot de passe',
-      phoneNumber: 'Téléphone',
-      address: 'Adresse',
-      city: 'Ville',
-      postalCode: 'Code postal',
-      companyName: 'Nom de l\'entreprise',
-      siretSiren: 'SIRET'
-    };
-
-    for (const fieldName of requiredFields) {
-      const control = this.form.get(fieldName);
-      if (!control || !control.value || control.value.trim() === '') {
-        missingFields.push(fieldLabels[fieldName] || fieldName);
+    const missing: string[] = [];
+    for (const name of fields) {
+      const ctrl = this.form.get(name);
+      const val = ctrl?.value;
+      const empty = val == null || (typeof val === 'string' && val.trim() === '');
+      if (!ctrl || empty) {
+        missing.push(labels[name] || name);
       }
     }
-
-    return missingFields;
+    return missing;
   }
 
   /**
@@ -164,15 +149,12 @@ export class RegisterFormComponent implements OnDestroy {
    * Effectue la requête d'inscription
    */
   private performRegistration(apiConfig: any): void {
-    // Réinitialiser l'erreur précédente
     this.apiError = null;
-
     this.registerService.performRegistration(apiConfig).subscribe({
       next: (response) => {
         this.registerService.handleRegistrationSuccess(response, this.isPrestataire);
       },
       error: (err) => {
-        // Spécifique: email déjà utilisé (409)
         if (err?.status === 409) {
           const emailControl = this.form.get('email');
           emailControl?.setErrors({ ...(emailControl.errors || {}), emailTaken: true });
@@ -187,25 +169,28 @@ export class RegisterFormComponent implements OnDestroy {
   }
 
   /**
+   * Message standardisé pour l'erreur d'injection
+   */
+  private dangerMsg(label: string): string {
+    return `${label} ne doit pas contenir de caractères spéciaux dangereux`;
+  }
+
+  /**
    * Construit un message unique pour les erreurs du mot de passe (comme login)
    */
   getPasswordErrorText(): string {
     const control = this.form?.get('userSecret');
     if (!control || !control.errors || !control.touched) return '';
-
     if (control.errors['required']) {
       return 'Le mot de passe est requis';
     }
-
     const constraints: string[] = [];
     if (control.errors['minLength']) constraints.push('au moins 8 caractères');
     if (control.errors['lowercase']) constraints.push('une minuscule');
     if (control.errors['uppercase']) constraints.push('une majuscule');
     if (control.errors['number']) constraints.push('un chiffre');
     if (control.errors['special']) constraints.push('un caractère spécial');
-
     if (constraints.length === 0) return '';
-
     const last = constraints.pop();
     const prefix = constraints.length > 0 ? constraints.join(', ') + ' et ' : '';
     return `Le mot de passe doit contenir ${prefix}${last}`;
@@ -218,93 +203,84 @@ export class RegisterFormComponent implements OnDestroy {
     const control = this.form?.get(fieldName);
     if (!control || !control.errors || !control.touched) return '';
 
+    const labels = this.formConfigService.getFieldLabels();
+    const L = (k: string) => labels[k] || k;
+
     switch (fieldName) {
       case 'firstName':
         if (control.errors['required']) return 'Le prénom est requis';
         if (control.errors['lettersOnly']) return 'Le prénom ne doit contenir que des lettres';
-        if (control.errors['injectionPrevention']) return 'Le prénom ne doit pas contenir de caractères spéciaux dangereux';
+        if (control.errors['injectionPrevention']) return this.dangerMsg(L('firstName'));
         break;
       case 'lastName':
         if (control.errors['required']) return 'Le nom est requis';
         if (control.errors['lettersOnly']) return 'Le nom ne doit contenir que des lettres';
-        if (control.errors['injectionPrevention']) return 'Le nom ne doit pas contenir de caractères spéciaux dangereux';
+        if (control.errors['injectionPrevention']) return this.dangerMsg(L('lastName'));
         break;
       case 'companyName':
         if (control.errors['required']) return "Le nom de l'entreprise est requis";
-        if (control.errors['injectionPrevention']) return "Le nom de l'entreprise ne doit pas contenir de caractères spéciaux dangereux";
+        if (control.errors['injectionPrevention']) return this.dangerMsg(L('companyName'));
         break;
       case 'siretSiren':
         if (control.errors['required']) return 'Le numéro SIRET est requis';
         if (control.errors['pattern']) return 'Le SIRET doit contenir 14 chiffres';
-        if (control.errors['injectionPrevention']) return 'Le SIRET ne doit pas contenir de caractères spéciaux dangereux';
+        if (control.errors['injectionPrevention']) return this.dangerMsg(L('siretSiren'));
         break;
       case 'email':
         if (control.errors['required']) return "L'email est requis";
         if (control.errors['emailFormat']) return "Format d'email invalide";
-        if (control.errors['injectionPrevention']) return "L'email ne doit pas contenir de caractères spéciaux dangereux";
+        if (control.errors['injectionPrevention']) return this.dangerMsg(L('email'));
         if (control.errors['emailTaken']) return 'Cet email est déjà utilisé';
         break;
       case 'phoneNumber':
         if (control.errors['required']) return 'Le numéro de téléphone est requis';
         if (control.errors['phoneNumberLength']) return 'Le numéro de téléphone doit contenir exactement 10 chiffres';
         if (control.errors['numbersOnly']) return 'Le numéro de téléphone ne doit contenir que des chiffres';
-        if (control.errors['injectionPrevention']) return 'Le numéro de téléphone ne doit pas contenir de caractères spéciaux dangereux';
+        if (control.errors['injectionPrevention']) return this.dangerMsg(L('phoneNumber'));
         break;
       case 'address':
         if (control.errors['required']) return "L'adresse est requise";
-        if (control.errors['injectionPrevention']) return "L'adresse ne doit pas contenir de caractères spéciaux dangereux";
+        if (control.errors['injectionPrevention']) return this.dangerMsg(L('address'));
         break;
       case 'postalCode':
         if (control.errors['required']) return 'Le code postal est requis';
         if (control.errors['pattern']) return 'Le code postal doit contenir 5 chiffres';
-        if (control.errors['injectionPrevention']) return 'Le code postal ne doit pas contenir de caractères spéciaux dangereux';
+        if (control.errors['injectionPrevention']) return this.dangerMsg(L('postalCode'));
         break;
       case 'city':
         if (control.errors['required']) return 'La ville est requise';
         if (control.errors['lettersOnly']) return 'La ville ne doit contenir que des lettres';
-        if (control.errors['injectionPrevention']) return 'La ville ne doit pas contenir de caractères spéciaux dangereux';
+        if (control.errors['injectionPrevention']) return this.dangerMsg(L('city'));
         break;
     }
-
     return '';
   }
 
   /**
    * Construit le résumé des erreurs du formulaire d'inscription
-   * Parcourt tous les champs du formulaire et ajoute les erreurs à errorSummaryItems
-   * Gère différemment les champs selon le type d'utilisateur (particulier/prestataire)
+   * (utilise la source unique fields + labels depuis le service)
    */
   private buildErrorSummary(): void {
+    const labels = this.formConfigService.getFieldLabels();
+    const fields = this.formConfigService.getRegistrationFields(this.isPrestataire);
+
     const items: { id: string; label: string; message: string }[] = [];
     const add = (id: string, label: string, message: string | null) => {
       if (message) items.push({ id, label, message });
-    };
-    const getMsg = (name: string) => this.getFieldErrorText(name);
-
-    const fields = this.isPrestataire
-      ? ['firstName','lastName','companyName','siretSiren','email','phoneNumber','address','postalCode','city','userSecret']
-      : ['firstName','lastName','email','phoneNumber','address','postalCode','city','userSecret'];
-
-    const labels: Record<string,string> = {
-      firstName: 'Prénom', lastName: 'Nom', companyName: "Nom de l'entreprise",
-      siretSiren: 'SIRET', email: 'Email', phoneNumber: 'Téléphone', address: 'Adresse',
-      postalCode: 'Code postal', city: 'Ville', userSecret: 'Mot de passe'
     };
 
     for (const f of fields) {
       const ctrl = this.form.get(f);
       if (ctrl && ctrl.invalid) {
-        const msg = f === 'userSecret' ? this.getPasswordErrorText() : getMsg(f);
-        add(f, labels[f], msg);
+        const msg = f === 'userSecret' ? this.getPasswordErrorText() : this.getFieldErrorText(f);
+        add(f, labels[f] || f, msg);
       }
     }
-
     this.errorSummaryItems = items;
   }
 
   /**
    * Met le focus sur un champ spécifique du formulaire
-   * @param fieldId - L'ID du champ à focaliser
    */
   focusField(fieldId: string): void {
     const el = document.getElementById(fieldId) as HTMLElement | null;
@@ -313,7 +289,6 @@ export class RegisterFormComponent implements OnDestroy {
 
   /**
    * Met le focus sur le premier champ invalide du formulaire
-   * Utilise le premier élément de errorSummaryItems pour déterminer quel champ focaliser
    */
   private focusFirstInvalidField(): void {
     const first = this.errorSummaryItems[0];
@@ -343,23 +318,23 @@ export class RegisterFormComponent implements OnDestroy {
     }
   }
 
+
   /**
    * Récupère le titre du formulaire selon le type d'utilisateur
    */
   getFormTitle(): string {
-    return this.isPrestataire ?
-      this.userTypeDetector.getPrestataireFormTitle() :
-      this.userTypeDetector.getParticulierFormTitle();
+    return this.isPrestataire
+      ? this.userTypeDetector.getPrestataireFormTitle()
+      : this.userTypeDetector.getParticulierFormTitle();
   }
 
   /**
    * Retourne le type d'utilisateur sous forme de chaîne pour affichage.
-   * @returns Le type d'utilisateur détecté (par ex. 'prestataire' ou 'particulier').
    */
   getUserTypeString(): string {
-    return this.isPrestataire ?
-      this.userTypeDetector.getPrestataireUserTypeString() :
-      this.userTypeDetector.getParticulierUserTypeString();
+    return this.isPrestataire
+      ? this.userTypeDetector.getPrestataireUserTypeString()
+      : this.userTypeDetector.getParticulierUserTypeString();
   }
 
   /**
@@ -378,8 +353,6 @@ export class RegisterFormComponent implements OnDestroy {
 
   /**
    * Récupère le libellé d'un champ selon le type d'utilisateur.
-   * @param fieldName Le nom du champ de formulaire.
-   * @returns Le libellé à afficher pour le champ.
    */
   getFieldLabel(fieldName: string): string {
     return this.formConfigService.getFieldLabel(fieldName, this.isPrestataire);
@@ -387,8 +360,6 @@ export class RegisterFormComponent implements OnDestroy {
 
   /**
    * Récupère le placeholder d'un champ selon le type d'utilisateur.
-   * @param fieldName Le nom du champ de formulaire.
-   * @returns Le placeholder à afficher pour le champ.
    */
   getFieldPlaceholder(fieldName: string): string {
     return this.formConfigService.getFieldPlaceholder(fieldName, this.isPrestataire);
@@ -396,34 +367,27 @@ export class RegisterFormComponent implements OnDestroy {
 
   /**
    * Récupère le type d'input d'un champ selon le type d'utilisateur.
-   * @param fieldName Le nom du champ de formulaire.
-   * @returns Le type d'input (ex: 'text', 'email', 'password').
    */
   getFieldType(fieldName: string): string {
-    return this.formConfigService.getFieldType(fieldName, this.isPrestataire);
+    return this.formConfigService.getFieldType(fieldName);
   }
 
   /**
    * Indique si un champ est requis selon le type d'utilisateur.
-   * @param fieldName Le nom du champ de formulaire.
-   * @returns true si le champ est requis, sinon false.
    */
   getFieldRequired(fieldName: string): boolean {
     return this.formConfigService.getFieldRequired(fieldName, this.isPrestataire);
   }
 
   /**
-   * Détecte le type d'utilisateur à partir de l'URL courante.
-   * @returns true si l'utilisateur est un prestataire, sinon false.
+   * Détecte le type d'utilisateur à partir de l'URL courante (exposé publiquement)
    */
   detectUserTypeFromUrl(): boolean {
     return this.userTypeDetector.detectUserTypeFromUrl();
   }
 
   /**
-   * Détecte le type d'utilisateur à partir d'une chaîne fournie.
-   * @param str Chaîne de détection (ex: segment d'URL ou paramètre).
-   * @returns true si la chaîne indique un prestataire, sinon false.
+   * Détecte le type d'utilisateur à partir d'une chaîne fournie (exposé publiquement)
    */
   detectUserTypeFromString(str: string): boolean {
     return this.userTypeDetector.detectUserTypeFromString(str);
@@ -431,7 +395,6 @@ export class RegisterFormComponent implements OnDestroy {
 
   /**
    * Retourne l'URL de base de l'API provenant de la configuration d'application.
-   * @returns L'URL de l'API.
    */
   getApiUrl(): string {
     return this.configService.apiUrl;

@@ -51,25 +51,89 @@ describe('RegisterFormComponent', () => {
     validationServiceMock.areAllRequiredFieldsFilled.and.returnValue(false);
     validationServiceMock.getFieldClasses.and.returnValue('');
 
-    formConfigServiceMock = jasmine.createSpyObj<RegisterFormConfigService>(
-      'RegisterFormConfigService',
-      [
-        'createRegistrationForm',
-        'updateValidatorsBasedOnUserType',
-        'shouldShowField',
-        'getFieldLabel',
-        'getFieldPlaceholder',
-        'getFieldType',
-        'getFieldRequired'
-      ]
-    );
-    formConfigServiceMock.createRegistrationForm.and.returnValue(testForm);
-    formConfigServiceMock.updateValidatorsBasedOnUserType.and.stub();
-    formConfigServiceMock.shouldShowField.and.returnValue(true);
-    formConfigServiceMock.getFieldLabel.and.returnValue('');
-    formConfigServiceMock.getFieldPlaceholder.and.returnValue('');
-    formConfigServiceMock.getFieldType.and.returnValue('text');
-    formConfigServiceMock.getFieldRequired.and.returnValue(true);
+         formConfigServiceMock = jasmine.createSpyObj<RegisterFormConfigService>(
+       'RegisterFormConfigService',
+       [
+         'createRegistrationForm',
+         'updateValidatorsBasedOnUserType',
+         'shouldShowField',
+         'getFieldLabel',
+         'getFieldPlaceholder',
+         'getFieldType',
+         'getFieldRequired',
+         'getRegistrationFields',
+         'getFieldLabels'
+       ]
+     );
+         formConfigServiceMock.createRegistrationForm.and.returnValue(testForm);
+     formConfigServiceMock.updateValidatorsBasedOnUserType.and.stub();
+     formConfigServiceMock.shouldShowField.and.callFake((fieldName: string, isPrestataire: boolean) => {
+       const prestataireOnly = ['companyName', 'siretSiren'];
+       return prestataireOnly.includes(fieldName) ? isPrestataire : true;
+     });
+     formConfigServiceMock.getFieldLabel.and.callFake((fieldName: string, isPrestataire: boolean) => {
+       const labels: Record<string, string> = {
+         firstName: 'Prénom',
+         lastName: 'Nom',
+         email: 'Email',
+         userSecret: 'Mot de passe',
+         phoneNumber: 'Téléphone',
+         address: 'Adresse',
+         city: 'Ville',
+         postalCode: 'Code postal',
+         companyName: isPrestataire ? "Nom de l'entreprise" : '',
+         siretSiren: isPrestataire ? 'SIRET' : ''
+       };
+       return labels[fieldName] || fieldName;
+     });
+     formConfigServiceMock.getFieldPlaceholder.and.callFake((fieldName: string, isPrestataire: boolean) => {
+       const placeholders: Record<string, string> = {
+         firstName: 'Jean',
+         lastName: 'Dupont',
+         email: 'exemple@mail.com',
+         userSecret: '********',
+         phoneNumber: '0601020304',
+         address: '123 rue Exemple',
+         city: 'Paris',
+         postalCode: '75000',
+         companyName: isPrestataire ? 'Votre entreprise' : '',
+         siretSiren: isPrestataire ? 'Numéro SIRET (14 chiffres)' : ''
+       };
+       return placeholders[fieldName] || '';
+     });
+     formConfigServiceMock.getFieldType.and.callFake((fieldName: string) => {
+       const types: Record<string, string> = {
+         email: 'email',
+         userSecret: 'password',
+         siretSiren: 'text'
+       };
+       return types[fieldName] || 'text';
+     });
+     formConfigServiceMock.getFieldRequired.and.callFake((fieldName: string, isPrestataire: boolean) => {
+       if (fieldName === 'companyName' || fieldName === 'siretSiren') {
+         return isPrestataire;
+       }
+       return true;
+     });
+     formConfigServiceMock.getRegistrationFields.and.callFake((isPrestataire: boolean) => {
+       if (isPrestataire) {
+         return ['firstName', 'lastName', 'companyName', 'siretSiren', 'email', 'phoneNumber', 'address', 'postalCode', 'city', 'userSecret'];
+       } else {
+         return ['firstName', 'lastName', 'email', 'phoneNumber', 'address', 'postalCode', 'city', 'userSecret'];
+       }
+     });
+     formConfigServiceMock.getFieldLabels.and.returnValue({
+       firstName: 'Prénom',
+       lastName: 'Nom',
+       email: 'Email',
+       userSecret: 'Mot de passe',
+       phoneNumber: 'Téléphone',
+       address: 'Adresse',
+       city: 'Ville',
+       postalCode: 'Code postal',
+       companyName: "Nom de l'entreprise",
+       siretSiren: 'SIRET'
+     });
 
     userTypeDetectorMock = jasmine.createSpyObj<UserTypeDetectorService>(
       'UserTypeDetectorService',
@@ -402,20 +466,20 @@ describe('RegisterFormComponent', () => {
   });
 
   it('should delegate form configuration methods correctly', () => {
-    expect(component.shouldShowField('testField')).toBeTrue();
-    expect(formConfigServiceMock.shouldShowField).toHaveBeenCalledWith('testField', false);
+         expect(component.shouldShowField('testField')).toBeTrue();
+     expect(formConfigServiceMock.shouldShowField).toHaveBeenCalledWith('testField', false);
 
-    expect(component.getFieldLabel('testField')).toBe('');
-    expect(formConfigServiceMock.getFieldLabel).toHaveBeenCalledWith('testField', false);
+     expect(component.getFieldLabel('testField')).toBe('testField');
+     expect(formConfigServiceMock.getFieldLabel).toHaveBeenCalledWith('testField', false);
 
-    expect(component.getFieldPlaceholder('testField')).toBe('');
-    expect(formConfigServiceMock.getFieldPlaceholder).toHaveBeenCalledWith('testField', false);
+     expect(component.getFieldPlaceholder('testField')).toBe('');
+     expect(formConfigServiceMock.getFieldPlaceholder).toHaveBeenCalledWith('testField', false);
 
-    expect(component.getFieldType('testField')).toBe('text');
-    expect(formConfigServiceMock.getFieldType).toHaveBeenCalledWith('testField', false);
+     expect(component.getFieldType('testField')).toBe('text');
+     expect(formConfigServiceMock.getFieldType).toHaveBeenCalledWith('testField');
 
-    expect(component.getFieldRequired('testField')).toBeTrue();
-    expect(formConfigServiceMock.getFieldRequired).toHaveBeenCalledWith('testField', false);
+     expect(component.getFieldRequired('testField')).toBeTrue();
+     expect(formConfigServiceMock.getFieldRequired).toHaveBeenCalledWith('testField', false);
   });
 
   it('should delegate validation methods correctly', () => {
