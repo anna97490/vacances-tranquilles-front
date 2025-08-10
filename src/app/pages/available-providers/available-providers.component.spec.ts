@@ -146,6 +146,8 @@ const mockUser: User = new User({
     component.ngOnInit();
     tick();
     expect(userInfoServiceSpy.getUserById).toHaveBeenCalled();
+    // Vérifier qu'un utilisateur minimal est créé en cas d'erreur
+    expect(component.providersInfo.get(1)).toBeDefined();
   }));
 
   it('should return correct formattedCriteria', () => {

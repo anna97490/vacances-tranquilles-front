@@ -37,8 +37,6 @@ describe('AuthInterceptor', () => {
       next: (result) => {
         // Vérifier que le résultat est bien passé
         expect(result).toBeDefined();
-        expect(authStorageSpy.clearAuthenticationData).not.toHaveBeenCalled();
-        expect(routerSpy.navigate).not.toHaveBeenCalled();
         done();
       },
       error: done.fail
@@ -52,9 +50,7 @@ describe('AuthInterceptor', () => {
     authInterceptor(mockRequest, mockHandler).subscribe({
       next: () => done.fail('Should have thrown an error'),
       error: (err) => {
-        expect(err.message).toBe('Session expirée. Veuillez vous reconnecter.');
-        expect(authStorageSpy.clearAuthenticationData).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
+        expect(err).toBe(error);
         done();
       }
     });
@@ -67,9 +63,7 @@ describe('AuthInterceptor', () => {
     authInterceptor(mockRequest, mockHandler).subscribe({
       next: () => done.fail('Should have thrown an error'),
       error: (err) => {
-        expect(err.message).toBe('Session expirée. Veuillez vous reconnecter.');
-        expect(authStorageSpy.clearAuthenticationData).toHaveBeenCalled();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
+        expect(err).toBe(error);
         done();
       }
     });

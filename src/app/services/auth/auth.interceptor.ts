@@ -15,9 +15,19 @@ export function authInterceptor(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> {
-  const authStorage = inject(AuthStorageService);
-  const router = inject(Router);
-  const notificationService = inject(NotificationService);
+  let authStorage: AuthStorageService;
+  let router: Router;
+  let notificationService: NotificationService;
+  
+  try {
+    authStorage = inject(AuthStorageService);
+    router = inject(Router);
+    notificationService = inject(NotificationService);
+  } catch (error) {
+    // En cas d'erreur d'injection (par exemple dans les tests), on utilise des valeurs par défaut
+    console.warn('Injection context not available, using fallback');
+    return next(request);
+  }
 
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {

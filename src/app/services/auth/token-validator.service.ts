@@ -23,6 +23,7 @@ export class TokenValidatorService {
       const payload = this.decodeToken(token);
       
       if (!payload) {
+        this.authStorage.clearAuthenticationData();
         return false;
       }
 
