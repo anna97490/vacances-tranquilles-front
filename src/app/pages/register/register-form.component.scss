@@ -1,0 +1,221 @@
+.back-btn {
+  top: 2rem;
+  left: 2rem;
+  color:  var(--button-color);
+  background-color: var(--primary-color);
+  border: none;
+  padding: 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--tertiary-color);
+  }
+
+  &:focus-visible {
+    outline: 3px solid #1f5f8b;
+    outline-offset: 2px;
+  }
+}
+
+.register-container {
+  min-height: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 2.5rem;
+  box-sizing: border-box;
+}
+
+h2 {
+  color: var(--text-color);
+}
+
+.mat-mdc-text-field-wrapper {
+  height: 56px !important;
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.register-icon {
+  font-size: 2.5rem;
+  color: var(--quaternary-color) !important;
+  margin-bottom: 0.5rem;
+}
+
+.register-header h2 {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0.5rem 0 0.2rem 0;
+}
+
+.register-subtitle {
+  color: var(--text-color);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.mat-mdc-floating-label {
+  top: 10px;
+}
+
+.register-form {
+  background: var(--secondary-text-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  padding: 2.2rem 2rem 1.5rem 2rem;
+  width: 100%;
+  max-width: 35vw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-sizing: border-box;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-group {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+// Styles pour les messages d'erreur
+.error-message {
+  color: #d32f2f;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.error-message span {
+  display: block;
+}
+
+.register-btn {
+  margin-top: 1.2rem;
+  background: var(--text-color) !important;
+  color: var(--secondary-text-color) !important;
+  font-weight: 500;
+  font-size: 1.08rem;
+  border-radius: 6px !important;
+  height: 44px !important;
+}
+
+.register-login {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.register-login a {
+  color: var(--quaternary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register-container > app-footer {
+  margin-top: auto;
+}
+
+.logo {
+  height: 80px;
+  margin-bottom: 0.7rem;
+}
+
+.required-asterisk {
+  color: #d32f2f;
+  font-weight: 700;
+}
+
+
+
+@media (max-width: 1024px) {
+  .register-form {
+    max-width: 50vw;
+  }
+  .general-error-message {
+    max-width: 50vw;
+  }
+}
+
+@media (max-width: 600px) {
+  .register-form {
+    padding: 1.2rem 0.5rem 1rem 0.5rem;
+    max-width: 80vw;
+  }
+  .general-error-message {
+    max-width: 80vw;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+}
+
+// Uniformiser la hauteur de tous les champs du formulaire
+::ng-deep .custom-form-field .mat-form-field-infix {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+// Style pour les labels au-dessus des champs
+::ng-deep .form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #9e9e9e !important; // Gris clair avec !important pour forcer l'application
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+// Style du bouton conforme à la maquette
+.styled-btn {
+  width: 100%;
+  background: var(--text-color) !important;
+  color: var(--secondary-text-color) !important;
+  border-radius: 6px !important;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-top: 1.5rem;
+  padding: 0.75rem 0 !important;
+  box-shadow: none !important;
+  display: block;
+  text-align: center;
+}
+
+// Placeholders en gris clair
+::ng-deep .mat-mdc-input-element::placeholder {
+  color: #9e9e9e !important;
+  opacity: 1; // assure la visibilité sur Firefox
+}
+
+// Compatibilité ancienne API Material
+::ng-deep .mat-input-element::placeholder {
+  color: #9e9e9e !important;
+  opacity: 1;
+}

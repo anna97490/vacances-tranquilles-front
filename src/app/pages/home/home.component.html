@@ -1,0 +1,31 @@
+<div class="homepage-container">
+  <main class="content">
+    <div class="logo">
+        <img [src]="mainLogo" class="logo" alt="" />
+    </div>
+    <h2 class="title">{{ content.title }}</h2>
+    <div class="subtitle">{{ content.subtitle }}</div>
+    <div class="intro-text">{{ content.introText }}</div>
+    <div class="cta-buttons">
+      <button class="btn blue" routerLink="/auth/register/prestataire">{{ content.btnPrestataire }}</button>
+      <button class="btn blue" routerLink="/auth/register/particulier">{{ content.btnParticulier }}</button>
+      <button class="btn grey" routerLink="/auth/login">{{ content.btnConnexion }}</button>
+    </div>
+  </main>
+  <section class="features-section">
+    <h3 class="features-title">{{ content.featuresTitle }}</h3>
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of content.features">
+        <ng-container *ngIf="feature.iconType === 'custom'; else materialIcon">
+          <img [src]="feature.icon" class="feature-icon" alt="" />
+        </ng-container>
+        <ng-template #materialIcon>
+          <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+        </ng-template>
+        <div class="feature-title">{{ feature.title }}</div>
+        <div class="feature-desc">{{ feature.desc }}</div>
+      </div>
+    </div>
+  </section>
+  <app-footer></app-footer>
+</div>
