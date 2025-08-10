@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -6,48 +6,47 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { ConfigService } from '../../services/config/config.service';
+import { finalize, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-success',
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule],
   templateUrl: './success.component.html',
-  styleUrl: './success.component.scss'
+  styleUrls: ['./success.component.scss']
 })
 export class SuccessComponent implements OnInit {
-  message: string = '';
-  isLoading: boolean = true;
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private configService = inject(ConfigService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private http: HttpClient,
-    private configService: ConfigService
-  ) {}
+  message = '';
+  isLoading = true;
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      const sessionId = params['session_id'];
-      if (sessionId) {
-        this.confirmReservation(sessionId);
-      } else {
-        this.message = '❌ Paramètre de session manquant.';
-        this.isLoading = false;
-      }
-    });
+  async ngOnInit(): Promise<void> {
+    // Attendre que la configuration soit chargée
+    await this.configService.waitForConfig();
+    
+    const sessionId = this.route.snapshot.queryParamMap.get('session_id');
+    if (!sessionId) {
+      this.isLoading = false;
+      this.message = '❌ Paramètre de session manquant.';
+      return;
+    }
+    this.confirmReservation(sessionId);
   }
 
   private confirmReservation(sessionId: string): void {
-    this.http.post(`${this.configService.apiUrl}/reservations/confirm`, { sessionId })
+    this.http.post(`${this.configService.apiUrl}/stripe/confirm-reservation`, { sessionId })
+      .pipe(finalize(() => (this.isLoading = false)), take(1))
       .subscribe({
         next: () => {
           this.message = '✅ Réservation confirmée !';
-          this.isLoading = false;
         },
         error: (error) => {
           console.error('Erreur lors de la confirmation:', error);
           this.message = '❌ Une erreur est survenue lors de la confirmation.';
-          this.isLoading = false;
         }
       });
   }
@@ -55,4 +54,4 @@ export class SuccessComponent implements OnInit {
   goToHome(): void {
     this.router.navigate(['/home']);
   }
-} 
+}

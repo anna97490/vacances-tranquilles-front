@@ -23,7 +23,6 @@ export class ConfigService {
     try {
       const config = await firstValueFrom(this.http.get('/assets/config.json'));
       this.config = config;
-      console.log('Configuration chargée:', this.config);
     } catch (error) {
       console.error('Erreur lors du chargement de config.json:', error);
       throw new Error('Impossible de charger la configuration. Vérifiez que le fichier config.json existe dans /assets/');
