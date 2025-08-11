@@ -1,88 +1,113 @@
-# Implémentation de la récupération des informations utilisateur connecté
+# Gestion du Profil Utilisateur - Frontend
 
 ## Vue d'ensemble
 
-Cette implémentation permet de récupérer et d'afficher les informations de l'utilisateur connecté (`loggedUser`) sur la page profil lorsqu'on clique sur "Profil" dans le header.
+Cette implémentation permet la synchronisation complète entre le frontend Angular et le backend Spring Boot pour la gestion du profil utilisateur.
 
-## Fonctionnalités implémentées
+## Architecture
 
-### 1. Récupération des données utilisateur
-- **Service utilisé** : `UserInformationService.getUserProfile()`
-- **Méthode** : Appel API GET vers `/users/profile` avec authentification Bearer token
-- **Gestion d'erreur** : Fallback vers les données mock en cas d'échec
-- **Propriétés** : 
-  - `loggedUser` : Utilisateur connecté (récupéré via API)
-  - `displayedUser` : Utilisateur affiché (peut être le même que loggedUser ou un autre utilisateur)
+### Composants principaux
 
-### 2. États de l'interface utilisateur
-- **Chargement** : Spinner avec message "Chargement des informations du profil..."
-- **Erreur** : Message d'erreur avec bouton "Réessayer"
-- **Succès** : Affichage des informations utilisateur
+1. **ProfilePageComponent** (`src/app/pages/ProfilePage/`)
+   - Composant parent qui gère l'affichage et l'édition du profil
+   - Bascule entre mode affichage et mode édition
+   - Coordonne la sauvegarde des modifications
 
-### 3. Navigation
-- **Route** : `/profile` (corrigée depuis `/profil`)
-- **Accès** : Via le menu "Profil" dans le header
+2. **DisplayProfileComponent** (`src/app/components/profile/display-profile/`)
+   - Affiche les informations du profil en lecture seule
+   - Se met à jour automatiquement après les modifications
 
-## Fichiers modifiés
+3. **UpdateProfileComponent** (`src/app/components/profile/update-profile/`)
+   - Permet la modification des informations du profil
+   - Gère la sauvegarde vers le backend
 
-### 1. `src/app/pages/ProfilePage/profilePage.component.ts`
-- Ajout de l'injection du `UserInformationService`
-- Implémentation de `ngOnInit()` pour charger les données
-- Ajout des propriétés `isLoading` et `hasError`
-- Renommage de `user` en `displayedUser` pour plus de clarté
-- Méthode `loadLoggedUserData()` pour récupérer les données
-- Méthode `retryLoadData()` pour recharger en cas d'erreur
-- Méthode `isCurrentUserProfile()` pour vérifier si l'utilisateur affiché est le même que l'utilisateur connecté
+### Services
 
-### 2. `src/app/pages/ProfilePage/profilePage.component.html`
-- Ajout des états de chargement et d'erreur
-- Structure conditionnelle pour afficher le contenu approprié
-- Bouton de retry en cas d'erreur
-- Condition `*ngIf="isCurrentUserProfile()"` pour afficher le bouton "Modifier" uniquement si l'utilisateur affiché est le même que l'utilisateur connecté
+1. **UserInformationService** (`src/app/services/user-information/user-information.service.ts`)
+   - Service existant étendu pour gérer le profil utilisateur
+   - Méthodes ajoutées :
+     - `updateUserProfile(updateDTO)` : Met à jour le profil utilisateur
+     - `getUserProfileWithServices()` : Récupère le profil avec les services
+   - Endpoints : GET /users/profile, PATCH /users/profile
 
-### 3. `src/app/pages/ProfilePage/profilePage.component.scss`
-- Styles pour le spinner de chargement
-- Styles pour les messages d'erreur
-- Animation de rotation pour l'icône de chargement
+### Modèles
 
-### 4. `src/app/components/header/header.component.ts`
-- Correction du chemin de navigation : `/profil` → `/profile`
+1. **UpdateUserDTO** (`src/app/models/UpdateUserDTO.ts`)
+   - Interface pour les données de mise à jour du profil
+   - Correspond au DTO backend
+
+2. **UserProfileDTO** (`src/app/models/UserProfileDTO.ts`)
+   - Interface pour la réponse du profil utilisateur
+   - Contient l'utilisateur et ses services
 
 ## Flux de données
 
-1. **Clic sur "Profil"** dans le header
-2. **Navigation** vers `/profile`
-3. **Chargement** du `ProfilePageComponent`
-4. **Appel API** `getUserProfile()` via `UserInformationService`
-5. **Mise à jour** des propriétés `loggedUser` et `displayedUser`
-6. **Affichage** des informations dans `DisplayProfileComponent`
+### Chargement initial
+1. `ProfilePageComponent` charge les données via `UserInformationService`
+2. Les données sont passées aux composants enfants via `@Input()`
 
-## Gestion de l'authentification
+### Mode édition
+1. L'utilisateur clique sur "Modifier"
+2. `ProfilePageComponent` bascule en mode édition
+3. `UpdateProfileComponent` affiche les formulaires d'édition
 
-- **Token** : Récupéré automatiquement depuis `localStorage`
-- **Intercepteur** : `authInterceptor` ajoute le header `Authorization: Bearer {token}`
-- **Expiration** : Redirection automatique vers `/auth/login` si token expiré
+### Sauvegarde
+1. L'utilisateur clique sur "Valider les modifications"
+2. `ProfilePageComponent` appelle `saveProfileChanges()`
+3. `UpdateProfileComponent.saveProfile()` envoie les données au backend
+4. Le backend répond avec les données mises à jour
+5. Les composants se mettent à jour automatiquement
+6. Retour en mode affichage
+
+### Gestion des services
+Les services sont gérés localement dans le composant `UpdateProfileServicesComponent` et synchronisés avec le parent via les événements. La sauvegarde vers le backend se fait via la méthode `saveProfile()` du composant parent.
+
+## Endpoints Backend
+
+### Profil utilisateur
+- `GET /api/users/profile` - Récupérer le profil
+- `PATCH /api/users/profile` - Mettre à jour le profil
+- `DELETE /api/users/profile` - Supprimer le compte
+
+### Services (optionnel)
+Les services peuvent être gérés localement ou via des endpoints backend si nécessaire :
+- `GET /api/services/provider/{providerId}` - Services d'un prestataire
+- `POST /api/services` - Créer un service
+- `PATCH /api/services/{serviceId}` - Modifier un service
+- `DELETE /api/services/{serviceId}` - Supprimer un service
 
 ## Gestion des erreurs
 
-- **Erreur réseau** : Affichage du message d'erreur avec bouton retry
-- **Erreur 401/403** : Redirection automatique vers la page de connexion
-- **Fallback** : Utilisation des données mock en cas d'échec
+- Affichage de messages d'erreur via `MatSnackBar`
+- Logs d'erreur dans la console
+- Gestion des états de chargement et de sauvegarde
+
+## Sécurité
+
+- Utilisation de l'intercepteur d'authentification (`authInterceptor`)
+- Validation des données côté frontend et backend
+- Gestion des tokens d'authentification
 
 ## Tests
 
-L'application compile sans erreur et est prête pour les tests fonctionnels.
+Les composants incluent des tests unitaires avec Jasmine/Karma.
+Les services peuvent être testés avec des mocks pour les appels HTTP.
 
-## Fonctionnalités supplémentaires
+## Utilisation
 
-### Redirection automatique après connexion
-- **CLIENT** : Redirection vers `/service-search`
-- **PROVIDER** : Redirection vers `/profile` (nouveau)
-- **ADMIN** : Redirection vers `/home`
+```typescript
+// Dans un composant
+constructor(private userInformationService: UserInformationService) {}
 
-## Prochaines étapes
+// Charger le profil
+this.userInformationService.getUserProfileWithServices().subscribe(profile => {
+  this.user = profile.user;
+  this.services = profile.services;
+});
 
-1. Tester la connexion avec un vrai utilisateur
-2. Vérifier l'affichage des données dans les composants enfants
-3. Implémenter la mise à jour des informations utilisateur
-4. Ajouter des tests unitaires pour le `ProfilePageComponent`
+// Mettre à jour le profil
+const updateDTO: UpdateUserDTO = { firstName: 'Nouveau prénom' };
+this.userInformationService.updateUserProfile(updateDTO).subscribe(updatedProfile => {
+  // Traitement de la réponse
+});
+```

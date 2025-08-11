@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DisplayProfileComponent } from '../../components/profile/display-profile/display-profile.component';
 import { UpdateProfileComponent } from '../../components/profile/update-profile/update-profile.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/User';
 import { Service } from '../../models/Service';
@@ -13,11 +14,14 @@ import { UserRole } from '../../models/User';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [DisplayProfileComponent, UpdateProfileComponent, MatButtonModule, MatIconModule, CommonModule],
+  imports: [DisplayProfileComponent, UpdateProfileComponent, MatButtonModule, MatIconModule, MatSnackBarModule, CommonModule],
   templateUrl: './profilePage.component.html',
   styleUrl: './profilePage.component.scss'
 })
 export class ProfilePageComponent implements OnInit {
+  @ViewChild(DisplayProfileComponent) displayProfileComponent!: DisplayProfileComponent;
+  @ViewChild(UpdateProfileComponent) updateProfileComponent!: UpdateProfileComponent;
+
   /**
    * Indique si le mode édition est activé
    */
@@ -33,6 +37,11 @@ export class ProfilePageComponent implements OnInit {
    */
   hasError = false;
 
+  /**
+   * Indique si une sauvegarde est en cours
+   */
+  isSaving = false;
+
   displayedUser: User | null = null;
   services: Service[] = [];
   loggedUser: User | null = null;
@@ -40,7 +49,8 @@ export class ProfilePageComponent implements OnInit {
 
   constructor(
     private readonly userInformationService: UserInformationService,
-    private readonly authStorageService: AuthStorageService
+    private readonly authStorageService: AuthStorageService,
+    private readonly snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -67,7 +77,7 @@ export class ProfilePageComponent implements OnInit {
         this.loggedUser = {
           ...userData,
           role: this.userRole || UserRole.CLIENT // fallback par défaut
-        };
+        } as User;
         
         // Si c'est le profil de l'utilisateur connecté, on met aussi à jour displayedUser
         this.displayedUser = { ...this.loggedUser };
@@ -79,6 +89,19 @@ export class ProfilePageComponent implements OnInit {
         this.hasError = true;
       }
     });
+
+    // Charger les services séparément si l'utilisateur est un prestataire
+    if (this.userRole === 'PROVIDER') {
+      this.userInformationService.getMyServices().subscribe({
+        next: (services: Service[]) => {
+          this.services = services;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la récupération des services:', error);
+          this.services = [];
+        }
+      });
+    }
   }
 
   /**
@@ -89,10 +112,19 @@ export class ProfilePageComponent implements OnInit {
   }
 
   toggleEditMode(): void {
-    this.isEditMode = !this.isEditMode;
+    if (this.isEditMode) {
+      // Si on sort du mode édition, sauvegarder les modifications
+      this.saveProfileChanges();
+    } else {
+      // Entrer en mode édition
+      this.isEditMode = true;
+    }
   }
 
   getButtonText(): string {
+    if (this.isSaving) {
+      return 'Sauvegarde...';
+    }
     return this.isEditMode ? 'Valider les modifications' : 'Modifier';
   }
 
@@ -102,6 +134,36 @@ export class ProfilePageComponent implements OnInit {
   onProfileDataChange(event: { user?: User; services?: Service[] }) {
     if (event.user) this.displayedUser = { ...event.user };
     if (event.services) this.services = [...event.services];
+  }
+
+  /**
+   * Sauvegarde les modifications du profil vers le backend
+   */
+  private saveProfileChanges(): void {
+    if (!this.displayedUser) {
+      this.snackBar.open('Aucune donnée à sauvegarder', 'Fermer', { duration: 3000 });
+      return;
+    }
+
+    this.isSaving = true;
+
+    // Appeler la méthode saveProfile du composant update-profile
+    if (this.updateProfileComponent) {
+      this.updateProfileComponent.saveProfile();
+    }
+
+    // Attendre un peu pour simuler la sauvegarde puis sortir du mode édition
+    setTimeout(() => {
+      this.isEditMode = false;
+      this.isSaving = false;
+      
+      // Mettre à jour le composant d'affichage
+      if (this.displayProfileComponent && this.displayedUser) {
+        this.displayProfileComponent.updateProfileData(this.displayedUser, this.services);
+      }
+      
+      this.snackBar.open('Profil mis à jour avec succès', 'Fermer', { duration: 3000 });
+    }, 1000);
   }
 
   /**

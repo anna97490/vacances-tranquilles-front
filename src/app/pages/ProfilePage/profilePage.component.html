@@ -29,7 +29,7 @@
   </ng-template>
 
   <div class="profile-action-btn-container" *ngIf="isCurrentUserProfile()">
-    <button mat-raised-button class="profile-action-btn" (click)="toggleEditMode()">
+    <button mat-raised-button class="profile-action-btn" (click)="toggleEditMode()" [disabled]="isSaving">
       <mat-icon class="icon-left">{{ isEditMode ? 'done' : 'edit' }}</mat-icon>
       {{ getButtonText() }}
     </button>

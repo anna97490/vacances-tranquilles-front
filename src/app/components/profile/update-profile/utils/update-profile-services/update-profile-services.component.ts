@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Service, ServiceCategory } from '../../../../../models/Service';
+import { UserInformationService } from '../../../../../services/user-information/user-information.service';
 
 /**
  * Composant de modification des services proposés dans le profil utilisateur.
@@ -50,7 +51,8 @@ export class UpdateProfileServicesComponent {
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private userInformationService: UserInformationService
   ) {
     this.serviceForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
@@ -106,26 +108,45 @@ export class UpdateProfileServicesComponent {
       if (this.isAddingNew) {
         // Ajouter un nouveau service
         const newService: Service = {
-          id: Date.now(), // Génération d'un ID temporaire
+          id: 0, // L'ID sera généré par le backend
           providerId: 0, // Sera défini par le service backend
           ...formValue
         };
-        this.services = [...this.services, newService];
-        this.snackBar.open('Service ajouté avec succès', 'Fermer', { duration: 3000 });
+        
+        this.userInformationService.createService(newService).subscribe({
+          next: (createdService: Service) => {
+            this.services = [...this.services, createdService];
+            this.servicesChange.emit(this.services);
+            this.snackBar.open('Service ajouté avec succès', 'Fermer', { duration: 3000 });
+            this.cancelEdit();
+          },
+          error: (error: any) => {
+            console.error('Erreur lors de la création du service:', error);
+            this.snackBar.open('Erreur lors de l\'ajout du service', 'Fermer', { duration: 3000 });
+          }
+        });
       } else if (this.editingService) {
         // Modifier un service existant
         const updatedService: Service = {
           ...this.editingService,
           ...formValue
         };
-        this.services = this.services.map(service => 
-          service.id === this.editingService!.id ? updatedService : service
-        );
-        this.snackBar.open('Service modifié avec succès', 'Fermer', { duration: 3000 });
+        
+        this.userInformationService.updateService(this.editingService.id, updatedService).subscribe({
+          next: (savedService: Service) => {
+            this.services = this.services.map(service => 
+              service.id === this.editingService!.id ? savedService : service
+            );
+            this.servicesChange.emit(this.services);
+            this.snackBar.open('Service modifié avec succès', 'Fermer', { duration: 3000 });
+            this.cancelEdit();
+          },
+          error: (error: any) => {
+            console.error('Erreur lors de la modification du service:', error);
+            this.snackBar.open('Erreur lors de la modification du service', 'Fermer', { duration: 3000 });
+          }
+        });
       }
-
-      this.servicesChange.emit(this.services);
-      this.cancelEdit();
     } else {
       this.snackBar.open('Veuillez corriger les erreurs dans le formulaire', 'Fermer', { duration: 3000 });
     }
@@ -136,9 +157,17 @@ export class UpdateProfileServicesComponent {
    * @param serviceId - L'ID du service à supprimer
    */
   deleteService(serviceId: number): void {
-    this.services = this.services.filter(service => service.id !== serviceId);
-    this.servicesChange.emit(this.services);
-    this.snackBar.open('Service supprimé avec succès', 'Fermer', { duration: 3000 });
+    this.userInformationService.deleteService(serviceId).subscribe({
+      next: () => {
+        this.services = this.services.filter(service => service.id !== serviceId);
+        this.servicesChange.emit(this.services);
+        this.snackBar.open('Service supprimé avec succès', 'Fermer', { duration: 3000 });
+      },
+      error: (error: any) => {
+        console.error('Erreur lors de la suppression du service:', error);
+        this.snackBar.open('Erreur lors de la suppression du service', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 
   /**
