@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { User } from '../../../models/User';
 import { Service } from '../../../models/Service';
@@ -7,6 +7,7 @@ import { UpdateUserDTO } from '../../../models/UpdateUserDTO';
 import { UserInformationService } from '../../../services/user-information/user-information.service';
 import { UpdateProfileHeaderComponent } from './utils/update-profile-header/update-profile-header.component';
 import { UpdateProfileServicesComponent } from './utils/update-profile-services/update-profile-services.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-update-profile',
@@ -20,6 +21,11 @@ export class UpdateProfileComponent implements OnInit {
   @Input() services!: Service[];
   @Input() userRole!: UserRole;
   @Output() profileDataChange = new EventEmitter<{ user?: User; services?: Service[] }>();
+  @Output() validationError = new EventEmitter<string>();
+  @Output() saveSuccess = new EventEmitter<void>();
+  @Output() saveError = new EventEmitter<string>();
+
+  @ViewChild(UpdateProfileHeaderComponent) headerComponent!: UpdateProfileHeaderComponent;
 
   constructor(private userInformationService: UserInformationService) {}
 
@@ -67,6 +73,13 @@ export class UpdateProfileComponent implements OnInit {
   }
 
   /**
+   * Gère les erreurs de validation du header
+   */
+  onHeaderValidationError(errorMessage: string) {
+    this.validationError.emit(errorMessage);
+  }
+
+  /**
    * Gère les changements de services
    */
   onServicesChange(newServices: Service[]) {
@@ -75,36 +88,62 @@ export class UpdateProfileComponent implements OnInit {
   }
 
   /**
-   * Sauvegarde les modifications du profil vers le backend
+   * Valide le formulaire avant la sauvegarde
    */
-  saveProfile(): void {
-    const updateDTO: UpdateUserDTO = {
-      firstName: this.user.firstName,
-      lastName: this.user.lastName,
-      email: this.user.email,
-      phoneNumber: this.user.phoneNumber,
-      address: this.user.address,
-      city: this.user.city,
-      postalCode: this.user.postalCode,
-      siretSiren: this.user.siretSiren,
-      companyName: this.user.companyName,
-      rcNumber: this.user.rcNumber,
-      kbisUrl: this.user.kbisUrl,
-      autoEntrepreneurAttestationUrl: this.user.autoEntrepreneurAttestationUrl,
-      insuranceCertificateUrl: this.user.insuranceCertificateUrl,
-      description: this.user.description
-    };
+  validateForm(): boolean {
+    if (this.headerComponent) {
+      return this.headerComponent.validateForm();
+    }
+    return true;
+  }
 
-    this.userInformationService.updateUserProfile(updateDTO).subscribe({
-      next: (updatedProfile: any) => {
-        this.user = updatedProfile.user;
-        this.services = updatedProfile.services;
-        this.profileDataChange.emit({ user: this.user, services: this.services });
-        console.log('Profil mis à jour avec succès');
-      },
-      error: (error: any) => {
-        console.error('Erreur lors de la mise à jour du profil:', error);
+  /**
+   * Sauvegarde les modifications du profil vers le backend
+   * @returns Observable qui émet true en cas de succès, false en cas d'échec
+   */
+  saveProfile(): Observable<boolean> {
+    return new Observable(observer => {
+      // Valider le formulaire avant la sauvegarde
+      if (!this.validateForm()) {
+        observer.next(false);
+        observer.complete();
+        return;
       }
+
+      const updateDTO: UpdateUserDTO = {
+        firstName: this.user.firstName,
+        lastName: this.user.lastName,
+        email: this.user.email,
+        phoneNumber: this.user.phoneNumber,
+        address: this.user.address,
+        city: this.user.city,
+        postalCode: this.user.postalCode,
+        siretSiren: this.user.siretSiren,
+        companyName: this.user.companyName,
+        rcNumber: this.user.rcNumber,
+        kbisUrl: this.user.kbisUrl,
+        autoEntrepreneurAttestationUrl: this.user.autoEntrepreneurAttestationUrl,
+        insuranceCertificateUrl: this.user.insuranceCertificateUrl,
+        description: this.user.description
+      };
+
+      this.userInformationService.updateUserProfile(updateDTO).subscribe({
+        next: (updatedProfile: any) => {
+          this.user = updatedProfile.user;
+          this.services = updatedProfile.services;
+          this.profileDataChange.emit({ user: this.user, services: this.services });
+          this.saveSuccess.emit();
+          console.log('Profil mis à jour avec succès');
+          observer.next(true);
+          observer.complete();
+        },
+        error: (error: any) => {
+          console.error('Erreur lors de la mise à jour du profil:', error);
+          this.saveError.emit('Erreur lors de la sauvegarde du profil');
+          observer.next(false);
+          observer.complete();
+        }
+      });
     });
   }
 }

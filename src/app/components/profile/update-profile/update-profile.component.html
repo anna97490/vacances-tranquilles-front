@@ -1,2 +1,10 @@
-<app-update-profile-header [user]="user" (userChange)="onUserChange($event)"></app-update-profile-header>
-<app-update-profile-services *ngIf="userRole === 'PROVIDER'" [services]="services" (servicesChange)="onServicesChange($event)"></app-update-profile-services>
+<app-update-profile-header 
+  [user]="user" 
+  (userChange)="onUserChange($event)"
+  (validationError)="onHeaderValidationError($event)">
+</app-update-profile-header>
+<app-update-profile-services 
+  *ngIf="userRole === 'PROVIDER'" 
+  [services]="services" 
+  (servicesChange)="onServicesChange($event)">
+</app-update-profile-services>

@@ -137,6 +137,42 @@ export class ProfilePageComponent implements OnInit {
   }
 
   /**
+   * Gère les erreurs de validation
+   */
+  onValidationError(errorMessage: string) {
+    this.snackBar.open(errorMessage, 'Fermer', { 
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
+  }
+
+  /**
+   * Gère le succès de la sauvegarde
+   */
+  onSaveSuccess(): void {
+    this.isSaving = false;
+    this.isEditMode = false;
+    
+    // Mettre à jour le composant d'affichage
+    if (this.displayProfileComponent && this.displayedUser) {
+      this.displayProfileComponent.updateProfileData(this.displayedUser, this.services);
+    }
+    
+    this.snackBar.open('Profil mis à jour avec succès', 'Fermer', { duration: 3000 });
+  }
+
+  /**
+   * Gère l'erreur de sauvegarde
+   */
+  onSaveError(errorMessage: string): void {
+    this.isSaving = false;
+    this.snackBar.open(errorMessage, 'Fermer', { 
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
+  }
+
+  /**
    * Sauvegarde les modifications du profil vers le backend
    */
   private saveProfileChanges(): void {
@@ -149,21 +185,23 @@ export class ProfilePageComponent implements OnInit {
 
     // Appeler la méthode saveProfile du composant update-profile
     if (this.updateProfileComponent) {
-      this.updateProfileComponent.saveProfile();
-    }
-
-    // Attendre un peu pour simuler la sauvegarde puis sortir du mode édition
-    setTimeout(() => {
-      this.isEditMode = false;
+      this.updateProfileComponent.saveProfile().subscribe({
+        next: (success: boolean) => {
+          if (success) {
+            this.onSaveSuccess();
+          } else {
+            // La validation a échoué, rester en mode édition
+            this.isSaving = false;
+          }
+        },
+        error: (error) => {
+          this.onSaveError('Erreur lors de la sauvegarde');
+        }
+      });
+    } else {
       this.isSaving = false;
-      
-      // Mettre à jour le composant d'affichage
-      if (this.displayProfileComponent && this.displayedUser) {
-        this.displayProfileComponent.updateProfileData(this.displayedUser, this.services);
-      }
-      
-      this.snackBar.open('Profil mis à jour avec succès', 'Fermer', { duration: 3000 });
-    }, 1000);
+      this.snackBar.open('Erreur lors de la sauvegarde', 'Fermer', { duration: 3000 });
+    }
   }
 
   /**
