@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
       label: 'Profil',
       icon: 'assets/icons/person_24dp_FFFFFF.svg',
       iconActive: 'assets/icons/person_24dp_FFA101.svg',
-      path: '/profil'
+      path: '/profile'
     },
     {
       label: 'Messagerie',
