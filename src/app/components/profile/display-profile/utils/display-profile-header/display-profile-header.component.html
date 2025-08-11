@@ -1,6 +1,6 @@
 <div class="profile-header-main">
   <div class="profile-header-left">
-<!--     <img [src]="profilePictureUrl" alt="Photo de profil" class="profile-picture" /> -->
+    <img src="assets/icons/person_24dp_FFA101.svg" alt="Photo de profil de {{ user.firstName }}" class="profile-picture" />
     <div class="profile-name">
       {{ user.firstName }} {{ user.lastName }}
       <mat-icon *ngIf="user.role === 'PROVIDER'" color="warn" matTooltip="Prestataire vérifié">verified</mat-icon>
@@ -17,7 +17,7 @@
   </div>
 
   <div class="profile-header-right">
-    <div class="desc-title">Description</div>
+    <div class="desc-title" *ngIf="user.description">Description</div>
     <div class="profile-description" *ngIf="user.description">{{ user.description }}</div>
     <div class="info-cards">
       <div class="info-card" *ngIf="isAdmin && user.phoneNumber">

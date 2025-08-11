@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { NgFor } from '@angular/common';
@@ -16,7 +17,7 @@ import { Service } from '../../../../../models/Service';
 @Component({
   selector: 'app-display-profile-services',
   standalone: true,
-  imports: [MatCardModule, MatIconModule, NgFor, NgClass],
+  imports: [CommonModule, MatCardModule, MatIconModule, NgFor, NgClass],
   templateUrl: './display-profile-services.component.html',
   styleUrl: './display-profile-services.component.scss'
 })

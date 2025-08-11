@@ -19,7 +19,7 @@
       /> -->
       <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
     </div>
-<!--     <img [src]="user.profilePicture" alt="Photo de profil" class="profile-picture" /> -->
+    <img src="assets/icons/person_24dp_FFA101.svg" alt="Photo de profil de {{ user.firstName }}" class="profile-picture" />
     <div class="profile-name">
       <input [(ngModel)]="user.firstName" placeholder="Prénom" class="profile-input" />
       <input [(ngModel)]="user.lastName" placeholder="Nom" class="profile-input" />
