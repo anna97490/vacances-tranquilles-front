@@ -15,77 +15,94 @@
 
   <!-- Formulaire d'ajout/édition de service -->
   <div *ngIf="isAddingNew || editingService" class="service-form-container">
-    <mat-card class="service-form-card" appearance="outlined">
-      <mat-card-header>
-        <h3 class="services-title">
+    <div class="service-form-card">
+      <div class="form-header">
+        <h3 class="form-title">
           {{ isAddingNew ? 'Ajouter un nouveau service' : 'Modifier le service' }}
         </h3>
-      </mat-card-header>
+      </div>
       
-      <mat-card-content>
+      <div class="form-content">
         <form [formGroup]="serviceForm" class="service-form">
           <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Titre du service</mat-label>
-              <input matInput formControlName="title" placeholder="Ex: Location de vélo">
-              <mat-error *ngIf="isFieldInvalid('title')">
+            <div class="form-field">
+              <label class="field-label">Titre du service*</label>
+              <input 
+                type="text" 
+                formControlName="title" 
+                placeholder="Ex: Location de vélo"
+                class="form-input"
+                [class.invalid]="isFieldInvalid('title')">
+              <div *ngIf="isFieldInvalid('title')" class="error-message">
                 {{ getErrorMessage('title') }}
-              </mat-error>
-            </mat-form-field>
+              </div>
+            </div>
 
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Catégorie</mat-label>
-              <mat-select formControlName="category">
-                <mat-option *ngFor="let category of categories" [value]="category">
+            <div class="form-field">
+              <label class="field-label">Catégorie*</label>
+              <select formControlName="category" class="form-select" [class.invalid]="isFieldInvalid('category')">
+                <option value="">Sélectionnez une catégorie</option>
+                <option *ngFor="let category of categories" [value]="category">
                   {{ category }}
-                </mat-option>
-              </mat-select>
-              <mat-error *ngIf="isFieldInvalid('category')">
+                </option>
+              </select>
+              <div *ngIf="isFieldInvalid('category')" class="error-message">
                 {{ getErrorMessage('category') }}
-              </mat-error>
-            </mat-form-field>
+              </div>
+            </div>
           </div>
 
-          <mat-form-field appearance="outline" class="form-field full-width">
-            <mat-label>Description</mat-label>
-            <textarea matInput formControlName="description" rows="3" 
-                      placeholder="Décrivez votre service en détail..."></textarea>
-            <mat-error *ngIf="isFieldInvalid('description')">
+          <div class="form-field full-width">
+            <label class="field-label">Description*</label>
+            <textarea 
+              formControlName="description" 
+              rows="3" 
+              placeholder="Décrivez votre service en détail..."
+              class="form-textarea"
+              [class.invalid]="isFieldInvalid('description')"></textarea>
+            <div *ngIf="isFieldInvalid('description')" class="error-message">
               {{ getErrorMessage('description') }}
-            </mat-error>
-          </mat-form-field>
+            </div>
+          </div>
 
           <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Prix (€)</mat-label>
-              <input matInput type="number" formControlName="price" min="0" step="0.01">
-              <mat-error *ngIf="isFieldInvalid('price')">
+            <div class="form-field">
+              <label class="field-label">Prix (€)*</label>
+              <input 
+                type="number" 
+                formControlName="price" 
+                min="0" 
+                step="0.01"
+                class="form-input"
+                [class.invalid]="isFieldInvalid('price')">
+              <div *ngIf="isFieldInvalid('price')" class="error-message">
                 {{ getErrorMessage('price') }}
-              </mat-error>
-            </mat-form-field>
+              </div>
+            </div>
           </div>
         </form>
-      </mat-card-content>
+      </div>
 
-      <mat-card-actions class="form-actions">
-        <button mat-button (click)="cancelEdit()" class="primary-action-btn">
+      <div class="form-actions">
+        <button (click)="cancelEdit()" class="cancel-btn">
           <mat-icon>cancel</mat-icon>
           Annuler
         </button>
-        <button mat-raised-button color="primary" (click)="saveService()" 
-                [disabled]="serviceForm.invalid" class="primary-action-btn">
+        <button 
+          (click)="saveService()" 
+          [disabled]="serviceForm.invalid" 
+          class="save-btn">
           <mat-icon>save</mat-icon>
           {{ isAddingNew ? 'Ajouter' : 'Sauvegarder' }}
         </button>
-      </mat-card-actions>
-    </mat-card>
+      </div>
+    </div>
   </div>
 
   <!-- Liste des services existants -->
   <div class="services-list">
     <mat-card *ngFor="let service of services" class="service-card" appearance="outlined">
       <div class="service-header">
-<!--         <img [src]="service.imageUrl" alt="Icône du service" class="service-icon" width="40" height="40" /> -->
         <div class="service-actions">
           <button mat-icon-button color="primary" (click)="editService(service)" 
                   [disabled]="isAddingNew || editingService">
@@ -108,12 +125,12 @@
 
   <!-- Message si aucun service -->
   <div *ngIf="services.length === 0 && !isAddingNew" class="no-services">
-    <mat-card class="empty-state-card" appearance="outlined">
-      <mat-card-content class="empty-state-content">
+    <div class="empty-state-card">
+      <div class="empty-state-content">
         <mat-icon class="empty-icon">add_business</mat-icon>
         <h4>Aucun service proposé</h4>
         <p>Commencez par ajouter vos premiers services pour les faire découvrir aux autres utilisateurs.</p>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   </div>
 </div>

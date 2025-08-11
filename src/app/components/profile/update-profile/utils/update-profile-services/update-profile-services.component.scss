@@ -52,47 +52,136 @@
   border: 1px solid #e6e6e6;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(60, 60, 60, 0.03);
+  padding: 2rem;
+}
+
+.form-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.form-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.form-content {
+  margin-bottom: 1.5rem;
 }
 
 .service-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .form-field {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--quaternary-color);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--tertiary-color);
+  box-shadow: 0 0 0 2px rgba(255, 161, 1, 0.1);
+}
+
+.form-input.invalid,
+.form-select.invalid,
+.form-textarea.invalid {
+  border-color: #f44336;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
 }
 
 .full-width {
   grid-column: 1 / -1;
 }
 
-.image-preview {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-}
-
-.preview-image {
-  max-width: 100px;
-  max-height: 100px;
-  border-radius: 8px;
-  border: 2px solid #e6e6e6;
-  object-fit: cover;
-}
-
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  padding: 1rem 0 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid #e6e6e6;
+}
+
+.cancel-btn,
+.save-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: var(--text-color);
+}
+
+.cancel-btn:hover {
+  background: #e0e0e0;
+}
+
+.save-btn {
+  background: var(--tertiary-color);
+  color: var(--quaternary-color);
+}
+
+.save-btn:hover:not(:disabled) {
+  background: var(--tertiary-color);
+}
+
+.save-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 // Liste des services
@@ -133,19 +222,6 @@
   margin-bottom: 0.7rem;
 }
 
-.service-icon {
-  font-size: 2.2rem;
-  color: var(--tertiary-color);
-  background: var(--primary-color);
-  border-radius: 50%;
-  padding: 0.45rem;
-  margin-right: 0.2rem;
-  box-shadow: 0 1px 2px rgba(255, 161, 1, 0.07);
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-}
-
 .service-actions {
   display: flex;
   gap: 0.25rem;
@@ -176,7 +252,7 @@
   font-size: 0.85rem;
   font-weight: 500;
   margin: 0 0 0.5rem 0;
-  display: none;
+  color: var(--tertiary-color);
 }
 
 .service-description {
@@ -259,6 +335,10 @@
     min-width: 180px;
     max-width: 100%;
   }
+  
+  .service-form-card {
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 600px) {
@@ -306,6 +386,10 @@
   .form-actions {
     flex-direction: column;
   }
+  
+  .service-form-card {
+    padding: 1rem;
+  }
 }
 
 .primary-action-btn {
@@ -348,16 +432,6 @@
   border-radius: 8px !important;
 }
 
-mat-card-actions.form-actions {
-  padding: 16px 16px 16px 16px;
-  display: flex;
-  gap: 12px;
-}
-
-mat-card-actions.form-actions .primary-action-btn {
-  margin: 0 4px;
-}
-
 .add-service-btn {
   margin-bottom: 12px;
 }
@@ -365,6 +439,7 @@ mat-card-actions.form-actions .primary-action-btn {
 :host {
   --discret-text-color: #777;
   --secondary-color: #31525B;
+  --tertiary-color: #db9e36;
 }
 
 ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
@@ -379,10 +454,6 @@ mat-card-actions.form-actions .primary-action-btn {
 ::ng-deep .mat-input-element,
 ::ng-deep .mat-form-field-label {
   color: var(--discret-text-color) !important;
-}
-
-:host {
-  --tertiary-color: #FFA101;
 }
 
 ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {

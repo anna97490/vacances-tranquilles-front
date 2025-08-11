@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Service } from '../../../../../models/Service';
+import { Service, ServiceCategory } from '../../../../../models/Service';
 
 /**
  * Composant de modification des services proposés dans le profil utilisateur.
@@ -44,15 +44,8 @@ export class UpdateProfileServicesComponent {
   isAddingNew = false;
   serviceForm: FormGroup;
 
-  // Catégories disponibles pour les services
-  categories = [
-    'Hébergement',
-    'Transport',
-    'Restauration',
-    'Activités',
-    'Services',
-    'Autre'
-  ];
+  // Utilisation de l'enum ServiceCategory pour les catégories disponibles
+  categories = Object.values(ServiceCategory);
 
   constructor(
     private fb: FormBuilder,
@@ -87,7 +80,9 @@ export class UpdateProfileServicesComponent {
   addNewService(): void {
     this.isAddingNew = true;
     this.editingService = null;
-    this.serviceForm.reset();
+    this.serviceForm.reset({
+      price: 0
+    });
   }
 
   /**
@@ -96,7 +91,9 @@ export class UpdateProfileServicesComponent {
   cancelEdit(): void {
     this.editingService = null;
     this.isAddingNew = false;
-    this.serviceForm.reset();
+    this.serviceForm.reset({
+      price: 0
+    });
   }
 
   /**
@@ -110,6 +107,7 @@ export class UpdateProfileServicesComponent {
         // Ajouter un nouveau service
         const newService: Service = {
           id: Date.now(), // Génération d'un ID temporaire
+          providerId: 0, // Sera défini par le service backend
           ...formValue
         };
         this.services = [...this.services, newService];
