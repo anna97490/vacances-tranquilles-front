@@ -6,7 +6,9 @@
       <div class="top-line">
         <span class="name">{{ user?.firstName }} {{ user?.lastName }}</span>
         <mat-icon class="verified-icon" aria-label="Profil vérifié">check_circle</mat-icon>
-        <button mat-button class="profile-btn" [attr.aria-label]="'Voir le profil de ' + user?.firstName + ' ' + user?.lastName">Voir le profil</button>
+        <button mat-button class="profile-btn" 
+                [attr.aria-label]="'Voir le profil de ' + user?.firstName + ' ' + user?.lastName"
+                (click)="navigateToProfile()">Voir le profil</button>
       </div>
 
       <div class="rating">

@@ -101,6 +101,20 @@ export class HeaderComponent implements OnInit {
    */
   onMenuNavigation(item: any): void {
     const path = this.getNavigationPath(item);
+    
+    // Si on navigue vers le profil depuis le header, nettoyer le localStorage
+    // pour s'assurer qu'on affiche le profil de l'utilisateur connecté
+    if (item.label === 'Profil') {
+      localStorage.removeItem('displayedUserId');
+      
+      // Si on est déjà sur la page profil, forcer le rechargement
+      if (this.currentPath === '/profile') {
+        // Recharger la page pour forcer le rechargement des données
+        window.location.reload();
+        return;
+      }
+    }
+    
     this.router.navigate([path]);
     this.closeMobileMenu();
   }

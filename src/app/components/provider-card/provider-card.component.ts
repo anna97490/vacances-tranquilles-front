@@ -13,6 +13,7 @@ import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.compon
 import { PaymentService } from '../../services/payment/payment.service';
 import { ConfigService } from '../../services/config/config.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 /**
  * Composant carte prestataire (affichage d'un User de rôle PROVIDER)
@@ -85,7 +86,9 @@ export class ProviderCardComponent implements OnChanges {
     private http: HttpClient,
     private configService: ConfigService,
     private authStorage: AuthStorageService,
-    private injector: Injector
+    private injector: Injector,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   private get paymentService(): PaymentService {
@@ -204,6 +207,28 @@ export class ProviderCardComponent implements OnChanges {
       }
     } catch (error) {
       console.error('Erreur lors de la création de la session de paiement:', error);
+    }
+  }
+
+  /**
+   * Navigue vers la page de profil de l'utilisateur affiché
+   */
+  navigateToProfile(): void {
+    let userId: number | undefined;
+    
+    if (this.user?.idUser) {
+      userId = this.user.idUser;
+    } else if (this.service?.providerId) {
+      userId = this.service.providerId;
+    }
+    
+    if (userId) {
+      // Stocker l'ID de l'utilisateur à afficher dans le localStorage
+      // pour que la page de profil puisse le récupérer
+      localStorage.setItem('displayedUserId', userId.toString());
+      this.router.navigate(['/profile']);
+    } else {
+      console.error('Impossible de naviguer: aucun ID utilisateur disponible');
     }
   }
 }

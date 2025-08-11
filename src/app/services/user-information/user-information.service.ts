@@ -176,6 +176,34 @@ export class UserInformationService {
   }
 
   /**
+   * Récupère les services d'un utilisateur spécifique
+   * @param userId ID de l'utilisateur
+   * @returns Observable<Service[]> Les services de l'utilisateur
+   */
+  getUserServices(userId: number): Observable<Service[]> {
+    const url = `${this.configService.apiUrl}/users/${userId}/services`;
+    
+    console.log('Récupération des services de l\'utilisateur depuis:', url);
+    
+    // Récupération du token depuis le localStorage
+    const token = localStorage.getItem('token');
+    
+    // Si pas de token, essayer d'accéder sans authentification
+    if (!token) {
+      console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
+      return this.http.get<Service[]>(url);
+    }
+    
+    // Configuration des headers
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.get<Service[]>(url, { headers });
+  }
+
+  /**
    * Crée un nouveau service
    * @param service Les données du service à créer
    * @returns Observable<Service> Le service créé

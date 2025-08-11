@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { DisplayProfileComponent } from '../../components/profile/display-profile/display-profile.component';
 import { UpdateProfileComponent } from '../../components/profile/update-profile/update-profile.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,7 +18,7 @@ import { UserRole } from '../../models/User';
   templateUrl: './profilePage.component.html',
   styleUrl: './profilePage.component.scss'
 })
-export class ProfilePageComponent implements OnInit {
+export class ProfilePageComponent implements OnInit, OnDestroy {
   @ViewChild(DisplayProfileComponent) displayProfileComponent!: DisplayProfileComponent;
   @ViewChild(UpdateProfileComponent) updateProfileComponent!: UpdateProfileComponent;
 
@@ -57,6 +57,11 @@ export class ProfilePageComponent implements OnInit {
     this.loadLoggedUserData();
   }
 
+  ngOnDestroy(): void {
+    // Nettoyer le localStorage quand l'utilisateur quitte la page
+    localStorage.removeItem('displayedUserId');
+  }
+
   /**
    * Charge les données de l'utilisateur connecté
    */
@@ -70,6 +75,26 @@ export class ProfilePageComponent implements OnInit {
       this.userRole = storedUserRole as UserRole;
     }
 
+    // Vérifier s'il y a un displayedUserId dans le localStorage
+    const displayedUserId = localStorage.getItem('displayedUserId');
+    const loggedUserId = this.authStorageService.getUserId();
+
+    // Si un displayedUserId est spécifié et différent de l'utilisateur connecté
+    if (displayedUserId && displayedUserId !== loggedUserId?.toString()) {
+      // Charger les données de l'utilisateur à afficher avec getUserById
+      this.loadDisplayedUserData(parseInt(displayedUserId, 10));
+      // Charger les données de l'utilisateur connecté séparément pour loggedUser
+      this.loadLoggedUserDataOnly();
+    } else {
+      // Si c'est le profil de l'utilisateur connecté, utiliser getUserProfile
+      this.loadLoggedUserDataOnly();
+    }
+  }
+
+  /**
+   * Charge uniquement les données de l'utilisateur connecté
+   */
+  private loadLoggedUserDataOnly(): void {
     // Récupérer les informations de l'utilisateur connecté
     this.userInformationService.getUserProfile().subscribe({
       next: (userData: User) => {
@@ -79,8 +104,12 @@ export class ProfilePageComponent implements OnInit {
           role: this.userRole || UserRole.CLIENT // fallback par défaut
         } as User;
         
-        // Si c'est le profil de l'utilisateur connecté, on met aussi à jour displayedUser
-        this.displayedUser = { ...this.loggedUser };
+        // Si aucun displayedUserId spécifié, c'est le profil de l'utilisateur connecté
+        const displayedUserId = localStorage.getItem('displayedUserId');
+        if (!displayedUserId) {
+          this.displayedUser = { ...this.loggedUser };
+        }
+        
         this.isLoading = false;
       },
       error: (error) => {
@@ -102,6 +131,43 @@ export class ProfilePageComponent implements OnInit {
         }
       });
     }
+  }
+
+  /**
+   * Charge les données de l'utilisateur à afficher
+   */
+  private loadDisplayedUserData(userId: number): void {
+    this.userInformationService.getUserById(userId).subscribe({
+      next: (userData: User) => {
+        // S'assurer que l'idUser est présent
+        const completeUserData: User = {
+          ...userData,
+          idUser: userData.idUser || userId, // Utiliser l'idUser de l'API ou l'userId passé en paramètre
+          role: userData.role || UserRole.CLIENT
+        };
+        
+        this.displayedUser = completeUserData;
+        this.isLoading = false;
+        
+        // Charger les services de cet utilisateur s'il est prestataire
+        if (this.displayedUser.role === UserRole.PROVIDER) {
+          this.userInformationService.getUserServices(userId).subscribe({
+            next: (services: Service[]) => {
+              this.services = services;
+            },
+            error: (error: any) => {
+              console.error('Erreur lors de la récupération des services:', error);
+              this.services = [];
+            }
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors de la récupération des données de l\'utilisateur affiché:', error);
+        this.isLoading = false;
+        this.hasError = true;
+      }
+    });
   }
 
   /**
