@@ -10,6 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { ServiceCategory } from '../../models/Service';
 import { ServicesService } from '../../services/services/services.service';
 import { Router } from '@angular/router';
+import { FooterComponent } from '../../components/footer/footer.component';
+import { NotificationService } from '../../services/notification/notification.service';
 
 @Component({
   selector: 'app-service-search',
@@ -24,7 +26,8 @@ import { Router } from '@angular/router';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    MatInputModule
+    MatInputModule,
+    FooterComponent,
   ]
 })
 
@@ -161,8 +164,9 @@ export class ServiceSearchComponent {
   isDateInPast = false;
 
   constructor(
-    private servicesService: ServicesService,
-    private router: Router
+    private readonly servicesService: ServicesService,
+    private readonly router: Router,
+    private readonly notificationService: NotificationService
   ) {}
 
   /**
@@ -186,7 +190,7 @@ export class ServiceSearchComponent {
    * Détermine si le code postal est valide (5 chiffres).
    */
   get isPostalCodeValid(): boolean {
-    return /^[0-9]{5}$/.test(this.postalCode);
+    return /^\d{5}$/.test(this.postalCode);
   }
 
   /**
@@ -319,13 +323,7 @@ export class ServiceSearchComponent {
       return;
     }
 
-    // Vérification de l'authentification
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Vous devez être connecté pour effectuer cette recherche. Veuillez vous connecter.');
-      this.router.navigate(['/auth/login']);
-      return;
-    }
+    // L'authentification est gérée automatiquement par l'intercepteur
 
     this.isLoading = true;
 
@@ -355,12 +353,16 @@ export class ServiceSearchComponent {
           error: (error) => {
             console.error('Erreur lors de la recherche:', error);
             
-            if (error.status === 401) {
-              alert('Vous devez être connecté pour effectuer cette recherche. Veuillez vous connecter.');
-              this.router.navigate(['/auth/login']);
-            } else {
-              alert('Erreur lors de la recherche. Veuillez réessayer.');
+            // L'intercepteur gère automatiquement les erreurs 401/403
+            // On ne gère que les autres types d'erreurs ici
+            if (error.status === 0) {
+              // Erreur de connexion réseau
+              this.notificationService.error('Impossible de se connecter au serveur. Vérifiez votre connexion internet ou contactez le support.');
+            } else if (error.status !== 401 && error.status !== 403) {
+              // Erreurs autres que l'authentification
+              this.notificationService.error('Erreur lors de la recherche. Veuillez réessayer.');
             }
+            // Les erreurs 401/403 sont gérées par l'intercepteur
           },
           complete: () => {
             this.isLoading = false;

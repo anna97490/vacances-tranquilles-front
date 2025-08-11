@@ -13,8 +13,8 @@ export class HomeInitializationService {
   ];
 
   constructor(
-    private scriptLoader: ScriptLoaderService,
-    private botpressService: BotpressService
+    private readonly scriptLoader: ScriptLoaderService,
+    private readonly botpressService: BotpressService
   ) {}
 
   /**

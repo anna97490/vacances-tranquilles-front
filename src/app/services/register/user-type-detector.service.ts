@@ -9,8 +9,8 @@ export class UserTypeDetectorService {
   /**
    * Détermine le type d'utilisateur à partir de l'URL
    */
-  detectUserTypeFromUrl(): boolean {
-    const path = window.location.pathname;
+  detectUserTypeFromUrl(pathname?: string): boolean {
+    const path = pathname || window.location.pathname;
     return path.includes('prestataire');
   }
 
@@ -26,18 +26,30 @@ export class UserTypeDetectorService {
   }
 
   /**
-   * Récupère le titre du formulaire selon le type d'utilisateur
-   * @param isPrestataire Si l'utilisateur est un prestataire
+   * Récupère le titre du formulaire pour un prestataire
    */
-  getFormTitle(isPrestataire: boolean): string {
-    return isPrestataire ? 'Inscription Prestataire' : 'Inscription Particulier';
+  getPrestataireFormTitle(): string {
+    return 'Inscription Prestataire';
   }
 
   /**
-   * Récupère le type d'utilisateur sous forme de chaîne
-   * @param isPrestataire Si l'utilisateur est un prestataire
+   * Récupère le titre du formulaire pour un particulier
    */
-  getUserTypeString(isPrestataire: boolean): string {
-    return isPrestataire ? 'prestataire' : 'particulier';
+  getParticulierFormTitle(): string {
+    return 'Inscription Particulier';
+  }
+
+  /**
+   * Récupère le type d'utilisateur sous forme de chaîne pour un prestataire
+   */
+  getPrestataireUserTypeString(): string {
+    return 'prestataire';
+  }
+
+  /**
+   * Récupère le type d'utilisateur sous forme de chaîne pour un particulier
+   */
+  getParticulierUserTypeString(): string {
+    return 'particulier';
   }
 }

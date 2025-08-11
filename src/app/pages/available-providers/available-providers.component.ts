@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProviderCardComponent } from '../../components/provider-card/provider-card.component';
-import { Service, ServiceCategory } from '../../models/Service';
+import { Service } from '../../models/Service';
 import { User, UserRole } from '../../models/User';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +12,8 @@ import { MatOptionModule } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { ServicesService } from '../../services/services/services.service';
 import { UserInformationService } from '../../services/user-information/user-information.service';
-
+import { FooterComponent } from '../../components/footer/footer.component';
+import { HeaderComponent } from '../../components/header/header.component';
 /**
  * Composant listant les prestataires disponibles.
  * Fournit la liste des services disponibles au composant provider-card.
@@ -28,7 +29,9 @@ import { UserInformationService } from '../../services/user-information/user-inf
     MatIconModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatOptionModule],
+    MatOptionModule,
+    FooterComponent,
+    HeaderComponent],
   templateUrl: './available-providers.component.html',
   styleUrl: './available-providers.component.scss'
 })
@@ -46,9 +49,9 @@ export class AvailableProvidersComponent implements OnInit {
   searchCriteria: any = null;
 
   constructor(
-    private router: Router,
-    private servicesService: ServicesService,
-    private userInformationService: UserInformationService
+    private readonly router: Router,
+    private readonly servicesService: ServicesService,
+    private readonly userInformationService: UserInformationService
   ) {}
 
   ngOnInit(): void {

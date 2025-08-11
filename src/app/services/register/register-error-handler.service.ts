@@ -28,6 +28,16 @@ export class RegisterErrorHandlerService {
    * @param error L'erreur HTTP
    */
   getRegistrationErrorMessage(error: HttpErrorResponse): string {
+    // Vérifier d'abord si c'est une erreur d'email déjà utilisé (409)
+    if (error.status === 409) {
+      return 'Email déjà utilisé';
+    }
+
+    // Vérifier les erreurs de validation (400)
+    if (error.status === 400) {
+      return this.getValidationErrorMessage(error);
+    }
+
     switch (error.status) {
       case 422:
         return 'Données de validation incorrectes';
@@ -45,6 +55,32 @@ export class RegisterErrorHandlerService {
       default:
         return 'Erreur inconnue lors de l\'inscription';
     }
+  }
+
+  /**
+   * Extrait le message d'erreur de validation depuis la réponse
+   * @param error L'erreur HTTP
+   */
+  private getValidationErrorMessage(error: HttpErrorResponse): string {
+    try {
+      if (error.error && typeof error.error === 'object') {
+        // Si l'erreur contient un message spécifique
+        if (error.error.message) {
+          return error.error.message;
+        }
+        // Si l'erreur contient un code d'erreur
+        if (error.error.code === 'EMAIL_ALREADY_USED') {
+          return 'Email déjà utilisé';
+        }
+        if (error.error.code === 'MISSING_REQUIRED_FIELD') {
+          return error.error.message || 'Champ obligatoire manquant';
+        }
+      }
+    } catch (e) {
+      console.warn('Erreur lors du parsing du message d\'erreur:', e);
+    }
+
+    return 'Données de validation incorrectes';
   }
 
   /**

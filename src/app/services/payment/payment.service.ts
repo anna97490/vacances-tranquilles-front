@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { loadStripe } from '@stripe/stripe-js';
 import { ConfigService } from '../config/config.service';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,54 +10,44 @@ export class PaymentService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly http: HttpClient
+    private readonly notificationService: NotificationService
   ) { }
 
-  /**
-   * Crée une session de paiement Stripe
-   * @param payload Les données de la session de paiement
-   * @param token Le token d'authentification
-   * @returns Promise<string> L'ID de la session Stripe
-   */
-  async createCheckoutSession(payload: any, token: string): Promise<string> {
-    // S'assurer que la configuration est chargée
-    await this.configService.waitForConfig();
-    
-    const headers = { 'Authorization': `Bearer ${token}` };
-    const apiUrl = `${this.configService.apiUrl}/stripe/create-checkout-session`;
-
-    const response = await firstValueFrom(
-      this.http.post<{ [key: string]: string }>(
-        apiUrl,
-        payload,
-        { headers }
-      )
-    );
-
-    const sessionId = response['sessionId'];
-    if (!sessionId) {
-      throw new Error('Session ID non reçu');
-    }
-
-    return sessionId;
-  }
-
-  async redirectToStripe(sessionId: string) {
+  async redirectToStripe(sessionId: string): Promise<boolean> {
     try {
       const stripePublicKey = this.configService.stripePublicKey;
       if (!stripePublicKey || stripePublicKey.trim() === '') {
         console.warn('Stripe public key not configured. Payment functionality will be disabled.');
-        return;
+        this.notificationService.warning('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+        return false;
       }
       
       const stripe = await loadStripe(stripePublicKey);
       if (stripe) {
-        await stripe.redirectToCheckout({ sessionId });
+        const result = await stripe.redirectToCheckout({ sessionId });
+        if (result.error) {
+          console.error('Erreur Stripe:', result.error);
+          this.notificationService.error(`Erreur de paiement: ${result.error.message}`);
+          return false;
+        }
+        return true;
       } else {
         console.error('Stripe could not be loaded');
+        this.notificationService.error('Impossible de charger le système de paiement. Veuillez réessayer.');
+        return false;
       }
     } catch (error) {
       console.error('Erreur lors du chargement de Stripe:', error);
+      this.notificationService.error('Erreur lors du chargement du système de paiement. Veuillez réessayer.');
+      return false;
     }
+  }
+
+  /**
+   * Vérifie si Stripe est configuré et disponible
+   */
+  isStripeConfigured(): boolean {
+    const stripePublicKey = this.configService.stripePublicKey;
+    return !!(stripePublicKey && stripePublicKey.trim() !== '');
   }
 }

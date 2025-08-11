@@ -1,19 +1,27 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { authInterceptor } from './services/interceptors/interceptors.service';
+import { ConfigService } from './services/config/config.service';
+import { authInterceptor } from './services/auth/auth.interceptor';
+
+const loadConfig = (configService: ConfigService) => {
+  return () => configService.loadConfig();
+};
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
-    // Important pour Material
     provideAnimations(),
-    provideHttpClient(withInterceptors([authInterceptor])), 
-    provideAnimationsAsync()
+    provideHttpClient(withInterceptors([authInterceptor])),
+    ConfigService,
+    {
+      provide: 'APP_INITIALIZER',
+      useFactory: loadConfig,
+      deps: [ConfigService],
+      multi: true
+    }
   ]
 };

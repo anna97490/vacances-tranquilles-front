@@ -2,6 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
+import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { UserRole } from '../../models/User';
+import { By } from '@angular/platform-browser';
 
 import { HeaderComponent } from './header.component';
 
@@ -10,8 +13,14 @@ describe('HeaderComponent', () => {
   let fixture: ComponentFixture<HeaderComponent>;
   let router: Router;
   let location: Location;
+  let authStorage: jasmine.SpyObj<AuthStorageService>;
 
   beforeEach(async () => {
+    const authStorageSpy = jasmine.createSpyObj('AuthStorageService', [
+      'isAuthenticated', 
+      'getUserRole'
+    ]);
+
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
       providers: [
@@ -60,6 +69,10 @@ describe('HeaderComponent', () => {
           useValue: {
             path: jasmine.createSpy('path').and.returnValue('/home')
           }
+        },
+        {
+          provide: AuthStorageService,
+          useValue: authStorageSpy
         }
       ]
     }).compileComponents();
@@ -68,6 +81,7 @@ describe('HeaderComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
     location = TestBed.inject(Location);
+    authStorage = TestBed.inject(AuthStorageService) as jasmine.SpyObj<AuthStorageService>;
     fixture.detectChanges();
   });
 
@@ -76,28 +90,25 @@ describe('HeaderComponent', () => {
   });
 
   it('should initialize with correct menu items', () => {
-    expect(component.menu.length).toBe(5);
+    expect(component.menu.length).toBe(4);
     expect(component.menu[0].label).toBe('Accueil');
     expect(component.menu[1].label).toBe('Profil');
     expect(component.menu[2].label).toBe('Messagerie');
-    expect(component.menu[3].label).toBe('Agenda');
-    expect(component.menu[4].label).toBe('Assistance');
+    expect(component.menu[3].label).toBe('Assistance');
   });
 
   it('should have correct paths for menu items', () => {
     expect(component.menu[0].path).toBe('/home');
     expect(component.menu[1].path).toBe('/profil');
     expect(component.menu[2].path).toBe('/messagerie');
-    expect(component.menu[3].path).toBe('/agenda');
-    expect(component.menu[4].path).toBe('/assistance');
+    expect(component.menu[3].path).toBe('/assistance');
   });
 
   it('should have correct icons for menu items', () => {
     expect(component.menu[0].icon).toContain('cottage');
     expect(component.menu[1].icon).toContain('person');
     expect(component.menu[2].icon).toContain('chat_bubble');
-    expect(component.menu[3].icon).toContain('calendar');
-    expect(component.menu[4].icon).toContain('contact_support');
+    expect(component.menu[3].icon).toContain('contact_support');
   });
 
   it('should have active icons for menu items', () => {
@@ -105,7 +116,6 @@ describe('HeaderComponent', () => {
     expect(component.menu[1].iconActive).toContain('FFA101');
     expect(component.menu[2].iconActive).toContain('FFA101');
     expect(component.menu[3].iconActive).toContain('FFA101');
-    expect(component.menu[4].iconActive).toContain('FFA101');
   });
 
   it('should initialize with correct logo path', () => {
@@ -123,7 +133,7 @@ describe('HeaderComponent', () => {
   it('should return correct icon based on hover state', () => {
     const menuItem = component.menu[0];
     component.hoveredItem = menuItem;
-    
+
     const icon = component.getIcon(menuItem);
     expect(icon).toBe(menuItem.iconActive);
   });
@@ -131,8 +141,8 @@ describe('HeaderComponent', () => {
   it('should return default icon when not hovered', () => {
     const menuItem = component.menu[0];
     component.hoveredItem = null;
-    component.currentPath = '/profil'; // Définir une route différente pour éviter l'état actif
-    
+    component.currentPath = '/profil';
+
     const icon = component.getIcon(menuItem);
     expect(icon).toBe(menuItem.icon);
   });
@@ -141,7 +151,7 @@ describe('HeaderComponent', () => {
     const menuItem = component.menu[0];
     component.currentPath = '/home';
     component.hoveredItem = null;
-    
+
     const icon = component.getIcon(menuItem);
     expect(icon).toBe(menuItem.iconActive);
   });
@@ -150,7 +160,7 @@ describe('HeaderComponent', () => {
     const menuItem = component.menu[0];
     component.currentPath = '/home';
     component.hoveredItem = menuItem;
-    
+
     const icon = component.getIcon(menuItem);
     expect(icon).toBe(menuItem.iconActive);
   });
@@ -159,38 +169,51 @@ describe('HeaderComponent', () => {
     const menuItem = component.menu[0];
     component.currentPath = '/profil';
     component.hoveredItem = null;
-    
+
     const icon = component.getIcon(menuItem);
     expect(icon).toBe(menuItem.icon);
+  });
+
+  it('should clear localStorage and navigate on logout without triggering real reload', () => {
+    const clearSpy = spyOn(localStorage, 'clear');
+    (component as any).router = router;
+    jasmine.clock().install();
+    try {
+      component.logout();
+      expect(clearSpy).toHaveBeenCalled();
+      expect((router.navigate as jasmine.Spy)).toHaveBeenCalledWith(['/home']);
+    } finally {
+      jasmine.clock().uninstall();
+    }
   });
 
   // Tests pour le burger menu
   it('should toggle mobile menu when toggleMobileMenu is called', () => {
     expect(component.isMobileMenuOpen).toBe(false);
-    
+
     component.toggleMobileMenu();
     expect(component.isMobileMenuOpen).toBe(true);
-    
+
     component.toggleMobileMenu();
     expect(component.isMobileMenuOpen).toBe(false);
   });
 
   it('should close mobile menu when closeMobileMenu is called', () => {
     component.isMobileMenuOpen = true;
-    
+
     component.closeMobileMenu();
     expect(component.isMobileMenuOpen).toBe(false);
   });
 
   it('should prevent body scroll when mobile menu is open', () => {
     const originalOverflow = document.body.style.overflow;
-    
+
     component.toggleMobileMenu();
     expect(document.body.style.overflow).toBe('hidden');
-    
+
     component.toggleMobileMenu();
     expect(document.body.style.overflow).toBe('');
-    
+
     // Restaurer l'état original
     document.body.style.overflow = originalOverflow;
   });
@@ -198,54 +221,54 @@ describe('HeaderComponent', () => {
   it('should restore body scroll when mobile menu is closed', () => {
     const originalOverflow = document.body.style.overflow;
     component.isMobileMenuOpen = true;
-    
+
     component.closeMobileMenu();
     expect(document.body.style.overflow).toBe('');
-    
+
     // Restaurer l'état original
     document.body.style.overflow = originalOverflow;
   });
 
   it('should close mobile menu on escape key', () => {
     component.isMobileMenuOpen = true;
-    
+
     component.onEscapeKey();
     expect(component.isMobileMenuOpen).toBe(false);
   });
 
   it('should close mobile menu when clicking outside', () => {
     component.isMobileMenuOpen = true;
-    
+
     const mockEvent = {
       target: document.createElement('div')
     } as unknown as Event;
-    
+
     component.onDocumentClick(mockEvent);
     expect(component.isMobileMenuOpen).toBe(false);
   });
 
   it('should not close mobile menu when clicking inside menu', () => {
     component.isMobileMenuOpen = true;
-    
+
     const mockMenuElement = document.createElement('div');
     mockMenuElement.className = 'mobile-menu-container';
     const mockEvent = {
       target: mockMenuElement
     } as unknown as Event;
-    
+
     component.onDocumentClick(mockEvent);
     expect(component.isMobileMenuOpen).toBe(true);
   });
 
   it('should not close mobile menu when clicking burger button', () => {
     component.isMobileMenuOpen = true;
-    
+
     const mockBurgerElement = document.createElement('button');
     mockBurgerElement.className = 'burger-btn';
     const mockEvent = {
       target: mockBurgerElement
     } as unknown as Event;
-    
+
     component.onDocumentClick(mockEvent);
     expect(component.isMobileMenuOpen).toBe(true);
   });
@@ -271,7 +294,7 @@ describe('HeaderComponent', () => {
   it('should render all menu items in mobile navigation', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const mobileNavLinks = compiled.querySelectorAll('.mobile-nav .nav-link');
-    expect(mobileNavLinks.length).toBe(component.menu.length);
+    expect(mobileNavLinks.length).toBe(component.menu.length + 1); // +1 for logout
   });
 
   it('should render desktop navigation in template', () => {
@@ -283,6 +306,118 @@ describe('HeaderComponent', () => {
   it('should render all menu items in desktop navigation', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const desktopNavLinks = compiled.querySelectorAll('.desktop-nav .nav-link');
-    expect(desktopNavLinks.length).toBe(component.menu.length);
+    expect(desktopNavLinks.length).toBe(component.menu.length + 1); // +1 for logout
+  });
+
+  describe('Navigation conditionnelle pour les clients', () => {
+    it('should navigate to service-search when client clicks on Accueil', () => {
+      // Simuler un utilisateur client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+
+      const accueilItem = component.menu[0]; // Accueil
+      component.onMenuNavigation(accueilItem);
+
+      expect(router.navigate).toHaveBeenCalledWith(['/service-search']);
+    });
+
+    it('should navigate to home when non-client user clicks on Accueil', () => {
+      // Simuler un utilisateur non-client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
+
+      const accueilItem = component.menu[0]; // Accueil
+      component.onMenuNavigation(accueilItem);
+
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should navigate to home when non-authenticated user clicks on Accueil', () => {
+      // Simuler un utilisateur non connecté
+      authStorage.isAuthenticated.and.returnValue(false);
+
+      const accueilItem = component.menu[0]; // Accueil
+      component.onMenuNavigation(accueilItem);
+
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should navigate to original path for non-Accueil menu items', () => {
+      // Simuler un utilisateur client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+
+      const profilItem = component.menu[1]; // Profil
+      component.onMenuNavigation(profilItem);
+
+      expect(router.navigate).toHaveBeenCalledWith(['/profil']);
+    });
+
+    it('should consider Accueil as active when client is on service-search page', () => {
+      // Simuler un utilisateur client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+      
+      // Simuler que l'utilisateur est sur la page service-search
+      component.currentPath = '/service-search';
+
+      const isAccueilActive = component.isActive('/home');
+      expect(isAccueilActive).toBe(true);
+    });
+
+    it('should not consider Accueil as active when non-client is on service-search page', () => {
+      // Simuler un utilisateur non-client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
+      
+      // Simuler que l'utilisateur est sur la page service-search
+      component.currentPath = '/service-search';
+
+      const isAccueilActive = component.isActive('/home');
+      expect(isAccueilActive).toBe(false);
+    });
+
+    it('should close mobile menu after navigation', () => {
+      // Simuler un utilisateur client connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+      
+      // Ouvrir le menu mobile
+      component.isMobileMenuOpen = true;
+
+      const accueilItem = component.menu[0]; // Accueil
+      component.onMenuNavigation(accueilItem);
+
+      expect(component.isMobileMenuOpen).toBe(false);
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have proper ARIA labels for navigation', () => {
+      const nav = fixture.debugElement.query(By.css('nav[aria-label="Navigation principale"]'));
+      expect(nav).toBeTruthy();
+    });
+
+    it('should have proper ARIA attributes for mobile menu button', () => {
+      const menuButton = fixture.debugElement.query(By.css('button[aria-label="Menu de navigation"]'));
+      expect(menuButton).toBeTruthy();
+      expect(menuButton.nativeElement.getAttribute('aria-expanded')).toBeDefined();
+      expect(menuButton.nativeElement.getAttribute('aria-controls')).toBe('mobile-menu');
+    });
+
+    it('should have proper focus management for mobile menu', () => {
+      const menuButton = fixture.debugElement.query(By.css('button[aria-label="Menu de navigation"]'));
+      const mobileMenu = fixture.debugElement.query(By.css('#mobile-menu'));
+      
+      expect(menuButton).toBeTruthy();
+      expect(mobileMenu).toBeTruthy();
+    });
+
+    it('should have proper button elements instead of clickable links', () => {
+      const navButtons = fixture.debugElement.queryAll(By.css('.nav-link'));
+      navButtons.forEach(button => {
+        expect(button.nativeElement.tagName).toBe('BUTTON');
+      });
+    });
   });
 });

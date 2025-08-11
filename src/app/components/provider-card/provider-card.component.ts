@@ -1,4 +1,6 @@
-import { Component, Input, Injector } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, Injector } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { User } from '../../models/User';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,14 +13,6 @@ import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.compon
 import { PaymentService } from '../../services/payment/payment.service';
 import { ConfigService } from '../../services/config/config.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
-import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-
-import { OnChanges, SimpleChanges } from '@angular/core';
 
 /**
  * Composant carte prestataire (affichage d'un User de rôle PROVIDER)
@@ -34,13 +28,7 @@ import { OnChanges, SimpleChanges } from '@angular/core';
     MatIconModule, 
     MatChipsModule, 
     MatDividerModule, 
-    RatingStarsComponent,
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule
+    RatingStarsComponent
   ],
   templateUrl: './provider-card.component.html',
   styleUrl: './provider-card.component.scss'
@@ -94,6 +82,7 @@ export class ProviderCardComponent implements OnChanges {
   }
 
   constructor(
+    private http: HttpClient,
     private configService: ConfigService,
     private authStorage: AuthStorageService,
     private injector: Injector
@@ -197,11 +186,22 @@ export class ProviderCardComponent implements OnChanges {
         return;
       }
       
-      // Utiliser le service de paiement pour créer la session
-      const sessionId = await this.paymentService.createCheckoutSession(payload, token);
-      
-      // Rediriger vers Stripe
-      await this.paymentService.redirectToStripe(sessionId);
+      const headers = { 'Authorization': `Bearer ${token}` };
+
+      const response = await firstValueFrom(
+        this.http.post<{ [key: string]: string }>(
+          `${this.configService.apiUrl}/stripe/create-checkout-session`,
+          payload,
+          { headers }
+        )
+      );
+
+      const sessionId = response['sessionId'];
+      if (sessionId) {
+        await this.paymentService.redirectToStripe(sessionId);
+      } else {
+        console.error('Session ID non reçu');
+      }
     } catch (error) {
       console.error('Erreur lors de la création de la session de paiement:', error);
     }

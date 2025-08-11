@@ -21,19 +21,6 @@ $frontend-theme: mat.define-theme((
   )
 ));
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-:root {
-  @include mat.all-component-themes($frontend-theme);
-}
-
-// Comment out the line below if you want to use the pre-defined typography utility classes.
-// For more information: https://material.angular.io/guide/typography#using-typography-styles-in-your-application.
-// @include mat.typography-hierarchy($frontend-theme);
-
-// Comment out the line below if you want to use the deprecated `color` inputs.
-// @include mat.color-variants-backwards-compatibility($frontend-theme);
 /* You can add global styles to this file, and also import other style files */
 
 /* Import Material Icons */
@@ -60,11 +47,16 @@ $frontend-theme: mat.define-theme((
 }
 
 :root {
+
+  @include mat.all-component-themes($frontend-theme);
+
     /** Background-color */
     --primary-color: #FBF4E9;
-    /** Button color */
     --secondary-color: #31525B;
+    /** Button color */
     --button-color: #31525B;
+    /** Button text color */
+    --secondary-text-color: #FFFFFF;
     /** Button nav color */
     --tertiary-color: #db9e36;
     /** Title color */
@@ -80,7 +72,10 @@ $frontend-theme: mat.define-theme((
     /** Border radius de référence */
     --border-radius-base: 12px;
 
-    --discret-text-color: #777; 
+    --vt-grey: #f5f5f5;
+    --vt-grey-border: #e0e0e0;
+
+    --discret-text-color: #777;
 
     --vt-grey: #f5f5f5;
     --vt-grey-border: #e0e0e0;
@@ -157,3 +152,16 @@ input, textarea, select {
 .mdc-text-field--outlined {
   overflow: hidden !important;
 }
+
+/* ===== Placeholders gris clair (global) ===== */
+/* Material V15+ */
+:root .mat-mdc-input-element::placeholder { color: #9e9e9e !important; opacity: 1; }
+/* Compat Material plus ancien */
+:root .mat-input-element::placeholder { color: #9e9e9e !important; opacity: 1; }
+/* Natif */
+:root input::placeholder, :root textarea::placeholder { color: #9e9e9e !important; opacity: 1; }
+/* WebKit */
+:root input::-webkit-input-placeholder, :root textarea::-webkit-input-placeholder { color: #9e9e9e !important; }
+/* Edge/IE */
+:root input:-ms-input-placeholder, :root textarea:-ms-input-placeholder { color: #9e9e9e !important; }
+:root input::-ms-input-placeholder, :root textarea::-ms-input-placeholder { color: #9e9e9e !important; }

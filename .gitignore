@@ -10,6 +10,7 @@
 /node_modules
 npm-debug.log
 yarn-error.log
+package-lock.json
 
 # IDEs and editors
 .idea/
@@ -47,3 +48,6 @@ Thumbs.db
 
 # Keep .env for default values only
 .env
+
+# Configuration values
+src/assets/config.json

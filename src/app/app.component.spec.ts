@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideRouter } from '@angular/router';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ConfigService } from './services/config/config.service';
 
 describe('AppComponent', () => {
   const clearLocalStorage = () => localStorage.removeItem('token');
@@ -10,8 +12,16 @@ describe('AppComponent', () => {
     clearLocalStorage();
 
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
-      providers: [provideRouter([])]
+      imports: [AppComponent, HttpClientTestingModule],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ConfigService,
+          useValue: {
+            loadConfig: () => Promise.resolve()
+          }
+        }
+      ]
     }).compileComponents();
   });
 
@@ -19,18 +29,18 @@ describe('AppComponent', () => {
     clearLocalStorage();
   });
 
-  it('should set isConnected to true if token is not present', () => {
+  it('should consider unauthenticated when token is absent', () => {
     clearLocalStorage();
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.isConnected).toBeTrue();
+    expect(app.isAuthenticated()).toBeFalse();
   });
 
-  it('should set isConnected to false if token is present', () => {
+  it('should consider authenticated when token is present', () => {
     setToken();
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.isConnected).toBeFalse();
+    expect(app.isAuthenticated()).toBeTrue();
   });
 
   it('should have title set to "frontend"', () => {

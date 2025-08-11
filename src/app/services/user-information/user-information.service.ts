@@ -8,8 +8,7 @@ import { ConfigService } from '../config/config.service';
   providedIn: 'root'
 })
 export class UserInformationService {
-
-  private readonly urlApi: string;
+  private urlApi: string;
 
   constructor(
     private http: HttpClient,
@@ -24,7 +23,7 @@ export class UserInformationService {
    * @returns Observable<User> Les informations de l'utilisateur
    */
   getUserById(userId: number): Observable<User> {
-    const url = `${this.urlApi}/users/${userId}`;
+    const url = `${this.configService.apiUrl}/users/${userId}`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -49,7 +48,7 @@ export class UserInformationService {
    * @returns Observable<User> Le profil de l'utilisateur
    */
   getUserProfile(): Observable<User> {
-    const url = `${this.urlApi}/users/profile`;
+    const url = `${this.configService.apiUrl}/users/profile`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -75,7 +74,7 @@ export class UserInformationService {
    * @returns Observable<User[]> Les informations des utilisateurs
    */
   getUsersByIds(userIds: number[]): Observable<User[]> {
-    const url = `${this.urlApi}/users/batch`;
+    const url = `${this.configService.apiUrl}/users/batch`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');

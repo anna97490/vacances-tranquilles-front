@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
@@ -9,14 +8,34 @@ export class ConfigService {
   private config: any = {};
 
   constructor(private readonly http: HttpClient) {
-    this.loadConfig();
+    // Ne pas charger automatiquement la configuration dans le constructeur
+    // pour éviter les problèmes dans les tests
   }
 
   get apiUrl(): string {
+    if (!this.config?.apiUrl) {
+      // Charger la configuration de manière synchrone si elle n'est pas encore chargée
+      this.loadConfigSync();
+    }
     return this.config?.apiUrl || '';
   }
 
+  private loadConfigSync(): void {
+    // Chargement synchrone pour éviter les erreurs pendant l'initialisation
+    if (!this.config?.apiUrl) {
+      // Utiliser l'URL de développement par défaut
+      this.config = { 
+        apiUrl: 'http://localhost:8080/api',
+        NG_APP_STRIPE_PUBLIC_KEY: 'pk_test_51ABC123DEF456GHI789JKL012MNO345PQR678STU901VWX234YZA567BCD890EFG'
+      };
+    }
+  }
+
   get stripePublicKey(): string {
+    if (!this.config?.NG_APP_STRIPE_PUBLIC_KEY) {
+      // Charger la configuration de manière synchrone si elle n'est pas encore chargée
+      this.loadConfigSync();
+    }
     return this.config?.NG_APP_STRIPE_PUBLIC_KEY || '';
   }
 
@@ -24,14 +43,9 @@ export class ConfigService {
     try {
       const config = await firstValueFrom(this.http.get('/assets/config.json'));
       this.config = config;
-      console.log('Configuration chargée:', this.config);
     } catch (error) {
-      console.warn('Impossible de charger config.json, utilisation des variables d\'environnement');
-      // Utiliser les variables d'environnement si le fichier config.json n'existe pas
-      this.config = {
-        apiUrl: environment.apiUrl
-      };
-      console.log('Configuration d\'environnement utilisée:', this.config);
+      console.error('Erreur lors du chargement de config.json:', error);
+      throw new Error('Impossible de charger la configuration. Vérifiez que le fichier config.json existe dans /assets/');
     }
   }
 

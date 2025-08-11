@@ -28,7 +28,7 @@ describe('HomeContentService', () => {
     expect(content.btnPrestataire).toBe('Inscription Prestataires');
     expect(content.btnParticulier).toBe('Inscription Particuliers');
     expect(content.btnConnexion).toBe('Connexion');
-    expect(content.featuresTitle).toBe('Pourquoi Nous Choisir');
+    expect(content.featuresTitle).toBe('Pourquoi nous choisir');
   });
 
   it('should return features array with correct length', () => {
