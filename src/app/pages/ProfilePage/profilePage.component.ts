@@ -4,12 +4,11 @@ import { UpdateProfileComponent } from '../../components/profile/update-profile/
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { MOCK_USER, LOGGED_USER } from '../../components/profile/mock-user';
-import { MOCK_SERVICES } from '../../components/provider-card/mock-service';
 import { User } from '../../models/User';
 import { Service } from '../../models/Service';
 import { UserInformationService } from '../../services/user-information/user-information.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { UserRole } from '../../models/User';
 
 @Component({
   selector: 'app-profile',
@@ -34,9 +33,10 @@ export class ProfilePageComponent implements OnInit {
    */
   hasError = false;
 
-  displayedUser: User = { ...MOCK_USER };
-  services = [...MOCK_SERVICES];
-  loggedUser: User = { ...LOGGED_USER };
+  displayedUser: User | null = null;
+  services: Service[] = [];
+  loggedUser: User | null = null;
+  userRole: UserRole | null = null;
 
   constructor(
     private readonly userInformationService: UserInformationService,
@@ -54,20 +54,27 @@ export class ProfilePageComponent implements OnInit {
     this.isLoading = true;
     this.hasError = false;
 
+    // Récupérer le userRole depuis le localStorage
+    const storedUserRole = localStorage.getItem('userRole');
+    if (storedUserRole) {
+      this.userRole = storedUserRole as UserRole;
+    }
+
     // Récupérer les informations de l'utilisateur connecté
     this.userInformationService.getUserProfile().subscribe({
       next: (userData: User) => {
-        console.log('Données utilisateur connecté récupérées:', userData);
-        this.loggedUser = userData;
+        // Créer l'objet loggedUser avec les données de l'API + le role du localStorage
+        this.loggedUser = {
+          ...userData,
+          role: this.userRole || UserRole.CLIENT // fallback par défaut
+        };
+        
         // Si c'est le profil de l'utilisateur connecté, on met aussi à jour displayedUser
-        this.displayedUser = userData;
+        this.displayedUser = { ...this.loggedUser };
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
-        // En cas d'erreur, on garde les données mock par défaut
-        this.loggedUser = { ...LOGGED_USER };
-        this.displayedUser = { ...MOCK_USER };
         this.isLoading = false;
         this.hasError = true;
       }
@@ -102,6 +109,6 @@ export class ProfilePageComponent implements OnInit {
    * @returns true si l'utilisateur affiché est le même que l'utilisateur connecté
    */
   isCurrentUserProfile(): boolean {
-    return this.displayedUser.idUser === this.loggedUser.idUser;
+    return this.displayedUser?.idUser === this.loggedUser?.idUser;
   }
 }

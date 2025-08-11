@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { User } from '../../../models/User';
 import { Service } from '../../../models/Service';
 import { UserRole } from '../../../models/User';
@@ -8,7 +9,7 @@ import { UpdateProfileServicesComponent } from './utils/update-profile-services/
 @Component({
   selector: 'app-update-profile',
   standalone: true,
-  imports: [UpdateProfileHeaderComponent, UpdateProfileServicesComponent],
+  imports: [CommonModule, UpdateProfileHeaderComponent, UpdateProfileServicesComponent],
   templateUrl: './update-profile.component.html',
   styleUrl: './update-profile.component.scss'
 })

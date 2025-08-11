@@ -1,2 +1,2 @@
 <app-update-profile-header [user]="user"></app-update-profile-header>
-<app-update-profile-services [services]="services"></app-update-profile-services>
+<app-update-profile-services *ngIf="userRole === 'PROVIDER'" [services]="services"></app-update-profile-services>
