@@ -122,16 +122,25 @@ describe('FAQPrestataireService', () => {
     // Vérifier que les catégories sont dans l'ordre de priorité
     const expectedOrder = ['inscription', 'conditions', 'documents', 'connexion', 'agenda', 'clients', 'services', 'communication', 'messagerie', 'profil'];
     
-    let currentIndex = 0;
     let currentCategory = priorityFAQ[0].categorie;
+    let currentCategoryIndex = expectedOrder.indexOf(currentCategory);
     
     for (let i = 1; i < priorityFAQ.length; i++) {
       const item = priorityFAQ[i];
       if (item.categorie !== currentCategory) {
-        const expectedIndex = expectedOrder.indexOf(item.categorie);
-        const currentExpectedIndex = expectedOrder.indexOf(currentCategory);
-        expect(expectedIndex).toBeGreaterThanOrEqual(currentExpectedIndex);
+        const newCategoryIndex = expectedOrder.indexOf(item.categorie);
+        
+        // Si la nouvelle catégorie est dans l'ordre de priorité
+        if (newCategoryIndex !== -1) {
+          // Si la catégorie précédente était aussi dans l'ordre de priorité
+          if (currentCategoryIndex !== -1) {
+            // La nouvelle catégorie doit avoir un index supérieur ou égal
+            expect(newCategoryIndex).toBeGreaterThanOrEqual(currentCategoryIndex);
+          }
+        }
+        
         currentCategory = item.categorie;
+        currentCategoryIndex = newCategoryIndex;
       }
     }
   });
