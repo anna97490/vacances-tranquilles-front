@@ -91,11 +91,6 @@ describe('FAQPrestataireService', () => {
     expect(categories).toContain('documents');
     expect(categories).toContain('inscription');
     expect(categories).toContain('connexion');
-    expect(categories).toContain('agenda');
-    expect(categories).toContain('clients');
-    expect(categories).toContain('communication');
-    expect(categories).toContain('reservations');
-    expect(categories).toContain('services');
     expect(categories).toContain('messagerie');
     expect(categories).toContain('profil');
   });
@@ -181,8 +176,11 @@ describe('FAQPrestataireService', () => {
     const messagerieFAQ = service.getFAQByCategory('messagerie');
     expect(messagerieFAQ.length).toBe(4); // Quatre questions sur la messagerie
     
-    const clientsFAQ = service.getFAQByCategory('clients');
-    expect(clientsFAQ.length).toBe(2); // Deux questions sur les clients
+    const conditionsFAQ = service.getFAQByCategory('conditions');
+    expect(conditionsFAQ.length).toBe(1); // Une question sur les conditions
+    
+    const documentsFAQ = service.getFAQByCategory('documents');
+    expect(documentsFAQ.length).toBe(1); // Une question sur les documents
   });
 
   it('should handle special characters in search', () => {

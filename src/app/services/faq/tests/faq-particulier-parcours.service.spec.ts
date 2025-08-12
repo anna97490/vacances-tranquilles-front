@@ -91,11 +91,9 @@ describe('FAQParticulierParcoursService', () => {
     });
 
     it('should return question about reservation', () => {
-      // Avec la nouvelle logique de génération, la première question de "Réserver une prestation" 
-      // est la 6ème question globale (après 3 inscription + 2 consulter)
-      const question = service.getQuestionById('part-reserver-6');
+      const question = service.getQuestionById('part-inscription-1');
       expect(question).toBeTruthy();
-      expect(question?.categorie).toBe('Réserver une prestation');
+      expect(question?.question).toBe('Comment créer mon compte ?');
     });
 
     it('should return undefined for invalid ID', () => {

@@ -90,11 +90,7 @@ describe('FAQParticulierService', () => {
     expect(categories).toContain('inscription');
     expect(categories).toContain('connexion');
     expect(categories).toContain('recherche');
-    expect(categories).toContain('prestataires');
-    expect(categories).toContain('prestations');
     expect(categories).toContain('reservation');
-    expect(categories).toContain('paiement');
-    expect(categories).toContain('suivi');
     expect(categories).toContain('evaluation');
     expect(categories).toContain('messagerie');
     expect(categories).toContain('profil');
@@ -123,7 +119,7 @@ describe('FAQParticulierService', () => {
     expect(priorityFAQ.length).toBeGreaterThan(0);
 
     // Vérifier que les catégories sont dans l'ordre de priorité
-    const expectedOrder = ['inscription', 'connexion', 'recherche', 'prestataires', 'prestations', 'reservation', 'paiement', 'suivi', 'evaluation', 'messagerie', 'profil', 'securite', 'tarifs', 'annulation'];
+    const expectedOrder = ['inscription', 'connexion', 'recherche', 'reservation', 'evaluation', 'messagerie', 'profil', 'securite', 'tarifs', 'annulation'];
     
     let currentIndex = 0;
     let currentCategory = priorityFAQ[0].categorie;
@@ -145,7 +141,7 @@ describe('FAQParticulierService', () => {
     expect(Array.isArray(frequentFAQ)).toBeTrue();
     expect(frequentFAQ.length).toBeGreaterThan(0);
 
-    const frequentCategories = ['inscription', 'recherche', 'reservation', 'paiement', 'annulation'];
+    const frequentCategories = ['inscription', 'recherche', 'reservation', 'annulation'];
     expect(frequentFAQ.every(item => frequentCategories.includes(item.categorie))).toBeTrue();
   });
 

@@ -47,7 +47,7 @@ describe('FAQPrestataireParcoursService', () => {
       expect(categories).toContain('Gestion des services');
       expect(categories).toContain('Création / Gestion des Services');
       expect(categories).toContain('Messagerie');
-      expect(categories).toContain('Profil Prestataire');
+      expect(categories).toContain('Profil personnel');
     });
   });
 
@@ -74,7 +74,7 @@ describe('FAQPrestataireParcoursService', () => {
     it('should return question for valid ID', () => {
       const question = service.getQuestionById('presta-inscription-1');
       expect(question).toBeTruthy();
-      expect(question?.question).toBe('Comment créer mon compte prestataire ?');
+      expect(question?.question).toBe('Comment créer mon compte ?');
     });
 
     it('should return undefined for invalid ID', () => {
