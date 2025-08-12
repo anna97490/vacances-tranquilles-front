@@ -73,7 +73,6 @@ describe('TermsAndConditionsComponent (robuste)', () => {
   afterEach(() => {
     cleanDOM();
     mockLocationService.getPathname.calls.reset();
-    // Toujours restaurer les getters originaux après chaque test
     if (originalCguContentGetter) {
       Object.defineProperty(TermsAndConditionsComponent.prototype, 'cguContent', originalCguContentGetter);
     }
@@ -145,7 +144,6 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       component = fixture.componentInstance;
     });
     afterEach(() => {
-      // Restaurer les getters originaux après chaque test
       if (originalCguContentGetter) {
         Object.defineProperty(TermsAndConditionsComponent.prototype, 'cguContent', originalCguContentGetter);
       }

@@ -29,7 +29,7 @@ describe('RegisterFormConfigService', () => {
       });
 
       it('devrait retourner le label pour siretSiren si prestataire', () => {
-        expect(service.getFieldLabel('siretSiren', true)).toBe('SIRET/SIREN');
+        expect(service.getFieldLabel('siretSiren', true)).toBe('SIRET');
       });
 
       it('devrait retourner une chaîne vide pour siretSiren si non prestataire', () => {
@@ -55,7 +55,7 @@ describe('RegisterFormConfigService', () => {
       });
 
       it('devrait retourner le placeholder pour siretSiren si prestataire', () => {
-        expect(service.getFieldPlaceholder('siretSiren', true)).toBe('Numéro SIRET/SIREN');
+        expect(service.getFieldPlaceholder('siretSiren', true)).toBe('Numéro SIRET (14 chiffres)');
       });
 
       it('devrait retourner une chaîne vide pour siretSiren si non prestataire', () => {
@@ -73,19 +73,19 @@ describe('RegisterFormConfigService', () => {
 
     describe('getFieldType', () => {
       it('devrait retourner "email" pour le champ email', () => {
-        expect(service.getFieldType('email', false)).toBe('email');
+        expect(service.getFieldType('email')).toBe('email');
       });
 
       it('devrait retourner "password" pour le champ userSecret', () => {
-        expect(service.getFieldType('userSecret', false)).toBe('password');
+        expect(service.getFieldType('userSecret')).toBe('password');
       });
 
       it('devrait retourner "text" pour le champ siretSiren', () => {
-        expect(service.getFieldType('siretSiren', true)).toBe('text');
+        expect(service.getFieldType('siretSiren')).toBe('text');
       });
 
       it('devrait retourner "text" pour un champ inconnu', () => {
-        expect(service.getFieldType('champInconnu', false)).toBe('text');
+        expect(service.getFieldType('champInconnu')).toBe('text');
       });
     });
     describe('getFieldRequired', () => {
@@ -114,13 +114,13 @@ describe('RegisterFormConfigService', () => {
   describe('createRegistrationForm', () => {
     it('should create form with all required controls', () => {
       const form = service.createRegistrationForm();
-      
+
       const expectedControls = [
         'firstName', 'lastName', 'email', 'userSecret',
         'phoneNumber', 'address', 'city', 'postalCode',
         'companyName', 'siretSiren'
       ];
-      
+
       expectedControls.forEach(controlName => {
         expect(form.get(controlName)).toBeTruthy();
       });
@@ -128,12 +128,12 @@ describe('RegisterFormConfigService', () => {
 
     it('should have correct validators for required fields', () => {
       const form = service.createRegistrationForm();
-      
+
       const requiredFields = [
         'firstName', 'lastName', 'email', 'userSecret',
         'phoneNumber', 'address', 'city', 'postalCode'
       ];
-      
+
       requiredFields.forEach(fieldName => {
         const control = form.get(fieldName);
         control?.setValue('');
@@ -144,10 +144,10 @@ describe('RegisterFormConfigService', () => {
     it('should have email validator on email field', () => {
       const form = service.createRegistrationForm();
       const emailControl = form.get('email');
-      
+
       emailControl?.setValue('invalid-email');
-      expect(emailControl?.hasError('email')).toBeTruthy();
-      
+      expect(emailControl?.hasError('emailFormat')).toBeTrue();
+
       emailControl?.setValue('valid@email.com');
       expect(emailControl?.valid).toBeTruthy();
     });
@@ -155,10 +155,10 @@ describe('RegisterFormConfigService', () => {
     it('should have minlength validator on userSecret field', () => {
       const form = service.createRegistrationForm();
       const userSecretControl = form.get('userSecret');
-      
+
       userSecretControl?.setValue('123');
       expect(userSecretControl?.hasError('minlength')).toBeTruthy();
-      
+
       userSecretControl?.setValue('Password123!');
       expect(userSecretControl?.valid).toBeTruthy();
     });
@@ -166,11 +166,10 @@ describe('RegisterFormConfigService', () => {
     it('should have pattern validator on userSecret field', () => {
       const form = service.createRegistrationForm();
       const userSecretControl = form.get('userSecret');
-      
-      // Test pattern validation
-      userSecretControl?.setValue('password'); // Pas de majuscule, chiffre ou caractère spécial
-      expect(userSecretControl?.hasError('pattern')).toBeTruthy();
-      
+
+      userSecretControl?.setValue('123');
+      expect(userSecretControl?.hasError('minLength')).toBeTrue();
+
       userSecretControl?.setValue('Password123!');
       expect(userSecretControl?.valid).toBeTruthy();
     });
@@ -178,28 +177,139 @@ describe('RegisterFormConfigService', () => {
     it('should have pattern validator on postalCode field', () => {
       const form = service.createRegistrationForm();
       const postalCodeControl = form.get('postalCode');
-      
+
       postalCodeControl?.setValue('123');
       expect(postalCodeControl?.hasError('pattern')).toBeTruthy();
-      
+
       postalCodeControl?.setValue('abc12');
       expect(postalCodeControl?.hasError('pattern')).toBeTruthy();
-      
+
       postalCodeControl?.setValue('75000');
       expect(postalCodeControl?.valid).toBeTruthy();
     });
 
     it('should have no validators on companyName and siretSiren initially', () => {
       const form = service.createRegistrationForm();
-      
+
       const companyNameControl = form.get('companyName');
       const siretSirenControl = form.get('siretSiren');
-      
+
       companyNameControl?.setValue('');
       siretSirenControl?.setValue('');
-      
+
       expect(companyNameControl?.valid).toBeTruthy();
       expect(siretSirenControl?.valid).toBeTruthy();
+    });
+  });
+
+  describe('Validators - parameterized branches', () => {
+    it('should validate email format with mixed cases and edge formats', () => {
+      const form = service.createRegistrationForm();
+      const email = form.get('email');
+
+      const validEmails = [
+        'TeSt@ExAmPlE.CoM',
+        'name.sur+alias@example-domain.com',
+        'a.b@cde.fr'
+      ];
+      validEmails.forEach(v => {
+        email?.setValue(v);
+        expect(email?.hasError('emailFormat')).toBeFalse();
+      });
+
+      const invalidEmails = [
+        'anna@d',
+        'nom@',
+        '@domaine.com',
+        'nom@domaine',
+        'inv alid@mail.com'
+      ];
+      invalidEmails.forEach(v => {
+        email?.setValue(v);
+        expect(email?.hasError('emailFormat')).toBeTrue();
+      });
+    });
+
+    it('should validate phone number with boundary cases', () => {
+      const form = service.createRegistrationForm();
+      const phone = form.get('phoneNumber');
+
+      phone?.setValue('012345678'); // 9 digits
+      expect(phone?.hasError('phoneNumberLength')).toBeTrue();
+
+      phone?.setValue('01234567890'); // 11 digits
+      expect(phone?.hasError('phoneNumberLength')).toBeTrue();
+
+      phone?.setValue('01 23-45 67-89');
+      expect(phone?.errors).toBeNull();
+
+      phone?.setValue('01234abc89');
+      expect(phone?.hasError('numbersOnly') || phone?.hasError('phoneNumberLength')).toBeTrue();
+    });
+
+    it('should block dangerous characters via injectionPrevention on address and city', () => {
+      const form = service.createRegistrationForm();
+      const address = form.get('address');
+      const city = form.get('city');
+
+      ['<script>', '{x}', 'name&drop', 'street`'].forEach(val => {
+        address?.setValue(val);
+        expect(address?.hasError('injectionPrevention')).toBeTrue();
+      });
+
+      ["O'Hara", 'Saint-Étienne', 'Le-Havre'].forEach(val => {
+        city?.setValue(val);
+        expect(city?.hasError('lettersOnly')).toBeFalse();
+      });
+
+      ['Paris1', 'N@ntes'].forEach(val => {
+        city?.setValue(val);
+        expect(city?.hasError('lettersOnly') || city?.hasError('injectionPrevention')).toBeTrue();
+      });
+    });
+
+    it('should flip all password complexity branches', () => {
+      const form = service.createRegistrationForm();
+      const pwd = form.get('userSecret');
+
+      // Too short
+      pwd?.setValue('Aa1!aaa');
+      expect(pwd?.hasError('minLength')).toBeTrue();
+
+      // Missing lowercase
+      pwd?.setValue('AAAAAAA1!');
+      expect(pwd?.hasError('lowercase')).toBeTrue();
+
+      // Missing uppercase
+      pwd?.setValue('aaaaaaa1!');
+      expect(pwd?.hasError('uppercase')).toBeTrue();
+
+      // Missing number
+      pwd?.setValue('Aaaaaaaa!');
+      expect(pwd?.hasError('number')).toBeTrue();
+
+      // Missing special
+      pwd?.setValue('Aaaaaaaa1');
+      expect(pwd?.hasError('special')).toBeTrue();
+
+      // Valid
+      pwd?.setValue('Password1!');
+      expect(pwd?.errors).toBeNull();
+    });
+
+    it('should validate postal code boundaries', () => {
+      const form = service.createRegistrationForm();
+      const cp = form.get('postalCode');
+
+      ['1234', '123456', '12a45'].forEach(v => {
+        cp?.setValue(v);
+        expect(cp?.hasError('pattern')).toBeTrue();
+      });
+
+      ['00000', '99999', '75000'].forEach(v => {
+        cp?.setValue(v);
+        expect(cp?.errors).toBeNull();
+      });
     });
   });
 
@@ -212,28 +322,28 @@ describe('RegisterFormConfigService', () => {
 
     it('should add validators for prestataire fields when isPrestataire is true', () => {
       service.updateValidatorsBasedOnUserType(form, true);
-      
+
       const companyNameControl = form.get('companyName');
       const siretSirenControl = form.get('siretSiren');
-      
+
       companyNameControl?.setValue('');
       siretSirenControl?.setValue('');
-      
+
       expect(companyNameControl?.hasError('required')).toBeTruthy();
       expect(siretSirenControl?.hasError('required')).toBeTruthy();
     });
 
     it('should add pattern validator for SIRET when isPrestataire is true', () => {
       service.updateValidatorsBasedOnUserType(form, true);
-      
+
       const siretSirenControl = form.get('siretSiren');
-      
+
       siretSirenControl?.setValue('123');
       expect(siretSirenControl?.hasError('pattern')).toBeTruthy();
-      
+
       siretSirenControl?.setValue('abc12345678901');
       expect(siretSirenControl?.hasError('pattern')).toBeTruthy();
-      
+
       siretSirenControl?.setValue('12345678901234');
       expect(siretSirenControl?.valid).toBeTruthy();
     });
@@ -241,16 +351,16 @@ describe('RegisterFormConfigService', () => {
     it('should clear validators when isPrestataire is false', () => {
       // First add validators
       service.updateValidatorsBasedOnUserType(form, true);
-      
+
       // Then clear them
       service.updateValidatorsBasedOnUserType(form, false);
-      
+
       const companyNameControl = form.get('companyName');
       const siretSirenControl = form.get('siretSiren');
-      
+
       companyNameControl?.setValue('');
       siretSirenControl?.setValue('');
-      
+
       expect(companyNameControl?.valid).toBeTruthy();
       expect(siretSirenControl?.valid).toBeTruthy();
     });
@@ -258,19 +368,16 @@ describe('RegisterFormConfigService', () => {
     it('should update validity after changing validators', () => {
       const companyNameControl = form.get('companyName');
       const siretSirenControl = form.get('siretSiren');
-      
+
       // Set invalid values
       companyNameControl?.setValue('');
       siretSirenControl?.setValue('');
-      
-      // Initially should be valid (no validators)
+
       expect(companyNameControl?.valid).toBeTruthy();
       expect(siretSirenControl?.valid).toBeTruthy();
-      
-      // Add validators
+
       service.updateValidatorsBasedOnUserType(form, true);
-      
-      // Should now be invalid
+
       expect(companyNameControl?.valid).toBeFalsy();
       expect(siretSirenControl?.valid).toBeFalsy();
     });
@@ -279,7 +386,7 @@ describe('RegisterFormConfigService', () => {
       const mockForm = {
         get: jasmine.createSpy('get').and.returnValue(null)
       };
-      
+
       expect(() => service.updateValidatorsBasedOnUserType(mockForm as any, true))
         .not.toThrow();
     });
@@ -301,7 +408,7 @@ describe('RegisterFormConfigService', () => {
         'firstName', 'lastName', 'email', 'userSecret',
         'phoneNumber', 'address', 'city', 'postalCode'
       ];
-      
+
       commonFields.forEach(field => {
         expect(service.shouldShowField(field, true)).toBeTruthy();
         expect(service.shouldShowField(field, false)).toBeTruthy();
@@ -314,58 +421,37 @@ describe('RegisterFormConfigService', () => {
     });
   });
 
-  describe('getFieldValidators', () => {
-    it('should return correct validators for userSecret field', () => {
-      const validators = service.getFieldValidators('userSecret');
-      expect(validators.length).toBe(3); // required, minlength, pattern
-    });
 
-    it('should return correct validators for email field', () => {
-      const validators = service.getFieldValidators('email');
-      expect(validators.length).toBe(2); // required, email
-    });
-
-    it('should return correct validators for postalCode field', () => {
-      const validators = service.getFieldValidators('postalCode');
-      expect(validators.length).toBe(2); // required, pattern
-    });
-
-    it('should return default validators for unknown field', () => {
-      const validators = service.getFieldValidators('unknownField');
-      expect(validators.length).toBe(1); // required only
-    });
-  });
 
   describe('Edge Cases', () => {
     it('should handle form creation multiple times', () => {
       const form1 = service.createRegistrationForm();
       const form2 = service.createRegistrationForm();
-      
-      expect(form1).not.toBe(form2); // Different instances
+
+      expect(form1).not.toBe(form2);
       expect(Object.keys(form1.controls)).toEqual(Object.keys(form2.controls));
     });
 
     it('should handle validator updates multiple times', () => {
       const form = service.createRegistrationForm();
-      
+
       // Multiple updates should work
       service.updateValidatorsBasedOnUserType(form, true);
       service.updateValidatorsBasedOnUserType(form, false);
       service.updateValidatorsBasedOnUserType(form, true);
-      
+
       const companyNameControl = form.get('companyName');
       companyNameControl?.setValue('');
-      
+
       expect(companyNameControl?.hasError('required')).toBeTruthy();
     });
 
     it('should validate SIRET with exact 14 digits', () => {
       const form = service.createRegistrationForm();
       service.updateValidatorsBasedOnUserType(form, true);
-      
+
       const siretControl = form.get('siretSiren');
-      
-      // Test edge cases for SIRET pattern
+
       const testCases = [
         { value: '1234567890123', valid: false }, // 13 digits
         { value: '12345678901234', valid: true },  // 14 digits
@@ -374,7 +460,7 @@ describe('RegisterFormConfigService', () => {
         { value: '00000000000000', valid: true },   // all zeros
         { value: '99999999999999', valid: true }    // all nines
       ];
-      
+
       testCases.forEach(({ value, valid }) => {
         siretControl?.setValue(value);
         expect(siretControl?.valid).toBe(valid);

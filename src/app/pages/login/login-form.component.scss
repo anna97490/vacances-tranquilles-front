@@ -1,11 +1,41 @@
+.back-btn {
+  top: 2rem;
+  left: 2rem;
+  color:  var(--button-color);
+  background-color: var(--primary-color);
+  border: none;
+  padding: 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--tertiary-color);
+  }
+
+  &:focus-visible {
+    outline: 3px solid #1f5f8b;
+    outline-offset: 2px;
+  }
+}
+
 .login-container {
   min-height: 100vh;
+  height: auto;
+  overflow: visible;
   background: var(--primary-color);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding-top: 2.5rem;
+  box-sizing: border-box;
 }
 
 .login-header {
@@ -30,14 +60,26 @@
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+  box-sizing: border-box;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 0.25rem;
-    color: var(--text-color);
-    font-size: 1.05rem;
-    font-weight: 600;
+::ng-deep .form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #9e9e9e !important; /* Gris clair forcé */
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+/* Placeholders en gris clair */
+::ng-deep .mat-mdc-input-element::placeholder {
+  color: #9e9e9e !important;
+  opacity: 1;
+}
+
+::ng-deep .mat-input-element::placeholder {
+  color: #9e9e9e !important;
+  opacity: 1;
 }
 
 .form-field {
@@ -49,7 +91,7 @@
 }
 
 .login-btn {
-  margin-top: 1.2rem;
+  margin-top: 2rem;
   background: var(--button-color) !important;
   color: var(--secondary-text-color) !important;
   font-weight: 500;
@@ -63,9 +105,47 @@
   margin-bottom: 0.7rem;
 }
 
+.login-register {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+}
+
+.login-container > app-footer {
+  margin-top: auto;
+}
+
+.login-register a {
+  color: var(--quaternary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.required-asterisk {
+  color: #d32f2f;
+  font-weight: 700;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
 @media (max-width: 600px) {
   .login-form {
     padding: 1.2rem 0.5rem 1rem 0.5rem;
     max-width: 85vw;
   }
-} 
+
+  .general-error-message {
+    max-width: 85vw;
+  }
+}
