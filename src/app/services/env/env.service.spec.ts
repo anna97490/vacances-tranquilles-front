@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { EnvService } from './EnvService';
+import { EnvService } from './env.service';
 
 describe('EnvService', () => {
   let service: EnvService;
@@ -32,7 +32,8 @@ describe('EnvService', () => {
     if (!newService.isProduction) {
       expect(console.log).toHaveBeenCalledWith('Environment configuré :', {
         apiUrl: newService.apiUrl,
-        isProduction: newService.isProduction
+        isProduction: newService.isProduction,
+        stripePublicKey: newService.stripePublicKey
       });
     }
   });

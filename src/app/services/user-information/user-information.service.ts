@@ -5,19 +5,19 @@ import { User } from '../../models/User';
 import { Service } from '../../models/Service';
 import { UpdateUserDTO } from '../../models/UpdateUserDTO';
 import { UserProfileDTO } from '../../models/UserProfileDTO';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserInformationService {
-  private urlApi: string;
+  private readonly urlApi: string;
 
   constructor(
-    private http: HttpClient,
-    private readonly configService: ConfigService
+    private readonly http: HttpClient,
+    private readonly envService: EnvService
   ) {
-    this.urlApi = this.configService.apiUrl;
+    this.urlApi = this.envService.apiUrl;
   }
 
   /**
@@ -26,7 +26,7 @@ export class UserInformationService {
    * @returns Observable<User> Les informations de l'utilisateur
    */
   getUserById(userId: number): Observable<User> {
-    const url = `${this.configService.apiUrl}/users/${userId}`;
+    const url = `${this.urlApi}/users/${userId}`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -51,7 +51,7 @@ export class UserInformationService {
    * @returns Observable<User> Le profil de l'utilisateur
    */
   getUserProfile(): Observable<User> {
-    const url = `${this.configService.apiUrl}/users/profile`;
+    const url = `${this.urlApi}/users/profile`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -77,7 +77,7 @@ export class UserInformationService {
    * @returns Observable<User[]> Les informations des utilisateurs
    */
   getUsersByIds(userIds: number[]): Observable<User[]> {
-    const url = `${this.configService.apiUrl}/users/batch`;
+    const url = `${this.urlApi}/users/batch`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -103,7 +103,7 @@ export class UserInformationService {
    * @returns Observable<UserProfileDTO> Le profil mis à jour
    */
   updateUserProfile(updateDTO: UpdateUserDTO): Observable<UserProfileDTO> {
-    const url = `${this.configService.apiUrl}/users/profile`;
+    const url = `${this.urlApi}/users/profile`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -128,7 +128,7 @@ export class UserInformationService {
    * @returns Observable<UserProfileDTO> Le profil complet de l'utilisateur
    */
   getUserProfileWithServices(): Observable<UserProfileDTO> {
-    const url = `${this.configService.apiUrl}/users/profile`;
+    const url = `${this.urlApi}/users/profile`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -153,7 +153,7 @@ export class UserInformationService {
    * @returns Observable<Service[]> Les services de l'utilisateur
    */
   getMyServices(): Observable<Service[]> {
-    const url = `${this.configService.apiUrl}/services/my-services`;
+    const url = `${this.urlApi}/services/my-services`;
     
     console.log('Récupération des services depuis:', url);
     
@@ -181,7 +181,7 @@ export class UserInformationService {
    * @returns Observable<Service[]> Les services de l'utilisateur
    */
   getUserServices(userId: number): Observable<Service[]> {
-    const url = `${this.configService.apiUrl}/users/${userId}/services`;
+    const url = `${this.urlApi}/users/${userId}/services`;
     
     console.log('Récupération des services de l\'utilisateur depuis:', url);
     
@@ -209,7 +209,7 @@ export class UserInformationService {
    * @returns Observable<Service> Le service créé
    */
   createService(service: Service): Observable<Service> {
-    const url = `${this.configService.apiUrl}/services`;
+    const url = `${this.urlApi}/services`;
     
     console.log('Création d\'un nouveau service vers:', url);
     console.log('Données du service:', service);
@@ -239,7 +239,7 @@ export class UserInformationService {
    * @returns Observable<Service> Le service mis à jour
    */
   updateService(serviceId: number, service: Service): Observable<Service> {
-    const url = `${this.configService.apiUrl}/services/${serviceId}`;
+    const url = `${this.urlApi}/services/${serviceId}`;
     
     console.log('Mise à jour du service vers:', url);
     console.log('Données du service:', service);
@@ -268,7 +268,7 @@ export class UserInformationService {
    * @returns Observable<void>
    */
   deleteService(serviceId: number): Observable<void> {
-    const url = `${this.configService.apiUrl}/services/${serviceId}`;
+    const url = `${this.urlApi}/services/${serviceId}`;
     
     console.log('Suppression du service vers:', url);
     

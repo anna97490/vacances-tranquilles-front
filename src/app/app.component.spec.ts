@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideRouter } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ConfigService } from './services/config/config.service';
+import { EnvService } from './services/env/env.service';
 
 describe('AppComponent', () => {
   const clearLocalStorage = () => localStorage.removeItem('token');
@@ -16,9 +16,11 @@ describe('AppComponent', () => {
       providers: [
         provideRouter([]),
         {
-          provide: ConfigService,
+          provide: EnvService,
           useValue: {
-            loadConfig: () => Promise.resolve()
+            apiUrl: 'http://test-api.example.com/api',
+            isProduction: false,
+            stripePublicKey: 'pk_test_example'
           }
         }
       ]

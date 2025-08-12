@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { Service } from '../../models/Service';
 import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.component';
 import { PaymentService } from '../../services/payment/payment.service';
-import { ConfigService } from '../../services/config/config.service';
+import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -83,12 +83,11 @@ export class ProviderCardComponent implements OnChanges {
   }
 
   constructor(
-    private http: HttpClient,
-    private configService: ConfigService,
-    private authStorage: AuthStorageService,
-    private injector: Injector,
-    private router: Router,
-    private route: ActivatedRoute
+    private readonly http: HttpClient,
+    private readonly envService: EnvService,
+    private readonly authStorage: AuthStorageService,
+    private readonly injector: Injector,
+    private readonly router: Router
   ) {}
 
   private get paymentService(): PaymentService {
@@ -149,8 +148,12 @@ export class ProviderCardComponent implements OnChanges {
       return;
     }
 
-    const providerId = this.providerInfo?.idUser ? Number(this.providerInfo.idUser) : 
-                      this.service.providerId ? Number(this.service.providerId) : null;
+    let providerId: number | null = null;
+    if (this.providerInfo?.idUser) {
+      providerId = Number(this.providerInfo.idUser);
+    } else if (this.service.providerId) {
+      providerId = Number(this.service.providerId);
+    }
 
     // Récupérer les critères de recherche depuis le localStorage
     const searchCriteriaStr = localStorage.getItem('searchCriteria');
@@ -193,7 +196,7 @@ export class ProviderCardComponent implements OnChanges {
 
       const response = await firstValueFrom(
         this.http.post<{ [key: string]: string }>(
-          `${this.configService.apiUrl}/stripe/create-checkout-session`,
+          `${this.envService.apiUrl}/stripe/create-checkout-session`,
           payload,
           { headers }
         )

@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { RouterModule, RouterLink, Router } from '@angular/router';
 import { LoginPayload } from './../../models/Login';
-import { ConfigService } from '../../services/config/config.service';
+import { EnvService } from '../../services/env/env.service';
 import { LoginValidationService } from '../../services/login/login-validation.service';
 import { LoginFormConfigService } from '../../services/login/login-form-config.service';
 import { LoginService } from '../../services/login/login.service';
@@ -43,13 +43,13 @@ export class LoginFormComponent {
   @ViewChild('loginErrorSummary') errorSummaryRef?: ElementRef<HTMLDivElement>;
 
   constructor(
-    private readonly configService: ConfigService,
+    private readonly envService: EnvService,
     private readonly validationService: LoginValidationService,
     private readonly formConfigService: LoginFormConfigService,
     private readonly loginService: LoginService,
     private readonly router: Router
   ) {
-    this.urlApi = this.configService.apiUrl;
+    this.urlApi = this.envService.apiUrl;
     this.initializeForm();
   }
 

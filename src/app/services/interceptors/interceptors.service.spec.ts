@@ -108,13 +108,137 @@ describe('authInterceptor', () => {
       });
     });
 
-    // Test supprimé car il cause des problèmes de compilation avec HttpHeaders
-    // Le comportement est testé dans les autres tests
+    it('should handle null token value', () => {
+      localStorage.setItem('token', 'null');
+
+      let modifiedRequest: HttpRequest<any> | null = null;
+      const mockHandlerWithCapture = (req: HttpRequest<any>) => {
+        modifiedRequest = req;
+        return of({} as any);
+      };
+
+      const result = authInterceptor(mockRequest, mockHandlerWithCapture);
+      
+      result.subscribe(() => {
+        expect(modifiedRequest).toBeTruthy();
+        expect(modifiedRequest!.headers.has('Authorization')).toBeTruthy();
+        expect(modifiedRequest!.headers.get('Authorization')).toBe('Bearer null');
+      });
+    });
+
+    it('should handle undefined token value', () => {
+      localStorage.setItem('token', 'undefined');
+
+      let modifiedRequest: HttpRequest<any> | null = null;
+      const mockHandlerWithCapture = (req: HttpRequest<any>) => {
+        modifiedRequest = req;
+        return of({} as any);
+      };
+
+      const result = authInterceptor(mockRequest, mockHandlerWithCapture);
+      
+      result.subscribe(() => {
+        expect(modifiedRequest).toBeTruthy();
+        expect(modifiedRequest!.headers.has('Authorization')).toBeTruthy();
+        expect(modifiedRequest!.headers.get('Authorization')).toBe('Bearer undefined');
+      });
+    });
   });
 
-  // Tests d'erreur supprimés car ils causent des problèmes avec window.location.href
-  // L'intercepteur fonctionne correctement en production
-  // Les tests d'autorisation et de gestion des requêtes restent pour couvrir le code principal
+  describe('Error handling', () => {
+    it('should handle 401 error and clear localStorage', () => {
+      localStorage.setItem('token', 'test-token');
+      localStorage.setItem('userRole', 'admin');
+
+      const error401 = new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' });
+      const mockHandlerWithError = (req: HttpRequest<any>) => throwError(() => error401);
+
+      const result = authInterceptor(mockRequest, mockHandlerWithError);
+      
+      result.subscribe({
+        error: (error) => {
+          expect(error).toBe(error401);
+          expect(localStorage.getItem('token')).toBeNull();
+          expect(localStorage.getItem('userRole')).toBeNull();
+        }
+      });
+    });
+
+    it('should handle 401 error without existing tokens', () => {
+      const error401 = new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' });
+      const mockHandlerWithError = (req: HttpRequest<any>) => throwError(() => error401);
+
+      const result = authInterceptor(mockRequest, mockHandlerWithError);
+      
+      result.subscribe({
+        error: (error) => {
+          expect(error).toBe(error401);
+          expect(localStorage.getItem('token')).toBeNull();
+          expect(localStorage.getItem('userRole')).toBeNull();
+        }
+      });
+    });
+
+    it('should handle non-401 errors without clearing localStorage', () => {
+      localStorage.setItem('token', 'test-token');
+      localStorage.setItem('userRole', 'admin');
+
+      const error404 = new HttpErrorResponse({ status: 404, statusText: 'Not Found' });
+      const mockHandlerWithError = (req: HttpRequest<any>) => throwError(() => error404);
+
+      const result = authInterceptor(mockRequest, mockHandlerWithError);
+      
+      result.subscribe({
+        error: (error) => {
+          expect(error).toBe(error404);
+          expect(localStorage.getItem('token')).toBe('test-token');
+          expect(localStorage.getItem('userRole')).toBe('admin');
+        }
+      });
+    });
+
+    it('should handle other HTTP errors (403, 500)', () => {
+      localStorage.setItem('token', 'test-token');
+
+      const errors = [
+        new HttpErrorResponse({ status: 403, statusText: 'Forbidden' }),
+        new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' })
+      ];
+
+      errors.forEach(error => {
+        const mockHandlerWithError = (req: HttpRequest<any>) => throwError(() => error);
+
+        const result = authInterceptor(mockRequest, mockHandlerWithError);
+        
+        result.subscribe({
+          error: (err) => {
+            expect(err).toBe(error);
+            expect(localStorage.getItem('token')).toBe('test-token');
+          }
+        });
+      });
+    });
+
+    it('should handle network errors without clearing localStorage', () => {
+      localStorage.setItem('token', 'test-token');
+
+      const networkError = new HttpErrorResponse({ 
+        error: new Error('Network Error'),
+        status: 0,
+        statusText: 'Network Error'
+      });
+      const mockHandlerWithError = (req: HttpRequest<any>) => throwError(() => networkError);
+
+      const result = authInterceptor(mockRequest, mockHandlerWithError);
+      
+      result.subscribe({
+        error: (error) => {
+          expect(error).toBe(networkError);
+          expect(localStorage.getItem('token')).toBe('test-token');
+        }
+      });
+    });
+  });
 
   describe('Request handling', () => {
     it('should handle different HTTP methods', () => {
@@ -219,6 +343,27 @@ describe('authInterceptor', () => {
         expect(modifiedRequest!.headers.get('Authorization')).toBe(`Bearer ${token}`);
       });
     });
+
+    it('should handle requests with existing headers', () => {
+      const token = 'test-token';
+      localStorage.setItem('token', token);
+
+      const request = new HttpRequest('GET', '/api/test');
+
+      let modifiedRequest: HttpRequest<any> | null = null;
+      const mockHandlerWithCapture = (req: HttpRequest<any>) => {
+        modifiedRequest = req;
+        return of({} as any);
+      };
+
+      const result = authInterceptor(request, mockHandlerWithCapture);
+      
+      result.subscribe(() => {
+        expect(modifiedRequest).toBeTruthy();
+        expect(modifiedRequest!.headers.has('Authorization')).toBeTruthy();
+        expect(modifiedRequest!.headers.get('Authorization')).toBe(`Bearer ${token}`);
+      });
+    });
   });
 
   describe('Integration tests', () => {
@@ -260,7 +405,40 @@ describe('authInterceptor', () => {
       });
     });
 
-    // Test d'erreur 401 supprimé car il cause des problèmes avec window.location.href
-    // L'intercepteur fonctionne correctement en production
+    it('should handle successful request with token and then 401 error', () => {
+      const token = 'test-token';
+      localStorage.setItem('token', token);
+
+      // Premier appel réussi
+      const response = { data: 'success' };
+      let modifiedRequest: HttpRequest<any> | null = null;
+      const mockHandlerWithCapture = (req: HttpRequest<any>) => {
+        modifiedRequest = req;
+        return of(response as any);
+      };
+
+      const result1 = authInterceptor(mockRequest, mockHandlerWithCapture);
+      
+      result1.subscribe((data) => {
+        expect(data).toEqual(response as any);
+        expect(modifiedRequest).toBeTruthy();
+        expect(modifiedRequest!.headers.has('Authorization')).toBeTruthy();
+        expect(modifiedRequest!.headers.get('Authorization')).toBe(`Bearer ${token}`);
+      });
+
+      // Deuxième appel avec erreur 401
+      const error401 = new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' });
+      const mockHandlerWithError = (req: HttpRequest<any>) => throwError(() => error401);
+
+      const result2 = authInterceptor(mockRequest, mockHandlerWithError);
+      
+      result2.subscribe({
+        error: (error) => {
+          expect(error).toBe(error401);
+          expect(localStorage.getItem('token')).toBeNull();
+          expect(localStorage.getItem('userRole')).toBeNull();
+        }
+      });
+    });
   });
 });

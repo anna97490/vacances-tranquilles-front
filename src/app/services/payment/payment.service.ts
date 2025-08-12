@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { loadStripe } from '@stripe/stripe-js';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 import { NotificationService } from '../notification/notification.service';
 
 @Injectable({
@@ -9,13 +9,13 @@ import { NotificationService } from '../notification/notification.service';
 export class PaymentService {
 
   constructor(
-    private readonly configService: ConfigService,
+    private readonly envService: EnvService,
     private readonly notificationService: NotificationService
   ) { }
 
   async redirectToStripe(sessionId: string): Promise<boolean> {
     try {
-      const stripePublicKey = this.configService.stripePublicKey;
+      const stripePublicKey = this.envService.stripePublicKey;
       if (!stripePublicKey || stripePublicKey.trim() === '') {
         console.warn('Stripe public key not configured. Payment functionality will be disabled.');
         this.notificationService.warning('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
@@ -47,7 +47,7 @@ export class PaymentService {
    * Vérifie si Stripe est configuré et disponible
    */
   isStripeConfigured(): boolean {
-    const stripePublicKey = this.configService.stripePublicKey;
+    const stripePublicKey = this.envService.stripePublicKey;
     return !!(stripePublicKey && stripePublicKey.trim() !== '');
   }
 }

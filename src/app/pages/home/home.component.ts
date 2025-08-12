@@ -1,6 +1,6 @@
 import { Component, HostBinding, OnInit, OnDestroy } from '@angular/core';
 import { HomeContent } from './../../models/Home';
-import { HomeContentService } from './../../services/home-content.service';
+import { HomeContentService } from './../../services/home-content/home-content.service';
 import { HomeInitializationService } from './../../services/home/home-initilization.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';

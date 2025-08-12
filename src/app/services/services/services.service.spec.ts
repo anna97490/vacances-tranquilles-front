@@ -2,13 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ServicesService } from './services.service';
 import { Service } from '../../models/Service';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 import { TokenValidatorService } from '../auth/token-validator.service';
 import { Router } from '@angular/router';
 
 describe('ServicesService', () => {
 
-  class MockConfigService {
+  class MockEnvService {
     apiUrl = 'http://mock-api/api';
   }
 
@@ -25,7 +25,7 @@ describe('ServicesService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         ServicesService,
-        { provide: ConfigService, useClass: MockConfigService },
+        { provide: EnvService, useClass: MockEnvService },
         { provide: TokenValidatorService, useValue: tokenValidatorSpyObj },
         { provide: Router, useValue: routerSpyObj }
       ]
@@ -87,15 +87,30 @@ it('should send GET request with correct parameters', () => {
     ).toThrowError('Catégorie inconnue : INVALID');
   });
 
-  it('should redirect to login when token is invalid', () => {
+  it('should make HTTP request even when token is invalid (interceptor handles auth)', () => {
     // Configurer le spy pour retourner false (token invalide)
     tokenValidatorSpy.isTokenValid.and.returnValue(false);
+    
+    // Configurer localStorage pour avoir un token
+    spyOn(localStorage, 'getItem').and.returnValue('mock-token');
 
-    service.searchServices('HOME', '75001', '2025-01-01', '10:00', '12:00').subscribe({
-      error: (error) => {
-        expect(error.message).toBe('Session expirée. Veuillez vous reconnecter.');
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/auth/login']);
-      }
+    service.searchServices('HOME', '75001', '2025-01-01', '10:00', '12:00').subscribe();
+
+    const req = httpMock.expectOne((req) => {
+      const url = req.urlWithParams;
+      return url.includes('/services/search') &&
+             url.includes('category=HOME') &&
+             url.includes('postalCode=75001') &&
+             url.includes('date=2025-01-01') &&
+             url.includes('startTime=10:00') &&
+             url.includes('endTime=12:00');
     });
+
+    expect(req.request.method).toBe('GET');
+
+    // Simule une réponse vide
+    req.flush([]);
+
+    httpMock.verify();
   });
 });
