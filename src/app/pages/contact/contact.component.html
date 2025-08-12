@@ -30,7 +30,7 @@
           placeholder="Votre nom"
           aria-labelledby="nom-label"
           aria-required="true"
-          aria-invalid="{{ nom?.invalid && nom?.touched }}"
+          [attr.aria-invalid]="nom?.invalid && nom?.touched"
           aria-describedby="nom-error"
           autocomplete="family-name"
         />
@@ -60,7 +60,7 @@
           placeholder="Votre prénom"
           aria-labelledby="prenom-label"
           aria-required="true"
-          aria-invalid="{{ prenom?.invalid && prenom?.touched }}"
+          [attr.aria-invalid]="prenom?.invalid && prenom?.touched"
           aria-describedby="prenom-error"
           autocomplete="given-name"
         />
@@ -90,7 +90,7 @@
           placeholder="Objet de votre demande"
           aria-labelledby="objet-label"
           aria-required="true"
-          aria-invalid="{{ objet?.invalid && objet?.touched }}"
+          [attr.aria-invalid]="objet?.invalid && objet?.touched"
           aria-describedby="objet-error"
         />
         <div 
@@ -119,7 +119,7 @@
           rows="6"
           aria-labelledby="demande-label"
           aria-required="true"
-          aria-invalid="{{ demande?.invalid && demande?.touched }}"
+          [attr.aria-invalid]="demande?.invalid && demande?.touched"
           aria-describedby="demande-error demande-counter"
           maxlength="1000"
         ></textarea>
