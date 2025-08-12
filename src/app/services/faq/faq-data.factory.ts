@@ -10,16 +10,24 @@ interface FAQDataItem {
 }
 
 /**
+ * Interface pour les données FAQ par type d'utilisateur
+ */
+interface FAQUserTypeData {
+  particulier: FAQDataItem[];
+  prestataire: FAQDataItem[];
+}
+
+/**
  * Factory pour générer les données FAQ de manière programmatique
  * Élimine la duplication de code dans les services FAQ
  */
 export class FAQDataFactory {
 
   /**
-   * Génère les données FAQ pour les particuliers
+   * Données FAQ centralisées pour éviter la duplication
    */
-  static generateParticulierFAQ(): FAQParticulierParcours[] {
-    const faqData: FAQDataItem[] = [
+  private static readonly FAQ_DATA: FAQUserTypeData = {
+    particulier: [
       // 1. Inscription / Connexion
       {
         question: 'Comment créer mon compte ?',
@@ -121,16 +129,9 @@ export class FAQDataFactory {
         reponse: 'Oui, cliquez sur « Éditer » pour mettre à jour vos données personnelles.',
         categorie: 'Profil personnel'
       }
-    ];
+    ],
 
-    return this.generateFAQWithOrder<FAQParticulierParcours>(faqData, 'part');
-  }
-
-  /**
-   * Génère les données FAQ pour les prestataires
-   */
-  static generatePrestataireFAQ(): FAQPrestataireParcours[] {
-    const faqData: FAQDataItem[] = [
+    prestataire: [
       // 1. Inscription / Connexion
       {
         question: 'Comment créer mon compte prestataire ?',
@@ -225,9 +226,27 @@ export class FAQDataFactory {
         reponse: 'Oui, cliquez sur « Éditer » pour mettre à jour vos informations personnelles et professionnelles.',
         categorie: 'Profil Prestataire'
       }
-    ];
+    ]
+  };
 
-    return this.generateFAQWithOrder<FAQPrestataireParcours>(faqData, 'presta');
+  /**
+   * Génère les données FAQ pour les particuliers
+   */
+  static generateParticulierFAQ(): FAQParticulierParcours[] {
+    return this.generateFAQWithOrder<FAQParticulierParcours>(
+      this.FAQ_DATA.particulier, 
+      'part'
+    );
+  }
+
+  /**
+   * Génère les données FAQ pour les prestataires
+   */
+  static generatePrestataireFAQ(): FAQPrestataireParcours[] {
+    return this.generateFAQWithOrder<FAQPrestataireParcours>(
+      this.FAQ_DATA.prestataire, 
+      'presta'
+    );
   }
 
   /**

@@ -112,12 +112,8 @@ export class FAQPrestataireService extends BaseFAQService<FAQPrestataireItem> {
   /**
    * Récupère les questions FAQ par ordre de priorité
    */
-  getFAQByPriority(): FAQPrestataireItem[] {
+  override getFAQByPriority(): FAQPrestataireItem[] {
     const priorityOrder = ['inscription', 'conditions', 'documents', 'connexion', 'agenda', 'clients', 'services', 'communication', 'messagerie', 'profil'];
-    return this.faqItems.sort((a, b) => {
-      const aIndex = priorityOrder.indexOf(a.categorie);
-      const bIndex = priorityOrder.indexOf(b.categorie);
-      return aIndex - bIndex;
-    });
+    return super.getFAQByPriority(priorityOrder);
   }
 }

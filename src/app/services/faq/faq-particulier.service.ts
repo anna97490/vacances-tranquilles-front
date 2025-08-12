@@ -137,20 +137,16 @@ export class FAQParticulierService extends BaseFAQService<FAQParticulierItem> {
   /**
    * Récupère les questions FAQ par ordre de priorité
    */
-  getFAQByPriority(): FAQParticulierItem[] {
+  override getFAQByPriority(): FAQParticulierItem[] {
     const priorityOrder = ['inscription', 'connexion', 'recherche', 'prestataires', 'prestations', 'reservation', 'paiement', 'suivi', 'evaluation', 'messagerie', 'profil', 'securite', 'tarifs', 'annulation'];
-    return this.faqItems.sort((a, b) => {
-      const aIndex = priorityOrder.indexOf(a.categorie);
-      const bIndex = priorityOrder.indexOf(b.categorie);
-      return aIndex - bIndex;
-    });
+    return super.getFAQByPriority(priorityOrder);
   }
 
   /**
    * Récupère les questions FAQ les plus fréquemment consultées
    */
-  getMostFrequentFAQ(): FAQParticulierItem[] {
+  override getMostFrequentFAQ(): FAQParticulierItem[] {
     const frequentCategories = ['inscription', 'recherche', 'reservation', 'paiement', 'annulation'];
-    return this.faqItems.filter(item => frequentCategories.includes(item.categorie));
+    return super.getMostFrequentFAQ(frequentCategories);
   }
 }

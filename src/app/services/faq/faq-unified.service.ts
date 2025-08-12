@@ -2,73 +2,88 @@ import { Injectable } from '@angular/core';
 import { FAQGeneralService } from './faq-general.service';
 import { FAQPrestataireService } from './faq-prestataire.service';
 import { FAQParticulierService } from './faq-particulier.service';
-import { UnifiedFAQItem } from '../../models/FAQ';
+import { UnifiedFAQItem, FAQItem } from '../../models/FAQ';
 
 // Type alias pour le type union
 type FAQType = 'general' | 'prestataire' | 'particulier';
+
+// Interface pour la configuration des services FAQ
+interface FAQServiceConfig {
+  service: FAQGeneralService | FAQPrestataireService | FAQParticulierService;
+  type: FAQType;
+  source: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class FAQUnifiedService {
   
+  // Configuration centralisée des services FAQ
+  private readonly faqServices: FAQServiceConfig[];
+
   constructor(
     private readonly faqGeneralService: FAQGeneralService,
     private readonly faqPrestataireService: FAQPrestataireService,
     private readonly faqParticulierService: FAQParticulierService
-  ) { }
+  ) { 
+    // Initialisation de la configuration dans le constructeur
+    this.faqServices = [
+      {
+        service: this.faqGeneralService,
+        type: 'general',
+        source: 'Général'
+      },
+      {
+        service: this.faqPrestataireService,
+        type: 'prestataire',
+        source: 'Prestataire'
+      },
+      {
+        service: this.faqParticulierService,
+        type: 'particulier',
+        source: 'Particulier'
+      }
+    ];
+  }
+
+  /**
+   * Méthode utilitaire pour mapper les FAQ vers UnifiedFAQItem
+   */
+  private mapToUnifiedFAQ<T extends FAQItem>(items: T[], type: FAQType, source: string): UnifiedFAQItem[] {
+    return items.map(item => ({
+      ...item,
+      type,
+      source
+    }));
+  }
+
+  /**
+   * Méthode utilitaire pour récupérer les FAQ d'un service spécifique
+   */
+  private getFAQFromService(type: FAQType): UnifiedFAQItem[] {
+    const config = this.faqServices.find(s => s.type === type);
+    if (!config) return [];
+
+    const items = config.service.getAllFAQ();
+    return this.mapToUnifiedFAQ(items, config.type, config.source);
+  }
 
   /**
    * Récupère toutes les FAQ de tous les services
    */
   getAllFAQ(): UnifiedFAQItem[] {
-    const generalFAQ = this.faqGeneralService.getAllFAQ().map(item => ({
-      ...item,
-      type: 'general' as const,
-      source: 'Général'
-    }));
-
-    const prestataireFAQ = this.faqPrestataireService.getAllFAQ().map(item => ({
-      ...item,
-      type: 'prestataire' as const,
-      source: 'Prestataire'
-    }));
-
-    const particulierFAQ = this.faqParticulierService.getAllFAQ().map(item => ({
-      ...item,
-      type: 'particulier' as const,
-      source: 'Particulier'
-    }));
-
-    return [...generalFAQ, ...prestataireFAQ, ...particulierFAQ];
+    return this.faqServices.flatMap(config => {
+      const items = config.service.getAllFAQ();
+      return this.mapToUnifiedFAQ(items, config.type, config.source);
+    });
   }
 
   /**
    * Récupère les FAQ par type d'utilisateur
    */
   getFAQByType(type: FAQType): UnifiedFAQItem[] {
-    switch (type) {
-      case 'general':
-        return this.faqGeneralService.getAllFAQ().map(item => ({
-          ...item,
-          type: 'general' as const,
-          source: 'Général'
-        }));
-      case 'prestataire':
-        return this.faqPrestataireService.getAllFAQ().map(item => ({
-          ...item,
-          type: 'prestataire' as const,
-          source: 'Prestataire'
-        }));
-      case 'particulier':
-        return this.faqParticulierService.getAllFAQ().map(item => ({
-          ...item,
-          type: 'particulier' as const,
-          source: 'Particulier'
-        }));
-      default:
-        return [];
-    }
+    return this.getFAQFromService(type);
   }
 
   /**
@@ -115,48 +130,39 @@ export class FAQUnifiedService {
    * Récupère les FAQ par ordre de priorité pour un type donné
    */
   getFAQByPriority(type: FAQType): UnifiedFAQItem[] {
-    switch (type) {
-      case 'prestataire':
-        return this.faqPrestataireService.getFAQByPriority().map(item => ({
-          ...item,
-          type: 'prestataire' as const,
-          source: 'Prestataire'
-        }));
-      case 'particulier':
-        // Utiliser getAllFAQ() au lieu de getFAQByPriority() qui n'existe pas
-        return this.faqParticulierService.getAllFAQ().map(item => ({
-          ...item,
-          type: 'particulier' as const,
-          source: 'Particulier'
-        }));
-      default:
-        return this.faqGeneralService.getAllFAQ().map(item => ({
-          ...item,
-          type: 'general' as const,
-          source: 'Général'
-        }));
+    const config = this.faqServices.find(s => s.type === type);
+    if (!config) return [];
+
+    let items: FAQItem[];
+    
+    // Gestion spécifique pour les méthodes qui peuvent ne pas exister
+    if (type === 'prestataire' && 'getFAQByPriority' in config.service) {
+      items = (config.service as any).getFAQByPriority();
+    } else {
+      items = config.service.getAllFAQ();
     }
+
+    return this.mapToUnifiedFAQ(items, config.type, config.source);
   }
 
   /**
    * Récupère les FAQ les plus fréquemment consultées
    */
   getMostFrequentFAQ(): UnifiedFAQItem[] {
-    const particulierFrequent = this.faqParticulierService.getMostFrequentFAQ().map(item => ({
-      ...item,
-      type: 'particulier' as const,
-      source: 'Particulier'
-    }));
+    const frequentFAQ: UnifiedFAQItem[] = [];
 
+    // FAQ fréquentes des particuliers
+    if ('getMostFrequentFAQ' in this.faqParticulierService) {
+      const particulierFrequent = (this.faqParticulierService as any).getMostFrequentFAQ();
+      frequentFAQ.push(...this.mapToUnifiedFAQ(particulierFrequent, 'particulier', 'Particulier'));
+    }
+
+    // FAQ fréquentes générales (basées sur des catégories spécifiques)
     const generalFrequent = this.faqGeneralService.getAllFAQ()
-      .filter(item => ['inscription', 'services', 'tarifs', 'assistance'].includes(item.categorie))
-      .map(item => ({
-        ...item,
-        type: 'general' as const,
-        source: 'Général'
-      }));
+      .filter(item => ['inscription', 'services', 'tarifs', 'assistance'].includes(item.categorie));
+    frequentFAQ.push(...this.mapToUnifiedFAQ(generalFrequent, 'general', 'Général'));
 
-    return [...particulierFrequent, ...generalFrequent];
+    return frequentFAQ;
   }
 
   /**
