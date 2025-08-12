@@ -1,9 +1,13 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
+import { ServiceSearchComponent } from './pages/service-search/service-search.component';
+import { AvailableProvidersComponent } from './pages/available-providers/available-providers.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
+  { path: 'service-search', component: ServiceSearchComponent },
+  { path: 'available-providers', component: AvailableProvidersComponent },
   { path: 'terms-and-conditions', 
     children : [
       {

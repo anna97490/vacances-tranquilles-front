@@ -1,3 +1,26 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the theme object.
+$frontend-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
 /* You can add global styles to this file, and also import other style files */
 
 /* Import Material Icons */
@@ -24,8 +47,12 @@
 }
 
 :root {
+
+  @include mat.all-component-themes($frontend-theme);
+
     /** Background-color */
     --primary-color: #FBF4E9;
+    --secondary-color: #31525B;
     /** Button color */
     --button-color: #31525B;
     /** Button text color */
@@ -33,9 +60,20 @@
     /** Button nav color */
     --tertiary-color: #db9e36;
     /** Title color */
-    --quaternary-color: #db9e36;
+    --quaternary-color: #FFFFFF;
+    
     /** Text color */
     --text-color: #31525B;
+    /** >Secondary text color */
+    --secondary-text-color: #FFFFFF;
+    /** Discret text color */ 
+    --discret-text-color: #777; 
+
+    /** Border radius de référence */
+    --border-radius-base: 12px;
+
+    --vt-grey: #f5f5f5;
+    --vt-grey-border: #e0e0e0;
 
     --discret-text-color: #777;
 
