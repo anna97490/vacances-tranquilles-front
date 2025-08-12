@@ -31,12 +31,8 @@ jobs:
       - name: Install dependencies 
         run: npm install 
 
-      - name: Run build 
-        run: npm run build 
-
-      - name: Inject config.json
-        run: |
-          echo "{ \"apiUrl\": \"${{ secrets.API_URL }}\" }" > ./dist/frontend/assets/config.json
+      - name: Run build (production)
+        run: npm run build:prod
 
       - name: Install Chrome
         run: |

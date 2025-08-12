@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { Service, ServiceCategory } from '../../models/Service';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 import { TokenValidatorService } from '../auth/token-validator.service';
 import { Router } from '@angular/router';
 
@@ -15,11 +15,11 @@ export class ServicesService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly configService: ConfigService,
+    private readonly envService: EnvService,
     private readonly tokenValidator: TokenValidatorService,
     private readonly router: Router
   ) {
-    this.urlApi = this.configService.apiUrl;
+    this.urlApi = this.envService.apiUrl;
   }
 
   /**
