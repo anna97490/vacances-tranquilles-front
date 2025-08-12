@@ -44,26 +44,53 @@ interface FAQCompleteData {
 export class FAQDataFactory {
 
   /**
+   * Constantes pour les questions communes
+   */
+  private static readonly QUESTIONS = {
+    CREER_COMPTE: 'Comment créer mon compte ?',
+    CONNEXION_ECHEC: 'Que faire si je ne parviens pas à me connecter ?',
+    APRES_CONNEXION: 'Que se passe-t-il après la connexion ?',
+    CONSULTER_MESSAGES: 'Où consulter mes messages ?',
+    REPONDRE_MESSAGE: 'Comment répondre à un message ?',
+    ENVOYER_MESSAGE: 'Puis-je envoyer un nouveau message ?',
+    HISTORIQUE_ECHANGES: 'Puis-je retrouver l\'historique de mes échanges ?',
+    CONSULTER_PROFIL: 'Comment consulter mon profil ?',
+    MODIFIER_INFOS: 'Puis-je modifier mes informations ?',
+    FRAIS_ANNULATION: 'Il y a-t-il des frais d\'annulation ?',
+    EVALUER_UTILISATEUR: 'Puis-je évaluer un utilisateur après la réalisation d\'une prestation ?'
+  };
+
+  /**
+   * Constantes pour les réponses communes
+   */
+  private static readonly REPONSES = {
+    FRAIS_ANNULATION: '> 96h : remboursement complet, Entre 48h et 96h avant : frais d\'annulation 50% du montant de la commande, < 48h : frais d\'annulation de 100% du montant de la commande.',
+    EVALUATION_STANDARD: 'Oui. À la fin de chaque prestation, vous êtes invité à : Laisser une note (1 à 5 étoiles), Rédiger un commentaire. Ces avis sont visibles sur le profil de l\'utilisateur pour aider les futurs utilisateurs à faire leur choix.',
+    EVALUATION_UTILISATEUR: 'Oui. À la fin de chaque prestation, vous êtes invité à : Laisser une note (1 à 5 étoiles), Rédiger un commentaire. Ces avis seront visibles sur le profil de l\'utilisateur. Cela permet d\'avoir une idée de la personne à qui nous avons affaire.',
+    VERIFICATION_PROFESSIONNELS: 'Oui. Chaque professionnel doit : Fournir une pièce d\'identité, Un numéro SIRET/SIREN, Une attestation d\'assurance responsabilité civile professionnelle, Et compléter un profil détaillé. De plus, les utilisateurs notent l\'utilisateur à la fin de chaque mission, assurant une sélection basée sur la qualité et la confiance.'
+  };
+
+  /**
    * Données FAQ partagées pour éviter la duplication entre parcours et standard
    */
   private static readonly FAQ_SHARED_DATA: FAQSharedData[] = [
     // Inscription / Connexion
     {
-      question: 'Comment créer mon compte ?',
+      question: this.QUESTIONS.CREER_COMPTE,
       reponseParticulier: 'Pour créer un compte, cliquez sur le bouton « S\'inscrire » et remplissez le formulaire d\'inscription avec vos informations personnelles.',
       reponsePrestataire: 'Cliquez sur le bouton « S\'inscrire » et remplissez le formulaire spécifique aux prestataires.',
       categorie: 'Inscription / Connexion',
       categorieStandard: 'inscription'
     },
     {
-      question: 'Que faire si je ne parviens pas à me connecter ?',
+      question: this.QUESTIONS.CONNEXION_ECHEC,
       reponseParticulier: 'Vérifiez votre identifiant et votre mot de passe. En cas d\'échec, utilisez la fonction « Mot de passe oublié » ou contactez le support.',
       reponsePrestataire: 'Vérifiez vos identifiants. Si le problème persiste, utilisez la fonction « Mot de passe oublié » ou contactez le support.',
       categorie: 'Inscription / Connexion',
       categorieStandard: 'connexion'
     },
     {
-      question: 'Que se passe-t-il après la connexion ?',
+      question: this.QUESTIONS.APRES_CONNEXION,
       reponseParticulier: 'Une fois votre authentification réussie, vous aurez accès aux différentes fonctionnalités : recherche de prestations, messagerie, gestion du profil, etc.',
       reponsePrestataire: 'Une fois connecté (après authentification réussie), vous accédez à votre espace prestataire avec toutes les fonctionnalités liées à la gestion de vos services.',
       categorie: 'Inscription / Connexion',
@@ -71,28 +98,28 @@ export class FAQDataFactory {
     },
     // Messagerie
     {
-      question: 'Où consulter mes messages ?',
+      question: this.QUESTIONS.CONSULTER_MESSAGES,
       reponseParticulier: 'Vous accédez à votre messagerie directement depuis votre tableau de bord.',
       reponsePrestataire: 'Dans votre espace prestataire, accédez à la section « Consulter mes messages ».',
       categorie: 'Messagerie',
       categorieStandard: 'messagerie'
     },
     {
-      question: 'Comment répondre à un message ?',
+      question: this.QUESTIONS.REPONDRE_MESSAGE,
       reponseParticulier: 'Sélectionnez le message concerné et utilisez l\'option « Répondre ».',
       reponsePrestataire: 'Ouvrez le message concerné et cliquez sur « Répondre à un message ».',
       categorie: 'Messagerie',
       categorieStandard: 'messagerie'
     },
     {
-      question: 'Puis-je envoyer un nouveau message ?',
+      question: this.QUESTIONS.ENVOYER_MESSAGE,
       reponseParticulier: 'Oui, utilisez l\'option « Envoyer un message » depuis la messagerie ou directement depuis le profil du prestataire.',
       reponsePrestataire: 'Utilisez l\'option « Envoyer un message » depuis votre messagerie ou depuis un profil client.',
       categorie: 'Messagerie',
       categorieStandard: 'messagerie'
     },
     {
-      question: 'Puis-je retrouver l\'historique de mes échanges ?',
+      question: this.QUESTIONS.HISTORIQUE_ECHANGES,
       reponseParticulier: 'Oui, l\'historique complet des messages avec chaque prestataire est accessible dans votre messagerie.',
       reponsePrestataire: 'Oui, l\'intégralité de vos échanges est visible dans « Consulter l\'historique des messages ».',
       categorie: 'Messagerie',
@@ -100,14 +127,14 @@ export class FAQDataFactory {
     },
     // Profil
     {
-      question: 'Comment consulter mon profil ?',
+      question: this.QUESTIONS.CONSULTER_PROFIL,
       reponseParticulier: 'Rendez-vous dans la section « Consulter mon profil » pour visualiser vos informations personnelles.',
       reponsePrestataire: 'Allez dans la section « Consulter mon profil ».',
       categorie: 'Profil personnel',
       categorieStandard: 'profil'
     },
     {
-      question: 'Puis-je modifier mes informations ?',
+      question: this.QUESTIONS.MODIFIER_INFOS,
       reponseParticulier: 'Oui, cliquez sur « Éditer » pour mettre à jour vos données personnelles.',
       reponsePrestataire: 'Oui, cliquez sur « Éditer » pour mettre à jour vos informations personnelles et professionnelles.',
       categorie: 'Profil personnel',
@@ -219,7 +246,7 @@ export class FAQDataFactory {
     particulier: [
       {
         question: "Les professionnels sont-ils vérifiés ?",
-        reponse: "Oui. Chaque professionnel doit : Fournir une pièce d'identité, Un numéro SIRET/SIREN, Une attestation d'assurance responsabilité civile professionnelle, Et compléter un profil détaillé. De plus, les utilisateurs notent l'utilisateur à la fin de chaque mission, assurant une sélection basée sur la qualité et la confiance.",
+        reponse: this.REPONSES.VERIFICATION_PROFESSIONNELS,
         categorie: "securite"
       },
       {
@@ -233,13 +260,13 @@ export class FAQDataFactory {
         categorie: "annulation"
       },
       {
-        question: "Il y a-t-il des frais d'annulation ?",
-        reponse: "> 96h : remboursement complet, Entre 48h et 96h avant : frais d'annulation 50% du montant de la commande, < 48h : frais d'annulation de 100% du montant de la commande.",
+        question: this.QUESTIONS.FRAIS_ANNULATION,
+        reponse: this.REPONSES.FRAIS_ANNULATION,
         categorie: "annulation"
       },
       {
         question: "Puis-je évaluer un professionnel après sa mission ?",
-        reponse: "Oui. À la fin de chaque prestation, vous êtes invité à : Laisser une note (1 à 5 étoiles), Rédiger un commentaire. Ces avis sont visibles sur le profil de l'utilisateur pour aider les futurs utilisateurs à faire leur choix.",
+        reponse: this.REPONSES.EVALUATION_STANDARD,
         categorie: "evaluation"
       }
     ],
@@ -251,7 +278,7 @@ export class FAQDataFactory {
       },
       {
         question: "Quels documents un prestataire doit-il fournir pour s'inscrire ?",
-        reponse: "Chaque professionnel doit fournir : Une pièce d'identité, Un numéro SIRET/SIREN, Une attestation d'assurance responsabilité civile professionnelle, Et compléter un profil détaillé. De plus, les utilisateurs notent l'utilisateur à la fin de chaque mission, assurant une sélection basée sur la qualité et la confiance.",
+        reponse: this.REPONSES.VERIFICATION_PROFESSIONNELS,
         categorie: "documents"
       }
     ],
@@ -287,13 +314,13 @@ export class FAQDataFactory {
         categorie: "reservation"
       },
       {
-        question: "Il y a-t-il des frais d'annulation ?",
-        reponse: "> 96h : remboursement complet, Entre 48h et 96h avant : frais d'annulation 50% du montant de la commande, < 48h : frais d'annulation de 100% du montant de la commande.",
+        question: this.QUESTIONS.FRAIS_ANNULATION,
+        reponse: this.REPONSES.FRAIS_ANNULATION,
         categorie: "annulation"
       },
       {
-        question: "Puis-je évaluer un utilisateur après la réalisation d'une prestation ?",
-        reponse: "Oui. À la fin de chaque prestation, vous êtes invité à : Laisser une note (1 à 5 étoiles), Rédiger un commentaire. Ces avis seront visibles sur le profil de l'utilisateur. Cela permet d'avoir une idée de la personne à qui nous avons affaire.",
+        question: this.QUESTIONS.EVALUER_UTILISATEUR,
+        reponse: this.REPONSES.EVALUATION_UTILISATEUR,
         categorie: "evaluation"
       }
     ]
