@@ -1,25 +1,25 @@
 import { TestBed } from '@angular/core/testing';
 import { PaymentService } from './payment.service';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 
 describe('PaymentService', () => {
   let service: PaymentService;
-  let configService: jasmine.SpyObj<ConfigService>;
+  let envService: jasmine.SpyObj<EnvService>;
 
   beforeEach(() => {
-    const configServiceSpy = jasmine.createSpyObj('ConfigService', [], {
+    const envServiceSpy = jasmine.createSpyObj('EnvService', [], {
       stripePublicKey: 'pk_test_example_key'
     });
 
     TestBed.configureTestingModule({
       providers: [
         PaymentService,
-        { provide: ConfigService, useValue: configServiceSpy }
+        { provide: EnvService, useValue: envServiceSpy }
       ]
     });
 
     service = TestBed.inject(PaymentService);
-    configService = TestBed.inject(ConfigService) as jasmine.SpyObj<ConfigService>;
+    envService = TestBed.inject(EnvService) as jasmine.SpyObj<EnvService>;
   });
 
   it('should be created', () => {
@@ -29,7 +29,7 @@ describe('PaymentService', () => {
   describe('redirectToStripe', () => {
     it('should handle missing Stripe public key', async () => {
       // Override the getter to return empty string
-      Object.defineProperty(configService, 'stripePublicKey', {
+      Object.defineProperty(envService, 'stripePublicKey', {
         get: jasmine.createSpy('get').and.returnValue('')
       });
 
@@ -45,7 +45,7 @@ describe('PaymentService', () => {
 
     it('should handle whitespace-only Stripe public key', async () => {
       // Override the getter to return whitespace
-      Object.defineProperty(configService, 'stripePublicKey', {
+      Object.defineProperty(envService, 'stripePublicKey', {
         get: jasmine.createSpy('get').and.returnValue('   ')
       });
 
@@ -61,7 +61,7 @@ describe('PaymentService', () => {
 
     it('should handle null Stripe public key', async () => {
       // Override the getter to return null
-      Object.defineProperty(configService, 'stripePublicKey', {
+      Object.defineProperty(envService, 'stripePublicKey', {
         get: jasmine.createSpy('get').and.returnValue(null)
       });
 
@@ -77,7 +77,7 @@ describe('PaymentService', () => {
 
     it('should handle undefined Stripe public key', async () => {
       // Override the getter to return undefined
-      Object.defineProperty(configService, 'stripePublicKey', {
+      Object.defineProperty(envService, 'stripePublicKey', {
         get: jasmine.createSpy('get').and.returnValue(undefined)
       });
 

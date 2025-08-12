@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { Service } from '../../models/Service';
 import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.component';
 import { PaymentService } from '../../services/payment/payment.service';
-import { ConfigService } from '../../services/config/config.service';
+import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 
 /**
@@ -82,7 +82,7 @@ export class ProviderCardComponent implements OnChanges {
 
   constructor(
     private http: HttpClient,
-    private configService: ConfigService,
+    private envService: EnvService,
     private authStorage: AuthStorageService,
     private injector: Injector
   ) {}
@@ -189,7 +189,7 @@ export class ProviderCardComponent implements OnChanges {
 
       const response = await firstValueFrom(
         this.http.post<{ [key: string]: string }>(
-          `${this.configService.apiUrl}/stripe/create-checkout-session`,
+          `${this.envService.apiUrl}/stripe/create-checkout-session`,
           payload,
           { headers }
         )

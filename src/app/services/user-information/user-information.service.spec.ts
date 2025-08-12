@@ -2,24 +2,29 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { UserInformationService } from './user-information.service';
 import { User, UserRole } from '../../models/User';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 
 describe('UserInformationService', () => {
   let service: UserInformationService;
   let httpMock: HttpTestingController;
-  let configService: ConfigService;
+  let envService: EnvService;
 
-  const mockConfig = { apiUrl: 'http://test-api.example.com/api' };
+  const mockEnvService = {
+    apiUrl: 'http://test-api.example.com/api'
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [UserInformationService, ConfigService]
+      providers: [
+        UserInformationService,
+        { provide: EnvService, useValue: mockEnvService }
+      ]
     });
 
     service = TestBed.inject(UserInformationService);
     httpMock = TestBed.inject(HttpTestingController);
-    configService = TestBed.inject(ConfigService);
+    envService = TestBed.inject(EnvService);
   });
 
   afterEach(() => {

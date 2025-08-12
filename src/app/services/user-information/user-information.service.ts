@@ -8,6 +8,7 @@ import { EnvService } from '../env/env.service';
   providedIn: 'root'
 })
 export class UserInformationService {
+  private readonly urlApi: string;
 
   constructor(
     private readonly http: HttpClient,
@@ -22,7 +23,7 @@ export class UserInformationService {
    * @returns Observable<User> Les informations de l'utilisateur
    */
   getUserById(userId: number): Observable<User> {
-    const url = `${this.configService.apiUrl}/users/${userId}`;
+    const url = `${this.urlApi}/users/${userId}`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -47,7 +48,7 @@ export class UserInformationService {
    * @returns Observable<User> Le profil de l'utilisateur
    */
   getUserProfile(): Observable<User> {
-    const url = `${this.configService.apiUrl}/users/profile`;
+    const url = `${this.urlApi}/users/profile`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -73,7 +74,7 @@ export class UserInformationService {
    * @returns Observable<User[]> Les informations des utilisateurs
    */
   getUsersByIds(userIds: number[]): Observable<User[]> {
-    const url = `${this.configService.apiUrl}/users/batch`;
+    const url = `${this.urlApi}/users/batch`;
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');

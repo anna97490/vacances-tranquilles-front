@@ -4,7 +4,7 @@ import { ProviderCardComponent } from './provider-card.component';
 import { ServiceCategory } from '../../models/Service';
 import { User, UserRole } from '../../models/User';
 import { SimpleChange } from '@angular/core';
-import { ConfigService } from '../../services/config/config.service';
+import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { PaymentService } from '../../services/payment/payment.service';
 import { of, throwError } from 'rxjs';
@@ -46,7 +46,7 @@ describe('ProviderCardComponent', () => {
       imports: [ProviderCardComponent, HttpClientTestingModule],
       providers: [
         {
-          provide: ConfigService,
+          provide: EnvService,
           useValue: {
             apiUrl: 'http://test-api.example.com/api'
           }
@@ -71,7 +71,7 @@ describe('ProviderCardComponent', () => {
     // Configuration par défaut des spies
     authStorageService.getToken.and.returnValue('mock-token');
     authStorageService.getUserId.and.returnValue(123);
-    paymentService.redirectToStripe.and.returnValue(Promise.resolve());
+    paymentService.redirectToStripe.and.returnValue(Promise.resolve(true));
 
     component.service = mockService;
     component.providerInfo = mockUser;

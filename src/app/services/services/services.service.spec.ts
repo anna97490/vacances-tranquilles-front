@@ -2,13 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ServicesService } from './services.service';
 import { Service } from '../../models/Service';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 import { TokenValidatorService } from '../auth/token-validator.service';
 import { Router } from '@angular/router';
 
 describe('ServicesService', () => {
 
-  class MockConfigService {
+  class MockEnvService {
     apiUrl = 'http://mock-api/api';
   }
 
@@ -25,7 +25,7 @@ describe('ServicesService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         ServicesService,
-        { provide: ConfigService, useClass: MockConfigService },
+        { provide: EnvService, useClass: MockEnvService },
         { provide: TokenValidatorService, useValue: tokenValidatorSpyObj },
         { provide: Router, useValue: routerSpyObj }
       ]

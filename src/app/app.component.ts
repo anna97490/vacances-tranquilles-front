@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { ConfigService } from './services/config/config.service';
+import { EnvService } from './services/env/env.service';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +28,7 @@ import { ConfigService } from './services/config/config.service';
 export class AppComponent implements OnInit {
   title = 'frontend';
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly envService: EnvService) {}
 
   isAuthenticated(): boolean {
     // Simple check: considère connecté si un token est présent (ajuste si besoin)
@@ -36,7 +36,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Charger la configuration au démarrage de l'application
-    this.configService.loadConfig();
+    // La configuration est maintenant chargée automatiquement via envService
+    console.log('Application démarrée avec la configuration:', {
+      apiUrl: this.envService.apiUrl,
+      isProduction: this.envService.isProduction
+    });
   }
 }

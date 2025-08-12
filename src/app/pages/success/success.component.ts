@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { ConfigService } from '../../services/config/config.service';
+import { EnvService } from '../../services/env/env.service';
 import { finalize, take } from 'rxjs/operators';
 
 @Component({
@@ -19,15 +19,12 @@ export class SuccessComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private http = inject(HttpClient);
-  private configService = inject(ConfigService);
+  private envService = inject(EnvService);
 
   message = '';
   isLoading = true;
 
   async ngOnInit(): Promise<void> {
-    // Attendre que la configuration soit chargée
-    await this.configService.waitForConfig();
-    
     const sessionId = this.route.snapshot.queryParamMap.get('session_id');
     if (!sessionId) {
       this.isLoading = false;
@@ -38,7 +35,7 @@ export class SuccessComponent implements OnInit {
   }
 
   private confirmReservation(sessionId: string): void {
-    this.http.post(`${this.configService.apiUrl}/stripe/confirm-reservation`, { sessionId })
+    this.http.post(`${this.envService.apiUrl}/stripe/confirm-reservation`, { sessionId })
       .pipe(finalize(() => (this.isLoading = false)), take(1))
       .subscribe({
         next: () => {
