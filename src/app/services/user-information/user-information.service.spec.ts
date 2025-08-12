@@ -81,7 +81,6 @@ describe('UserInformationService', () => {
       address: '456 Client St',
       city: 'Paris',
       postalCode: 75002,
-      // ajoute companyName et siretSiren si nécessaire
     });
 
     service.getUserProfile().subscribe(user => {
