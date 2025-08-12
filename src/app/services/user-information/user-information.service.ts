@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../../models/User';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +10,11 @@ import { ConfigService } from '../config/config.service';
 export class UserInformationService {
 
   constructor(
-    private http: HttpClient,
-    private readonly configService: ConfigService
-  ) {}
+    private readonly http: HttpClient,
+    private readonly envService: EnvService
+  ) {
+    this.urlApi = this.envService.apiUrl;
+  }
 
   /**
    * Récupère les informations d'un utilisateur par son ID

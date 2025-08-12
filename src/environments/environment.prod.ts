@@ -1,4 +1,4 @@
 export const environment = {
-  production: true,
-  apiUrl: (import.meta as any).env?.URL_API
-}; 
+    production: true,
+    apiUrl: 'https://vacances-tranquilles-back.onrender.com/api'
+  };
