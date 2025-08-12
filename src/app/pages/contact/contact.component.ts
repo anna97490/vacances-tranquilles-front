@@ -2,8 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FooterComponent } from '../../components/footer/footer.component';
-import * as emailjs from '@emailjs/browser';
-import { EMAILJS_CONFIG } from '../../config/emailjs.config';
 
 @Component({
   selector: 'app-contact',
@@ -47,25 +45,17 @@ export class ContactComponent {
       try {
         const emailData = this.contactForm.value;
         
-        // Préparer les paramètres pour EmailJS
-        const templateParams = {
-          to_email: EMAILJS_CONFIG.TO_EMAIL,
-          from_name: `${emailData.prenom} ${emailData.nom}`,
-          subject: emailData.objet,
-          message: emailData.demande,
-          nom: emailData.nom,
-          prenom: emailData.prenom,
-          objet: emailData.objet,
-          demande: emailData.demande
-        };
+        // Simulation d'envoi - simple console.log pour le moment
+        console.log('=== DONNÉES DU FORMULAIRE DE CONTACT ===');
+        console.log('Nom:', emailData.nom);
+        console.log('Prénom:', emailData.prenom);
+        console.log('Objet:', emailData.objet);
+        console.log('Demande:', emailData.demande);
+        console.log('Date d\'envoi:', new Date().toISOString());
+        console.log('========================================');
 
-        // Envoyer l'email via EmailJS
-        await emailjs.send(
-          EMAILJS_CONFIG.SERVICE_ID,
-          EMAILJS_CONFIG.TEMPLATE_ID,
-          templateParams,
-          EMAILJS_CONFIG.PUBLIC_KEY
-        );
+        // Simuler un délai d'envoi
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         this.submitSuccess = true;
         this.contactForm.reset({

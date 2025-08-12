@@ -3,8 +3,6 @@ import { ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContactComponent } from './contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { ActivatedRoute } from '@angular/router';
-import emailjs from '@emailjs/browser';
-import { EMAILJS_CONFIG } from '../../config/emailjs.config';
 import { of } from 'rxjs';
 
 describe('ContactComponent', () => {
@@ -132,8 +130,8 @@ describe('ContactComponent', () => {
   });
 
   it('should not submit form when invalid', async () => {
-    // Mock EmailJS to track calls
-    spyOn(emailjs, 'send').and.returnValue(Promise.resolve({ status: 200, text: 'OK' }));
+    // Spy on console.log to track calls
+    spyOn(console, 'log');
     
     const form = component.contactForm;
     
@@ -143,16 +141,16 @@ describe('ContactComponent', () => {
     // Try to submit
     await component.onSubmit();
     
-    // Should not call EmailJS
-    expect(emailjs.send).not.toHaveBeenCalled();
+    // Should not call console.log
+    expect(console.log).not.toHaveBeenCalled();
     
     // Should not show success
     expect(component.submitSuccess).toBeFalse();
   });
 
   it('should submit form successfully when valid', async () => {
-    // Mock successful EmailJS response
-    spyOn(emailjs, 'send').and.returnValue(Promise.resolve({ status: 200, text: 'OK' }));
+    // Spy on console.log to track calls
+    spyOn(console, 'log');
     
     const form = component.contactForm;
     form.patchValue({
@@ -164,22 +162,12 @@ describe('ContactComponent', () => {
 
     await component.onSubmit();
 
-    // Should call EmailJS with correct parameters
-    expect(emailjs.send).toHaveBeenCalledWith(
-      EMAILJS_CONFIG.SERVICE_ID,
-      EMAILJS_CONFIG.TEMPLATE_ID,
-      {
-        to_email: EMAILJS_CONFIG.TO_EMAIL,
-        from_name: 'John Doe',
-        subject: 'Test object',
-        message: 'Test request',
-        nom: 'Doe',
-        prenom: 'John',
-        objet: 'Test object',
-        demande: 'Test request'
-      },
-      EMAILJS_CONFIG.PUBLIC_KEY
-    );
+    // Should call console.log with form data
+    expect(console.log).toHaveBeenCalledWith('=== DONNÉES DU FORMULAIRE DE CONTACT ===');
+    expect(console.log).toHaveBeenCalledWith('Nom:', 'Doe');
+    expect(console.log).toHaveBeenCalledWith('Prénom:', 'John');
+    expect(console.log).toHaveBeenCalledWith('Objet:', 'Test object');
+    expect(console.log).toHaveBeenCalledWith('Demande:', 'Test request');
 
     // Should show success
     expect(component.submitSuccess).toBeTrue();
@@ -191,10 +179,9 @@ describe('ContactComponent', () => {
     expect(form.get('demande')?.value).toBe('');
   });
 
-  it('should handle EmailJS error', async () => {
-    // Mock EmailJS error
-    const error = new Error('EmailJS error');
-    spyOn(emailjs, 'send').and.returnValue(Promise.reject(error));
+  it('should handle submission error', async () => {
+    // Mock console.log to throw an error
+    spyOn(console, 'log').and.throwError('Console error');
     
     const form = component.contactForm;
     form.patchValue({
@@ -214,10 +201,8 @@ describe('ContactComponent', () => {
   });
 
   it('should set isSubmitting during form submission', async () => {
-    // Mock EmailJS to delay response
-    spyOn(emailjs, 'send').and.returnValue(
-      new Promise(resolve => setTimeout(() => resolve({ status: 200, text: 'OK' }), 100))
-    );
+    // Spy on console.log
+    spyOn(console, 'log');
     
     const form = component.contactForm;
     form.patchValue({
@@ -244,8 +229,8 @@ describe('ContactComponent', () => {
     // Set an error first
     component.submitError = 'Previous error';
     
-    // Mock successful EmailJS response
-    spyOn(emailjs, 'send').and.returnValue(Promise.resolve({ status: 200, text: 'OK' }));
+    // Spy on console.log
+    spyOn(console, 'log');
     
     const form = component.contactForm;
     form.patchValue({

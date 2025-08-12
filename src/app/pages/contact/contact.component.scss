@@ -46,11 +46,11 @@
   font-weight: 500;
   color: #333;
   margin-bottom: 0.5rem;
-  
-  &::after {
-    content: ' *';
-    color: #e74c3c;
-  }
+}
+
+.required-indicator {
+  color: #e74c3c;
+  font-weight: bold;
 }
 
 .form-input,
@@ -69,10 +69,16 @@
   
   &.error {
     border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
   }
   
   &::placeholder {
     color: #adb5bd;
+  }
+  
+  // Amélioration de l'accessibilité pour les lecteurs d'écran
+  &[aria-invalid="true"] {
+    border-color: #e74c3c;
   }
 }
 
@@ -95,6 +101,7 @@
   
   &.warning {
     color: #f39c12;
+    font-weight: 500;
   }
 }
 
@@ -145,6 +152,7 @@
   &:focus {
     outline: 2px solid #FF9900;
     outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(255, 153, 0, 0.2);
   }
   
   &:disabled {
@@ -152,7 +160,38 @@
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+    opacity: 0.6;
   }
+}
+
+// Classes d'accessibilité pour les lecteurs d'écran
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Amélioration du contraste pour l'accessibilité
+.form-label {
+  color: #2c3e50; // Contraste amélioré
+}
+
+.contact-title {
+  color: #2c3e50; // Contraste amélioré
+}
+
+// Focus visible pour tous les éléments interactifs
+button:focus,
+input:focus,
+textarea:focus {
+  outline: 2px solid #FF9900;
+  outline-offset: 2px;
 }
 
 // Responsive design
@@ -182,5 +221,18 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+}
+
+// Support pour les préférences de réduction de mouvement
+@media (prefers-reduced-motion: reduce) {
+  .form-input,
+  .form-textarea,
+  .submit-button {
+    transition: none;
+  }
+  
+  .submit-button:hover:not(:disabled) {
+    transform: none;
   }
 }
