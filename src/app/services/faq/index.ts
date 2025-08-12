@@ -2,6 +2,9 @@
 export * from './base-faq.service';
 export * from './base-faq-parcours.service';
 
+// Factory pour les données FAQ
+export * from './faq-data.factory';
+
 // Services FAQ
 export * from './faq-general.service';
 export * from './faq-prestataire.service';
