@@ -13,7 +13,7 @@
       <h2 class="message" *ngIf="!isLoading">{{ message }}</h2>
       
       <div class="actions" *ngIf="!isLoading">
-        <button mat-raised-button color="primary" (click)="goToHome()">
+        <button mat-raised-button class="home-button" (click)="goToHome()">
           Retour à l'accueil
         </button>
       </div>
