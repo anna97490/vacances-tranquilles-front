@@ -45,8 +45,8 @@ export class FAQComponent implements OnInit, OnDestroy {
   searchQuery: string = '';
 
   constructor(
-    private router: Router,
-    private faqUnifiedService: FAQUnifiedService
+    private readonly router: Router,
+    private readonly faqUnifiedService: FAQUnifiedService
   ) {}
 
   ngOnInit(): void {

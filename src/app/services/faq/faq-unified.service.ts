@@ -4,15 +4,18 @@ import { FAQPrestataireService } from './faq-prestataire.service';
 import { FAQParticulierService } from './faq-particulier.service';
 import { UnifiedFAQItem } from '../../models/FAQ';
 
+// Type alias pour le type union
+type FAQType = 'general' | 'prestataire' | 'particulier';
+
 @Injectable({
   providedIn: 'root'
 })
 export class FAQUnifiedService {
   
   constructor(
-    private faqGeneralService: FAQGeneralService,
-    private faqPrestataireService: FAQPrestataireService,
-    private faqParticulierService: FAQParticulierService
+    private readonly faqGeneralService: FAQGeneralService,
+    private readonly faqPrestataireService: FAQPrestataireService,
+    private readonly faqParticulierService: FAQParticulierService
   ) { }
 
   /**
@@ -43,7 +46,7 @@ export class FAQUnifiedService {
   /**
    * Récupère les FAQ par type d'utilisateur
    */
-  getFAQByType(type: 'general' | 'prestataire' | 'particulier'): UnifiedFAQItem[] {
+  getFAQByType(type: FAQType): UnifiedFAQItem[] {
     switch (type) {
       case 'general':
         return this.faqGeneralService.getAllFAQ().map(item => ({
@@ -111,7 +114,7 @@ export class FAQUnifiedService {
   /**
    * Récupère les FAQ par ordre de priorité pour un type donné
    */
-  getFAQByPriority(type: 'general' | 'prestataire' | 'particulier'): UnifiedFAQItem[] {
+  getFAQByPriority(type: FAQType): UnifiedFAQItem[] {
     switch (type) {
       case 'prestataire':
         return this.faqPrestataireService.getFAQByPriority().map(item => ({

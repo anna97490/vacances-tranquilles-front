@@ -16,7 +16,7 @@ export interface ContactFormData {
 export class ContactService {
   private readonly apiUrl = '/api/contact'; // URL de votre API backend
   
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   /**
    * Envoie le formulaire de contact

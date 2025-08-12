@@ -1,5 +1,5 @@
 <!-- Header avec Material Toolbar -->
-<mat-toolbar class="faq-header" role="banner" aria-labelledby="faq-main-title">
+<header class="faq-header" aria-labelledby="faq-main-title">
   <div class="header-content">
     <h1 id="faq-main-title" class="faq-title">
       Foire <span class="title-highlight">aux</span> Questions
@@ -8,46 +8,47 @@
       Trouvez rapidement les réponses à vos questions
     </p>
   </div>
-</mat-toolbar>
+</header>
 
-<div class="faq-container" role="main" aria-labelledby="faq-main-title" aria-describedby="faq-description">
+<main class="faq-container" aria-labelledby="faq-main-title" aria-describedby="faq-description">
 
   <!-- Contenu principal dans une Material Card -->
   <mat-card class="faq-content">
 
     <!-- Résultats de recherche -->
-    <div class="search-results" *ngIf="searchQuery.trim()" role="status" aria-live="polite">
+    <output class="search-results" *ngIf="searchQuery.trim()" aria-live="polite">
       <p class="results-count" id="search-results">
         {{ filteredFAQItems.length }} résultat(s) trouvé(s) pour "{{ searchQuery }}"
       </p>
-    </div>
+    </output>
 
     <!-- Liste des FAQ avec Material Expansion Panel -->
-    <mat-accordion class="faq-accordion" role="region" aria-label="Liste des questions fréquentes">
-      <mat-expansion-panel 
-        *ngFor="let item of filteredFAQItems; let i = index; trackBy: trackByFn"
-        class="faq-panel"
-        [expanded]="item.isExpanded"
-        [attr.aria-labelledby]="'question-' + i"
-        [attr.aria-describedby]="'answer-' + i"
-      >
-        <mat-expansion-panel-header class="faq-header">
-          <mat-panel-title class="question-text" [id]="'question-' + i">
-            {{ item.question }}
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        
-        <div class="faq-answer" [id]="'answer-' + i" role="region" aria-labelledby="'question-' + i">
-          <p>{{ item.reponse }}</p>
-        </div>
-      </mat-expansion-panel>
-    </mat-accordion>
+    <section class="faq-accordion" aria-label="Liste des questions fréquentes">
+      <mat-accordion>
+        <mat-expansion-panel 
+          *ngFor="let item of filteredFAQItems; let i = index; trackBy: trackByFn"
+          class="faq-panel"
+          [expanded]="item.isExpanded"
+          [attr.aria-labelledby]="'question-' + i"
+          [attr.aria-describedby]="'answer-' + i"
+        >
+          <mat-expansion-panel-header class="faq-header">
+            <mat-panel-title class="question-text" [id]="'question-' + i">
+              {{ item.question }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          
+          <section class="faq-answer" [id]="'answer-' + i" aria-labelledby="'question-' + i">
+            <p>{{ item.reponse }}</p>
+          </section>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </section>
 
     <!-- Message si aucun résultat -->
-    <div 
+    <output 
       class="no-results" 
       *ngIf="filteredFAQItems.length === 0 && (searchQuery.trim() || selectedCategory !== 'all')"
-      role="status"
       aria-live="polite"
     >
       <mat-card class="no-results-card">
@@ -65,14 +66,14 @@
           </button>
         </mat-card-content>
       </mat-card>
-    </div>
+    </output>
   </mat-card>
 
   <!-- Séparateur Material -->
   <mat-divider class="faq-divider" aria-hidden="true"></mat-divider>
 
   <!-- Section d'aide simplifiée -->
-  <div class="help-section" role="complementary" aria-labelledby="help-title">
+  <aside class="help-section" aria-labelledby="help-title">
     <h2 id="help-title" class="help-title">Besoin d'aide supplémentaire ?</h2>
     <button 
       mat-raised-button 
@@ -83,6 +84,6 @@
     >
       Remplir le formulaire
     </button>
-  </div>
-</div>
+  </aside>
+</main>
 <app-footer></app-footer>

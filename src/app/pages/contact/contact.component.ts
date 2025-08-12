@@ -17,7 +17,7 @@ export class ContactComponent {
   submitError = '';
 
   constructor(
-    private fb: FormBuilder
+    private readonly fb: FormBuilder
   ) {
     this.contactForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],

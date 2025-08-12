@@ -101,9 +101,9 @@ export interface FAQStats {
  */
 export class FAQItemFactory {
   /**
-   * Crée une instance FAQItem à partir d'un objet
+   * Méthode générique pour créer un objet FAQ de base
    */
-  static createFAQItem(obj: any): FAQItem {
+  private static createBaseFAQ(obj: any): { question: string; reponse: string; categorie: string } {
     return {
       question: obj.question || '',
       reponse: obj.reponse || '',
@@ -112,13 +112,18 @@ export class FAQItemFactory {
   }
 
   /**
+   * Crée une instance FAQItem à partir d'un objet
+   */
+  static createFAQItem(obj: any): FAQItem {
+    return this.createBaseFAQ(obj);
+  }
+
+  /**
    * Crée une instance FAQItemWithState à partir d'un objet
    */
   static createFAQItemWithState(obj: any): FAQItemWithState {
     return {
-      question: obj.question || '',
-      reponse: obj.reponse || '',
-      categorie: obj.categorie || '',
+      ...this.createBaseFAQ(obj),
       isExpanded: obj.isExpanded !== undefined ? obj.isExpanded : false
     };
   }
@@ -127,22 +132,14 @@ export class FAQItemFactory {
    * Crée une instance FAQParticulierItem à partir d'un objet
    */
   static createFAQParticulierItem(obj: any): FAQParticulierItem {
-    return {
-      question: obj.question || '',
-      reponse: obj.reponse || '',
-      categorie: obj.categorie || ''
-    };
+    return this.createBaseFAQ(obj);
   }
 
   /**
    * Crée une instance FAQPrestataireItem à partir d'un objet
    */
   static createFAQPrestataireItem(obj: any): FAQPrestataireItem {
-    return {
-      question: obj.question || '',
-      reponse: obj.reponse || '',
-      categorie: obj.categorie || ''
-    };
+    return this.createBaseFAQ(obj);
   }
 
   /**
@@ -150,9 +147,7 @@ export class FAQItemFactory {
    */
   static createUnifiedFAQItem(obj: any): UnifiedFAQItem {
     return {
-      question: obj.question || '',
-      reponse: obj.reponse || '',
-      categorie: obj.categorie || '',
+      ...this.createBaseFAQ(obj),
       type: obj.type || 'general',
       source: obj.source || ''
     };
@@ -163,9 +158,7 @@ export class FAQItemFactory {
    */
   static createFAQParticulierParcours(obj: any): FAQParticulierParcours {
     return {
-      question: obj.question || '',
-      reponse: obj.reponse || '',
-      categorie: obj.categorie || '',
+      ...this.createBaseFAQ(obj),
       id: obj.id || '',
       ordre: obj.ordre || 0
     };
@@ -176,9 +169,7 @@ export class FAQItemFactory {
    */
   static createFAQPrestataireParcours(obj: any): FAQPrestataireParcours {
     return {
-      question: obj.question || '',
-      reponse: obj.reponse || '',
-      categorie: obj.categorie || '',
+      ...this.createBaseFAQ(obj),
       id: obj.id || '',
       ordre: obj.ordre || 0
     };
