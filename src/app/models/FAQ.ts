@@ -154,24 +154,27 @@ export class FAQItemFactory {
   }
 
   /**
-   * Crée une instance FAQParticulierParcours à partir d'un objet
+   * Méthode générique pour créer un objet FAQ avec ordre et ID
    */
-  static createFAQParticulierParcours(obj: any): FAQParticulierParcours {
+  private static createFAQWithOrder<T extends FAQItem & { id: string; ordre: number }>(obj: any): T {
     return {
       ...this.createBaseFAQ(obj),
       id: obj.id || '',
       ordre: obj.ordre || 0
-    };
+    } as T;
+  }
+
+  /**
+   * Crée une instance FAQParticulierParcours à partir d'un objet
+   */
+  static createFAQParticulierParcours(obj: any): FAQParticulierParcours {
+    return this.createFAQWithOrder<FAQParticulierParcours>(obj);
   }
 
   /**
    * Crée une instance FAQPrestataireParcours à partir d'un objet
    */
   static createFAQPrestataireParcours(obj: any): FAQPrestataireParcours {
-    return {
-      ...this.createBaseFAQ(obj),
-      id: obj.id || '',
-      ordre: obj.ordre || 0
-    };
+    return this.createFAQWithOrder<FAQPrestataireParcours>(obj);
   }
 }

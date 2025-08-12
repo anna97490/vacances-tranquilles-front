@@ -42,12 +42,6 @@
   flex-direction: column;
 }
 
-.form-label {
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
 .required-indicator {
   color: #e74c3c;
   font-weight: bold;
@@ -179,7 +173,9 @@
 
 // Amélioration du contraste pour l'accessibilité
 .form-label {
-  color: #2c3e50; // Contraste amélioré
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
 }
 
 // Focus visible pour tous les éléments interactifs
