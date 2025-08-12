@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { FAQItem } from '../../models/FAQ';
+import { BaseFAQService } from './base-faq.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FAQGeneralService {
+export class FAQGeneralService extends BaseFAQService<FAQItem> {
   
-  private faqItems: FAQItem[] = [
+  protected faqItems: FAQItem[] = [
     {
       question: "Qu'est-ce que l'application Vacances Tranquilles ?",
       reponse: "Vacances Tranquilles est une plateforme qui met en relation des particuliers en vacances avec des professionnels de confiance, pour la réalisation de services à domicile pendant leur absence : ménage, jardinage, garde d'animaux, petits travaux, etc. L'objectif : partir l'esprit libre, tout en assurant l'entretien et la surveillance de son domicile.",
@@ -49,37 +50,7 @@ export class FAQGeneralService {
     }
   ];
 
-  constructor() { }
-
-  /**
-   * Récupère toutes les questions FAQ
-   */
-  getAllFAQ(): FAQItem[] {
-    return this.faqItems;
-  }
-
-  /**
-   * Récupère les questions FAQ par catégorie
-   */
-  getFAQByCategory(categorie: string): FAQItem[] {
-    return this.faqItems.filter(item => item.categorie === categorie);
-  }
-
-  /**
-   * Recherche dans les questions FAQ
-   */
-  searchFAQ(query: string): FAQItem[] {
-    const searchTerm = query.toLowerCase();
-    return this.faqItems.filter(item => 
-      item.question.toLowerCase().includes(searchTerm) || 
-      item.reponse.toLowerCase().includes(searchTerm)
-    );
-  }
-
-  /**
-   * Récupère les catégories disponibles
-   */
-  getCategories(): string[] {
-    return [...new Set(this.faqItems.map(item => item.categorie))];
+  constructor() {
+    super();
   }
 }

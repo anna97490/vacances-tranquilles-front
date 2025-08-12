@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { FAQPrestataireParcours } from '../../models/FAQ';
+import { BaseFAQParcoursService } from './base-faq-parcours.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FAQPrestataireParcoursService {
+export class FAQPrestataireParcoursService extends BaseFAQParcoursService<FAQPrestataireParcours> {
 
-  private faqPrestataireParcours: FAQPrestataireParcours[] = [
+  protected faqItems: FAQPrestataireParcours[] = [
     // 1. Inscription / Connexion
     {
       id: 'presta-inscription-1',
@@ -137,53 +138,7 @@ export class FAQPrestataireParcoursService {
     }
   ];
 
-  constructor() { }
-
-  /**
-   * Récupère toutes les questions du parcours prestataire
-   */
-  getAllQuestions(): FAQPrestataireParcours[] {
-    return this.faqPrestataireParcours.sort((a, b) => a.ordre - b.ordre);
-  }
-
-  /**
-   * Récupère les questions par catégorie
-   */
-  getQuestionsByCategory(categorie: string): FAQPrestataireParcours[] {
-    return this.faqPrestataireParcours
-      .filter(faq => faq.categorie === categorie)
-      .sort((a, b) => a.ordre - b.ordre);
-  }
-
-  /**
-   * Récupère toutes les catégories disponibles
-   */
-  getCategories(): string[] {
-    return [...new Set(this.faqPrestataireParcours.map(faq => faq.categorie))];
-  }
-
-  /**
-   * Recherche dans les questions et réponses
-   */
-  searchQuestions(searchTerm: string): FAQPrestataireParcours[] {
-    const term = searchTerm.toLowerCase();
-    return this.faqPrestataireParcours.filter(faq => 
-      faq.question.toLowerCase().includes(term) || 
-      faq.reponse.toLowerCase().includes(term)
-    );
-  }
-
-  /**
-   * Récupère une question spécifique par ID
-   */
-  getQuestionById(id: string): FAQPrestataireParcours | undefined {
-    return this.faqPrestataireParcours.find(faq => faq.id === id);
-  }
-
-  /**
-   * Récupère le nombre total de questions
-   */
-  getTotalQuestions(): number {
-    return this.faqPrestataireParcours.length;
+  constructor() {
+    super();
   }
 }

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { FAQPrestataireItem } from '../../models/FAQ';
+import { BaseFAQService } from './base-faq.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FAQPrestataireService {
+export class FAQPrestataireService extends BaseFAQService<FAQPrestataireItem> {
   
-  private faqItems: FAQPrestataireItem[] = [
+  protected faqItems: FAQPrestataireItem[] = [
     {
       question: "Quelles conditions doivent être remplies pour proposer ses services ?",
       reponse: "Pour devenir prestataire, il faut : Avoir une entreprise, Avoir une assurance responsabilité civile professionnelle.",
@@ -104,38 +105,8 @@ export class FAQPrestataireService {
     }
   ];
 
-  constructor() { }
-
-  /**
-   * Récupère toutes les questions FAQ pour prestataires
-   */
-  getAllFAQ(): FAQPrestataireItem[] {
-    return this.faqItems;
-  }
-
-  /**
-   * Récupère les questions FAQ par catégorie
-   */
-  getFAQByCategory(categorie: string): FAQPrestataireItem[] {
-    return this.faqItems.filter(item => item.categorie === categorie);
-  }
-
-  /**
-   * Recherche dans les questions FAQ pour prestataires
-   */
-  searchFAQ(query: string): FAQPrestataireItem[] {
-    const searchTerm = query.toLowerCase();
-    return this.faqItems.filter(item => 
-      item.question.toLowerCase().includes(searchTerm) || 
-      item.reponse.toLowerCase().includes(searchTerm)
-    );
-  }
-
-  /**
-   * Récupère les catégories disponibles pour prestataires
-   */
-  getCategories(): string[] {
-    return [...new Set(this.faqItems.map(item => item.categorie))];
+  constructor() {
+    super();
   }
 
   /**

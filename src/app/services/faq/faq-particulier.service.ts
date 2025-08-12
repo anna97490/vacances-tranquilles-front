@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { FAQParticulierItem } from '../../models/FAQ';
+import { BaseFAQService } from './base-faq.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FAQParticulierService {
+export class FAQParticulierService extends BaseFAQService<FAQParticulierItem> {
   
-  private faqItems: FAQParticulierItem[] = [
+  protected faqItems: FAQParticulierItem[] = [
     {
       question: "Comment créer mon compte ?",
       reponse: "Pour créer un compte, cliquez sur le bouton « S'inscrire » et remplissez le formulaire d'inscription avec vos informations personnelles.",
@@ -129,38 +130,8 @@ export class FAQParticulierService {
     }
   ];
 
-  constructor() { }
-
-  /**
-   * Récupère toutes les questions FAQ pour particuliers
-   */
-  getAllFAQ(): FAQParticulierItem[] {
-    return this.faqItems;
-  }
-
-  /**
-   * Récupère les questions FAQ par catégorie
-   */
-  getFAQByCategory(categorie: string): FAQParticulierItem[] {
-    return this.faqItems.filter(item => item.categorie === categorie);
-  }
-
-  /**
-   * Recherche dans les questions FAQ pour particuliers
-   */
-  searchFAQ(query: string): FAQParticulierItem[] {
-    const searchTerm = query.toLowerCase();
-    return this.faqItems.filter(item => 
-      item.question.toLowerCase().includes(searchTerm) || 
-      item.reponse.toLowerCase().includes(searchTerm)
-    );
-  }
-
-  /**
-   * Récupère les catégories disponibles pour particuliers
-   */
-  getCategories(): string[] {
-    return [...new Set(this.faqItems.map(item => item.categorie))];
+  constructor() {
+    super();
   }
 
   /**
