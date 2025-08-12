@@ -91,7 +91,9 @@ describe('FAQParticulierParcoursService', () => {
     });
 
     it('should return question about reservation', () => {
-      const question = service.getQuestionById('part-reserver-1');
+      // Avec la nouvelle logique de génération, la première question de "Réserver une prestation" 
+      // est la 6ème question globale (après 3 inscription + 2 consulter)
+      const question = service.getQuestionById('part-reserver-6');
       expect(question).toBeTruthy();
       expect(question?.categorie).toBe('Réserver une prestation');
     });
