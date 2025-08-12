@@ -81,10 +81,10 @@ export class ProviderCardComponent implements OnChanges {
   }
 
   constructor(
-    private http: HttpClient,
-    private envService: EnvService,
-    private authStorage: AuthStorageService,
-    private injector: Injector
+    private readonly http: HttpClient,
+    private readonly envService: EnvService,
+    private readonly authStorage: AuthStorageService,
+    private readonly injector: Injector
   ) {}
 
   private get paymentService(): PaymentService {
@@ -145,8 +145,12 @@ export class ProviderCardComponent implements OnChanges {
       return;
     }
 
-    const providerId = this.providerInfo?.idUser ? Number(this.providerInfo.idUser) : 
-                      this.service.providerId ? Number(this.service.providerId) : null;
+    let providerId: number | null = null;
+    if (this.providerInfo?.idUser) {
+      providerId = Number(this.providerInfo.idUser);
+    } else if (this.service.providerId) {
+      providerId = Number(this.service.providerId);
+    }
 
     // Récupérer les critères de recherche depuis le localStorage
     const searchCriteriaStr = localStorage.getItem('searchCriteria');

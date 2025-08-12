@@ -16,15 +16,15 @@ import { finalize, take } from 'rxjs/operators';
   styleUrls: ['./success.component.scss']
 })
 export class SuccessComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private http = inject(HttpClient);
-  private envService = inject(EnvService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly envService = inject(EnvService);
 
   message = '';
   isLoading = true;
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const sessionId = this.route.snapshot.queryParamMap.get('session_id');
     if (!sessionId) {
       this.isLoading = false;
