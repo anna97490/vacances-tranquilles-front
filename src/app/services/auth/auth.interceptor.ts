@@ -29,7 +29,6 @@ export function authInterceptor(
     return next(request);
   }
 
-<<<<<<< HEAD
   // Ajouter le token d'authentification à la requête
   const token = authStorage.getToken();
   let authRequest = request;
@@ -43,9 +42,6 @@ export function authInterceptor(
   }
 
   return next(authRequest).pipe(
-=======
-  return next(request).pipe(
->>>>>>> staging
     catchError((error: HttpErrorResponse) => {
       // Gestion des erreurs d'authentification
       if (error.status === 403 || error.status === 401) {
