@@ -21,16 +21,23 @@
   gap: 20px;
 }
 
-.success-icon {
+.message-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.message-icon {
   font-size: 64px;
   width: 64px;
   height: 64px;
   
-  &.check_circle {
+  &.success-icon {
     color: #4caf50;
   }
   
-  &.error {
+  &.error-icon {
     color: #f44336;
   }
 }

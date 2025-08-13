@@ -4,6 +4,8 @@ import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { UserRole } from '../../models/User';
+import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { UserRole } from '../../models/User';
 
 @Component({
   selector: 'app-header',
@@ -175,6 +177,11 @@ export class HeaderComponent implements OnInit {
   }
 
   isActive(path: string): boolean {
+    // Si c'est le chemin "Accueil" et que l'utilisateur est un client connecté
+    // sur la page service-search, considérer Accueil comme actif
+    if (path === '/home' && this.isClientUser() && this.currentPath === '/service-search') {
+      return true;
+    }
     // Si c'est le chemin "Accueil" et que l'utilisateur est un client connecté
     // sur la page service-search, considérer Accueil comme actif
     if (path === '/home' && this.isClientUser() && this.currentPath === '/service-search') {

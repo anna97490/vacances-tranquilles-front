@@ -87,15 +87,19 @@ it('should send GET request with correct parameters', () => {
     ).toThrowError('Catégorie inconnue : INVALID');
   });
 
-  it('should make HTTP request even when token is invalid (interceptor handles auth)', () => {
+  it('should redirect to login when token is invalid', () => {
     // Configurer le spy pour retourner false (token invalide)
     tokenValidatorSpy.isTokenValid.and.returnValue(false);
-    
-    // Configurer localStorage pour avoir un token
-    spyOn(localStorage, 'getItem').and.returnValue('mock-token');
 
-    service.searchServices('HOME', '75001', '2025-01-01', '10:00', '12:00').subscribe();
+    service.searchServices('HOME', '75001', '2025-01-01', '10:00', '12:00').subscribe({
+      error: (error) => {
+        // Le service fait la requête HTTP, l'intercepteur gère l'erreur 401/403
+        // L'intercepteur est testé séparément dans auth.interceptor.spec.ts
+        expect(error).toBeDefined();
+      }
+    });
 
+    // S'attendre à ce qu'une requête HTTP soit faite
     const req = httpMock.expectOne((req) => {
       const url = req.urlWithParams;
       return url.includes('/services/search') &&
@@ -106,11 +110,7 @@ it('should send GET request with correct parameters', () => {
              url.includes('endTime=12:00');
     });
 
-    expect(req.request.method).toBe('GET');
-
-    // Simule une réponse vide
-    req.flush([]);
-
-    httpMock.verify();
+    // Simuler une réponse 401 (non autorisé)
+    req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
   });
 });

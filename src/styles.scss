@@ -73,6 +73,16 @@ $frontend-theme: mat.define-theme((
 
     --vt-grey: #f5f5f5;
     --vt-grey-border: #e0e0e0;
+    /** >Secondary text color */
+    --secondary-text-color: #FFFFFF;
+    /** Discret text color */ 
+    --discret-text-color: #777; 
+
+    /** Border radius de référence */
+    --border-radius-base: 12px;
+
+    --vt-grey: #f5f5f5;
+    --vt-grey-border: #e0e0e0;
 
     --discret-text-color: #777;
 

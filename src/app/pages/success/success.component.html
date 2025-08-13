@@ -1,16 +1,17 @@
 <div class="success-container">
   <mat-card class="success-card">
     <div class="success-content">
-      <mat-icon class="success-icon" *ngIf="!isLoading">
-        {{ message.includes('✅') ? 'check_circle' : 'error' }}
-      </mat-icon>
-      
       <div class="loading-spinner" *ngIf="isLoading">
         <mat-icon class="spinner">refresh</mat-icon>
         <span>Confirmation en cours...</span>
       </div>
 
-      <h2 class="message" *ngIf="!isLoading">{{ message }}</h2>
+      <div class="message-container" *ngIf="!isLoading">
+        <mat-icon class="message-icon" [class.success-icon]="messageType === 'success'" [class.error-icon]="messageType === 'error'">
+          {{ messageType === 'success' ? 'check_circle' : 'error' }}
+        </mat-icon>
+        <h2 class="message">{{ message }}</h2>
+      </div>
       
       <div class="actions" *ngIf="!isLoading">
         <button mat-raised-button class="home-button" (click)="goToHome()">

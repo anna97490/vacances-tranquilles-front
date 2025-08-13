@@ -324,7 +324,6 @@ export class ServiceSearchComponent {
     }
 
     // L'authentification est gérée automatiquement par l'intercepteur
-
     this.isLoading = true;
 
     try {
