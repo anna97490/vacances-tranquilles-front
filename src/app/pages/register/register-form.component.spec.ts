@@ -6,7 +6,6 @@ import { of, throwError } from 'rxjs';
 
 import { RegisterFormComponent } from './register-form.component';
 import { provideRouter } from '@angular/router';
-
 import { EnvService } from '../../services/env/env.service';
 import { RegisterValidationService } from '../../services/register/register-validation.service';
 import { RegisterFormConfigService } from '../../services/register/register-form-config.service';
@@ -17,7 +16,6 @@ import { RegisterService } from '../../services/register/register.service';
 describe('RegisterFormComponent', () => {
   let component: RegisterFormComponent;
   let fixture: ComponentFixture<RegisterFormComponent>;
-
 
   let envServiceMock: Partial<EnvService>;
   let validationServiceMock: jasmine.SpyObj<RegisterValidationService>;
@@ -42,7 +40,6 @@ describe('RegisterFormComponent', () => {
       companyName: new FormControl(''),
       siretSiren: new FormControl('')
     });
-
 
     envServiceMock = { 
       apiUrl: 'http://api.test',
@@ -185,7 +182,6 @@ describe('RegisterFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RegisterFormComponent, ReactiveFormsModule, NoopAnimationsModule],
       providers: [
-
         { provide: EnvService, useValue: envServiceMock },
         { provide: RegisterValidationService, useValue: validationServiceMock },
         { provide: RegisterFormConfigService, useValue: formConfigServiceMock },

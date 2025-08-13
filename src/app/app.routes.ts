@@ -8,10 +8,13 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'service-search', component: ServiceSearchComponent },
   { path: 'available-providers', component: AvailableProvidersComponent },
+<<<<<<< HEAD
   { path: 'success', 
     loadComponent: () => import('./pages/success/success.component')
       .then(m => m.SuccessComponent)
   },
+=======
+>>>>>>> staging
   { path: 'terms-and-conditions', 
     children : [
       {

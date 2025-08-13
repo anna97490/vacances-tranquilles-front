@@ -323,8 +323,11 @@ export class ServiceSearchComponent {
       return;
     }
 
+<<<<<<< HEAD
     // L'authentification est gérée automatiquement par l'intercepteur
 
+=======
+>>>>>>> staging
     this.isLoading = true;
 
     try {
@@ -353,6 +356,7 @@ export class ServiceSearchComponent {
           error: (error) => {
             console.error('Erreur lors de la recherche:', error);
             
+<<<<<<< HEAD
             // L'intercepteur gère automatiquement les erreurs 401/403
             // On ne gère que les autres types d'erreurs ici
             if (error.status === 0) {
@@ -363,6 +367,15 @@ export class ServiceSearchComponent {
               this.notificationService.error('Erreur lors de la recherche. Veuillez réessayer.');
             }
             // Les erreurs 401/403 sont gérées par l'intercepteur
+=======
+            // Vérifier si c'est une erreur d'authentification ou de session expirée
+            if (error.status === 403 || error.status === 401 || error.message?.includes('Session expirée')) {
+              this.notificationService.sessionExpired();
+              // La redirection sera gérée automatiquement par l'intercepteur
+            } else {
+              this.notificationService.error('Erreur lors de la recherche. Veuillez réessayer.');
+            }
+>>>>>>> staging
           },
           complete: () => {
             this.isLoading = false;

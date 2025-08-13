@@ -8,6 +8,10 @@ import { EnvService } from '../env/env.service';
   providedIn: 'root'
 })
 export class UserInformationService {
+<<<<<<< HEAD
+=======
+
+>>>>>>> staging
   private readonly urlApi: string;
 
   constructor(

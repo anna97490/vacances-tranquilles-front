@@ -2,13 +2,21 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ServicesService } from './services.service';
 import { Service } from '../../models/Service';
+<<<<<<< HEAD
 import { EnvService } from '../env/env.service';
+=======
+import { ConfigService } from '../config/config.service';
+>>>>>>> staging
 import { TokenValidatorService } from '../auth/token-validator.service';
 import { Router } from '@angular/router';
 
 describe('ServicesService', () => {
 
+<<<<<<< HEAD
   class MockEnvService {
+=======
+  class MockConfigService {
+>>>>>>> staging
     apiUrl = 'http://mock-api/api';
   }
 
@@ -25,7 +33,11 @@ describe('ServicesService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         ServicesService,
+<<<<<<< HEAD
         { provide: EnvService, useClass: MockEnvService },
+=======
+        { provide: ConfigService, useClass: MockConfigService },
+>>>>>>> staging
         { provide: TokenValidatorService, useValue: tokenValidatorSpyObj },
         { provide: Router, useValue: routerSpyObj }
       ]
@@ -87,6 +99,7 @@ it('should send GET request with correct parameters', () => {
     ).toThrowError('Catégorie inconnue : INVALID');
   });
 
+<<<<<<< HEAD
   it('should make HTTP request even when token is invalid (interceptor handles auth)', () => {
     // Configurer le spy pour retourner false (token invalide)
     tokenValidatorSpy.isTokenValid.and.returnValue(false);
@@ -112,5 +125,17 @@ it('should send GET request with correct parameters', () => {
     req.flush([]);
 
     httpMock.verify();
+=======
+  it('should redirect to login when token is invalid', () => {
+    // Configurer le spy pour retourner false (token invalide)
+    tokenValidatorSpy.isTokenValid.and.returnValue(false);
+
+    service.searchServices('HOME', '75001', '2025-01-01', '10:00', '12:00').subscribe({
+      error: (error) => {
+        expect(error.message).toBe('Session expirée. Veuillez vous reconnecter.');
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/auth/login']);
+      }
+    });
+>>>>>>> staging
   });
 });

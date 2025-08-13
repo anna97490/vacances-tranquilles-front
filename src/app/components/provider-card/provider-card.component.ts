@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import { Component, Input, OnChanges, SimpleChanges, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+=======
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+>>>>>>> staging
 import { User } from '../../models/User';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,10 +14,13 @@ import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
 import { Service } from '../../models/Service';
 import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.component';
+<<<<<<< HEAD
 import { PaymentService } from '../../services/payment/payment.service';
 import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 
+=======
+>>>>>>> staging
 /**
  * Composant carte prestataire (affichage d'un User de rôle PROVIDER)
  * @example <app-provider-card [user]="user"></app-provider-card>
@@ -21,6 +28,7 @@ import { AuthStorageService } from '../../services/login/auth-storage.service';
 @Component({
   selector: 'app-provider-card',
   standalone: true,
+<<<<<<< HEAD
   imports: [
     CommonModule, 
     MatCardModule, 
@@ -30,12 +38,18 @@ import { AuthStorageService } from '../../services/login/auth-storage.service';
     MatDividerModule, 
     RatingStarsComponent
   ],
+=======
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, MatDividerModule, RatingStarsComponent],
+>>>>>>> staging
   templateUrl: './provider-card.component.html',
   styleUrl: './provider-card.component.scss'
 })
 export class ProviderCardComponent implements OnChanges {
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> staging
   /**
    * Prestataire (User) correspondant au service affiché.
    * @type {User | undefined}
@@ -80,6 +94,7 @@ export class ProviderCardComponent implements OnChanges {
     this._providerInfo = providerInfo;
   }
 
+<<<<<<< HEAD
   constructor(
     private readonly http: HttpClient,
     private readonly envService: EnvService,
@@ -91,6 +106,8 @@ export class ProviderCardComponent implements OnChanges {
     return this.injector.get(PaymentService);
   }
 
+=======
+>>>>>>> staging
   ngOnChanges(changes: SimpleChanges): void {
     if (this._service && this._providerInfo) {
       this.user = this._providerInfo;
@@ -104,6 +121,7 @@ export class ProviderCardComponent implements OnChanges {
   get providerInfo(): User | undefined {
     return this._providerInfo;
   }
+<<<<<<< HEAD
 
 
 
@@ -209,4 +227,6 @@ export class ProviderCardComponent implements OnChanges {
       console.error('Erreur lors de la création de la session de paiement:', error);
     }
   }
+=======
+>>>>>>> staging
 }
