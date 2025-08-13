@@ -1,19 +1,26 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 import { ReservationService } from './reservation.service';
 
 describe('ReservationService (HTTP)', () => {
   let service: ReservationService;
   let httpMock: HttpTestingController;
+  let envServiceMock: jasmine.SpyObj<EnvService>;
   const apiUrl = 'http://api.test';
 
   beforeEach(() => {
+    envServiceMock = jasmine.createSpyObj<EnvService>('EnvService', [], {
+      apiUrl: apiUrl
+    });
+
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         ReservationService,
-        { provide: ConfigService, useValue: { apiUrl } },
+        { provide: EnvService, useValue: envServiceMock },
+        provideHttpClient(withFetch()),
+        provideHttpClientTesting()
       ]
     });
     service = TestBed.inject(ReservationService);

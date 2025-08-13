@@ -68,9 +68,22 @@ export class LoginService {
 
     const token = this.errorHandler.extractTokenFromErrorResponse(error);
     if (token) {
-      this.authStorage.storeAuthenticationData(token, '');
+      // Essayer d'extraire le userRole de la réponse d'erreur
+      let userRole = '';
+      try {
+        if (error.error?.text) {
+          const parsed = JSON.parse(error.error.text);
+          userRole = parsed.userRole || '';
+        } else if (error.error?.userRole) {
+          userRole = error.error.userRole;
+        }
+      } catch (parseError) {
+        console.warn('Impossible d\'extraire le userRole de la réponse:', parseError);
+      }
+
+      this.authStorage.storeAuthenticationData(token, userRole);
       this.logInfo('Connexion réussie !');
-      this.navigation.redirectAfterLogin();
+      this.navigation.redirectAfterLogin(userRole);
 
       // Actualiser la page uniquement en environnement browser
       this.reloadPageIfBrowser();

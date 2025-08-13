@@ -14,8 +14,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { FooterComponent } from '../../components/footer/footer.component';
-import { ConfigService } from '../../services/config/config.service';
+
+import { EnvService } from '../../services/env/env.service';
 import { RegisterValidationService } from '../../services/register/register-validation.service';
 import { RegisterFormConfigService } from '../../services/register/register-form-config.service';
 import { UserTypeDetectorService } from '../../services/register/user-type-detector.service';
@@ -32,8 +32,7 @@ import { RegisterService } from '../../services/register/register.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    RouterModule,
-    FooterComponent
+    RouterModule
   ],
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.scss'],
@@ -53,7 +52,7 @@ export class RegisterFormComponent implements OnDestroy {
 
   constructor(
     private readonly renderer: Renderer2,
-    private readonly configService: ConfigService,
+    private readonly envService: EnvService,
     private readonly validationService: RegisterValidationService,
     private readonly formConfigService: RegisterFormConfigService,
     private readonly userTypeDetector: UserTypeDetectorService,
@@ -61,7 +60,7 @@ export class RegisterFormComponent implements OnDestroy {
     private readonly registerService: RegisterService,
     private readonly router: Router
   ) {
-    this.urlApi = this.configService.apiUrl;
+    this.urlApi = this.envService.apiUrl;
     this.detectUserType();
     this.initializeForm();
   }
@@ -397,6 +396,6 @@ export class RegisterFormComponent implements OnDestroy {
    * Retourne l'URL de base de l'API provenant de la configuration d'application.
    */
   getApiUrl(): string {
-    return this.configService.apiUrl;
+    return this.envService.apiUrl;
   }
 }

@@ -171,7 +171,7 @@
           .price-amount {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--quaternary-color);
+            color: var(--text-color);
           }
 
           .price-label {
@@ -200,7 +200,6 @@
         flex-direction: column;
         align-items: stretch;
 
-        // Ensure spacing between adjacent buttons even if gap is not supported
         .profile-btn + .profile-btn {
           margin-top: 12px;
         }

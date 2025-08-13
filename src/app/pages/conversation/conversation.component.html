@@ -1,0 +1,70 @@
+<main class="conversations-container" aria-label="Page des conversations">
+  <!-- Région d'annonce accessible -->
+  <div class="sr-only" aria-live="polite" [textContent]="liveMessage"></div>
+
+  <!-- Header de la page -->
+  <div class="conversations-header">
+    <h1>Mes conversations</h1>
+    <p>Gérez vos conversations et échangez avec vos interlocuteurs</p>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="loading-container" aria-busy="true" aria-live="polite">
+    <div class="loading-spinner" aria-hidden="true"></div>
+    <output aria-live="polite">Chargement des conversations…</output>
+  </div>
+
+  <!-- Contenu principal -->
+  <section *ngIf="!isLoading" class="conversations-content" aria-label="Liste des conversations">
+    <!-- Liste des conversations -->
+    <div class="conversations-list">
+      <h2>Liste des conversations</h2>
+
+      <!-- Message si aucune conversation -->
+      <output *ngIf="conversations.length === 0" class="no-conversations" aria-live="polite">
+        <div class="no-conversations-content">
+          <div class="no-conversations-icon" aria-hidden="true">💬</div>
+          <h3>Vous n'avez pas encore de conversation</h3>
+          <p>Commencez une conversation depuis vos réservations en cours</p>
+        </div>
+      </output>
+
+      <!-- Cartes des conversations -->
+      <ul class="conversation-cards" aria-label="Liste des conversations">
+        <button
+          *ngFor="let conversation of conversations; trackBy: trackByConversationId"
+          class="conversation-card"
+          (click)="openConversation(conversation.conversationId)"
+          (keydown)="onCardKeydown($event, conversation.conversationId)"
+          [attr.aria-label]="'Conversation avec ' + conversation.otherUserName + ' pour ' + conversation.serviceTitle"
+          [attr.data-conversation-id]="conversation.conversationId">
+
+          <div class="header">
+            <div class="info">
+              <div class="top-line">
+                 <h3 class="name">{{ conversation.otherUserName }}</h3>
+                 <div class="service-info" [attr.aria-label]="'Service: ' + conversation.serviceTitle">
+                   {{ conversation.serviceTitle }}
+                 </div>
+              </div>
+
+              <div class="date">
+                <span class="reservation-date" [attr.aria-label]="'Réservation du ' + formatDate(conversation.startTime)">
+                  Réservation du {{ formatDate(conversation.startTime) }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <a class="open-btn"
+               [routerLink]="['/messages', conversation.conversationId]"
+               [attr.aria-label]="'Ouvrir la conversation avec ' + conversation.otherUserName">
+              Ouvrir la conversation
+            </a>
+          </div>
+        </button>
+      </ul>
+    </div>
+  </section>
+</main>

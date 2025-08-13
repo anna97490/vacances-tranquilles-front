@@ -2,6 +2,8 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { UserRole } from '../../models/User';
 
 @Component({
   selector: 'app-header',
@@ -42,7 +44,7 @@ export class HeaderComponent implements OnInit {
       label: 'Messagerie',
       icon: 'assets/icons/chat_bubble_24dp_FFFFFF.svg',
       iconActive: 'assets/icons/chat_bubble_24dp_FFA101.svg',
-      path: '/messagerie'
+      path: '/messaging'
     },
     {
       label: 'Assistance',
@@ -61,9 +63,13 @@ export class HeaderComponent implements OnInit {
   };
 
   currentPath: string = '';
-
-  constructor(private router: Router, public location: Location) {}
-
+  
+  constructor(
+    private readonly router: Router, 
+    public location: Location,
+    private readonly authStorage: AuthStorageService
+  ) {}
+  
   ngOnInit(): void {
     this.currentPath = this.location.path() || '/home';
     this.router.events.pipe(
@@ -71,6 +77,38 @@ export class HeaderComponent implements OnInit {
     ).subscribe(() => {
       this.currentPath = this.location.path() || '/home';
     });
+  }
+
+  /**
+   * Détermine le chemin de navigation pour un élément du menu
+   * @param item L'élément du menu
+   * @returns Le chemin de navigation
+   */
+  getNavigationPath(item: any): string {
+    // Si c'est l'élément "Accueil" et que l'utilisateur est connecté avec le rôle CLIENT
+    if (item.label === 'Accueil' && this.isClientUser()) {
+      return '/service-search';
+    }
+    return item.path;
+  }
+
+  /**
+   * Vérifie si l'utilisateur connecté est un client
+   * @returns true si l'utilisateur est connecté et a le rôle CLIENT
+   */
+  private isClientUser(): boolean {
+    return this.authStorage.isAuthenticated() && 
+           this.authStorage.getUserRole() === UserRole.CLIENT;
+  }
+
+  /**
+   * Gère la navigation vers un élément du menu
+   * @param item L'élément du menu
+   */
+  onMenuNavigation(item: any): void {
+    const path = this.getNavigationPath(item);
+    this.router.navigate([path]);
+    this.closeMobileMenu();
   }
 
   /**
@@ -129,6 +167,11 @@ export class HeaderComponent implements OnInit {
   }
 
   isActive(path: string): boolean {
+    // Si c'est le chemin "Accueil" et que l'utilisateur est un client connecté
+    // sur la page service-search, considérer Accueil comme actif
+    if (path === '/home' && this.isClientUser() && this.currentPath === '/service-search') {
+      return true;
+    }
     return this.currentPath === path;
   }
 

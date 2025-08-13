@@ -24,10 +24,10 @@ export class HomeInitializationService {
     try {
       // Charger les scripts Botpress
       await this.loadBotpressScripts();
-      
+
       // Envoyer le message d'accueil
       await this.initializeBotpress();
-      
+
     } catch (error) {
       console.error('Erreur lors de l\'initialisation des services:', error);
     }
@@ -53,7 +53,7 @@ export class HomeInitializationService {
     try {
       // Attendre que Botpress soit disponible
       const isAvailable = await this.botpressService.waitForBotpress();
-      
+
       if (isAvailable) {
         await this.botpressService.sendWelcomeMessage();
         console.log('Botpress initialisé avec succès');

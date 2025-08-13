@@ -31,6 +31,61 @@ export class AuthStorageService {
   }
 
   /**
+   * Extrait l'userId du token JWT
+   */
+  getUserIdFromToken(): number | null {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+
+    try {
+      // Décoder le token JWT (format: header.payload.signature)
+      const parts = token.split('.');
+      
+      if (parts.length !== 3) {
+        return null;
+      }
+
+      const payload = parts[1];
+
+      // Décoder le payload base64
+      const decodedPayload = JSON.parse(atob(payload));
+      
+      // Chercher l'userId dans le payload
+      // Les clés possibles peuvent être: userId, user_id, id, sub, etc.
+      const userId = decodedPayload.userId || 
+                    decodedPayload.user_id || 
+                    decodedPayload.id || 
+                    decodedPayload.sub;
+
+      // Convertir en number si c'est une string
+      let userIdNumber: number | null = null;
+      if (typeof userId === 'string') {
+        userIdNumber = parseInt(userId, 10);
+      } else if (typeof userId === 'number') {
+        userIdNumber = userId;
+      }
+
+      if (userIdNumber && userIdNumber >= 1 && userIdNumber <= 50) {
+        return userIdNumber;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Erreur lors du décodage du token JWT:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Récupère l'ID utilisateur depuis le token JWT
+   */
+  getUserId(): number | null {
+    return this.getUserIdFromToken();
+  }
+
+  /**
    * Vérifie si l'utilisateur est connecté
    */
   isAuthenticated(): boolean {

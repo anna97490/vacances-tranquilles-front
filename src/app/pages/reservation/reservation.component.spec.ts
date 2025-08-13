@@ -2,9 +2,13 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of, throwError } from 'rxjs';
 import { ReservationComponent } from './reservation.component';
 import { ReservationService, ReservationResponseDTO } from '../../services/reservation/reservation.service';
+import { ConversationsService } from '../../services/conversation/conversations.service';
+import { EnvService } from '../../services/env/env.service';
 
 @Component({ template: '' })
 class DummyDetailComponent {}
@@ -14,12 +18,22 @@ describe('ReservationComponent', () => {
   let fixture: ComponentFixture<ReservationComponent>;
 
   let reservationServiceMock: jasmine.SpyObj<ReservationService>;
+  let conversationsServiceMock: jasmine.SpyObj<ConversationsService>;
+  let envServiceMock: jasmine.SpyObj<EnvService>;
 
   beforeEach(async () => {
     reservationServiceMock = jasmine.createSpyObj<ReservationService>('ReservationService', [
       'getAllReservations',
       'updateReservationStatus',
     ]);
+
+    conversationsServiceMock = jasmine.createSpyObj<ConversationsService>('ConversationsService', [
+      'getConversations'
+    ]);
+
+    envServiceMock = jasmine.createSpyObj<EnvService>('EnvService', [], {
+      apiUrl: 'http://test-api.example.com/api'
+    });
 
     const sample: ReservationResponseDTO = {
       id: 1,
@@ -48,6 +62,7 @@ describe('ReservationComponent', () => {
     };
 
     reservationServiceMock.getAllReservations.and.returnValue(of([sample]));
+    conversationsServiceMock.getConversations.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -58,6 +73,10 @@ describe('ReservationComponent', () => {
       ],
       providers: [
         { provide: ReservationService, useValue: reservationServiceMock },
+        { provide: ConversationsService, useValue: conversationsServiceMock },
+        { provide: EnvService, useValue: envServiceMock },
+        provideHttpClient(withFetch()),
+        provideHttpClientTesting()
       ],
     })
     .compileComponents();

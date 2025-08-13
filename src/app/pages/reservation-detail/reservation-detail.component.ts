@@ -78,15 +78,39 @@ export class ReservationDetailComponent implements OnInit {
     return date;
   }
 
-  formatPrice(price: number): string {
-    if (!price) return '0';
-    return price.toFixed(2);
+  formatPrice(price: number | null | undefined): string {
+    if (price === null || price === undefined || price === 0) {
+      return '0,00 €';
+    }
+
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(price);
   }
 
   formatTime(time: string): string {
     if (!time) return '';
-    const match = time.match(/^(\d{2}:\d{2})/);
-    return match ? match[1] : time;
+
+    // Si c'est un format LocalDateTime complet (ex: 2024-01-15T22:29:02)
+    if (time.includes('T')) {
+      const date = new Date(time);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+    }
+
+    // Si c'est un format LocalTime (ex: 22:29:02)
+    const match = time.match(/^(\d{2}):(\d{2})/);
+    if (match) {
+      return `${match[1]}:${match[2]}`;
+    }
+
+    // Fallback: retourner la valeur originale
+    return time;
   }
 
   getStatusLabel(status: string): string {

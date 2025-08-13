@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 
 // Interfaces pour les données de réservation
 export interface ReservationDTO {
@@ -44,6 +44,9 @@ export interface ReservationResponseDTO {
   comments?: string;
   services: string[];
 
+  // ID de la conversation si elle existe
+  conversationId?: number;
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
@@ -60,7 +63,7 @@ export class ReservationService {
 
   constructor(
     private http: HttpClient,
-    private configService: ConfigService
+    private envService: EnvService
   ) {}
 
   /**
@@ -68,10 +71,9 @@ export class ReservationService {
    * @returns Observable contenant la liste des réservations
    */
   getAllReservations(): Observable<ReservationResponseDTO[]> {
-    const apiUrl = this.configService.apiUrl;
+    const apiUrl = this.envService.apiUrl;
     const url = `${apiUrl}/reservations`;
-    console.log('🌐 Appel API - URL:', url);
-    console.log('🔧 API URL configurée:', apiUrl);
+
     return this.http.get<ReservationResponseDTO[]>(url);
   }
 
@@ -81,7 +83,8 @@ export class ReservationService {
    * @returns Observable contenant la réservation
    */
   getReservationById(id: number): Observable<ReservationResponseDTO> {
-    const apiUrl = this.configService.apiUrl;
+    const apiUrl = this.envService.apiUrl;
+
     return this.http.get<ReservationResponseDTO>(`${apiUrl}/reservations/${id}`);
   }
 
@@ -91,7 +94,8 @@ export class ReservationService {
    * @returns Observable contenant la réservation créée
    */
   createReservation(reservationData: ReservationDTO): Observable<ReservationResponseDTO> {
-    const apiUrl = this.configService.apiUrl;
+    const apiUrl = this.envService.apiUrl;
+
     return this.http.post<ReservationResponseDTO>(`${apiUrl}/reservations`, reservationData);
   }
 
@@ -102,7 +106,8 @@ export class ReservationService {
    * @returns Observable contenant la réservation mise à jour
    */
   updateReservationStatus(id: number, statusData: UpdateReservationStatusDTO): Observable<ReservationResponseDTO> {
-    const apiUrl = this.configService.apiUrl;
+    const apiUrl = this.envService.apiUrl;
+
     return this.http.patch<ReservationResponseDTO>(`${apiUrl}/reservations/${id}/status`, statusData);
   }
 
@@ -112,7 +117,8 @@ export class ReservationService {
    * @returns Observable de la réponse HTTP
    */
   deleteReservation(id: number): Observable<HttpResponse<any>> {
-    const apiUrl = this.configService.apiUrl;
+    const apiUrl = this.envService.apiUrl;
+
     return this.http.delete(`${apiUrl}/reservations/${id}`, { observe: 'response' });
   }
 
@@ -127,7 +133,7 @@ export class ReservationService {
     endDate?: string;
     propertyId?: number;
   }): Observable<ReservationResponseDTO[]> {
-    const apiUrl = this.configService.apiUrl;
+    const apiUrl = this.envService.apiUrl;
     const params = new URLSearchParams();
 
     if (filters.status) params.append('status', filters.status);
@@ -152,7 +158,7 @@ export class ReservationService {
     completed: number;
     cancelled: number;
   }> {
-    const apiUrl = this.configService.apiUrl;
+    const apiUrl = this.envService.apiUrl;
     return this.http.get<{
       total: number;
       pending: number;

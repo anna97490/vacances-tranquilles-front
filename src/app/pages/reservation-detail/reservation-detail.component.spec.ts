@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { ReservationDetailComponent } from './reservation-detail.component';
@@ -12,6 +12,7 @@ describe('ReservationDetailComponent', () => {
 
   let reservationServiceMock: jasmine.SpyObj<ReservationService>;
   let authStorageMock: jasmine.SpyObj<AuthStorageService>;
+  let routerMock: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
     reservationServiceMock = jasmine.createSpyObj<ReservationService>('ReservationService', [
@@ -21,6 +22,7 @@ describe('ReservationDetailComponent', () => {
     authStorageMock = jasmine.createSpyObj<AuthStorageService>('AuthStorageService', [
       'getUserRole', 'getToken', 'isAuthenticated', 'storeAuthenticationData', 'clearAuthenticationData'
     ]);
+    routerMock = jasmine.createSpyObj<Router>('Router', ['navigate']);
     authStorageMock.getUserRole.and.returnValue('PROVIDER');
 
     const dto: ReservationResponseDTO = {
@@ -56,6 +58,7 @@ describe('ReservationDetailComponent', () => {
       providers: [
         { provide: ReservationService, useValue: reservationServiceMock },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map([['id', '42']]) } } },
+        { provide: Router, useValue: routerMock },
         { provide: AuthStorageService, useValue: authStorageMock },
       ]
     })
@@ -68,6 +71,20 @@ describe('ReservationDetailComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should determine user role correctly', () => {
+    authStorageMock.getUserRole.and.returnValue('PROVIDER');
+    component.ngOnInit();
+    expect(component.isProvider).toBeTrue();
+
+    authStorageMock.getUserRole.and.returnValue('PRESTATAIRE');
+    component.ngOnInit();
+    expect(component.isProvider).toBeTrue();
+
+    authStorageMock.getUserRole.and.returnValue('CLIENT');
+    component.ngOnInit();
+    expect(component.isProvider).toBeFalse();
   });
 
   it('should display loading with aria-busy and output aria-live', () => {
@@ -93,6 +110,18 @@ describe('ReservationDetailComponent', () => {
     expect(buttons[1].attributes['type']).toBe('button');
   });
 
+  it('should not show action buttons when user is not provider', () => {
+    component.isLoading = false;
+    component.isProvider = false;
+    component.reservation = {
+      id: 42,
+      status: 'PENDING',
+    } as any;
+    fixture.detectChanges();
+    const buttons = fixture.debugElement.queryAll(By.css('.actions-section .profile-btn'));
+    expect(buttons.length).toBe(0);
+  });
+
   it('should announce live message after status update', () => {
     component.isProvider = true;
     component.reservation = { id: 42, status: 'PENDING' } as any;
@@ -115,7 +144,6 @@ describe('ReservationDetailComponent', () => {
   });
 
   it('should handle missing id branch in loadReservationDetails', () => {
-    // Simuler un ID manquant en remplaçant la route le temps du test
     const route = TestBed.inject(ActivatedRoute) as any;
     route.snapshot.paramMap = new Map();
     component.isLoading = true;
@@ -130,7 +158,6 @@ describe('ReservationDetailComponent', () => {
     const route = TestBed.inject(ActivatedRoute) as any;
     route.snapshot.paramMap = new Map([[ 'id', '42' ]]);
     (TestBed.inject(ReservationService) as jasmine.SpyObj<ReservationService>).getReservationById.and.returnValue(throwError(() => new Error('fail')));
-    // Call ngOnInit->loadReservationDetails again
     component.ngOnInit();
     fixture.detectChanges();
     expect(component.error).toContain('Erreur lors du chargement des détails');
@@ -141,6 +168,15 @@ describe('ReservationDetailComponent', () => {
     component.reservation = null as any;
     component.updateStatus('IN_PROGRESS');
     expect(service.updateReservationStatus).not.toHaveBeenCalled();
+  });
+
+  it('should early-return in updateStatus when user is not provider', () => {
+    const service = TestBed.inject(ReservationService) as jasmine.SpyObj<ReservationService>;
+    component.isProvider = false;
+    component.reservation = { id: 123, status: 'PENDING' } as any;
+    component.updateStatus('IN_PROGRESS');
+    expect(service.updateReservationStatus).not.toHaveBeenCalled();
+    expect(component.error).toContain('Seuls les prestataires peuvent modifier');
   });
 
   it('should set error when updateStatus fails', () => {
@@ -158,6 +194,22 @@ describe('ReservationDetailComponent', () => {
     expect(component.formatDate('2025-08-09')).toBeTruthy();
     expect(component.formatTime('14:30:15')).toBe('14:30');
     expect(component.formatTime('bad')).toBe('bad');
+  });
+
+  it('should format time with LocalDateTime format', () => {
+    expect(component.formatTime('2024-01-15T22:29:02')).toMatch(/^\d{2}:\d{2}$/);
+  });
+
+  it('should format price correctly', () => {
+    expect(component.formatPrice(100)).toContain('100,00');
+    expect(component.formatPrice(0)).toBe('0,00 €');
+    expect(component.formatPrice(null)).toBe('0,00 €');
+    expect(component.formatPrice(undefined)).toBe('0,00 €');
+  });
+
+  it('should navigate back to reservations', () => {
+    component.goBack();
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/reservations']);
   });
 
   it('should return default color and label for unknown status', () => {
