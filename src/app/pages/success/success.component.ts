@@ -22,13 +22,15 @@ export class SuccessComponent implements OnInit {
   private readonly envService = inject(EnvService);
 
   message = '';
+  messageType: 'success' | 'error' = 'success';
   isLoading = true;
 
   ngOnInit(): void {
     const sessionId = this.route.snapshot.queryParamMap.get('session_id');
     if (!sessionId) {
       this.isLoading = false;
-      this.message = '❌ Paramètre de session manquant.';
+      this.messageType = 'error';
+      this.message = 'Paramètre de session manquant.';
       return;
     }
     this.confirmReservation(sessionId);
@@ -39,11 +41,13 @@ export class SuccessComponent implements OnInit {
       .pipe(finalize(() => (this.isLoading = false)), take(1))
       .subscribe({
         next: () => {
-          this.message = '✅ Réservation confirmée !';
+          this.messageType = 'success';
+          this.message = 'Réservation confirmée !';
         },
         error: (error) => {
           console.error('Erreur lors de la confirmation:', error);
-          this.message = '❌ Une erreur est survenue lors de la confirmation.';
+          this.messageType = 'error';
+          this.message = 'Une erreur est survenue lors de la confirmation.';
         }
       });
   }
