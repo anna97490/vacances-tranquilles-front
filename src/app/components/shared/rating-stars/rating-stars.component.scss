@@ -1,0 +1,16 @@
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  .star {
+    color: var(--tertiary-color);
+    font-size: 1.2rem;
+  }
+
+  .reviews {
+    margin-left: 8px;
+    font-size: 0.9rem;
+    color: var(--discret-text-color);
+  }
+}
