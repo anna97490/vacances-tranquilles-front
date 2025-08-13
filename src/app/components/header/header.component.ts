@@ -4,8 +4,6 @@ import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { UserRole } from '../../models/User';
-import { AuthStorageService } from '../../services/login/auth-storage.service';
-import { UserRole } from '../../models/User';
 
 @Component({
   selector: 'app-header',
