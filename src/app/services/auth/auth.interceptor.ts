@@ -29,7 +29,19 @@ export function authInterceptor(
     return next(request);
   }
 
-  return next(request).pipe(
+  // Ajouter le token d'authentification à la requête
+  const token = authStorage.getToken();
+  let authRequest = request;
+  
+  if (token) {
+    authRequest = request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  return next(authRequest).pipe(
     catchError((error: HttpErrorResponse) => {
       // Gestion des erreurs d'authentification
       if (error.status === 403 || error.status === 401) {

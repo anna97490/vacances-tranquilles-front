@@ -323,6 +323,7 @@ export class ServiceSearchComponent {
       return;
     }
 
+    // L'authentification est gérée automatiquement par l'intercepteur
     this.isLoading = true;
 
     try {
@@ -351,13 +352,16 @@ export class ServiceSearchComponent {
           error: (error) => {
             console.error('Erreur lors de la recherche:', error);
             
-            // Vérifier si c'est une erreur d'authentification ou de session expirée
-            if (error.status === 403 || error.status === 401 || error.message?.includes('Session expirée')) {
-              this.notificationService.sessionExpired();
-              // La redirection sera gérée automatiquement par l'intercepteur
-            } else {
+            // L'intercepteur gère automatiquement les erreurs 401/403
+            // On ne gère que les autres types d'erreurs ici
+            if (error.status === 0) {
+              // Erreur de connexion réseau
+              this.notificationService.error('Impossible de se connecter au serveur. Vérifiez votre connexion internet ou contactez le support.');
+            } else if (error.status !== 401 && error.status !== 403) {
+              // Erreurs autres que l'authentification
               this.notificationService.error('Erreur lors de la recherche. Veuillez réessayer.');
             }
+            // Les erreurs 401/403 sont gérées par l'intercepteur
           },
           complete: () => {
             this.isLoading = false;

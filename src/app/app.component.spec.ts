@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideRouter } from '@angular/router';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { EnvService } from './services/env/env.service';
 
 describe('AppComponent', () => {
   const clearLocalStorage = () => localStorage.removeItem('token');
@@ -10,8 +12,18 @@ describe('AppComponent', () => {
     clearLocalStorage();
 
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
-      providers: [provideRouter([])]
+      imports: [AppComponent, HttpClientTestingModule],
+      providers: [
+        provideRouter([]),
+        {
+          provide: EnvService,
+          useValue: {
+            apiUrl: 'http://test-api.example.com/api',
+            isProduction: false,
+            stripePublicKey: 'pk_test_example'
+          }
+        }
+      ]
     }).compileComponents();
   });
 

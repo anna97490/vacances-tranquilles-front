@@ -2,24 +2,29 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { UserInformationService } from './user-information.service';
 import { User, UserRole } from '../../models/User';
+import { EnvService } from '../env/env.service';
 
 describe('UserInformationService', () => {
   let service: UserInformationService;
   let httpMock: HttpTestingController;
+  let envService: EnvService;
 
-  const mockConfig = { apiUrl: 'http://localhost:8080/api' };
+  const mockEnvService = {
+    apiUrl: 'http://test-api.example.com/api'
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         UserInformationService,
-        { provide: 'APP_CONFIG', useValue: mockConfig }
+        { provide: EnvService, useValue: mockEnvService }
       ]
     });
 
     service = TestBed.inject(UserInformationService);
     httpMock = TestBed.inject(HttpTestingController);
+    envService = TestBed.inject(EnvService);
   });
 
   afterEach(() => {
@@ -54,7 +59,7 @@ describe('UserInformationService', () => {
       expect(user).toEqual(mockUser);
     });
 
-    const req = httpMock.expectOne('http://localhost:8080/api/users/1');
+    const req = httpMock.expectOne('http://test-api.example.com/api/users/1');
     expect(req.request.method).toBe('GET');
     expect(req.request.headers.has('Authorization')).toBeTrue(); // ✅ devrait maintenant passer
     req.flush(mockUser);
@@ -82,7 +87,7 @@ describe('UserInformationService', () => {
       expect(user).toEqual(mockUser);
     });
 
-    const req = httpMock.expectOne('http://localhost:8080/api/users/profile');
+    const req = httpMock.expectOne('http://test-api.example.com/api/users/profile');
     expect(req.request.method).toBe('GET');
     expect(req.request.headers.has('Authorization')).toBeTrue();
     req.flush(mockUser);
@@ -128,7 +133,7 @@ describe('UserInformationService', () => {
       expect(users).toEqual(mockUsers);
     });
 
-    const req = httpMock.expectOne('http://localhost:8080/api/users/batch');
+    const req = httpMock.expectOne('http://test-api.example.com/api/users/batch');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ userIds });
     expect(req.request.headers.has('Authorization')).toBeTrue(); // ✅ devrait passer maintenant
@@ -154,7 +159,7 @@ describe('UserInformationService', () => {
       expect(user).toEqual(mockUser);
     });
 
-    const req = httpMock.expectOne('http://localhost:8080/api/users/3');
+    const req = httpMock.expectOne('http://test-api.example.com/api/users/3');
     expect(req.request.method).toBe('GET');
     expect(req.request.headers.has('Authorization')).toBeFalse();
 
@@ -170,7 +175,7 @@ describe('UserInformationService', () => {
       }
     });
 
-    const req = httpMock.expectOne('http://localhost:8080/api/users/999');
+    const req = httpMock.expectOne('http://test-api.example.com/api/users/999');
     req.flush('User not found', { status: 404, statusText: 'Not Found' });
   });
 });

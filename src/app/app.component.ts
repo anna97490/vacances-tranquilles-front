@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { EnvService } from './services/env/env.service';
 
 @Component({
   selector: 'app-root',
@@ -24,11 +25,21 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'frontend';
+
+  constructor(private readonly envService: EnvService) {}
 
   isAuthenticated(): boolean {
     // Simple check: considère connecté si un token est présent (ajuste si besoin)
     return !!localStorage.getItem('token');
+  }
+
+  ngOnInit() {
+    // La configuration est maintenant chargée automatiquement via envService
+    console.log('Application démarrée avec la configuration:', {
+      apiUrl: this.envService.apiUrl,
+      isProduction: this.envService.isProduction
+    });
   }
 }
