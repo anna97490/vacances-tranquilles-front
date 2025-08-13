@@ -134,12 +134,9 @@ describe('ServiceSearchComponent', () => {
     });
 
     it('should call service and navigate if form is valid', () => {
-<<<<<<< HEAD
       // Simuler un token d'authentification
       spyOn(localStorage, 'getItem').and.returnValue('mock-token');
       
-=======
->>>>>>> staging
       component.findProviders();
 
       expect(searchSpy).toHaveBeenCalled();
@@ -294,16 +291,8 @@ describe('ServiceSearchComponent', () => {
 
   describe('findProviders errors', () => {
     it('should catch error if formatDate throws', () => {
-<<<<<<< HEAD
-      // Simuler un token d'authentification
-      spyOn(localStorage, 'getItem').and.returnValue('mock-token');
-      
       spyOn<any>(component, 'formatDate').and.throwError('format error');
       spyOnProperty(component, 'isDateValid', 'get').and.returnValue(true);
-=======
-      spyOn<any>(component, 'formatDate').and.throwError('format error');
-      spyOnProperty(component, 'isDateValid', 'get').and.returnValue(true); // <-- ici
->>>>>>> staging
       spyOn(window, 'alert');
 
       component.selectedDay = 1;

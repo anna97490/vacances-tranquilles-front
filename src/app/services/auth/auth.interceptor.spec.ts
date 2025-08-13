@@ -16,11 +16,7 @@ describe('AuthInterceptor', () => {
   let injector: any;
 
   beforeEach(() => {
-<<<<<<< HEAD
     const authSpy = jasmine.createSpyObj('AuthStorageService', ['clearAuthenticationData', 'getToken']);
-=======
-    const authSpy = jasmine.createSpyObj('AuthStorageService', ['clearAuthenticationData']);
->>>>>>> staging
     const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
     const notificationSpy = jasmine.createSpyObj('NotificationService', ['sessionExpired']);
 
@@ -37,12 +33,9 @@ describe('AuthInterceptor', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     notificationServiceSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
 
-<<<<<<< HEAD
     // Configurer les valeurs de retour par défaut pour les méthodes authStorage
     authStorageSpy.getToken.and.returnValue('mock-token');
 
-=======
->>>>>>> staging
     mockRequest = new HttpRequest('GET', '/api/test');
     mockHandler = jasmine.createSpy('mockHandler').and.returnValue(of({}));
   });

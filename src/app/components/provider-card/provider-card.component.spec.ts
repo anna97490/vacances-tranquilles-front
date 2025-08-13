@@ -1,29 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-<<<<<<< HEAD
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-=======
->>>>>>> staging
 import { ProviderCardComponent } from './provider-card.component';
 import { ServiceCategory } from '../../models/Service';
 import { User, UserRole } from '../../models/User';
 import { SimpleChange } from '@angular/core';
-<<<<<<< HEAD
 import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { PaymentService } from '../../services/payment/payment.service';
 import { of, throwError } from 'rxjs';
-=======
->>>>>>> staging
 
 describe('ProviderCardComponent', () => {
   let component: ProviderCardComponent;
   let fixture: ComponentFixture<ProviderCardComponent>;
-<<<<<<< HEAD
   let httpMock: HttpTestingController;
   let authStorageService: jasmine.SpyObj<AuthStorageService>;
   let paymentService: jasmine.SpyObj<PaymentService>;
-=======
->>>>>>> staging
 
   const mockUser = new User({
     idUser: 101,
@@ -48,7 +39,6 @@ describe('ProviderCardComponent', () => {
   };
 
   beforeEach(async () => {
-<<<<<<< HEAD
     const authStorageSpy = jasmine.createSpyObj('AuthStorageService', ['getToken', 'getUserId', 'clearToken']);
     const paymentServiceSpy = jasmine.createSpyObj('PaymentService', ['redirectToStripe']);
 
@@ -70,15 +60,10 @@ describe('ProviderCardComponent', () => {
           useValue: paymentServiceSpy
         }
       ]
-=======
-    await TestBed.configureTestingModule({
-      imports: [ProviderCardComponent]
->>>>>>> staging
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProviderCardComponent);
     component = fixture.componentInstance;
-<<<<<<< HEAD
     httpMock = TestBed.inject(HttpTestingController);
     authStorageService = TestBed.inject(AuthStorageService) as jasmine.SpyObj<AuthStorageService>;
     paymentService = TestBed.inject(PaymentService) as jasmine.SpyObj<PaymentService>;
@@ -87,8 +72,6 @@ describe('ProviderCardComponent', () => {
     authStorageService.getToken.and.returnValue('mock-token');
     authStorageService.getUserId.and.returnValue(123);
     paymentService.redirectToStripe.and.returnValue(Promise.resolve(true));
-=======
->>>>>>> staging
 
     component.service = mockService;
     component.providerInfo = mockUser;
@@ -101,13 +84,10 @@ describe('ProviderCardComponent', () => {
     fixture.detectChanges();
   });
 
-<<<<<<< HEAD
   afterEach(() => {
     httpMock.verify();
   });
 
-=======
->>>>>>> staging
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -247,7 +227,6 @@ describe('ProviderCardComponent', () => {
   it('should get providerInfo through getter', () => {
     expect(component.providerInfo).toEqual(mockUser);
   });
-<<<<<<< HEAD
 
   // Tests pour calculateDuration
   describe('calculateDuration', () => {
@@ -501,6 +480,4 @@ describe('ProviderCardComponent', () => {
       expect(component.user).toBeUndefined();
     });
   });
-=======
->>>>>>> staging
 });
