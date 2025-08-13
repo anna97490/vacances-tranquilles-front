@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Service, ServiceCategory } from '../../models/Service';
 import { EnvService } from '../env/env.service';
 import { TokenValidatorService } from '../auth/token-validator.service';
@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class ServicesService {
-
   private readonly urlApi: string;
 
   constructor(
@@ -38,13 +37,6 @@ export class ServicesService {
     startTime: string,
     endTime: string
   ): Observable<Service[]> {
-    // Vérifier la validité du token avant d'effectuer la requête
-    if (!this.tokenValidator.isTokenValid()) {
-      console.warn('Token invalide ou expiré, redirection vers la page de connexion');
-      this.router.navigate(['/auth/login']);
-      return throwError(() => new Error('Session expirée. Veuillez vous reconnecter.'));
-    }
-
     const url = `${this.urlApi}/services/search`;
 
     // Vérification que la catégorie est valide
@@ -60,15 +52,7 @@ export class ServicesService {
       .set('startTime', startTime)
       .set('endTime', endTime);
 
-    // Récupération du token depuis le localStorage
-    const token = localStorage.getItem('token');
-    
-    // Configuration des headers
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
-
-    return this.http.get<Service[]>(url, { params, headers });
+    // L'intercepteur gère automatiquement l'authentification et les erreurs 401/403
+    return this.http.get<Service[]>(url, { params });
   }
 }

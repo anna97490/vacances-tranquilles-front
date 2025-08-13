@@ -32,7 +32,8 @@ describe('EnvService', () => {
     if (!newService.isProduction) {
       expect(console.log).toHaveBeenCalledWith('Environment configuré :', {
         apiUrl: newService.apiUrl,
-        isProduction: newService.isProduction
+        isProduction: newService.isProduction,
+        stripePublicKey: newService.stripePublicKey
       });
     }
   });

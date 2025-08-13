@@ -13,7 +13,7 @@ import { Component } from '@angular/core';
 import { of, throwError } from 'rxjs';
 
 import { LoginFormComponent } from './login-form.component';
-import { ConfigService } from '../../services/config/config.service';
+import { EnvService } from '../../services/env/env.service';
 import { LoginValidationService } from '../../services/login/login-validation.service';
 import { LoginFormConfigService } from '../../services/login/login-form-config.service';
 import { LoginService } from '../../services/login/login.service';
@@ -71,7 +71,7 @@ describe('LoginFormComponent', () => {
       ],
       providers: [
         FormBuilder,
-        ConfigService,
+        EnvService,
         LoginValidationService,
         LoginFormConfigService,
         LoginService,

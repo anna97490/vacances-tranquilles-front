@@ -8,7 +8,6 @@ import { EnvService } from '../env/env.service';
   providedIn: 'root'
 })
 export class UserInformationService {
-
   private readonly urlApi: string;
 
   constructor(

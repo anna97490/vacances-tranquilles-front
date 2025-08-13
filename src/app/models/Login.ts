@@ -5,6 +5,9 @@ export class LoginResponse {
   /** Rôle de l'utilisateur (CLIENT, PRESTATAIRE, ADMIN) */
   userRole!: string;
   
+  /** ID de l'utilisateur */
+  userId?: number;
+  
   /** Propriétés additionnelles dynamiques */
   [key: string]: any;
 }
