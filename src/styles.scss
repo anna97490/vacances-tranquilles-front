@@ -115,7 +115,37 @@ html, body {
   max-width: 100%;
 }
 
-/* Assure que les conteneurs principaux ne dépassent pas */
+*:focus-visible {
+  outline: 2px solid #31525B !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+}
+
+/* Focus pour les boutons */
+button:focus-visible {
+  outline: 3px solid #31525B !important;
+  outline-offset: 2px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 0 0 2px rgba(49, 82, 91, 0.2) !important;
+}
+
+/* Focus pour les liens */
+a:focus-visible {
+  outline: 2px solid #31525B !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+  text-decoration: underline !important;
+}
+
+/* Focus pour les champs de formulaire */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #31525B !important;
+  outline-offset: 2px !important;
+  border-radius: 6px !important;
+}
+
 .app-container,
 .homepage-container,
 .content,
