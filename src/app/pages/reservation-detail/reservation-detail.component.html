@@ -1,0 +1,123 @@
+<div>
+  <!-- Bouton retour -->
+  <button class="back-btn" aria-label="Retour" type="button" (click)="goBack()">
+    ←
+  </button>
+</div>
+
+
+<div class="reservation-detail-container">
+  <!-- Région d'annonce accessible -->
+  <div class="sr-only" aria-live="polite" [textContent]="liveMessage"></div>
+
+  <!-- Header de la page -->
+  <div class="detail-header">
+    <h1>Détails de la réservation</h1>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message" role="alert" aria-live="assertive">
+    {{ error }}
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="loading-container" aria-busy="true">
+    <div class="loading-spinner"></div>
+    <output aria-live="polite">Chargement des détails…</output>
+  </div>
+
+  <!-- Contenu principal -->
+  <div *ngIf="!isLoading && reservation" class="detail-content">
+    <!-- Carte principale de la réservation -->
+    <div class="reservation-card">
+      <div class="card-header">
+        <div class="reservation-info">
+          <h2>Réservation</h2>
+          <div class="status-badge" [style.color]="getStatusColor(reservation.status)">
+            {{ getStatusLabel(reservation.status) }}
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Informations du service -->
+        <div class="info-section">
+          <h3>Prestation</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="value">{{ reservation.serviceName || 'Non spécifié' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Date de réservation:</span>
+              <span class="value">{{ formatDate(reservation.reservationDate) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Début:</span>
+              <span class="value">{{ formatTime(reservation.startDate) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Fin:</span>
+              <span class="value">{{ formatTime(reservation.endDate) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informations des participants -->
+        <div class="info-section">
+          <h3>Participants</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">Client:</span>
+              <span class="value">{{ reservation.clientName || 'Non spécifié' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Prestataire:</span>
+              <span class="value">{{ reservation.providerName || 'Non spécifié' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prix -->
+        <div class="info-section">
+          <h3>Prix</h3>
+          <div class="price-display">
+            <span class="price-amount">€ {{ formatPrice(reservation.totalPrice) }}</span>
+            <span class="price-label">Prix total</span>
+          </div>
+        </div>
+
+        <!-- Actions prestataire -->
+        <div class="actions-section" *ngIf="isProvider">
+          <!-- Si statut PENDING: Accepter / Refuser -->
+          <ng-container *ngIf="reservation.status === 'PENDING'">
+            <button class="profile-btn" type="button" [disabled]="isUpdating" (click)="updateStatus('IN_PROGRESS')">
+              {{ isUpdating ? 'Traitement...' : 'Accepter' }}
+            </button>
+            <button class="profile-btn" type="button" [disabled]="isUpdating" (click)="updateStatus('CANCELLED')">
+              {{ isUpdating ? 'Traitement...' : 'Refuser' }}
+            </button>
+          </ng-container>
+
+          <!-- Si statut IN_PROGRESS: Clore la réservation -->
+          <ng-container *ngIf="reservation.status === 'IN_PROGRESS'">
+            <button class="profile-btn" type="button" [disabled]="isUpdating" (click)="updateStatus('CLOSED')">
+              {{ isUpdating ? 'Traitement...' : 'Clore la réservation' }}
+            </button>
+          </ng-container>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Message si réservation non trouvée -->
+  <div *ngIf="!isLoading && !reservation && !error" class="not-found">
+    <div class="not-found-content">
+      <h3>Réservation non trouvée</h3>
+      <p>La réservation demandée n'existe pas ou n'est plus disponible.</p>
+      <button class="back-btn" (click)="goBack()">
+        Retour aux réservations
+      </button>
+    </div>
+  </div>
+</div>

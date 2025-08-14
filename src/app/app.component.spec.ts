@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideRouter } from '@angular/router';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EnvService } from './services/env/env.service';
 
 describe('AppComponent', () => {
@@ -12,9 +13,11 @@ describe('AppComponent', () => {
     clearLocalStorage();
 
     await TestBed.configureTestingModule({
-      imports: [AppComponent, HttpClientTestingModule],
+      imports: [AppComponent],
       providers: [
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: EnvService,
           useValue: {

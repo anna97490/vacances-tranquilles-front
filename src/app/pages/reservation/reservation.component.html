@@ -1,0 +1,71 @@
+<div class="reservations-container">
+  <!-- Région d'annonce accessible -->
+  <div class="sr-only" aria-live="polite" [textContent]="liveMessage"></div>
+  <!-- Header de la page -->
+  <div class="reservations-header">
+    <h1>Mes réservations</h1>
+    <p>Gérez vos réservations et suivez leur statut</p>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message" role="alert" aria-live="assertive">
+    {{ error }}
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="loading-container" aria-busy="true">
+    <div class="loading-spinner"></div>
+    <output aria-live="polite">Chargement des réservations…</output>
+  </div>
+
+  <!-- Contenu principal -->
+  <div *ngIf="!isLoading" class="reservations-content">
+    <!-- Liste des réservations -->
+    <div class="reservations-list">
+      <h2>Liste des réservations</h2>
+
+      <!-- Message si aucune réservation -->
+      <div *ngIf="reservations.length === 0" class="no-reservations">
+        <div class="no-reservations-content">
+          <div class="no-reservations-icon">📋</div>
+          <h3>Vous n'avez pas encore de réservation</h3>
+        </div>
+      </div>
+
+             <!-- Cartes des réservations -->
+       <div class="reservation-cards">
+         <div
+           *ngFor="let reservation of reservations"
+           class="reservation-card"
+
+         >
+           <div class="header">
+             <div class="info">
+               <div class="top-line">
+                 <h3 class="name">{{ reservation.serviceName || 'Service' }}</h3>
+                 <div class="status-badge">
+                   {{ getStatusLabel(reservation.status) }}
+                 </div>
+               </div>
+
+               <div class="rating">
+                 <span class="service-date"> Le {{ formatDate(reservation.reservationDate) }}</span>
+               </div>
+             </div>
+           </div>
+
+           <div class="footer">
+              <div class="price">
+               <span class="euro">€ {{ formatPrice(reservation.totalPrice) }}</span>
+                <span class="unit">/total</span>
+              </div>
+
+              <div class="footer-buttons">
+                <a class="profile-btn" [routerLink]="['/reservations', reservation.id]">Voir détails</a>
+              </div>
+           </div>
+         </div>
+       </div>
+         </div>
+   </div>
+ </div>
