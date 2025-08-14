@@ -177,4 +177,58 @@ describe('ReservationComponent', () => {
     component.isProvider = true;
     expect(component.getAvailableStatuses({ status: 'UNKNOWN_STATUS' } as any)).toEqual([]);
   });
+
+  it('should handle formatDate with valid date', () => {
+    expect(component.formatDate('2025-08-09')).toBe('09/08/2025');
+  });
+
+  it('should handle formatDate with invalid date', () => {
+    expect(component.formatDate('invalid-date')).toBe('Invalid Date');
+  });
+
+  it('should handle formatTime with valid time', () => {
+    const result = component.formatTime('14:30:00');
+    expect(result).toContain('14:30');
+  });
+
+  it('should handle formatTime with HH:MM format', () => {
+    expect(component.formatTime('14:30')).toBe('14:30');
+  });
+
+  it('should handle formatTime with ISO format', () => {
+    const result = component.formatTime('2024-01-15T14:30:00');
+    expect(result).toContain('14:30');
+  });
+
+  it('should handle formatTime with invalid time', () => {
+    expect(component.formatTime('invalid-time')).toBe('invalid-time');
+  });
+
+  it('should handle formatPrice with valid price', () => {
+    const result = component.formatPrice(120.50);
+    expect(result).toContain('120');
+    expect(result).toContain('50');
+    expect(result).toContain('€');
+  });
+
+  it('should handle formatPrice with zero', () => {
+    const result = component.formatPrice(0);
+    expect(result).toContain('0');
+    expect(result).toContain('€');
+  });
+
+  it('should handle canUpdateStatus when not provider', () => {
+    component.isProvider = false;
+    expect(component.canUpdateStatus({ status: 'PENDING' } as any)).toBeFalse();
+  });
+
+  it('should handle canUpdateStatus for CLOSED status', () => {
+    component.isProvider = true;
+    expect(component.canUpdateStatus({ status: 'CLOSED' } as any)).toBeFalse();
+  });
+
+  it('should handle canUpdateStatus for CANCELLED status', () => {
+    component.isProvider = true;
+    expect(component.canUpdateStatus({ status: 'CANCELLED' } as any)).toBeFalse();
+  });
 });

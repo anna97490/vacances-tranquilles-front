@@ -164,4 +164,52 @@ describe('ReservationDetailComponent', () => {
     expect(component.getStatusLabel('UNKNOWN' as any)).toBe('UNKNOWN');
     expect(component.getStatusColor('UNKNOWN' as any)).toBe('#95a5a6');
   });
+
+  it('should handle non-provider role in determineUserRole', () => {
+    authStorageMock.getUserRole.and.returnValue('CUSTOMER');
+    component.ngOnInit();
+    expect(component.isProvider).toBeFalse();
+  });
+
+  it('should handle PRESTATAIRE role in determineUserRole', () => {
+    authStorageMock.getUserRole.and.returnValue('PRESTATAIRE');
+    component.ngOnInit();
+    expect(component.isProvider).toBeTrue();
+  });
+
+  it('should block updateStatus when not provider', () => {
+    component.isProvider = false;
+    component.reservation = { id: 123, status: 'PENDING' } as any;
+    component.updateStatus('IN_PROGRESS');
+    expect(component.error).toContain('Seuls les prestataires peuvent modifier le statut');
+    expect(reservationServiceMock.updateReservationStatus).not.toHaveBeenCalled();
+  });
+
+  it('should handle formatDate with valid date string', () => {
+    expect(component.formatDate('2025-08-09')).toBe('09/08/2025');
+  });
+
+  it('should handle formatDate with date format YYYY-MM-DD', () => {
+    expect(component.formatDate('2025-08-09')).toBe('09/08/2025');
+  });
+
+  it('should handle formatPrice with zero value', () => {
+    expect(component.formatPrice(0)).toBe('0');
+  });
+
+  it('should handle formatPrice with null value', () => {
+    expect(component.formatPrice(null as any)).toBe('0');
+  });
+
+  it('should handle formatTime with HH:MM format', () => {
+    expect(component.formatTime('14:30')).toBe('14:30');
+  });
+
+  it('should handle formatTime with ISO format', () => {
+    expect(component.formatTime('2024-01-15T14:30:00')).toBe('14:30');
+  });
+
+  it('should handle formatTime with invalid date', () => {
+    expect(component.formatTime('invalid-time')).toBe('invalid-time');
+  });
 });

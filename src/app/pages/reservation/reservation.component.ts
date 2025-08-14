@@ -156,13 +156,37 @@ export class ReservationComponent implements OnInit {
 
   formatTime(timeString: string): string {
     if (!timeString) return '';
-    // Extrait l'heure et les minutes du format ISO
-    const time = new Date(`2000-01-01T${timeString}`);
-    return time.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
+
+    // Si c'est déjà au format HH:MM, on le retourne
+    if (timeString.match(/^\\d{2}:\\d{2}$/)) {
+      return timeString;
+    }
+
+    // Si c'est au format HH:MM:SS, on extrait les 5 premiers caractères
+    if (timeString.match(/^\\d{2}:\\d{2}:\\d{2}$/)) {
+      return timeString.substring(0, 5);
+    }
+
+    // Si c'est au format ISO (avec T), on extrait l'heure
+    if (timeString.includes('T')) {
+      const timePart = timeString.split('T')[1];
+      const match = timePart.match(/^(\\d{2}:\\d{2})/);
+      return match ? match[1] : timePart;
+    }
+
+    // Sinon on essaie de parser comme une date complète
+    try {
+      const date = new Date(timeString);
+      if (isNaN(date.getTime())) {
+        return timeString; // Retourne la valeur originale si la date est invalide
+      }
+      // Formatage manuel pour avoir seulement HH:MM
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    } catch {
+      return timeString;
+    }
   }
 
   formatPrice(price: number): string {
