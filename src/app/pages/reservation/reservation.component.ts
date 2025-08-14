@@ -154,6 +154,17 @@ export class ReservationComponent implements OnInit {
     return new Date(dateString).toLocaleDateString('fr-FR');
   }
 
+  formatTime(timeString: string): string {
+    if (!timeString) return '';
+    // Extrait l'heure et les minutes du format ISO
+    const time = new Date(`2000-01-01T${timeString}`);
+    return time.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+  }
+
   formatPrice(price: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',

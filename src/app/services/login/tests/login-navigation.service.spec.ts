@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { LoginNavigationService } from './../login-navigation.service';
+import { UserRole } from '../../../models/User';
 
 describe('LoginNavigationService', () => {
   let service: LoginNavigationService;
@@ -29,20 +30,38 @@ describe('LoginNavigationService', () => {
   });
 
   describe('redirectAfterLogin', () => {
-    it('should redirect to home by default', () => {
+    it('should redirect to home by default when no userRole provided', () => {
       service.redirectAfterLogin();
       
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });
 
-    it('should redirect to home with userRole parameter', () => {
+    it('should redirect to service-search when userRole is CLIENT', () => {
+      service.redirectAfterLogin(UserRole.CLIENT);
+      
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/service-search']);
+    });
+
+    it('should redirect to service-search when userRole is CLIENT as string', () => {
       service.redirectAfterLogin('CLIENT');
+      
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/service-search']);
+    });
+
+    it('should redirect to home when userRole is PROVIDER', () => {
+      service.redirectAfterLogin(UserRole.PROVIDER);
       
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });
 
-    it('should redirect to home with admin role', () => {
-      service.redirectAfterLogin('ADMIN');
+    it('should redirect to home when userRole is ADMIN', () => {
+      service.redirectAfterLogin(UserRole.ADMIN);
+      
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('should redirect to home with any other userRole', () => {
+      service.redirectAfterLogin('OTHER_ROLE');
       
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });

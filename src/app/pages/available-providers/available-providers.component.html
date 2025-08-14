@@ -1,0 +1,36 @@
+<div class="page-container">
+  <div class="header-section">
+    <h1>Prestataires Disponibles</h1>
+    <p class="subtitle">Trouvez le prestataire idéal pour vos besoins</p>
+    
+    <!-- Affichage des critères de recherche -->
+    <div *ngIf="searchCriteria" class="search-criteria">
+      <p><strong>Recherche :</strong> {{ formattedCriteria }}</p>
+      <p><strong>{{ servicesCount }}</strong> prestataire(s) trouvé(s)</p>
+    </div>
+  </div>
+
+  <div class="providers-container">
+    <!-- Message si aucun service trouvé -->
+   <div *ngIf="services.length === 0" class="no-results-container">
+      <div class="no-results-card">
+        <h3>Aucun prestataire trouvé</h3>
+        <p>Aucun prestataire n'est disponible pour vos critères de recherche.</p>
+        <button mat-raised-button color="primary" class="search-button" (click)="navigateToSearch()">
+          Modifier ma recherche
+        </button>
+      </div>
+    </div>
+
+    <!-- Liste des prestataires trouvés-->
+    <div *ngIf="services.length > 0" class="providers-grid">
+      <ng-container *ngFor="let service of services">
+        <app-provider-card 
+          [service]="service"
+          [providerInfo]="getProviderInfo(service.providerId)">
+        </app-provider-card>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>

@@ -1,0 +1,6 @@
+<div class="stars">
+  <ng-container *ngFor="let i of stars">
+    <mat-icon class="star" [attr.aria-label]="'Étoile ' + i">{{ getStarIcon(i) }}</mat-icon>
+  </ng-container>
+  <span class="reviews">({{ reviewsCount }} avis)</span>
+</div>

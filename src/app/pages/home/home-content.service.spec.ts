@@ -1,4 +1,4 @@
-import { HomeContentService } from './../../services/home-content.service';
+import { HomeContentService } from './../../services/home-content/home-content.service';
 import { HomeContent } from './../../models/Home';
 
 describe('HomeContentService', () => {

@@ -4,24 +4,12 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
-import { ConfigService } from './services/config/config.service';
-import { authInterceptor } from './interceptors/auth.interceptor';
-
-const loadConfig = (configService: ConfigService) => {
-  return () => configService.loadConfig();
-};
+import { authInterceptor } from './services/auth/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withInterceptors([authInterceptor])),
-    ConfigService,
-    {
-      provide: 'APP_INITIALIZER',
-      useFactory: loadConfig,
-      deps: [ConfigService],
-      multi: true
-    }
+    provideHttpClient(withInterceptors([authInterceptor]))
   ]
 };

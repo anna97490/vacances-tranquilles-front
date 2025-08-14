@@ -1,0 +1,98 @@
+.page-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .subtitle {
+    color: var(--discret-text-color);
+    font-size: 1.1rem;
+    margin: 0;
+  }
+}
+
+.providers-container {
+  .providers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    
+    ::ng-deep app-provider-card {
+      height: 100%;
+      display: block;
+
+      > * {
+        height: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .providers-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.no-results-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.no-results-card {
+  background-color: var(--secondary-text-color);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.no-results-card h3 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.no-results-card p {
+  margin-bottom: 2rem;
+  color: var(--text-color);
+}
+
+.search-button {
+  width: 60%;
+  min-width: 220px;
+  max-width: 400px;
+  margin: 2rem auto 0 auto;
+  background-color: var(--secondary-color) !important;
+  color: var(--secondary-text-color) !important;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.07);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-weight: 600;
+  padding: 12px 24px;
+}
+
+.search-button:hover,
+.search-button:focus {
+  background-color: var(--tertiary-color) !important;
+  color: var(--secondary-text-color) !important;
+}
+

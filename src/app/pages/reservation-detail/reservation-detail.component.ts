@@ -85,8 +85,36 @@ export class ReservationDetailComponent implements OnInit {
 
   formatTime(time: string): string {
     if (!time) return '';
-    const match = time.match(/^(\d{2}:\d{2})/);
-    return match ? match[1] : time;
+
+    // Si c'est déjà au format HH:MM, on le retourne
+    if (time.match(/^\d{2}:\d{2}$/)) {
+      return time;
+    }
+
+    // Si c'est au format HH:MM:SS, on extrait HH:MM
+    if (time.match(/^\d{2}:\d{2}:\d{2}$/)) {
+      return time.substring(0, 5);
+    }
+
+    // Si c'est au format ISO (avec T), on extrait l'heure
+    if (time.includes('T')) {
+      const timePart = time.split('T')[1];
+      const match = timePart.match(/^(\d{2}:\d{2})/);
+      return match ? match[1] : timePart;
+    }
+
+    try {
+      const date = new Date(time);
+      if (isNaN(date.getTime())) {
+        return time;
+      }
+      // Formatage manuel pour avoir seulement HH:MM
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    } catch {
+      return time;
+    }
   }
 
   getStatusLabel(status: string): string {

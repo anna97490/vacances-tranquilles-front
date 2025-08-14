@@ -1,6 +1,7 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ConfigService } from '../config/config.service';
+import { EnvService } from '../env/env.service';
 import { ReservationService } from './reservation.service';
 
 describe('ReservationService (HTTP)', () => {
@@ -10,10 +11,11 @@ describe('ReservationService (HTTP)', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         ReservationService,
-        { provide: ConfigService, useValue: { apiUrl } },
+        { provide: EnvService, useValue: { apiUrl } },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ]
     });
     service = TestBed.inject(ReservationService);
