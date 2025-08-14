@@ -3,7 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { UpdateProfileHeaderComponent } from './update-profile-header.component';
 import { ProfileValidationService } from '../../../../../services/user-profile/profile-validation.service';
-import { User } from '../../../../../models/User';
+import { User, UserRole } from '../../../../../models/User';
 
 describe('UpdateProfileHeaderComponent', () => {
   let component: UpdateProfileHeaderComponent;
@@ -20,20 +20,20 @@ describe('UpdateProfileHeaderComponent', () => {
     component = fixture.componentInstance;
 
     // Mock user data
-    mockUser = {
-      id: 1,
+    mockUser = new User({
+      idUser: 1,
       firstName: 'John',
       lastName: 'Doe',
       email: 'john.doe@example.com',
       phoneNumber: '0612345678',
       city: 'Paris',
       description: 'Test description',
-      role: 'USER',
+      role: UserRole.CLIENT,
       address: '123 Test Street',
-      postalCode: '75000',
+      postalCode: 75000,
       companyName: '',
       siretSiren: ''
-    };
+    });
 
     component.user = mockUser;
     component.services = [];

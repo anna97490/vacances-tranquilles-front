@@ -109,6 +109,7 @@ const mockUser: User = new User({
 
   it('should catch JSON.parse error and navigate', () => {
     spyOn(localStorage, 'getItem').and.returnValue('{invalidJson');
+    spyOn(console, 'error').and.stub();
     component.ngOnInit();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/service-search']);
   });
@@ -134,6 +135,7 @@ const mockUser: User = new User({
   it('should handle searchServices error', fakeAsync(() => {
     spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({ category: 'REPAIRS', postalCode: '75000' }));
     servicesServiceSpy.searchServices.and.returnValue(throwError(() => new Error('fail')));
+    spyOn(console, 'error').and.stub();
     component.ngOnInit();
     tick();
     expect(component.services).toEqual([]);
@@ -143,6 +145,7 @@ const mockUser: User = new User({
     spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify({ category: 'REPAIRS', postalCode: '75000', date: '2025-08-01', startTime: '10:00', endTime: '12:00' }));
     servicesServiceSpy.searchServices.and.returnValue(of(mockServices));
     userInfoServiceSpy.getUserById.and.returnValue(throwError(() => new Error('fail')));
+    spyOn(console, 'error').and.stub();
     component.ngOnInit();
     tick();
     expect(userInfoServiceSpy.getUserById).toHaveBeenCalled();

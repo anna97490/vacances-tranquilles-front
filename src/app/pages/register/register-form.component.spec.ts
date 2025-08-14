@@ -182,7 +182,7 @@ describe('RegisterFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RegisterFormComponent, ReactiveFormsModule, NoopAnimationsModule],
       providers: [
-        { provide: ConfigService, useValue: configServiceMock },
+        { provide: EnvService, useValue: envServiceMock },
         { provide: RegisterValidationService, useValue: validationServiceMock },
         { provide: RegisterFormConfigService, useValue: formConfigServiceMock },
         { provide: UserTypeDetectorService, useValue: userTypeDetectorMock },
