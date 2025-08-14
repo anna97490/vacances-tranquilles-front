@@ -45,7 +45,7 @@ describe('UserInformationService', () => {
         return key === 'token' ? 'mock-token' : null;
       });
 
-      const mockUser = new User({
+      const mockUser: User = {
         idUser: 1,
         firstName: 'John',
         lastName: 'Doe',
@@ -57,7 +57,7 @@ describe('UserInformationService', () => {
         postalCode: 75001,
         companyName: 'John Services',
         siretSiren: '12345678901234'
-      });
+      };
 
       service.getUserById(1).subscribe(user => {
         expect(user).toEqual(mockUser);
@@ -73,13 +73,17 @@ describe('UserInformationService', () => {
       spyOn(localStorage, 'getItem').and.returnValue(null);
       spyOn(console, 'warn').and.stub();
 
-      const mockUser = new User({
-        idUser: 1,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john@example.com',
-        role: UserRole.PROVIDER
-      });
+              const mockUser: User = {
+          idUser: 1,
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john@example.com',
+          role: UserRole.PROVIDER,
+          phoneNumber: '0123456789',
+          address: '123 Test Street',
+          city: 'Test City',
+          postalCode: 12345
+        };
 
       service.getUserById(1).subscribe(user => {
         expect(user).toEqual(mockUser);
@@ -111,7 +115,7 @@ describe('UserInformationService', () => {
         return key === 'token' ? 'mock-token' : null;
       });
 
-      const mockUser = new User({
+      const mockUser: User = {
         idUser: 6,
         firstName: 'Client',
         lastName: 'Test',
@@ -121,7 +125,7 @@ describe('UserInformationService', () => {
         address: '456 Client St',
         city: 'Paris',
         postalCode: 75002,
-      });
+      };
 
       service.getUserProfile().subscribe(user => {
         expect(user).toEqual(mockUser);
@@ -137,13 +141,17 @@ describe('UserInformationService', () => {
       spyOn(localStorage, 'getItem').and.returnValue(null);
       spyOn(console, 'warn').and.stub();
 
-      const mockUser = new User({
-        idUser: 6,
-        firstName: 'Client',
-        lastName: 'Test',
-        email: 'client@test.com',
-        role: UserRole.CLIENT
-      });
+              const mockUser: User = {
+          idUser: 6,
+          firstName: 'Client',
+          lastName: 'Test',
+          email: 'client@test.com',
+          role: UserRole.CLIENT,
+          phoneNumber: '0123456789',
+          address: '123 Test Street',
+          city: 'Test City',
+          postalCode: 12345
+        };
 
       service.getUserProfile().subscribe(user => {
         expect(user).toEqual(mockUser);
@@ -163,7 +171,7 @@ describe('UserInformationService', () => {
       });
 
       const mockUsers: User[] = [
-        new User({
+        {
           idUser: 1,
           firstName: 'John',
           lastName: 'Doe',
@@ -175,8 +183,8 @@ describe('UserInformationService', () => {
           postalCode: 75001,
           companyName: 'John Services',
           siretSiren: '12345678901234'
-        }),
-        new User({
+        },
+        {
           idUser: 2,
           firstName: 'Jane',
           lastName: 'Smith',
@@ -188,7 +196,7 @@ describe('UserInformationService', () => {
           postalCode: 69001,
           companyName: 'Jane Services',
           siretSiren: '98765432109876'
-        })
+        }
       ];
 
       const userIds = [1, 2];
@@ -208,15 +216,15 @@ describe('UserInformationService', () => {
       spyOn(localStorage, 'getItem').and.returnValue(null);
       spyOn(console, 'warn').and.stub();
 
-      const mockUsers: User[] = [
-        new User({
-          idUser: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          role: UserRole.PROVIDER
-        })
-      ];
+              const mockUsers: User[] = [
+          {
+            idUser: 1,
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            role: UserRole.PROVIDER
+          } as User
+        ];
 
       const userIds = [1];
 
@@ -245,16 +253,16 @@ describe('UserInformationService', () => {
         phoneNumber: '0987654321'
       };
 
-      const mockResponse: UserProfileDTO = {
-        user: new User({
-          idUser: 1,
-          firstName: 'Updated',
-          lastName: 'Name',
-          email: 'updated@example.com',
-          role: UserRole.PROVIDER
-        }),
-        services: []
-      };
+              const mockResponse: UserProfileDTO = {
+          user: {
+            idUser: 1,
+            firstName: 'Updated',
+            lastName: 'Name',
+            email: 'updated@example.com',
+            role: UserRole.PROVIDER
+          } as User,
+          services: []
+        };
 
       service.updateUserProfile(updateDTO).subscribe(response => {
         expect(response).toEqual(mockResponse);
@@ -276,15 +284,15 @@ describe('UserInformationService', () => {
         lastName: 'Name'
       };
 
-      const mockResponse: UserProfileDTO = {
-        user: new User({
-          idUser: 1,
-          firstName: 'Updated',
-          lastName: 'Name',
-          role: UserRole.PROVIDER
-        }),
-        services: []
-      };
+              const mockResponse: UserProfileDTO = {
+          user: {
+            idUser: 1,
+            firstName: 'Updated',
+            lastName: 'Name',
+            role: UserRole.PROVIDER
+          } as User,
+          services: []
+        };
 
       service.updateUserProfile(updateDTO).subscribe(response => {
         expect(response).toEqual(mockResponse);
@@ -312,16 +320,16 @@ describe('UserInformationService', () => {
       mockService.price = 50;
       mockService.providerId = 1;
 
-      const mockResponse: UserProfileDTO = {
-        user: new User({
-          idUser: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          role: UserRole.PROVIDER
-        }),
-        services: [mockService]
-      };
+              const mockResponse: UserProfileDTO = {
+          user: {
+            idUser: 1,
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            role: UserRole.PROVIDER
+          } as User,
+          services: [mockService]
+        };
 
       service.getUserProfileWithServices().subscribe(response => {
         expect(response).toEqual(mockResponse);
@@ -337,15 +345,15 @@ describe('UserInformationService', () => {
       spyOn(localStorage, 'getItem').and.returnValue(null);
       spyOn(console, 'warn').and.stub();
 
-      const mockResponse: UserProfileDTO = {
-        user: new User({
-          idUser: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          role: UserRole.PROVIDER
-        }),
-        services: []
-      };
+              const mockResponse: UserProfileDTO = {
+          user: {
+            idUser: 1,
+            firstName: 'John',
+            lastName: 'Doe',
+            role: UserRole.PROVIDER
+          } as User,
+          services: []
+        };
 
       service.getUserProfileWithServices().subscribe(response => {
         expect(response).toEqual(mockResponse);

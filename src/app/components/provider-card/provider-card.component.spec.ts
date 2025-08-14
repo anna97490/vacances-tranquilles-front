@@ -16,7 +16,7 @@ describe('ProviderCardComponent', () => {
   let authStorageService: jasmine.SpyObj<AuthStorageService>;
   let paymentService: jasmine.SpyObj<PaymentService>;
 
-  const mockUser = new User({
+  const mockUser: User = {
     idUser: 101,
     firstName: 'Marie',
     lastName: 'Dubois',
@@ -27,7 +27,7 @@ describe('ProviderCardComponent', () => {
     city: 'Lyon',
     postalCode: 69000,
     password: ''
-  });
+  };
 
   const mockService = {
     id: 2,
@@ -204,7 +204,7 @@ describe('ProviderCardComponent', () => {
   });
 
   it('should set providerInfo through setter', () => {
-    const newUser = new User({
+    const newUser = {
       idUser: 102,
       firstName: 'Jean',
       lastName: 'Martin',
@@ -215,7 +215,7 @@ describe('ProviderCardComponent', () => {
       city: 'Paris',
       postalCode: 75000,
       password: ''
-    });
+    };
     component.providerInfo = newUser;
     expect(component.providerInfo).toEqual(newUser);
   });

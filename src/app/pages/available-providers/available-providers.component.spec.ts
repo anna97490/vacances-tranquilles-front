@@ -54,7 +54,7 @@ describe('AvailableProvidersComponent - Full Coverage', () => {
     { id: 2, title: 'Plomberie', category: ServiceCategory.REPAIRS, price: 50, providerId: 2 }
   ];
 
-const mockUser: User = new User({
+const mockUser: User = {
   idUser: 1,
   firstName: 'Alice',
   lastName: 'Martin',
@@ -71,7 +71,7 @@ const mockUser: User = new User({
   autoEntrepreneurAttestationUrl: 'https://example.com/auto-entrepreneur.pdf',
   insuranceCertificateUrl: 'https://example.com/assurance.pdf',
   description: 'Prestataire expérimenté dans les services à domicile'
-});
+};
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

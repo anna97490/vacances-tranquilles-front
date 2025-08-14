@@ -20,7 +20,7 @@ describe('UpdateProfileHeaderComponent', () => {
     component = fixture.componentInstance;
 
     // Mock user data
-    mockUser = new User({
+    mockUser = {
       idUser: 1,
       firstName: 'John',
       lastName: 'Doe',
@@ -33,7 +33,7 @@ describe('UpdateProfileHeaderComponent', () => {
       postalCode: 75000,
       companyName: '',
       siretSiren: ''
-    });
+    };
 
     component.user = mockUser;
     component.services = [];

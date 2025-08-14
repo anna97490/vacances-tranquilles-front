@@ -64,10 +64,4 @@ export class User {
 
   /** Description de l'utilisateur */
   description?: string;
-
-  constructor(userData?: Partial<User>) {
-    if (userData) {
-      Object.assign(this, userData);
-    }
-  }
 }
