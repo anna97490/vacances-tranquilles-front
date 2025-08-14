@@ -197,14 +197,14 @@ export class MessageComponent implements OnInit {
       return false;
     }
 
-    // Vérifier qu'il n'y a pas de caractères dangereux
-    const dangerousPattern = /[<>{}*$#@!%^&()_+\-=\[\]{}|\\:;"'`~]/;
+    // Vérifier qu'il n'y a pas de caractères dangereux (mais autoriser !, :, ;, ?, ')
+    const dangerousPattern = /[<>{}*$#@%^&()_+\-=\[\]{}|\\"`~]/;
     if (dangerousPattern.test(content)) {
       return false;
     }
 
     // Supprimer les espaces et caractères de ponctuation pour la validation
-    const cleanContent = content.replaceAll(/[\s.,!?;:'"()\-_@#$%&*+=<>[\]{}|\\/`~€£¥§±°©®™✓✔✗✘•·–—…¿¡¡¿\n\r\t]/g, '');
+    const cleanContent = content.replaceAll(/[\s.,"()\-_@#$%&*+=<>[\]{}|\\/`~€£¥§±°©®™✓✔✗✘•·–—…¿¡¡¿\n\r\t!?:;]/g, '');
 
     // Vérifier que le contenu n'est pas vide après nettoyage
     if (cleanContent.length === 0) {
@@ -234,12 +234,12 @@ export class MessageComponent implements OnInit {
       return null;
     }
 
-    const dangerousPattern = /[<>{}*$#@!%^&()_+\-=\[\]{}|\\:;"'`~]/;
+    const dangerousPattern = /[<>{}*$#@%^&()_+\-=\[\]{}|\\"`~]/;
     if (dangerousPattern.test(content)) {
       return "Le message contient des caractères non autorisés. Veuillez utiliser uniquement des lettres, chiffres, ponctuation simple et espaces.";
     }
 
-    const cleanContent = content.replaceAll(/[\s.,!?;:'"()\-_@#$%&*+=<>[\]{}|\\/`~€£¥§±°©®™✓✔✗✘•·–—…¿¡¡¿\n\r\t]/g, '');
+    const cleanContent = content.replaceAll(/[\s.,"()\-_@#$%&*+=<>[\]{}|\\/`~€£¥§±°©®™✓✔✗✘•·–—…¿¡¡¿\n\r\t!?:;]/g, '');
 
     if (cleanContent.length === 0) {
       return "Le message ne peut pas être composé uniquement de ponctuation et d'espaces.";

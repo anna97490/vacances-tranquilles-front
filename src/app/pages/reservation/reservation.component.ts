@@ -36,7 +36,6 @@ export class ReservationComponent implements OnInit {
   }
 
   private determineUserRole(): void {
-    // Pour l'instant, on simule un prestataire
     this.isProvider = true;
   }
 
@@ -50,37 +49,10 @@ export class ReservationComponent implements OnInit {
         next: (data: Reservation[]) => {
           this.reservations = data;
           this.isLoading = false;
-
-          console.log('📋 RÉSERVATIONS CHARGÉES:', data);
-          console.log('📊 NOMBRE DE RÉSERVATIONS:', data.length);
-
-          // Log détaillé de chaque réservation
-          data.forEach((reservation, index) => {
-            console.log(`📋 RÉSERVATION ${index + 1}:`, {
-              id: reservation.id,
-              status: reservation.status,
-              clientId: reservation.clientId,
-              clientName: reservation.clientName,
-              providerId: reservation.providerId,
-              providerName: reservation.providerName,
-              conversationId: reservation.conversationId,
-              reservationDate: reservation.reservationDate,
-              startDate: reservation.startDate,
-              endDate: reservation.endDate,
-              totalPrice: reservation.totalPrice,
-              serviceName: reservation.serviceName,
-              propertyName: reservation.propertyName,
-              comments: reservation.comments,
-              services: reservation.services,
-              createdAt: reservation.createdAt,
-              updatedAt: reservation.updatedAt
-            });
-          });
         },
         error: (err: any) => {
           this.error = 'Erreur lors du chargement des réservations';
           this.isLoading = false;
-          console.error('❌ Erreur chargement réservations:', err);
         }
       });
   }
@@ -132,7 +104,6 @@ export class ReservationComponent implements OnInit {
         },
         error: (err: any) => {
           alert('Erreur lors de la mise à jour du statut');
-          console.error('Erreur mise à jour statut:', err);
         }
       });
   }
@@ -203,26 +174,17 @@ export class ReservationComponent implements OnInit {
     // Pour l'instant, on simule un utilisateur connecté avec l'ID 53 (client)
     const currentUserId = 53; // À remplacer par le vrai ID de l'utilisateur connecté
 
-    console.log('🔍 Détermination otherUserId:', {
-      currentUserId,
-      clientId: reservation.clientId,
-      providerId: reservation.providerId
-    });
-
     // Si l'utilisateur connecté est le client, l'autre utilisateur est le provider
     if (currentUserId === reservation.clientId) {
-      console.log('✅ Utilisateur connecté = CLIENT, otherUserId = providerId');
       return reservation.providerId;
     }
 
     // Si l'utilisateur connecté est le provider, l'autre utilisateur est le client
     if (currentUserId === reservation.providerId) {
-      console.log('✅ Utilisateur connecté = PROVIDER, otherUserId = clientId');
       return reservation.clientId;
     }
 
     // Si l'utilisateur connecté n'est ni le client ni le provider, erreur
-    console.error('❌ Utilisateur connecté n\'est ni le client ni le provider de cette réservation');
     throw new Error('Utilisateur non autorisé pour cette réservation');
   }
 
@@ -230,41 +192,11 @@ export class ReservationComponent implements OnInit {
    * Crée une nouvelle conversation pour la réservation
    */
   startConversation(reservation: Reservation): void {
-    console.log('🔍 DIAGNOSTIC - Tentative de création de conversation:', {
-      reservationId: reservation.id,
-      isProvider: this.isProvider,
-      clientId: reservation.clientId,
-      providerId: reservation.providerId,
-      status: reservation.status,
-      conversationId: reservation.conversationId,
-      reservation: reservation
-    });
-
-    console.log('📋 DÉTAILS COMPLETS DE LA RÉSERVATION:', {
-      id: reservation.id,
-      status: reservation.status,
-      clientId: reservation.clientId,
-      clientName: reservation.clientName,
-      providerId: reservation.providerId,
-      providerName: reservation.providerName,
-      conversationId: reservation.conversationId,
-      reservationDate: reservation.reservationDate,
-      startDate: reservation.startDate,
-      endDate: reservation.endDate,
-      totalPrice: reservation.totalPrice,
-      serviceName: reservation.serviceName,
-      propertyName: reservation.propertyName,
-      comments: reservation.comments,
-      services: reservation.services,
-      createdAt: reservation.createdAt,
-      updatedAt: reservation.updatedAt
-    });
 
     this.conversationsService.createConversation(reservation.id)
       .pipe(take(1))
       .subscribe({
         next: (conversation) => {
-          console.log('Conversation créée avec succès:', conversation);
 
           // Mettre à jour la réservation avec l'ID de la conversation
           reservation.conversationId = conversation.id;
@@ -278,12 +210,6 @@ export class ReservationComponent implements OnInit {
           }, 1500); // 1.5 secondes de délai pour voir le message de succès
         },
         error: (error) => {
-          console.error('Erreur lors de la création de la conversation:', error);
-          console.error('Détails de l\'erreur:', {
-            status: error.status,
-            message: error.message,
-            error: error.error
-          });
 
           // Afficher un message d'erreur plus détaillé
           if (error.status === 0) {

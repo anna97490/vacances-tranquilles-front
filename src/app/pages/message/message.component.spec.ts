@@ -240,6 +240,19 @@ describe('MessageComponent', () => {
     it('should return false for content with only punctuation', () => {
       expect(component.isMessageValid('...')).toBeFalse();
       expect(component.isMessageValid('!!!')).toBeFalse();
+      expect(component.isMessageValid('???')).toBeFalse();
+      expect(component.isMessageValid(':::')).toBeFalse();
+      expect(component.isMessageValid(';;;')).toBeFalse();
+      expect(component.isMessageValid('.,.,.')).toBeFalse();
+      expect(component.isMessageValid('---')).toBeFalse();
+    });
+
+    it('should return true for content with allowed punctuation', () => {
+      expect(component.isMessageValid('Hello!')).toBeTrue();
+      expect(component.isMessageValid('Test?')).toBeTrue();
+      expect(component.isMessageValid('Message:')).toBeTrue();
+      expect(component.isMessageValid('Note;')).toBeTrue();
+      expect(component.isMessageValid('It\'s working')).toBeTrue();
     });
 
     it('should return false for content too short', () => {

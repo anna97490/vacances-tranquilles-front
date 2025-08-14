@@ -40,6 +40,7 @@ export class ConversationComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (data: ConversationSummaryDTO[]) => {
+          console.log('📋 Conversations reçues:', data);
           this.conversations = data;
           this.isLoading = false;
         },
@@ -74,45 +75,7 @@ export class ConversationComponent implements OnInit {
     }
   }
 
-  /**
-   * Formate une date en format français
-   * @param dateString - La date à formater
-   * @returns La date formatée ou "Date non disponible"
-   */
-  formatDate(dateString: string | null | undefined): string {
-    if (!dateString) {
-      console.log('Date vide ou null');
-      return 'Date non disponible';
-    }
 
-    // Essayer différents formats de date
-    let date: Date;
-
-    // Format ISO standard
-    date = new Date(dateString);
-    if (!isNaN(date.getTime())) {
-      console.log('Date parsée avec format ISO:', date);
-      return date.toLocaleDateString('fr-FR');
-    }
-
-    // Essayer avec des formats alternatifs
-    const formats = [
-      dateString.replace(' ', 'T'), // Remplacer espace par T
-      dateString + 'T00:00:00',     // Ajouter l'heure
-      dateString + 'Z'              // Ajouter Z
-    ];
-
-    for (const format of formats) {
-      date = new Date(format);
-      if (!isNaN(date.getTime())) {
-        console.log('Date parsée avec format alternatif:', format, '->', date);
-        return date.toLocaleDateString('fr-FR');
-      }
-    }
-
-    console.warn('Aucun format de date reconnu pour:', dateString);
-    return 'Date non disponible';
-  }
 
   /**
    * Fonction de tracking pour optimiser les performances de la liste des conversations

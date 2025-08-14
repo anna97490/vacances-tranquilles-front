@@ -179,14 +179,12 @@ describe('ConversationsService', () => {
         {
           conversationId: 1,
           otherUserName: 'John Doe',
-          serviceTitle: 'Service 1',
-          startTime: '2024-01-15T10:00:00'
+          serviceTitle: 'Service 1'
         },
         {
           conversationId: 2,
           otherUserName: 'Jane Smith',
-          serviceTitle: 'Service 2',
-          startTime: '2024-01-16T11:00:00'
+          serviceTitle: 'Service 2'
         }
       ];
 

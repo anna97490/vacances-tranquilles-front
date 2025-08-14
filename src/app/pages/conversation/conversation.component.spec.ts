@@ -14,14 +14,12 @@ describe('ConversationComponent', () => {
     {
       conversationId: 1,
       otherUserName: 'John Doe',
-      serviceTitle: 'Nettoyage',
-      startTime: '2024-01-15T10:00:00Z'
+      serviceTitle: 'Nettoyage'
     },
     {
       conversationId: 2,
       otherUserName: 'Jane Smith',
-      serviceTitle: 'Jardinage',
-      startTime: '2024-01-16T14:30:00Z'
+      serviceTitle: 'Jardinage'
     }
   ];
 
@@ -136,32 +134,7 @@ describe('ConversationComponent', () => {
     });
   });
 
-  describe('formatDate', () => {
-    it('should return "Date non disponible" for null date', () => {
-      const result = component.formatDate(null);
-      expect(result).toBe('Date non disponible');
-    });
 
-    it('should return "Date non disponible" for undefined date', () => {
-      const result = component.formatDate(undefined);
-      expect(result).toBe('Date non disponible');
-    });
-
-    it('should format valid ISO date', () => {
-      const result = component.formatDate('2024-01-15T10:00:00Z');
-      expect(result).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
-    });
-
-    it('should handle date with space instead of T', () => {
-      const result = component.formatDate('2024-01-15 10:00:00');
-      expect(result).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
-    });
-
-    it('should return "Date non disponible" for invalid date', () => {
-      const result = component.formatDate('invalid-date');
-      expect(result).toBe('Date non disponible');
-    });
-  });
 
   describe('trackByConversationId', () => {
     it('should return conversation ID for tracking', () => {

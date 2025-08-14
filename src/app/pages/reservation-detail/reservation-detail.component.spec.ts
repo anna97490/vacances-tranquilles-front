@@ -47,6 +47,7 @@ describe('ReservationDetailComponent', () => {
       paymentStatus: undefined,
       comments: 'Note',
       services: [],
+      conversationId: undefined,
       createdAt: '2025-08-01',
       updatedAt: '2025-08-01',
     };
@@ -215,5 +216,72 @@ describe('ReservationDetailComponent', () => {
   it('should return default color and label for unknown status', () => {
     expect(component.getStatusLabel('UNKNOWN' as any)).toBe('UNKNOWN');
     expect(component.getStatusColor('UNKNOWN' as any)).toBe('#95a5a6');
+  });
+
+  describe('Format methods', () => {
+    it('should format date correctly', () => {
+      expect(component.formatDate('2025-08-09')).toBeTruthy();
+      expect(component.formatDate('invalid-date')).toBe('invalid-date');
+      expect(component.formatDate('')).toBe('');
+    });
+
+    it('should format time correctly', () => {
+      expect(component.formatTime('14:30:15')).toBe('14:30');
+      expect(component.formatTime('2024-01-15T22:29:02')).toMatch(/^\d{2}:\d{2}$/);
+      expect(component.formatTime('bad')).toBe('bad');
+      expect(component.formatTime('')).toBe('');
+    });
+
+    it('should format price correctly', () => {
+      expect(component.formatPrice(100)).toContain('100,00');
+      expect(component.formatPrice(0)).toBe('0,00 €');
+      expect(component.formatPrice(null)).toBe('0,00 €');
+      expect(component.formatPrice(undefined)).toBe('0,00 €');
+    });
+  });
+
+  describe('Status update functionality', () => {
+    it('should update status successfully', () => {
+      component.isProvider = true;
+      component.reservation = { id: 42, status: 'PENDING' } as any;
+      const updatedReservation = { id: 42, status: 'IN_PROGRESS' } as any;
+      reservationServiceMock.updateReservationStatus.and.returnValue(of(updatedReservation));
+
+      component.updateStatus('IN_PROGRESS');
+
+      expect(reservationServiceMock.updateReservationStatus).toHaveBeenCalledWith(42, { status: 'IN_PROGRESS' });
+      expect(component.reservation?.status).toBe('IN_PROGRESS');
+      expect(component.isUpdating).toBeFalse();
+      expect(component.liveMessage).toContain('Statut mis à jour');
+    });
+
+    it('should handle status update error', () => {
+      component.isProvider = true;
+      component.reservation = { id: 42, status: 'PENDING' } as any;
+      reservationServiceMock.updateReservationStatus.and.returnValue(throwError(() => new Error('Update failed')));
+
+      component.updateStatus('IN_PROGRESS');
+
+      expect(component.isUpdating).toBeFalse();
+      expect(component.error).toContain('Impossible de mettre à jour le statut');
+    });
+
+    it('should not update status when reservation is null', () => {
+      component.isProvider = true;
+      component.reservation = null;
+
+      component.updateStatus('IN_PROGRESS');
+
+      expect(reservationServiceMock.updateReservationStatus).not.toHaveBeenCalled();
+    });
+
+    it('should not update status when reservation has no id', () => {
+      component.isProvider = true;
+      component.reservation = { status: 'PENDING' } as any;
+
+      component.updateStatus('IN_PROGRESS');
+
+      expect(reservationServiceMock.updateReservationStatus).not.toHaveBeenCalled();
+    });
   });
 });

@@ -38,7 +38,6 @@ export interface ConversationSummaryDTO {
   conversationId: number;
   otherUserName: string;
   serviceTitle: string;
-  startTime: string;
 }
 
 export interface ReservationResponseDTO {

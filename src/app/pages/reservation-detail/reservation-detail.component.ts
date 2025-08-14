@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
@@ -53,7 +54,6 @@ export class ReservationDetailComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des détails:', error);
         this.error = 'Erreur lors du chargement des détails de la réservation';
         this.isLoading = false;
       }
@@ -141,7 +141,6 @@ export class ReservationDetailComponent implements OnInit {
           this.liveMessage = `Statut mis à jour: ${this.getStatusLabel(updated.status)}`;
         },
         error: (err) => {
-          console.error('Erreur lors de la mise à jour du statut:', err);
           this.error = "Impossible de mettre à jour le statut de la réservation.";
           this.isUpdating = false;
         },
