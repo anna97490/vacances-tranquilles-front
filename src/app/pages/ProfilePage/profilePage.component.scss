@@ -1,4 +1,22 @@
-// États de chargement et d'erreur
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--primary-color);
+  padding: 2rem 0;
+}
+
+.profile-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 2rem;
+}
+
 .loading-container {
   display: flex;
   justify-content: center;
@@ -115,5 +133,21 @@
 
 .icon-left {
   font-size: 1.5em;
+}
+
+@media (max-width: 900px) {
+  .profile-content {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 1rem 0;
+  }
+  
+  .profile-content {
+    padding: 0 1rem;
+  }
 }
 

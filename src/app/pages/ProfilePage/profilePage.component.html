@@ -20,26 +20,28 @@
 </div>
 
 <!-- Contenu principal -->
-<div *ngIf="!isLoading && !hasError">
-  <ng-container *ngIf="!isEditMode; else editMode">
-    <app-display-profile *ngIf="displayedUser && loggedUser" [user]="displayedUser" [services]="services" [userRole]="loggedUser.role" />
-  </ng-container>
-  <ng-template #editMode>
-    <app-update-profile 
-      *ngIf="displayedUser && loggedUser" 
-      [user]="displayedUser" 
-      [services]="services" 
-      [userRole]="loggedUser.role" 
-      (profileDataChange)="onProfileDataChange($event)"
-      (validationError)="onValidationError($event)"
-      (saveSuccess)="onSaveSuccess()"
-      (saveError)="onSaveError($event)" />
-  </ng-template>
+<div *ngIf="!isLoading && !hasError" class="profile-container">
+  <div class="profile-content">
+    <ng-container *ngIf="!isEditMode; else editMode">
+      <app-display-profile *ngIf="displayedUser && loggedUser" [user]="displayedUser" [services]="services" [userRole]="loggedUser.role" />
+    </ng-container>
+    <ng-template #editMode>
+      <app-update-profile 
+        *ngIf="displayedUser && loggedUser" 
+        [user]="displayedUser" 
+        [services]="services" 
+        [userRole]="loggedUser.role" 
+        (profileDataChange)="onProfileDataChange($event)"
+        (validationError)="onValidationError($event)"
+        (saveSuccess)="onSaveSuccess()"
+        (saveError)="onSaveError($event)" />
+    </ng-template>
 
-  <div class="profile-action-btn-container" *ngIf="isCurrentUserProfile()">
-    <button mat-raised-button class="profile-action-btn" (click)="toggleEditMode()" [disabled]="isSaving">
-      <mat-icon class="icon-left">{{ isEditMode ? 'done' : 'edit' }}</mat-icon>
-      {{ getButtonText() }}
-    </button>
+    <div class="profile-action-btn-container" *ngIf="isCurrentUserProfile()">
+      <button mat-raised-button class="profile-action-btn" (click)="toggleEditMode()" [disabled]="isSaving">
+        <mat-icon class="icon-left">{{ isEditMode ? 'done' : 'edit' }}</mat-icon>
+        {{ getButtonText() }}
+      </button>
+    </div>
   </div>
 </div>
