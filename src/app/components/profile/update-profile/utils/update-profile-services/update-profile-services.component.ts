@@ -11,6 +11,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Service, ServiceCategory } from '../../../../../models/Service';
 import { UserInformationService } from '../../../../../services/user-information/user-information.service';
+import { IconService } from '../../../../../services/icon.service';
 
 /**
  * Composant de modification des services proposés dans le profil utilisateur.
@@ -45,15 +46,16 @@ export class UpdateProfileServicesComponent {
   isAddingNew = false;
   serviceForm: FormGroup;
 
-  // Utilisation de l'enum ServiceCategory pour les catégories disponibles
-  categories = Object.values(ServiceCategory);
+  categories: ServiceCategory[] = [];
 
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private userInformationService: UserInformationService
+    private userInformationService: UserInformationService,
+    public iconService: IconService
   ) {
+    this.categories = this.iconService.getAvailableCategories();
     this.serviceForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(200)]],
@@ -108,8 +110,8 @@ export class UpdateProfileServicesComponent {
       if (this.isAddingNew) {
         // Ajouter un nouveau service
         const newService: Service = {
-          id: 0, // L'ID sera généré par le backend
-          providerId: 0, // Sera défini par le service backend
+          id: 0,
+          providerId: 0, 
           ...formValue
         };
         

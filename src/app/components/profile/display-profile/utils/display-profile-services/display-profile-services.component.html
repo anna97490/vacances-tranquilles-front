@@ -5,7 +5,7 @@
   <div class="services-list" *ngIf="services.length > 0">
     <mat-card *ngFor="let service of services" class="service-card" appearance="outlined">
       <div class="service-header">
-<!--         <img [src]="service.imageUrl" alt="Icône du service" class="service-icon" width="40" height="40" /> -->
+        <mat-icon class="service-icon">{{ iconService.getIcon(service.category) }}</mat-icon>
       </div>
       <div class="service-content">
         <h4 class="service-title">{{ service.title }}</h4>

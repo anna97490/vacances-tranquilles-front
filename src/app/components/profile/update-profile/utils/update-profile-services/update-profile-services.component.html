@@ -103,6 +103,7 @@
   <div class="services-list">
     <mat-card *ngFor="let service of services" class="service-card" appearance="outlined">
       <div class="service-header">
+        <mat-icon class="service-icon">{{ iconService.getIcon(service.category) }}</mat-icon>
         <div class="service-actions">
           <button mat-icon-button color="primary" (click)="editService(service)" 
                   [disabled]="isAddingNew || editingService">
