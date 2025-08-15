@@ -137,7 +137,7 @@ export class UpdateProfileServicesComponent {
         this.userInformationService.updateService(this.editingService.id, updatedService).subscribe({
           next: (savedService: Service) => {
             this.services = this.services.map(service => 
-              service.id === this.editingService!.id ? savedService : service
+              service.id === this.editingService?.id ? savedService : service
             );
             this.servicesChange.emit(this.services);
             this.snackBar.open('Service modifié avec succès', 'Fermer', { duration: 3000 });

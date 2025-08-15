@@ -20,7 +20,7 @@ const UI_FIELD_LABELS = {
  * @returns Erreurs de validation ou null
  */
 function validateIfNotEmpty(control: AbstractControl, fn: (value: string) => ValidationErrors | null): ValidationErrors | null {
-  if (control == null || control.value == null || control.value === '') return null;
+  if (control?.value == null || control.value === '') return null;
   return fn(String(control.value));
 }
 
@@ -147,7 +147,7 @@ export class ProfileValidationService {
    * @returns true si l'erreur doit être affichée
    */
   private shouldShowError(control: AbstractControl): boolean {
-    return !!(control && control.errors && control.touched);
+    return !!(control?.errors && control.touched);
   }
 
   /**

@@ -370,6 +370,9 @@
   }
   .services-container {
     padding-inline: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .services-list {
@@ -384,12 +387,6 @@
     max-width: 100%;
     margin: 0;
     flex: 1;
-  }
-
-  .services-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 
   .service-actions {
@@ -443,16 +440,7 @@
 .primary-action-btn,
 .add-service-btn {
   border-radius: 8px !important;
-}
-
-.add-service-btn {
   margin-bottom: 12px;
-}
-
-:host {
-  --discret-text-color: #777;
-  --secondary-color: #31525B;
-  --tertiary-color: #db9e36;
 }
 
 ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {

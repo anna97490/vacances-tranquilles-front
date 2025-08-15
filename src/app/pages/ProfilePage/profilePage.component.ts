@@ -251,13 +251,8 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     // Appeler la méthode saveProfile du composant update-profile
     if (this.updateProfileComponent) {
       this.updateProfileComponent.saveProfile().subscribe({
-        next: (success: boolean) => {
-          if (success) {
-            this.onSaveSuccess();
-          } else {
-            // La validation a échoué, rester en mode édition
-            this.isSaving = false;
-          }
+        next: () => {
+          this.onSaveSuccess();
         },
         error: (error) => {
           this.onSaveError('Erreur lors de la sauvegarde');
