@@ -4,8 +4,8 @@
     <p class="subtitle">Sélectionnez vos critères</p>
     <div class="form-card">
       <form #searchForm="ngForm" autocomplete="off" role="search" aria-label="Formulaire de recherche de services">
-        <fieldset class="form-section" aria-labelledby="date-label">
-          <label class="section-label" id="date-label" for="day-select">Sélectionner une date</label>
+        <fieldset class="form-section">
+          <legend class="section-label">Sélectionner une date</legend>
           <div class="date-row">
             <mat-form-field appearance="outline">
               <mat-select id="day-select" placeholder="Jour" [(ngModel)]="selectedDay" name="day" required #dayCtrl="ngModel" (selectionChange)="onDayChange()"
@@ -36,8 +36,8 @@
             <mat-error>La date sélectionnée ne peut pas être dans le passé</mat-error>
           </div>
         </fieldset>
-        <fieldset class="form-section" aria-labelledby="time-label">
-          <label class="section-label" id="time-label" for="start-hour-select">Sélectionner un horaire</label>
+        <fieldset class="form-section">
+          <legend class="section-label">Sélectionner un horaire</legend>
           <div class="hour-row">
             <mat-form-field appearance="outline">
               <mat-select id="start-hour-select" placeholder="Heure de début" [(ngModel)]="selectedStartHour" name="startHour" [disabled]="!selectedDay || !selectedMonth || !selectedYear" #startHourCtrl="ngModel" (selectionChange)="onStartHourChange()"
@@ -79,14 +79,13 @@
         </div>
         <div class="button-zone">
           <button mat-raised-button color="primary" class="main-action-btn" [disabled]="!isFormValid() || isLoading" (click)="findProviders()"
-                  [attr.aria-label]="isLoading ? 'Recherche en cours...' : 'Lancer la recherche de prestataires'"
-                  [attr.aria-describedby]="!isFormValid() ? 'form-incomplete-message' : ''">
+                  [attr.aria-label]="isLoading ? 'Recherche en cours...' : 'Lancer la recherche de prestataires'">
             <span *ngIf="!isLoading">Voir les prestataires disponibles</span>
             <span *ngIf="isLoading">Recherche en cours...</span>
           </button>
-          <div id="form-incomplete-message" class="sr-only" *ngIf="!isFormValid()">
-            Veuillez remplir tous les champs obligatoires pour lancer la recherche
-          </div>
+        </div>
+        <div class="form-error-message" *ngIf="!isFormValid()">
+          Veuillez remplir tous les champs obligatoires pour lancer la recherche
         </div>
       </form>
     </div>
