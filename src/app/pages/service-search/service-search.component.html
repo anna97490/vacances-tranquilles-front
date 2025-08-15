@@ -3,71 +3,89 @@
     <h2 class="main-title">Recherchez votre service</h2>
     <p class="subtitle">Sélectionnez vos critères</p>
     <div class="form-card">
-      <form #searchForm="ngForm" autocomplete="off">
-        <div class="form-section">
-          <label class="section-label" for="day-select">Sélectionner une date</label>
+      <form #searchForm="ngForm" autocomplete="off" role="search" aria-label="Formulaire de recherche de services">
+        <fieldset class="form-section">
+          <legend class="section-label">Sélectionner une date</legend>
           <div class="date-row">
             <mat-form-field appearance="outline">
-              <mat-select id="day-select" placeholder="Jour" [(ngModel)]="selectedDay" name="day" required #dayCtrl="ngModel" (selectionChange)="onDayChange()">
+              <mat-select id="day-select" placeholder="Jour" [(ngModel)]="selectedDay" name="day" required #dayCtrl="ngModel" (selectionChange)="onDayChange()"
+                          [attr.aria-invalid]="(dayCtrl.invalid && dayCtrl.touched) ? 'true' : 'false'"
+                          [attr.aria-describedby]="(dayCtrl.invalid && dayCtrl.touched ? 'day-error' : '')">
                 <mat-option *ngFor="let day of days" [value]="day">{{ day }}</mat-option>
               </mat-select>
-              <mat-error *ngIf="dayCtrl.invalid && dayCtrl.touched">Jour requis</mat-error>
+              <mat-error *ngIf="dayCtrl.invalid && dayCtrl.touched" id="day-error">Jour requis</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-select id="month-select" placeholder="Mois" [(ngModel)]="selectedMonth" name="month" required #monthCtrl="ngModel" (selectionChange)="onMonthChange()">
+              <mat-select id="month-select" placeholder="Mois" [(ngModel)]="selectedMonth" name="month" required #monthCtrl="ngModel" (selectionChange)="onMonthChange()"
+                          [attr.aria-invalid]="(monthCtrl.invalid && monthCtrl.touched) ? 'true' : 'false'"
+                          [attr.aria-describedby]="(monthCtrl.invalid && monthCtrl.touched ? 'month-error' : '')">
                 <mat-option *ngFor="let month of months" [value]="month">{{ month }}</mat-option>
               </mat-select>
-              <mat-error *ngIf="monthCtrl.invalid && monthCtrl.touched">Mois requis</mat-error>
+              <mat-error *ngIf="monthCtrl.invalid && monthCtrl.touched" id="month-error">Mois requis</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-select id="year-select" placeholder="Année" [(ngModel)]="selectedYear" name="year" required #yearCtrl="ngModel" (selectionChange)="onYearChange()">
+              <mat-select id="year-select" placeholder="Année" [(ngModel)]="selectedYear" name="year" required #yearCtrl="ngModel" (selectionChange)="onYearChange()"
+                          [attr.aria-invalid]="(yearCtrl.invalid && yearCtrl.touched) ? 'true' : 'false'"
+                          [attr.aria-describedby]="(yearCtrl.invalid && yearCtrl.touched ? 'year-error' : '')">
                 <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
               </mat-select>
-              <mat-error *ngIf="yearCtrl.invalid && yearCtrl.touched">Année requise</mat-error>
+              <mat-error *ngIf="yearCtrl.invalid && yearCtrl.touched" id="year-error">Année requise</mat-error>
             </mat-form-field>
           </div>
-          <div class="date-error" *ngIf="selectedDay && selectedMonth && selectedYear && isDateInPast">
+          <div class="date-error" *ngIf="selectedDay && selectedMonth && selectedYear && isDateInPast" role="alert" aria-live="assertive">
             <mat-error>La date sélectionnée ne peut pas être dans le passé</mat-error>
           </div>
-        </div>
-        <div class="form-section">
-          <label class="section-label" for="start-hour-select">Sélectionner un horaire</label>
+        </fieldset>
+        <fieldset class="form-section">
+          <legend class="section-label">Sélectionner un horaire</legend>
           <div class="hour-row">
             <mat-form-field appearance="outline">
-              <mat-select id="start-hour-select" placeholder="Heure de début" [(ngModel)]="selectedStartHour" name="startHour" [disabled]="!selectedDay || !selectedMonth || !selectedYear" #startHourCtrl="ngModel" (selectionChange)="onStartHourChange()">
+              <mat-select id="start-hour-select" placeholder="Heure de début" [(ngModel)]="selectedStartHour" name="startHour" [disabled]="!selectedDay || !selectedMonth || !selectedYear" #startHourCtrl="ngModel" (selectionChange)="onStartHourChange()"
+                          [attr.aria-invalid]="(startHourCtrl.invalid && startHourCtrl.touched) ? 'true' : 'false'"
+                          [attr.aria-describedby]="(startHourCtrl.invalid && startHourCtrl.touched ? 'start-hour-error' : '')">
                 <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
               </mat-select>
-              <mat-error *ngIf="startHourCtrl.invalid && startHourCtrl.touched">Heure de début requise</mat-error>
+              <mat-error *ngIf="startHourCtrl.invalid && startHourCtrl.touched" id="start-hour-error">Heure de début requise</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-select id="end-hour-select" placeholder="Heure de fin" [(ngModel)]="selectedEndHour" name="endHour" [disabled]="!selectedStartHour" #endHourCtrl="ngModel">
+              <mat-select id="end-hour-select" placeholder="Heure de fin" [(ngModel)]="selectedEndHour" name="endHour" [disabled]="!selectedStartHour" #endHourCtrl="ngModel"
+                          [attr.aria-invalid]="(endHourCtrl.invalid && endHourCtrl.touched) ? 'true' : 'false'"
+                          [attr.aria-describedby]="(endHourCtrl.invalid && endHourCtrl.touched ? 'end-hour-error' : '') + (selectedStartHour && !availableEndHours.length ? ' no-hours-error' : '')">
                 <mat-option *ngFor="let hour of availableEndHours" [value]="hour">{{ hour }}</mat-option>
               </mat-select>
-              <mat-error *ngIf="endHourCtrl.invalid && endHourCtrl.touched">Heure de fin requise</mat-error>
-              <mat-error *ngIf="selectedStartHour && !availableEndHours.length">Aucune heure de fin disponible après l'heure de début sélectionnée</mat-error>
+              <mat-error *ngIf="endHourCtrl.invalid && endHourCtrl.touched" id="end-hour-error">Heure de fin requise</mat-error>
+              <mat-error *ngIf="selectedStartHour && !availableEndHours.length" id="no-hours-error">Aucune heure de fin disponible après l'heure de début sélectionnée</mat-error>
             </mat-form-field>
           </div>
-        </div>
+        </fieldset>
         <div class="form-section">
           <mat-form-field appearance="outline" class="full-width">
-            <input matInput id="postal-code-input" placeholder="Entrez votre code postal" [(ngModel)]="postalCode" name="postalCode" maxlength="5" pattern="^[0-9]{5}$" required #postalCtrl="ngModel">
-            <mat-error *ngIf="postalCtrl.invalid && postalCtrl.touched">Code postal requis (5 chiffres)</mat-error>
-            <mat-error *ngIf="postalCode && !isPostalCodeValid">Code postal invalide</mat-error>
+            <input matInput id="postal-code-input" placeholder="Entrez votre code postal" [(ngModel)]="postalCode" name="postalCode" maxlength="5" pattern="^[0-9]{5}$" required #postalCtrl="ngModel"
+                   [attr.aria-invalid]="(postalCtrl.invalid && postalCtrl.touched) ? 'true' : 'false'"
+                   [attr.aria-describedby]="(postalCtrl.invalid && postalCtrl.touched ? 'postal-error' : '') + (postalCode && !isPostalCodeValid ? ' postal-invalid-error' : '')">
+            <mat-error *ngIf="postalCtrl.invalid && postalCtrl.touched" id="postal-error">Code postal requis (5 chiffres)</mat-error>
+            <mat-error *ngIf="postalCode && !isPostalCodeValid" id="postal-invalid-error">Code postal invalide</mat-error>
           </mat-form-field>
         </div>
         <div class="form-section">
           <mat-form-field appearance="outline" class="full-width">
-            <mat-select id="service-select" placeholder="Choisissez un service" [(ngModel)]="selectedService" name="service" required #serviceCtrl="ngModel">
+            <mat-select id="service-select" placeholder="Choisissez un service" [(ngModel)]="selectedService" name="service" required #serviceCtrl="ngModel"
+                        [attr.aria-invalid]="(serviceCtrl.invalid && serviceCtrl.touched) ? 'true' : 'false'"
+                        [attr.aria-describedby]="(serviceCtrl.invalid && serviceCtrl.touched ? 'service-error' : '')">
               <mat-option *ngFor="let service of services" [value]="service.key">{{ service.value }}</mat-option>
             </mat-select>
-            <mat-error *ngIf="serviceCtrl.invalid && serviceCtrl.touched">Service requis</mat-error>
+            <mat-error *ngIf="serviceCtrl.invalid && serviceCtrl.touched" id="service-error">Service requis</mat-error>
           </mat-form-field>
         </div>
         <div class="button-zone">
-          <button mat-raised-button color="primary" class="main-action-btn" [disabled]="!isFormValid() || isLoading" (click)="findProviders()">
+          <button mat-raised-button color="primary" class="main-action-btn" [disabled]="!isFormValid() || isLoading" (click)="findProviders()"
+                  [attr.aria-label]="isLoading ? 'Recherche en cours...' : 'Lancer la recherche de prestataires'">
             <span *ngIf="!isLoading">Voir les prestataires disponibles</span>
             <span *ngIf="isLoading">Recherche en cours...</span>
           </button>
+        </div>
+        <div class="form-error-message" *ngIf="!isFormValid()">
+          Veuillez remplir tous les champs obligatoires pour lancer la recherche
         </div>
       </form>
     </div>

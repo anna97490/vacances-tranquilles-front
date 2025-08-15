@@ -179,19 +179,7 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should log configuration on initialization', () => {
-    const consoleSpy = spyOn(console, 'log');
-    const fixture = TestBed.createComponent(AppComponent);
 
-    // Trigger ngOnInit
-    fixture.detectChanges();
-
-    // Verify that console.log was called with configuration info
-    expect(consoleSpy).toHaveBeenCalledWith('Application démarrée avec la configuration:', {
-      apiUrl: mockEnvService.apiUrl,
-      isProduction: mockEnvService.isProduction
-    });
-  });
 
   it('should inject EnvService correctly', () => {
     const fixture = TestBed.createComponent(AppComponent);

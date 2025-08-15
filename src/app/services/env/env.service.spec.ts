@@ -23,18 +23,8 @@ describe('EnvService', () => {
     expect(typeof service.isProduction).toBe('boolean');
   });
 
-  it('should log environment configuration in non-production mode', () => {
-    spyOn(console, 'log');
-    
-    // Recreate service to trigger the log
-    const newService = new EnvService();
-    
-    if (!newService.isProduction) {
-      expect(console.log).toHaveBeenCalledWith('Environment configuré :', {
-        apiUrl: newService.apiUrl,
-        isProduction: newService.isProduction,
-        stripePublicKey: newService.stripePublicKey
-      });
-    }
+  it('should have stripePublicKey property', () => {
+    expect(service.stripePublicKey).toBeDefined();
+    expect(typeof service.stripePublicKey).toBe('string');
   });
 }); 

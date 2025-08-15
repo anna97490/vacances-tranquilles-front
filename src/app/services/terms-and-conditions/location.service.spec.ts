@@ -1,15 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { LocationService } from './location.service';
-import { createWindowSpies } from '../../utils/test-helpers';
 
 describe('LocationService', () => {
   let service: LocationService;
-  let spies: ReturnType<typeof createWindowSpies>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(LocationService);
-    spies = createWindowSpies();
   });
 
   afterEach(() => {

@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
+import { ProfilePageComponent } from './pages/ProfilePage/profilePage.component';
+
 
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
@@ -11,6 +13,12 @@ import { MessageComponent } from './pages/message/message.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
+  { path: 'service-search', component: ServiceSearchComponent },
+  { path: 'available-providers', component: AvailableProvidersComponent },
+  { path: 'success', 
+    loadComponent: () => import('./pages/success/success.component')
+      .then(m => m.SuccessComponent)
+  },
   { path: 'service-search', component: ServiceSearchComponent },
   { path: 'available-providers', component: AvailableProvidersComponent },
   { path: 'success',
@@ -33,6 +41,10 @@ export const routes: Routes = [
       }
     ]
   },
+  { path: 'profile', component: ProfilePageComponent },
+  { path: 'service-search', component: ServiceSearchComponent },
+  { path: 'avalaible-providers', component: AvailableProvidersComponent },
+  
     // Routes d'authentification avec paramètres pour le type d'utilisateur
   {
     path: 'auth',
