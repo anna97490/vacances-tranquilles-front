@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterLink } from '@angular/router';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatListModule } from '@angular/material/list';
+import { SharedMaterialModule } from '../../shared/material.module';
 
 @Component({
   selector: 'app-footer',
@@ -10,8 +9,7 @@ import { MatListModule } from '@angular/material/list';
   imports: [
     CommonModule,
     RouterModule,
-    MatDividerModule,
-    MatListModule,
+    SharedMaterialModule,
     RouterLink
   ],
   templateUrl: './footer.component.html',

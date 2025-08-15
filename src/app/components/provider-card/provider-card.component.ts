@@ -13,6 +13,7 @@ import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.compon
 import { PaymentService } from '../../services/payment/payment.service';
 import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { Router } from '@angular/router';
 
 /**
  * Composant carte prestataire (affichage d'un User de rôle PROVIDER)
@@ -35,6 +36,8 @@ import { AuthStorageService } from '../../services/login/auth-storage.service';
 })
 export class ProviderCardComponent implements OnChanges {
 
+
+
   /**
    * Prestataire (User) correspondant au service affiché.
    * @type {User | undefined}
@@ -50,7 +53,7 @@ export class ProviderCardComponent implements OnChanges {
   @Input()
   /**
    * Setter pour le service.
-   * Met à jour le service et utilise les données mockées par défaut.
+   * Met à jour le service.
    */
   set service(service: Service) {
     this._service = service;
@@ -83,7 +86,8 @@ export class ProviderCardComponent implements OnChanges {
     private readonly http: HttpClient,
     private readonly envService: EnvService,
     private readonly authStorage: AuthStorageService,
-    private readonly injector: Injector
+    private readonly injector: Injector,
+    private readonly router: Router
   ) {}
 
   private get paymentService(): PaymentService {
@@ -104,6 +108,8 @@ export class ProviderCardComponent implements OnChanges {
     return this._providerInfo;
   }
 
+
+
   /**
    * Calcule la durée en heures à partir des heures de début et fin
    */
@@ -122,6 +128,8 @@ export class ProviderCardComponent implements OnChanges {
     const pricePerHour = this.service?.price || 0;
     return duration * pricePerHour;
   }
+
+
 
   /**
    * Crée une session de paiement Stripe et redirige vers le checkout
@@ -174,7 +182,7 @@ export class ProviderCardComponent implements OnChanges {
       totalPrice: this.calculateTotalPrice(startTime, endTime) // Prix total calculé
     };
 
-    console.log('Payload envoyé:', payload);
+
 
     try {
       const token = this.authStorage.getToken();
@@ -202,6 +210,28 @@ export class ProviderCardComponent implements OnChanges {
       }
     } catch (error) {
       console.error('Erreur lors de la création de la session de paiement:', error);
+    }
+  }
+
+  /**
+   * Navigue vers la page de profil de l'utilisateur affiché
+   */
+  navigateToProfile(): void {
+    let userId: number | undefined;
+    
+    if (this.user?.idUser) {
+      userId = this.user.idUser;
+    } else if (this.service?.providerId) {
+      userId = this.service.providerId;
+    }
+    
+    if (userId) {
+      // Stocker l'ID de l'utilisateur à afficher dans le localStorage
+      // pour que la page de profil puisse le récupérer
+      localStorage.setItem('displayedUserId', userId.toString());
+      this.router.navigate(['/profile']);
+    } else {
+      console.error('Impossible de naviguer: aucun ID utilisateur disponible');
     }
   }
 }

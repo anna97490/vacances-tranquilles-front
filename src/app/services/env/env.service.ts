@@ -12,13 +12,5 @@ export class EnvService {
     this.isProduction = environment.production;
     this.stripePublicKey = environment.stripePublicKey;
     
-    // Log pour debug (supprimé en production)
-    if (!this.isProduction) {
-      console.log('Environment configuré :', {
-        apiUrl: this.apiUrl,
-        isProduction: this.isProduction,
-        stripePublicKey: this.stripePublicKey
-      });
-    }
   }
 }

@@ -48,10 +48,10 @@ describe('LoginNavigationService', () => {
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/service-search']);
     });
 
-    it('should redirect to home when userRole is PROVIDER', () => {
+    it('should redirect to profile when userRole is PROVIDER', () => {
       service.redirectAfterLogin(UserRole.PROVIDER);
       
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/profile']);
     });
 
     it('should redirect to home when userRole is ADMIN', () => {

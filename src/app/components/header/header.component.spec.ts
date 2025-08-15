@@ -104,7 +104,7 @@ describe('HeaderComponent', () => {
 
   it('should have correct paths for menu items', () => {
     expect(component.menu[0].path).toBe('/home');
-    expect(component.menu[1].path).toBe('/profil');
+    expect(component.menu[1].path).toBe('/profile');
     expect(component.menu[2].path).toBe('/reservations');
     expect(component.menu[3].path).toBe('/messaging');
     expect(component.menu[4].path).toBe('/assistance');
@@ -153,7 +153,7 @@ describe('HeaderComponent', () => {
   it('should return default icon when not hovered', () => {
     const menuItem = component.menu[0];
     component.hoveredItem = null;
-    component.currentPath = '/profil';
+    component.currentPath = '/profile';
 
     const icon = component.getIcon(menuItem);
     expect(icon).toBe(menuItem.icon);
@@ -179,7 +179,7 @@ describe('HeaderComponent', () => {
 
   it('should return default icon when route is not active and not hovered', () => {
     const menuItem = component.menu[0];
-    component.currentPath = '/profil';
+    component.currentPath = '/profile';
     component.hoveredItem = null;
 
     const icon = component.getIcon(menuItem);
@@ -333,7 +333,7 @@ describe('HeaderComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/service-search']);
     });
 
-    it('should navigate to home when non-client user clicks on Accueil', () => {
+    it('should navigate to profile when provider user clicks on Accueil', () => {
       // Simuler un utilisateur non-client connecté
       authStorage.isAuthenticated.and.returnValue(true);
       authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
@@ -341,7 +341,7 @@ describe('HeaderComponent', () => {
       const accueilItem = component.menu[0]; // Accueil
       component.onMenuNavigation(accueilItem);
 
-      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+      expect(router.navigate).toHaveBeenCalledWith(['/profile']);
     });
 
     it('should navigate to home when non-authenticated user clicks on Accueil', () => {
@@ -362,7 +362,7 @@ describe('HeaderComponent', () => {
       const profilItem = component.menu[1]; // Profil
       component.onMenuNavigation(profilItem);
 
-      expect(router.navigate).toHaveBeenCalledWith(['/profil']);
+      expect(router.navigate).toHaveBeenCalledWith(['/profile']);
     });
 
     it('should consider Accueil as active when client is on service-search page', () => {
