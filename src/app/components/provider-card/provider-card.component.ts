@@ -53,7 +53,7 @@ export class ProviderCardComponent implements OnChanges {
   @Input()
   /**
    * Setter pour le service.
-   * Met à jour le service et utilise les données mockées par défaut.
+   * Met à jour le service.
    */
   set service(service: Service) {
     this._service = service;

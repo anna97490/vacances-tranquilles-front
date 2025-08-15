@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { IconService } from './icon.service';
-import { ServiceCategory } from '../models/Service';
+import { ServiceCategory } from '../../models/Service';
 
 describe('IconService', () => {
   let service: IconService;

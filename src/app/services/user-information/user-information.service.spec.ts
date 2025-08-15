@@ -6,6 +6,7 @@ import { Service, ServiceCategory } from '../../models/Service';
 import { UpdateUserDTO } from '../../models/UpdateUserDTO';
 import { UserProfileDTO } from '../../models/UserProfileDTO';
 import { EnvService } from '../env/env.service';
+import { MOCK_USER_PROVIDER, MOCK_USER_ADMIN, MOCK_SERVICES } from '../../utils/test-mocks';
 
 describe('UserInformationService', () => {
   let service: UserInformationService;
@@ -45,19 +46,7 @@ describe('UserInformationService', () => {
         return key === 'token' ? 'mock-token' : null;
       });
 
-      const mockUser: User = {
-        idUser: 1,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john@example.com',
-        role: UserRole.PROVIDER,
-        phoneNumber: '0123456789',
-        address: '123 Main St',
-        city: 'Paris',
-        postalCode: 75001,
-        companyName: 'John Services',
-        siretSiren: '12345678901234'
-      };
+      const mockUser: User = MOCK_USER_PROVIDER;
 
       service.getUserById(1).subscribe(user => {
         expect(user).toEqual(mockUser);
@@ -73,17 +62,7 @@ describe('UserInformationService', () => {
       spyOn(localStorage, 'getItem').and.returnValue(null);
       spyOn(console, 'warn').and.stub();
 
-              const mockUser: User = {
-          idUser: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          role: UserRole.PROVIDER,
-          phoneNumber: '0123456789',
-          address: '123 Test Street',
-          city: 'Test City',
-          postalCode: 12345
-        };
+              const mockUser: User = MOCK_USER_PROVIDER;
 
       service.getUserById(1).subscribe(user => {
         expect(user).toEqual(mockUser);
@@ -170,34 +149,7 @@ describe('UserInformationService', () => {
         return key === 'token' ? 'mock-token' : null;
       });
 
-      const mockUsers: User[] = [
-        {
-          idUser: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          role: UserRole.PROVIDER,
-          phoneNumber: '0123456789',
-          address: '123 Main St',
-          city: 'Paris',
-          postalCode: 75001,
-          companyName: 'John Services',
-          siretSiren: '12345678901234'
-        },
-        {
-          idUser: 2,
-          firstName: 'Jane',
-          lastName: 'Smith',
-          email: 'jane@example.com',
-          role: UserRole.PROVIDER,
-          phoneNumber: '0987654321',
-          address: '789 Provider St',
-          city: 'Lyon',
-          postalCode: 69001,
-          companyName: 'Jane Services',
-          siretSiren: '98765432109876'
-        }
-      ];
+      const mockUsers: User[] = [MOCK_USER_PROVIDER, MOCK_USER_ADMIN];
 
       const userIds = [1, 2];
 
@@ -312,13 +264,7 @@ describe('UserInformationService', () => {
         return key === 'token' ? 'mock-token' : null;
       });
 
-      const mockService = new Service();
-      mockService.id = 1;
-      mockService.title = 'Service 1';
-      mockService.description = 'Description 1';
-      mockService.category = ServiceCategory.HOME;
-      mockService.price = 50;
-      mockService.providerId = 1;
+      const mockService = MOCK_SERVICES[0];
 
               const mockResponse: UserProfileDTO = {
           user: {
