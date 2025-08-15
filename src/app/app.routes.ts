@@ -5,6 +5,7 @@ import { ReservationComponent } from './pages/reservation/reservation.component'
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 import { ServiceSearchComponent } from './pages/service-search/service-search.component';
 import { AvailableProvidersComponent } from './pages/available-providers/available-providers.component';
+import { ReviewComponent } from './pages/review/review.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -49,5 +50,6 @@ export const routes: Routes = [
     ]
   },
   { path: 'reservations', component: ReservationComponent },
-  { path: 'reservations/:id', component: ReservationDetailComponent }
+  { path: 'reservations/:id', component: ReservationDetailComponent },
+  { path: 'review', component: ReviewComponent }
 ];

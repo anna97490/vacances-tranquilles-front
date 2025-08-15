@@ -1,0 +1,89 @@
+<main class="review-container">
+  <div class="container">
+    <!-- Formulaire de création de review -->
+    <form class="rating-card" aria-labelledby="review-title">
+    <div class="profile">
+        <div>
+          <div class="name" id="provider-name">{{ providerName }}</div>
+        </div>
+    </div>
+
+      <h3 class="title" id="review-title">Donner une note</h3>
+
+         <fieldset class="stars-container">
+         <legend class="sr-only">Note sur 5 étoiles</legend>
+         <div class="stars" role="radiogroup" aria-labelledby="review-title">
+           <input
+             *ngFor="let star of stars; let i = index"
+             type="radio"
+             [id]="'star-' + (i + 1)"
+             name="rating"
+             [value]="i + 1"
+             [checked]="rating === i + 1"
+             (change)="setRating(i + 1)"
+             class="star-input"
+           >
+           <label
+             *ngFor="let star of stars; let i = index"
+             [for]="'star-' + (i + 1)"
+             class="star"
+             [class.filled]="i < rating"
+           >
+             ★
+           </label>
+         </div>
+       </fieldset>
+
+      <textarea
+        id="feedback"
+        name="feedback"
+        placeholder="Votre commentaire"
+        [(ngModel)]="feedback"
+        (input)="onFeedbackInput($event)"
+        [class.error]="feedbackError"
+        [attr.aria-describedby]="feedbackError ? 'feedback-error' : 'feedback-help'"
+        [attr.aria-invalid]="feedbackError ? 'true' : 'false'"
+        required
+      ></textarea>
+
+      <div *ngIf="feedbackError" id="feedback-error" class="error-message" role="alert" aria-live="polite">
+        {{ feedbackError }}
+      </div>
+      <div *ngIf="!feedbackError" id="feedback-help" class="sr-only">
+        Saisissez votre commentaire pour cette réservation
+      </div>
+
+      <div class="info-box" role="note" aria-label="Information importante">
+        <span class="info-icon" aria-hidden="true">ℹ️</span>
+        <span>
+          Votre avis est important pour nous. Il nous aide à améliorer nos services et à mieux répondre à vos besoins.
+          Merci de prendre le temps de partager votre expérience.
+        </span>
+      </div>
+
+      <div class="buttons">
+        <button
+          class="btn send"
+          (click)="sendFeedback()"
+          [disabled]="rating === 0 || feedback.trim().length === 0 || feedbackError"
+          [attr.aria-describedby]="rating === 0 ? 'rating-error' : ''"
+          type="submit"
+        >
+          Envoyer
+        </button>
+        <button
+          class="btn cancel"
+          (click)="cancel()"
+          type="button"
+        >
+          Annuler
+        </button>
+      </div>
+
+      <div *ngIf="rating === 0" id="rating-error" class="sr-only">
+        Veuillez sélectionner une note avant d'envoyer votre avis
+      </div>
+     </form>
+   </div>
+ </main>
+<app-footer></app-footer>

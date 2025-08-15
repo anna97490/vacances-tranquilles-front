@@ -36,10 +36,5 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // La configuration est maintenant chargée automatiquement via envService
-    console.log('Application démarrée avec la configuration:', {
-      apiUrl: this.envService.apiUrl,
-      isProduction: this.envService.isProduction
-    });
   }
 }
