@@ -155,7 +155,7 @@ export class UserInformationService {
   getMyServices(): Observable<Service[]> {
     const url = `${this.urlApi}/services/my-services`;
     
-    console.log('Récupération des services depuis:', url);
+
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -183,7 +183,7 @@ export class UserInformationService {
   getUserServices(userId: number): Observable<Service[]> {
     const url = `${this.urlApi}/users/${userId}/services`;
     
-    console.log('Récupération des services de l\'utilisateur depuis:', url);
+
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -211,8 +211,7 @@ export class UserInformationService {
   createService(service: Service): Observable<Service> {
     const url = `${this.urlApi}/services`;
     
-    console.log('Création d\'un nouveau service vers:', url);
-    console.log('Données du service:', service);
+
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -241,8 +240,7 @@ export class UserInformationService {
   updateService(serviceId: number, service: Service): Observable<Service> {
     const url = `${this.urlApi}/services/${serviceId}`;
     
-    console.log('Mise à jour du service vers:', url);
-    console.log('Données du service:', service);
+
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
@@ -270,7 +268,7 @@ export class UserInformationService {
   deleteService(serviceId: number): Observable<void> {
     const url = `${this.urlApi}/services/${serviceId}`;
     
-    console.log('Suppression du service vers:', url);
+
     
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');

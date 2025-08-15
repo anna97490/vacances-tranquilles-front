@@ -1,12 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { PaymentService } from './payment.service';
 import { EnvService } from '../env/env.service';
-import { NotificationService } from '../notification/notification.service';
 
 describe('PaymentService', () => {
   let service: PaymentService;
   let envService: jasmine.SpyObj<EnvService>;
-  let notificationService: jasmine.SpyObj<NotificationService>;
 
   // Mock the loadStripe function
   const mockLoadStripe = jasmine.createSpy('loadStripe').and.returnValue(Promise.resolve(null));
@@ -15,23 +13,15 @@ describe('PaymentService', () => {
     const envServiceSpy = jasmine.createSpyObj('EnvService', [], {
       stripePublicKey: 'pk_test_example_key'
     });
-    const notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['warning', 'error']);
-
     TestBed.configureTestingModule({
       providers: [
         PaymentService,
-        { provide: EnvService, useValue: envServiceSpy },
-        { provide: NotificationService, useValue: notificationServiceSpy }
+        { provide: EnvService, useValue: envServiceSpy }
       ]
     });
 
     service = TestBed.inject(PaymentService);
     envService = TestBed.inject(EnvService) as jasmine.SpyObj<EnvService>;
-    notificationService = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
-
-    // Réinitialiser les mocks
-    notificationService.warning.calls.reset();
-    notificationService.error.calls.reset();
   });
 
   it('should be created', () => {
@@ -97,12 +87,14 @@ describe('PaymentService', () => {
       const sessionId = 'test-session-id';
       spyOn(console, 'warn');
       spyOn(console, 'error');
+      spyOn(window, 'alert');
 
       const result = await service.redirectToStripe(sessionId);
 
       expect(result).toBeFalsy();
       expect(console.warn).toHaveBeenCalledWith('Stripe public key not configured. Payment functionality will be disabled.');
-      expect(notificationService.warning).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+      expect(console.warn).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+      expect(window.alert).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
     });
 
     it('should handle whitespace-only Stripe public key', async () => {
@@ -113,12 +105,14 @@ describe('PaymentService', () => {
       const sessionId = 'test-session-id';
       spyOn(console, 'warn');
       spyOn(console, 'error');
+      spyOn(window, 'alert');
 
       const result = await service.redirectToStripe(sessionId);
 
       expect(result).toBeFalsy();
       expect(console.warn).toHaveBeenCalledWith('Stripe public key not configured. Payment functionality will be disabled.');
-      expect(notificationService.warning).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+      expect(console.warn).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+      expect(window.alert).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
     });
 
     it('should handle null Stripe public key', async () => {
@@ -129,12 +123,14 @@ describe('PaymentService', () => {
       const sessionId = 'test-session-id';
       spyOn(console, 'warn');
       spyOn(console, 'error');
+      spyOn(window, 'alert');
 
       const result = await service.redirectToStripe(sessionId);
 
       expect(result).toBeFalsy();
       expect(console.warn).toHaveBeenCalledWith('Stripe public key not configured. Payment functionality will be disabled.');
-      expect(notificationService.warning).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+      expect(console.warn).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+      expect(window.alert).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
     });
 
     it('should handle undefined Stripe public key', async () => {
@@ -145,12 +141,14 @@ describe('PaymentService', () => {
       const sessionId = 'test-session-id';
       spyOn(console, 'warn');
       spyOn(console, 'error');
+      spyOn(window, 'alert');
 
       const result = await service.redirectToStripe(sessionId);
 
       expect(result).toBeFalsy();
       expect(console.warn).toHaveBeenCalledWith('Stripe public key not configured. Payment functionality will be disabled.');
-      expect(notificationService.warning).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+      expect(console.warn).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+      expect(window.alert).toHaveBeenCalledWith('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
     });
 
     it('should handle empty session ID', async () => {

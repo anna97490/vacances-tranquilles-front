@@ -182,7 +182,7 @@ export class ProviderCardComponent implements OnChanges {
       totalPrice: this.calculateTotalPrice(startTime, endTime) // Prix total calculé
     };
 
-    console.log('Payload envoyé:', payload);
+
 
     try {
       const token = this.authStorage.getToken();

@@ -11,7 +11,7 @@ import { ServiceCategory } from '../../models/Service';
 import { ServicesService } from '../../services/services/services.service';
 import { Router } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { NotificationService } from '../../services/notification/notification.service';
+
 
 @Component({
   selector: 'app-service-search',
@@ -165,8 +165,7 @@ export class ServiceSearchComponent {
 
   constructor(
     private readonly servicesService: ServicesService,
-    private readonly router: Router,
-    private readonly notificationService: NotificationService
+    private readonly router: Router
   ) {}
 
   /**
@@ -175,12 +174,6 @@ export class ServiceSearchComponent {
   private checkDateInPast(): void {
     if (this.selectedDay && this.selectedMonth && this.selectedYear) {
       this.isDateInPast = this.isDayInPast(this.selectedDay);
-      console.log('Date check:', {
-        day: this.selectedDay,
-        month: this.selectedMonth,
-        year: this.selectedYear,
-        isDateInPast: this.isDateInPast
-      });
     } else {
       this.isDateInPast = false;
     }
@@ -356,10 +349,12 @@ export class ServiceSearchComponent {
             // On ne gère que les autres types d'erreurs ici
             if (error.status === 0) {
               // Erreur de connexion réseau
-              this.notificationService.error('Impossible de se connecter au serveur. Vérifiez votre connexion internet ou contactez le support.');
+              console.error('Impossible de se connecter au serveur. Vérifiez votre connexion internet ou contactez le support.');
+              alert('Impossible de se connecter au serveur. Vérifiez votre connexion internet ou contactez le support.');
             } else if (error.status !== 401 && error.status !== 403) {
               // Erreurs autres que l'authentification
-              this.notificationService.error('Erreur lors de la recherche. Veuillez réessayer.');
+              console.error('Erreur lors de la recherche. Veuillez réessayer.');
+              alert('Erreur lors de la recherche. Veuillez réessayer.');
             }
             // Les erreurs 401/403 sont gérées par l'intercepteur
           },

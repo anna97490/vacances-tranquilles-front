@@ -105,7 +105,6 @@
             "karmaConfig": "karma.conf.js",
             "codeCoverage": true,
             "codeCoverageExclude": [
-              "src/app/utils/test-helpers.ts",
               "src/app/services/home/chatbot/botpress.service.ts",
               "src/app/services/register/register-error-handler.service.ts",
               "src/app/services/login/login-navigation.service.ts"

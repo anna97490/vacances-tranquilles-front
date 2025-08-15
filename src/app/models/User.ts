@@ -64,4 +64,12 @@ export class User {
 
   /** Description de l'utilisateur */
   description?: string;
+
+  /**
+   * Constructeur permettant d'initialiser un objet utilisateur.
+   * @param data Données initiales de l'utilisateur.
+   */
+  constructor(data: Partial<User> = {}) {
+    Object.assign(this, data);
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -27,7 +27,7 @@ import { EnvService } from './services/env/env.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'frontend';
 
   constructor(private readonly envService: EnvService) {}
@@ -37,11 +37,6 @@ export class AppComponent implements OnInit {
     return !!localStorage.getItem('token');
   }
 
-  ngOnInit() {
-    // La configuration est maintenant chargée automatiquement via envService
-    console.log('Application démarrée avec la configuration:', {
-      apiUrl: this.envService.apiUrl,
-      isProduction: this.envService.isProduction
-    });
-  }
+
+
 }

@@ -104,7 +104,7 @@ describe('HeaderComponent', () => {
 
   it('should have correct paths for menu items', () => {
     expect(component.menu[0].path).toBe('/home');
-    expect(component.menu[1].path).toBe('/profil');
+    expect(component.menu[1].path).toBe('/profile');
     expect(component.menu[2].path).toBe('/reservations');
     expect(component.menu[3].path).toBe('/messaging');
     expect(component.menu[4].path).toBe('/assistance');

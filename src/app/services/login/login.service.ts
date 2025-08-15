@@ -64,7 +64,7 @@ export class LoginService {
    * @param error L'erreur HTTP
    */
   private handleSuccessWithParseError(error: HttpErrorResponse): void {
-    console.log('Gestion spéciale pour erreur de parsing avec status 200:', error);
+    
 
     const token = this.errorHandler.extractTokenFromErrorResponse(error);
     if (token) {
@@ -156,7 +156,7 @@ export class LoginService {
 
   /** Log helpers sans popup **/
   private logInfo(message: string): void {
-    console.log(message);
+
   }
 
   private logError(message: string): void {

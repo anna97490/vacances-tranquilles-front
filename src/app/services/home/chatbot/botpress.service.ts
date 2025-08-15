@@ -75,7 +75,7 @@ export class BotpressService {
 
       /* istanbul ignore next */
       const data = await response.json();
-      console.log('Message envoyé avec succès', data);
+      
       return true;
 
     } catch (error) {

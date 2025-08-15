@@ -15,11 +15,9 @@ export function authInterceptor(
         Authorization: `Bearer ${token}`
       }
     });
-
-    console.log('Token ajouté à la requête:', authReq.url);
+    
     return next(authReq);
   }
-
-  console.log('Aucun token trouvé pour la requête:', request.url);
+  
   return next(request);
 }

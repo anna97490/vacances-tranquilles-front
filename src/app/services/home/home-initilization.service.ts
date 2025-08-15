@@ -39,7 +39,7 @@ export class HomeInitializationService {
   private async loadBotpressScripts(): Promise<void> {
     try {
       await this.scriptLoader.loadScripts(this.botpressScripts);
-      console.log('Scripts Botpress chargés avec succès');
+
     } catch (error) {
       console.error('Erreur lors du chargement des scripts Botpress:', error);
       throw error;
@@ -56,7 +56,7 @@ export class HomeInitializationService {
 
       if (isAvailable) {
         await this.botpressService.sendWelcomeMessage();
-        console.log('Botpress initialisé avec succès');
+
       } else {
         console.warn('Timeout: Botpress non disponible');
       }

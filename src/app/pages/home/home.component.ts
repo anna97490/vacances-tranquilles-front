@@ -31,7 +31,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('HomeComponent initialized');
+
     this.initializeContent();
     this.initializeServices();
   }
@@ -44,10 +44,10 @@ export class HomeComponent implements OnInit, OnDestroy {
    * Initialise le contenu de la page
    */
   private initializeContent(): void {
-    console.log('Initializing content...');
+
     const content = this.homeContentService.getContent();
     this.content = content ?? this.getDefaultContent();
-    console.log('Content initialized:', this.content);
+
   }
 
   /**
@@ -55,9 +55,9 @@ export class HomeComponent implements OnInit, OnDestroy {
    */
   private async initializeServices(): Promise<void> {
     try {
-      console.log('Initializing services...');
+  
       await this.homeInitializationService.initializeHomeServices();
-      console.log('Services initialized successfully');
+      
     } catch (error) {
       console.error('Erreur lors de l\'initialisation des services:', error);
     }
