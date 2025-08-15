@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { mapStatusColor, mapStatusLabel } from '../../models/reservation-status';
 import { take } from 'rxjs/operators';
 import { ReservationService, ReservationResponseDTO, UpdateReservationStatusDTO } from '../../services/reservation/reservation.service';
+import { ConversationsService } from '../../services/conversation/conversations.service';
 
 // Utilise les interfaces du service
 type Reservation = ReservationResponseDTO;
@@ -25,6 +26,7 @@ export class ReservationComponent implements OnInit {
 
   constructor(
     private reservationService: ReservationService,
+    private conversationsService: ConversationsService,
     private router: Router
   ) {}
 
@@ -34,8 +36,6 @@ export class ReservationComponent implements OnInit {
   }
 
   private determineUserRole(): void {
-    // TODO: Récupérer le rôle de l'utilisateur depuis le service d'authentification
-    // Pour l'instant, on simule un prestataire
     this.isProvider = true;
   }
 
@@ -104,7 +104,6 @@ export class ReservationComponent implements OnInit {
         },
         error: (err: any) => {
           alert('Erreur lors de la mise à jour du statut');
-          console.error('Erreur mise à jour statut:', err);
         }
       });
   }
@@ -154,45 +153,77 @@ export class ReservationComponent implements OnInit {
     return new Date(dateString).toLocaleDateString('fr-FR');
   }
 
-  formatTime(timeString: string): string {
-    if (!timeString) return '';
-
-    // Si c'est déjà au format HH:MM, on le retourne
-    if (timeString.match(/^\\d{2}:\\d{2}$/)) {
-      return timeString;
-    }
-
-    // Si c'est au format HH:MM:SS, on extrait les 5 premiers caractères
-    if (timeString.match(/^\\d{2}:\\d{2}:\\d{2}$/)) {
-      return timeString.substring(0, 5);
-    }
-
-    // Si c'est au format ISO (avec T), on extrait l'heure
-    if (timeString.includes('T')) {
-      const timePart = timeString.split('T')[1];
-      const match = timePart.match(/^(\\d{2}:\\d{2})/);
-      return match ? match[1] : timePart;
-    }
-
-    // Sinon on essaie de parser comme une date complète
-    try {
-      const date = new Date(timeString);
-      if (isNaN(date.getTime())) {
-        return timeString; // Retourne la valeur originale si la date est invalide
-      }
-      // Formatage manuel pour avoir seulement HH:MM
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      return `${hours}:${minutes}`;
-    } catch {
-      return timeString;
-    }
-  }
-
   formatPrice(price: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR'
     }).format(price);
+  }
+
+  /**
+   * Vérifie si le bouton "Commencer une conversation" doit être affiché
+   */
+  shouldShowConversationButton(reservation: Reservation): boolean {
+    return reservation.status === 'IN_PROGRESS' && !reservation.conversationId;
+  }
+
+  /**
+   * Détermine l'ID de l'autre utilisateur pour créer la conversation
+   */
+  getOtherUserId(reservation: Reservation): number {
+    // Pour l'instant, on simule un utilisateur connecté avec l'ID 53 (client)
+    const currentUserId = 53; // À remplacer par le vrai ID de l'utilisateur connecté
+
+    // Si l'utilisateur connecté est le client, l'autre utilisateur est le provider
+    if (currentUserId === reservation.clientId) {
+      return reservation.providerId;
+    }
+
+    // Si l'utilisateur connecté est le provider, l'autre utilisateur est le client
+    if (currentUserId === reservation.providerId) {
+      return reservation.clientId;
+    }
+
+    // Si l'utilisateur connecté n'est ni le client ni le provider, erreur
+    throw new Error('Utilisateur non autorisé pour cette réservation');
+  }
+
+      /**
+   * Crée une nouvelle conversation pour la réservation
+   */
+  startConversation(reservation: Reservation): void {
+
+    this.conversationsService.createConversation(reservation.id)
+      .pipe(take(1))
+      .subscribe({
+        next: (conversation) => {
+
+          // Mettre à jour la réservation avec l'ID de la conversation
+          reservation.conversationId = conversation.id;
+
+          // Afficher un message de succès
+          this.liveMessage = 'Conversation créée avec succès';
+
+          // Naviguer vers la page de messagerie pour voir la conversation créée
+          setTimeout(() => {
+            this.router.navigate(['/messaging']);
+          }, 1500); // 1.5 secondes de délai pour voir le message de succès
+        },
+        error: (error) => {
+
+          // Afficher un message d'erreur plus détaillé
+          if (error.status === 0) {
+            this.error = 'Impossible de se connecter au serveur. Vérifiez que le backend est démarré.';
+          } else if (error.status === 400) {
+            this.error = `Erreur de validation: ${error.error?.message || error.message}`;
+          } else if (error.status === 403) {
+            this.error = 'Vous n\'êtes pas autorisé à créer cette conversation.';
+          } else if (error.status === 404) {
+            this.error = 'Réservation ou utilisateur non trouvé.';
+          } else {
+            this.error = `Erreur lors de la création de la conversation: ${error.error?.message || error.message}`;
+          }
+        }
+      });
   }
 }

@@ -44,7 +44,7 @@ export class HeaderComponent implements OnInit {
       label: 'Messagerie',
       icon: 'assets/icons/chat_bubble_24dp_FFFFFF.svg',
       iconActive: 'assets/icons/chat_bubble_24dp_FFA101.svg',
-      path: '/messagerie'
+      path: '/messaging'
     },
     {
       label: 'Assistance',

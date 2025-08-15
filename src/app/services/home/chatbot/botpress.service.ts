@@ -19,13 +19,13 @@ export class BotpressService {
   async sendWelcomeMessage(message: string = 'Bonjour'): Promise<void> {
     return new Promise((resolve, reject) => {
       let attempts = 0;
-      
+
       const interval = setInterval(async () => {
         attempts++;
-        
+
         try {
           const bpWebChat = (window as any).botpressWebChat;
-          
+
           if (bpWebChat?.conversationId) {
             const success = await this.sendMessage(bpWebChat.conversationId, message);
             if (success) {
@@ -33,7 +33,7 @@ export class BotpressService {
               resolve();
             }
           }
-          
+
           if (attempts >= this.maxRetries) {
             clearInterval(interval);
             reject(new Error('Timeout: Unable to initialize Botpress conversation'));
@@ -56,7 +56,7 @@ export class BotpressService {
   private async sendMessage(conversationId: string, text: string): Promise<boolean> {
     try {
       const clientMessageId = await this.secureIdGenerator.generateSecureRandomId('msg');
-      
+
       const response = await fetch(this.botpressApiUrl, {
         method: 'POST',
         headers: {
@@ -77,7 +77,7 @@ export class BotpressService {
       const data = await response.json();
       console.log('Message envoyé avec succès', data);
       return true;
-      
+
     } catch (error) {
       /* istanbul ignore next */
       console.error('Erreur lors de l\'envoi du message:', error);
@@ -99,14 +99,14 @@ export class BotpressService {
    */
   async waitForBotpress(timeout: number = 5000): Promise<boolean> {
     const startTime = Date.now();
-    
+
     while (Date.now() - startTime < timeout) {
       if (this.isBotpressAvailable()) {
         return true;
       }
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    
+
     return false;
   }
 }
