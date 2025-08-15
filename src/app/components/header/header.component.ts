@@ -35,10 +35,16 @@ export class HeaderComponent implements OnInit {
       path: '/profile'
     },
     {
+      label: 'Mes réservations',
+      icon: 'assets/icons/calendar_month_24dp_FFFFF.svg',
+      iconActive: 'assets/icons/calendar_FFA101.svg',
+      path: '/reservations'
+    },
+    {
       label: 'Messagerie',
       icon: 'assets/icons/chat_bubble_24dp_FFFFFF.svg',
       iconActive: 'assets/icons/chat_bubble_24dp_FFA101.svg',
-      path: '/messagerie'
+      path: '/messaging'
     },
     {
       label: 'Assistance',

@@ -1,0 +1,149 @@
+
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { ReservationService, ReservationResponseDTO } from '../../services/reservation/reservation.service';
+import { mapStatusColor, mapStatusLabel } from '../../models/reservation-status';
+import { take } from 'rxjs/operators';
+
+@Component({
+  selector: 'app-reservation-detail',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './reservation-detail.component.html',
+  styleUrl: './reservation-detail.component.scss'
+})
+export class ReservationDetailComponent implements OnInit {
+  reservation: ReservationResponseDTO | null = null;
+  isLoading = true;
+  error: string | null = null;
+  isUpdating = false;
+  liveMessage = '';
+  isProvider = false;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private reservationService: ReservationService,
+    private authStorage: AuthStorageService
+  ) {}
+
+  ngOnInit(): void {
+    this.determineUserRole();
+    this.loadReservationDetails();
+  }
+
+  private determineUserRole(): void {
+    const role = this.authStorage.getUserRole();
+    this.isProvider = role === 'PROVIDER' || role === 'PRESTATAIRE';
+  }
+
+  loadReservationDetails(): void {
+    const reservationId = this.route.snapshot.paramMap.get('id');
+
+    if (!reservationId) {
+      this.error = 'ID de réservation manquant';
+      this.isLoading = false;
+      return;
+    }
+
+    this.reservationService.getReservationById(parseInt(reservationId)).pipe(take(1)).subscribe({
+      next: (response) => {
+        this.reservation = response;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.error = 'Erreur lors du chargement des détails de la réservation';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/reservations']);
+  }
+
+  formatDate(date: string): string {
+    if (!date) return '';
+    const parsed = new Date(date);
+    if (!isNaN(parsed.getTime())) {
+      return parsed.toLocaleDateString('fr-FR');
+    }
+    const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (match) {
+      const d = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+      return d.toLocaleDateString('fr-FR');
+    }
+    return date;
+  }
+
+  formatPrice(price: number | null | undefined): string {
+    if (price === null || price === undefined || price === 0) {
+      return '0,00 €';
+    }
+
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(price);
+  }
+
+  formatTime(time: string): string {
+    if (!time) return '';
+
+    // Si c'est un format LocalDateTime complet (ex: 2024-01-15T22:29:02)
+    if (time.includes('T')) {
+      const date = new Date(time);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+    }
+
+    // Si c'est un format LocalTime (ex: 22:29:02)
+    const match = time.match(/^(\d{2}):(\d{2})/);
+    if (match) {
+      return `${match[1]}:${match[2]}`;
+    }
+
+    // Fallback: retourner la valeur originale
+    return time;
+  }
+
+  getStatusLabel(status: string): string {
+    return mapStatusLabel(status);
+  }
+
+  getStatusColor(status: string): string {
+    return mapStatusColor(status);
+  }
+
+  updateStatus(newStatus: 'IN_PROGRESS' | 'CANCELLED' | 'CLOSED'): void {
+    if (!this.isProvider) {
+      this.error = 'Seuls les prestataires peuvent modifier le statut des réservations';
+      return;
+    }
+    if (!this.reservation || !this.reservation.id) {
+      return;
+    }
+    this.isUpdating = true;
+    this.error = null;
+    this.reservationService
+      .updateReservationStatus(this.reservation.id, { status: newStatus })
+      .pipe(take(1))
+      .subscribe({
+        next: (updated) => {
+          this.reservation = updated;
+          this.isUpdating = false;
+          this.liveMessage = `Statut mis à jour: ${this.getStatusLabel(updated.status)}`;
+        },
+        error: (err) => {
+          this.error = "Impossible de mettre à jour le statut de la réservation.";
+          this.isUpdating = false;
+        },
+      });
+  }
+}

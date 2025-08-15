@@ -1,0 +1,273 @@
+<!-- Contenu de la page -->
+<main class="message-page" aria-label="Page de conversation">
+  <!-- Header de la conversation -->
+  <div class="conversation-header">
+    <button class="back-button" (click)="goBack()" aria-label="Retour aux conversations" title="Retour aux conversations">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Zone de chargement -->
+  <div *ngIf="loading" class="loading-container" aria-live="polite" aria-busy="true">
+    <div class="loading-spinner" aria-hidden="true"></div>
+    <p>Chargement des messages...</p>
+  </div>
+
+  <!-- Zone d'erreur -->
+  <div *ngIf="error" class="error-container" role="alert" aria-live="assertive">
+    <div class="error-message">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+      <p>{{ error }}</p>
+    </div>
+  </div>
+
+  <!-- Zone des messages -->
+  <section *ngIf="!loading && !error" class="messages-wrapper" aria-label="Messages de la conversation">
+    <!-- Message si aucune conversation (ID invalide) -->
+    <output *ngIf="showNoConversationsMessage" class="no-conversations" aria-live="polite">
+      <div class="no-conversations-content">
+        <div class="no-conversations-icon" aria-hidden="true">💬</div>
+        <h3>Vous n'avez pas encore de conversation</h3>
+        <p>Commencez une conversation depuis vos réservations en cours</p>
+        <button class="back-to-messaging-btn" (click)="goBack()">
+          Retour aux conversations
+        </button>
+      </div>
+    </output>
+
+    <!-- Message si aucune conversation -->
+    <output *ngIf="!showNoConversationsMessage && messages.length === 0" class="no-messages" aria-live="polite">
+      <div class="no-messages-content">
+        <div class="no-messages-icon" aria-hidden="true">💬</div>
+        <h3>Vous n'avez pas encore de messages</h3>
+        <p>Commencez la conversation en envoyant votre premier message</p>
+      </div>
+
+      <!-- Formulaire de nouveau message -->
+      <div class="new-message-form">
+        <h4>Nouveau message</h4>
+        <form (ngSubmit)="sendMessage()" class="message-form">
+          <!-- Message d'erreur de validation -->
+          <div *ngIf="getValidationErrorMessage(newMessageContent)" class="validation-error-message" role="alert" aria-live="polite">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            <span>{{ getValidationErrorMessage(newMessageContent) }}</span>
+          </div>
+
+          <div class="input-wrapper">
+            <label for="new-message-textarea" class="sr-only">Contenu du message</label>
+            <textarea
+              id="new-message-textarea"
+              [(ngModel)]="newMessageContent"
+              name="messageContent"
+              placeholder="Vos commentaires nous aideront à apporter des améliorations"
+              rows="4"
+              required
+              [disabled]="sending"
+              (input)="autoResize($event)"
+              class="message-textarea"
+              aria-describedby="message-help"
+            ></textarea>
+            <div id="message-help" class="sr-only">
+              Tapez votre message ici. Utilisez Entrée pour envoyer, Maj+Entrée pour une nouvelle ligne.
+            </div>
+          </div>
+          <button
+            type="submit"
+            [disabled]="sending || !newMessageContent.trim()"
+            class="send-button"
+            aria-label="Envoyer le message"
+          >
+            Envoyer
+          </button>
+        </form>
+      </div>
+    </output>
+
+    <!-- Liste des messages -->
+    <div *ngIf="messages.length > 0" class="messages-container" role="log" aria-label="Messages de la conversation" aria-live="polite">
+      <div *ngFor="let message of messages; let i = index; trackBy: trackByMessageId" class="message-group">
+        <!-- En-tête de date -->
+        <h3 *ngIf="shouldShowDateHeader(i)" class="date-header">
+          <span class="date-label">{{ message.getFormattedDate() }}</span>
+        </h3>
+
+        <!-- Message -->
+        <article class="message"
+             [class.my-message]="message.senderName === myName"
+             [class.editing]="editingMessageId === message.id"
+             [attr.aria-label]="'Message de ' + message.senderName + ' du ' + message.getFormattedDate()">
+          <div class="message-content">
+            <!-- Mode édition -->
+            <form *ngIf="editingMessageId === message.id" class="edit-mode" aria-label="Modifier le message">
+              <!-- Message d'erreur de validation -->
+              <div *ngIf="getValidationErrorMessage(editingContent)" class="validation-error-message" role="alert" aria-live="polite">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                <span>{{ getValidationErrorMessage(editingContent) }}</span>
+              </div>
+
+              <label for="edit-message-textarea" class="sr-only">Modifier le message</label>
+              <textarea
+                id="edit-message-textarea"
+                [(ngModel)]="editingContent"
+                name="editContent"
+                placeholder="Modifier le message..."
+                rows="3"
+                required
+                [disabled]="updating"
+                (keydown)="onEditKeyPress($event)"
+                (input)="autoResize($event)"
+                class="edit-textarea"
+                aria-describedby="edit-help"
+              ></textarea>
+              <div id="edit-help" class="sr-only">
+                Modifiez votre message ici. Utilisez Entrée pour sauvegarder, Échap pour annuler.
+              </div>
+              <div class="edit-actions">
+                <button
+                  type="button"
+                  (click)="updateMessage()"
+                  [disabled]="updating || !isMessageValid(editingContent)"
+                  class="save-button"
+                  aria-label="Sauvegarder les modifications"
+                >
+                  <svg *ngIf="!updating" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                  <div *ngIf="updating" class="updating-spinner" aria-hidden="true"></div>
+                  <span class="sr-only">Sauvegarder</span>
+                </button>
+                <button
+                  type="button"
+                  (click)="cancelEditing()"
+                  [disabled]="updating"
+                  class="cancel-button"
+                  aria-label="Annuler les modifications"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span class="sr-only">Annuler</span>
+                </button>
+              </div>
+            </form>
+
+            <!-- Mode affichage -->
+            <div *ngIf="editingMessageId !== message.id" class="message-text" [attr.aria-label]="'Message de ' + message.senderName">{{ message.content }}</div>
+
+            <div class="message-meta">
+              <span class="message-time" [attr.aria-label]="'Envoyé le ' + message.getFormattedDate()">{{ message.getFormattedDate() }}</span>
+              <!-- Indicateur de lecture pour les messages envoyés par l'utilisateur -->
+              <span *ngIf="message.senderName === myName" class="read-indicator" aria-label="Statut de lecture">
+                <svg *ngIf="message.isRead" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="read-check" aria-label="Message lu">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <svg *ngIf="!message.isRead" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="unread-check" aria-label="Message non lu">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </span>
+              <!-- Indicateur de non-lecture pour les messages reçus -->
+              <span *ngIf="!message.isRead && message.senderName !== myName" class="unread-indicator" aria-label="Nouveau message">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </span>
+
+              <!-- Icône de modification pour les messages de l'utilisateur actuel -->
+              <button
+                *ngIf="message.senderName === myName && editingMessageId !== message.id"
+                (click)="startEditing(message)"
+                class="edit-button"
+                aria-label="Modifier le message"
+                title="Modifier le message"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Zone de saisie de message (seulement si il y a des messages) -->
+  <aside *ngIf="!loading && !error && messages.length > 0" class="message-input-container" aria-label="Zone de saisie de message">
+    <!-- Message d'information si la réservation est fermée -->
+    <div *ngIf="isReservationClosed" class="reservation-closed-notice" role="alert" aria-live="polite">
+      <div class="notice-content">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        <span>Cette réservation est fermée. Vous pouvez consulter les messages mais ne pouvez plus en envoyer de nouveaux.</span>
+      </div>
+    </div>
+
+    <form (ngSubmit)="sendMessage()" class="message-form" aria-label="Formulaire d'envoi de message">
+      <!-- Message d'erreur de validation -->
+      <div *ngIf="getValidationErrorMessage(newMessageContent)" class="validation-error-message" role="alert" aria-live="polite">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        <span>{{ getValidationErrorMessage(newMessageContent) }}</span>
+      </div>
+
+      <div class="input-wrapper">
+        <label for="message-textarea" class="sr-only">Écrire un message</label>
+        <textarea
+          id="message-textarea"
+          [(ngModel)]="newMessageContent"
+          name="messageContent"
+          placeholder="Écrire un message..."
+          rows="1"
+          required
+          [disabled]="sending || isReservationClosed"
+          (keypress)="onKeyPress($event)"
+          (input)="autoResize($event)"
+          class="message-textarea"
+          aria-describedby="message-instructions"
+          [attr.aria-invalid]="error ? 'true' : 'false'"
+        ></textarea>
+        <div id="message-instructions" class="sr-only">
+          Tapez votre message ici. Utilisez Entrée pour envoyer, Maj+Entrée pour une nouvelle ligne.
+          {{ isReservationClosed ? 'Cette réservation est fermée, vous ne pouvez pas envoyer de nouveaux messages.' : '' }}
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="sending || !isMessageValid(newMessageContent)"
+          class="send-button"
+          aria-label="Envoyer le message"
+        >
+          <svg *ngIf="!sending" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22,2 15,22 11,13 2,9"/>
+          </svg>
+          <div *ngIf="sending" class="sending-spinner" aria-hidden="true"></div>
+          <span class="sr-only">Envoyer</span>
+        </button>
+      </div>
+    </form>
+  </aside>
+</main>

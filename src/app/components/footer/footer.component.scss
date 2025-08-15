@@ -67,6 +67,46 @@ mat-list-item .mat-list-item-content, a[mat-list-item] .mat-list-item-content {
   padding: 0.1rem 0;
 }
 
+// Styles spécifiques pour les liens des conditions générales
+.footer-link {
+  color: #FFFFFF !important;
+  text-decoration: none;
+
+  &:visited {
+    color: #FFFFFF !important;
+  }
+
+  &:active {
+    color: #FFFFFF !important;
+  }
+}
+
+// Styles spécifiques pour les éléments Material dans le footer
+mat-nav-list .footer-link {
+  color: #FFFFFF !important;
+
+  .mat-list-item-content {
+    color: #FFFFFF !important;
+  }
+
+  .mdc-list-item__content {
+    color: #FFFFFF !important;
+  }
+}
+
+// Cibler directement les éléments mat-list-item avec la classe footer-link
+a[mat-list-item].footer-link {
+  color: #FFFFFF !important;
+
+  .mat-list-item-content {
+    color: #FFFFFF !important;
+  }
+
+  .mdc-list-item__content {
+    color: #FFFFFF !important;
+  }
+}
+
 mat-divider {
   background: var(--secondary-text-color);
   height: 1px;
@@ -110,12 +150,12 @@ mat-divider {
   .footer-mockup {
     padding: 1.5rem 0 0.5rem 0;
   }
-  
+
   .footer-content {
     gap: 1.5rem;
     padding: 0 0.5rem 1rem 0.5rem;
   }
-  
+
   .footer-copyright {
     padding: 0 0.5rem;
   }
