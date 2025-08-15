@@ -179,7 +179,7 @@ export class UpdateProfileServicesComponent {
    */
   isFieldInvalid(fieldName: string): boolean {
     const field = this.serviceForm.get(fieldName);
-    return field ? field.invalid && (field.dirty || field.touched) : false;
+    return field?.invalid && (field?.dirty || field?.touched) || false;
   }
 
   /**
