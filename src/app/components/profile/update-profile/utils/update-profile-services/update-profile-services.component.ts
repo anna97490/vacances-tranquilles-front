@@ -11,7 +11,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Service, ServiceCategory } from '../../../../../models/Service';
 import { UserInformationService } from '../../../../../services/user-information/user-information.service';
-import { IconService } from '../../../../../services/icon.service';
+import { IconService } from '../../../../../services/icon/icon.service';
 
 /**
  * Composant de modification des services proposés dans le profil utilisateur.

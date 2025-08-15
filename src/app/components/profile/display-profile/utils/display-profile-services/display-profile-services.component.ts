@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgFor } from '@angular/common';
 import { NgClass } from '@angular/common';
 import { Service } from '../../../../../models/Service';
-import { IconService } from '../../../../../services/icon.service';
+import { IconService } from '../../../../../services/icon/icon.service';
 
 /**
  * Composant d'affichage des services proposés dans le profil utilisateur.

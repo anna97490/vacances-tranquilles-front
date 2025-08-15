@@ -8,7 +8,7 @@ import { of, throwError } from 'rxjs';
 
 import { UpdateProfileServicesComponent } from './update-profile-services.component';
 import { UserInformationService } from '../../../../../services/user-information/user-information.service';
-import { IconService } from '../../../../../services/icon.service';
+import { IconService } from '../../../../../services/icon/icon.service';
 import { Service, ServiceCategory } from '../../../../../models/Service';
 
 describe('UpdateProfileServicesComponent', () => {
