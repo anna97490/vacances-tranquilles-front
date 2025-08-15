@@ -175,6 +175,28 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       component = fixture.componentInstance;
       expect(component.getContent()).toEqual({ title: '', date: '', sections: [] });
     });
+    
+    // Tests supplémentaires pour couvrir toutes les branches
+    it('getContent retourne un objet vide pour une route neutre', () => {
+      mockLocationService.getPathname.and.returnValue('/home');
+      fixture = TestBed.createComponent(TermsAndConditionsComponent);
+      component = fixture.componentInstance;
+      expect(component.getContent()).toEqual({ title: '', date: '', sections: [] });
+    });
+    
+    it('getContent retourne un objet vide pour une route avec paramètres', () => {
+      mockLocationService.getPathname.and.returnValue('/terms-and-conditions?param=value');
+      fixture = TestBed.createComponent(TermsAndConditionsComponent);
+      component = fixture.componentInstance;
+      expect(component.getContent()).toEqual({ title: '', date: '', sections: [] });
+    });
+    
+    it('getContent retourne un objet vide pour une route racine', () => {
+      mockLocationService.getPathname.and.returnValue('/');
+      fixture = TestBed.createComponent(TermsAndConditionsComponent);
+      component = fixture.componentInstance;
+      expect(component.getContent()).toEqual({ title: '', date: '', sections: [] });
+    });
   });
 
   describe('Structure des données', () => {

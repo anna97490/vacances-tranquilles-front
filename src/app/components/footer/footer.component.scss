@@ -43,6 +43,15 @@
   overflow-wrap: break-word;
 }
 
+a.footer-link {
+  text-decoration: none;
+  color: var(--secondary-text-color) !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 0.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
 a.footer-link .footer-text {
   font-size: 0.9rem !important;
   margin-bottom: 0.5rem;

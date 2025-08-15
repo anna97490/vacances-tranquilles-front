@@ -1,4 +1,4 @@
-import { Component} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -27,10 +27,17 @@ import { EnvService } from './services/env/env.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'frontend';
 
   constructor(private readonly envService: EnvService) {}
+
+  ngOnInit(): void {
+    console.log('Application démarrée avec la configuration:', {
+      apiUrl: this.envService.apiUrl,
+      isProduction: this.envService.isProduction
+    });
+  }
 
   isAuthenticated(): boolean {
     // Simple check: considère connecté si un token est présent (ajuste si besoin)

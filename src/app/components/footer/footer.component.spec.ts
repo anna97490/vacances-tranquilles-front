@@ -157,7 +157,10 @@ describe('FooterComponent', () => {
       },
       {
         description: 'should have correct number of legal links',
-        test: () => expectations.elementCount(selectors.footerLink, footerData.legalLinks.length)
+        test: () => {
+          const legalLinks = getElements.all('a[mat-list-item]');
+          expect(legalLinks.length).toBe(footerData.legalLinks.length);
+        }
       },
       {
         description: 'should have mat-list-item directive on legal links',
@@ -187,14 +190,13 @@ describe('FooterComponent', () => {
     });
 
     it('should have disableRipple attribute on legal links', () => {
-      getElements.legalLinks().forEach(link => {
-        const componentInstance = link.componentInstance;
-        if (componentInstance?.disableRipple !== undefined) {
-          expect(componentInstance.disableRipple).toBe(true);
-        } else {
-          const ngReflectAttr = link.nativeElement.getAttribute('ng-reflect-disable-ripple');
-          expect(ngReflectAttr).toBe('true');
-        }
+      footerData.legalLinks.forEach(linkData => {
+        const linkSelector = `a[routerLink="${linkData.route}"]`;
+        const link = getElements.single(linkSelector);
+        
+        expect(link).toBeTruthy();
+        const ngReflectAttr = link.nativeElement.getAttribute('ng-reflect-disable-ripple');
+        expect(ngReflectAttr).toBe('true');
       });
     });
   });
@@ -209,9 +211,16 @@ describe('FooterComponent', () => {
 
     it('should have all required router links', () => {
       const routerLinks = getElements.routerLinks();
-      expectations.elementCount(selectors.routerLink, footerData.legalLinks.length);
+      // Il y a 3 liens router au total : Contact + 2 liens légaux
+      const expectedTotalLinks = footerData.legalLinks.length + 1; // +1 pour le lien Contact
+      expectations.elementCount(selectors.routerLink, expectedTotalLinks);
 
       const routes = routerLinks.map(link => link.nativeElement.getAttribute('routerLink'));
+      
+      // Vérifier que le lien Contact est présent
+      expect(routes).toContain('/assistance');
+      
+      // Vérifier que tous les liens légaux sont présents
       footerData.legalLinks.forEach(linkData => {
         expect(routes).toContain(linkData.route);
       });
@@ -260,7 +269,7 @@ describe('FooterComponent', () => {
       { selector: selectors.footerCol, className: 'footer-col', count: 4, description: 'footer columns' },
       { selector: selectors.footerTitle, className: 'footer-title', count: 4, description: 'footer titles' },
       { selector: selectors.footerText, className: 'footer-text', count: 1, description: 'footer text' },
-      { selector: selectors.footerLink, className: 'footer-link', count: 2, description: 'footer links' }
+      { selector: selectors.footerLink, className: 'footer-link', count: 3, description: 'footer links' }
     ];
 
     multiElementTests.forEach(({ selector, className, count, description }) => {
@@ -286,10 +295,18 @@ describe('FooterComponent', () => {
       {
         description: 'should have proper navigation structure',
         test: () => {
-          const navList = getElements.single(selectors.matNavList);
-          expect(navList).toBeTruthy();
-          const navLinks = navList.queryAll(By.css('a'));
-          expect(navLinks.length).toBe(footerData.legalLinks.length);
+          const navLists = getElements.all(selectors.matNavList);
+          expect(navLists.length).toBe(2); // Un pour Contact, un pour les liens légaux
+          
+          // Premier nav-list (Contact)
+          const contactNavList = navLists[0];
+          const contactLinks = contactNavList.queryAll(By.css('a'));
+          expect(contactLinks.length).toBe(1);
+          
+          // Deuxième nav-list (Légal)
+          const legalNavList = navLists[1];
+          const legalLinks = legalNavList.queryAll(By.css('a'));
+          expect(legalLinks.length).toBe(footerData.legalLinks.length);
         }
       },
       {

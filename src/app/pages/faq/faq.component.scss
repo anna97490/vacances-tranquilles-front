@@ -1,0 +1,249 @@
+// FAQ Component - Style Simplifié
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto 5rem auto;
+  padding: 2rem 1rem;
+  background-color: var(--secondary-text-color);
+}
+
+.mat-expansion-panel-header{
+  padding: 24px !important;
+}
+
+.mat-toolbar-single-row {
+  justify-content: center !important;
+  margin-bottom: 3rem !important;
+  margin-top: 2rem !important;
+}
+
+// Header simplifié
+.faq-header {
+  background: var(--secondary-text-color);
+  color: var(--text-color);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+
+  .header-content {
+    text-align: center;
+  }
+  
+  .faq-title {
+    font-size: 2rem;
+    font-weight: 500;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-color);
+    
+    .title-highlight {
+      font-weight: 700;
+      color: var(--tertiary-color);
+    }
+  }
+  
+  .faq-subtitle {
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.9;
+    color: var(--text-color);
+  }
+}
+
+// Contenu principal simplifié
+.faq-content {
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--secondary-text-color);
+  background: white;
+  
+  .search-section {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--secondary-text-color);
+  }
+  
+  .category-filters {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--secondary-text-color);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .search-results {
+    padding: 1rem 1.5rem;
+    background-color: var(--secondary-text-color);
+    border-bottom: 1px solid var(--secondary-text-color);
+    
+    .results-count {
+      margin: 0;
+      color: var(--discret-text-color);
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Accordéon FAQ simplifié
+.faq-accordion {
+  .faq-panel {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--secondary-text-color);
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    ::ng-deep .mat-expansion-panel-header {
+      padding: 1rem 1.5rem;
+      
+      &:hover {
+        background-color: var(--secondary-text-color);
+      }
+    }
+    
+    .question-text {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-color);
+      justify-content: space-between;
+    }
+    
+    .category-badge {
+      .category-chip-small {
+        font-size: 0.75rem;
+        height: 20px;
+        background-color: var(--tertiary-color);
+        color: var(--secondary-text-color);
+      }
+    }
+    
+    .faq-answer {
+      padding: 0 1.5rem 1rem 1.5rem;
+      
+      p {
+        margin: 0;
+        color: var(--discret-text-color);
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+// Message aucun résultat simplifié
+.no-results {
+  padding: 2rem;
+  text-align: center;
+  
+  .no-results-card {
+    background-color: var(--secondary-text-color);
+    
+    .no-results-icon {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+      color: var(--discret-text-color);
+      margin-bottom: 1rem;
+    }
+    
+    h3 {
+      color: var(--text-color);
+      margin: 0 0 0.5rem 0;
+    }
+    
+    p {
+      color: var(--discret-text-color);
+      margin: 0 0 1rem 0;
+    }
+  }
+}
+
+.mat-divider-horizontal {
+  margin: 3rem auto 2rem auto !important;
+}
+// Séparateur simplifié
+.faq-divider {
+  margin: 2rem auto;
+  width: 80%;
+  color: var(--tertiary-color);
+  ::ng-deep .mat-divider-horizontal {
+    border-top-color: var(--tertiary-color);
+    opacity: 0.4;
+  }
+}
+
+// Section d'aide simplifiée
+.help-section {
+  text-align: center;
+  padding: 0;
+
+  .help-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin: 0 0 1rem 0;
+    padding: 0;
+  }
+  
+  .contact-button {
+    background-color: var(--button-color) !important;
+    color: var(--secondary-text-color) !important;
+    padding: 0.75rem 2rem !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    border: none !important;
+    
+    &:hover {
+      background-color: var(--button-color) !important;
+    }
+  }
+}
+
+// Responsive simplifié
+@media (max-width: 768px) {
+  .faq-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .faq-header {
+    padding: 1rem;
+    
+    .faq-title {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .faq-content {
+    .search-section,
+    .category-filters,
+    .search-results {
+      padding: 1rem;
+    }
+    
+    .faq-accordion .faq-panel {
+      ::ng-deep .mat-expansion-panel-header {
+        padding: 0.75rem 1rem;
+      }
+      
+      .faq-answer {
+        padding: 0 1rem 0.75rem 1rem;
+      }
+    }
+  }
+  
+  .help-section {
+    ::ng-deep .mat-mdc-card-header,
+    ::ng-deep .mat-mdc-card-content,
+    ::ng-deep .mat-mdc-card-actions {
+      padding: 1rem;
+    }
+  }
+  
+  .category-filters {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .category-chips {
+      margin-bottom: 0.5rem;
+    }
+  }
+}

@@ -1,0 +1,187 @@
+<main class="contact-container" aria-labelledby="contact-title">
+  <div class="contact-card">
+    <h1 id="contact-title" class="contact-title">Contactez-nous</h1>
+    
+    <p class="contact-description" id="contact-description">
+      Laissez-nous vos coordonnées et nous vous recontacterons dans les 24 heures
+    </p>
+
+    <form 
+      [formGroup]="contactForm" 
+      (ngSubmit)="onSubmit()" 
+      class="contact-form"
+      aria-labelledby="contact-title"
+      aria-describedby="contact-description"
+      novalidate
+    >
+      <!-- Nom -->
+      <div class="form-group">
+        <label for="nom" class="form-label" id="nom-label">
+          Nom <span aria-label="champ obligatoire" class="required-indicator">*</span>
+        </label>
+        <input
+          type="text"
+          id="nom"
+          name="nom"
+          formControlName="nom"
+          class="form-input"
+          [class.error]="nom?.invalid && nom?.touched"
+          placeholder="Votre nom"
+          aria-labelledby="nom-label"
+          aria-required="true"
+          [attr.aria-invalid]="nom?.invalid && nom?.touched"
+          aria-describedby="nom-error"
+          autocomplete="family-name"
+        />
+        <div 
+          *ngIf="nom?.invalid && nom?.touched" 
+          class="error-message" 
+          id="nom-error"
+          role="alert"
+          aria-live="polite"
+        >
+          {{ getFieldError('nom') }}
+        </div>
+      </div>
+
+      <!-- Prénom -->
+      <div class="form-group">
+        <label for="prenom" class="form-label" id="prenom-label">
+          Prénom <span aria-label="champ obligatoire" class="required-indicator">*</span>
+        </label>
+        <input
+          type="text"
+          id="prenom"
+          name="prenom"
+          formControlName="prenom"
+          class="form-input"
+          [class.error]="prenom?.invalid && prenom?.touched"
+          placeholder="Votre prénom"
+          aria-labelledby="prenom-label"
+          aria-required="true"
+          [attr.aria-invalid]="prenom?.invalid && prenom?.touched"
+          aria-describedby="prenom-error"
+          autocomplete="given-name"
+        />
+        <div 
+          *ngIf="prenom?.invalid && prenom?.touched" 
+          class="error-message" 
+          id="prenom-error"
+          role="alert"
+          aria-live="polite"
+        >
+          {{ getFieldError('prenom') }}
+        </div>
+      </div>
+
+      <!-- Objet -->
+      <div class="form-group">
+        <label for="objet" class="form-label" id="objet-label">
+          Objet <span aria-label="champ obligatoire" class="required-indicator">*</span>
+        </label>
+        <input
+          type="text"
+          id="objet"
+          name="objet"
+          formControlName="objet"
+          class="form-input"
+          [class.error]="objet?.invalid && objet?.touched"
+          placeholder="Objet de votre demande"
+          aria-labelledby="objet-label"
+          aria-required="true"
+          [attr.aria-invalid]="objet?.invalid && objet?.touched"
+          aria-describedby="objet-error"
+        />
+        <div 
+          *ngIf="objet?.invalid && objet?.touched" 
+          class="error-message" 
+          id="objet-error"
+          role="alert"
+          aria-live="polite"
+        >
+          {{ getFieldError('objet') }}
+        </div>
+      </div>
+
+      <!-- Demande -->
+      <div class="form-group">
+        <label for="demande" class="form-label" id="demande-label">
+          Demande <span aria-label="champ obligatoire" class="required-indicator">*</span>
+        </label>
+        <textarea
+          id="demande"
+          name="demande"
+          formControlName="demande"
+          class="form-textarea"
+          [class.error]="demande?.invalid && demande?.touched"
+          placeholder="Décrivez votre demande..."
+          rows="6"
+          aria-labelledby="demande-label"
+          aria-required="true"
+          [attr.aria-invalid]="demande?.invalid && demande?.touched"
+          aria-describedby="demande-error demande-counter"
+          maxlength="1000"
+        ></textarea>
+        <div class="textarea-footer">
+          <div 
+            *ngIf="demande?.invalid && demande?.touched" 
+            class="error-message" 
+            id="demande-error"
+            role="alert"
+            aria-live="polite"
+          >
+            {{ getFieldError('demande') }}
+          </div>
+          <div 
+            class="character-count" 
+            [class.warning]="remainingCharacters <= 100"
+            id="demande-counter"
+            aria-live="polite"
+          >
+            {{ remainingCharacters }} caractères restants
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages de succès/erreur -->
+      <div 
+        *ngIf="submitSuccess" 
+        class="success-message"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <span class="sr-only">Succès : </span>
+        Votre message a été envoyé avec succès ! Nous vous recontacterons dans les 24 heures.
+      </div>
+      
+      <div 
+        *ngIf="submitError" 
+        class="error-message global-error"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <span class="sr-only">Erreur : </span>
+        {{ submitError }}
+      </div>
+
+      <!-- Bouton d'envoi -->
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="isSubmitting || contactForm.invalid"
+        aria-describedby="submit-status"
+      >
+        <span *ngIf="!isSubmitting" aria-hidden="false">Envoyer</span>
+        <span *ngIf="isSubmitting" aria-hidden="false">Envoi en cours...</span>
+      </button>
+      
+      <div id="submit-status" class="sr-only" aria-live="polite">
+        <span *ngIf="isSubmitting">Formulaire en cours d'envoi</span>
+        <span *ngIf="!isSubmitting && contactForm.invalid">Formulaire incomplet, veuillez corriger les erreurs</span>
+      </div>
+    </form>
+  </div>
+</main>
+<app-footer></app-footer>
