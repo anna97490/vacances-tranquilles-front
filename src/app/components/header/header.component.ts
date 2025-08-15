@@ -97,6 +97,22 @@ export class HeaderComponent implements OnInit {
    * @returns Le chemin de navigation approprié pour Accueil
    */
   private getAccueilNavigationPath(): string {
+    return this.getAccueilPathByRole();
+  }
+
+  /**
+   * Détermine si l'élément Accueil doit être considéré comme actif
+   * @returns true si Accueil doit être considéré comme actif
+   */
+  private isAccueilActive(): boolean {
+    return this.currentPath === this.getAccueilPathByRole();
+  }
+
+  /**
+   * Détermine le chemin approprié pour l'élément Accueil selon le rôle utilisateur
+   * @returns Le chemin de navigation approprié pour Accueil
+   */
+  private getAccueilPathByRole(): string {
     const userRole = this.authStorage.getUserRole();
     
     // Si c'est un CLIENT, rediriger vers service-search
@@ -111,14 +127,7 @@ export class HeaderComponent implements OnInit {
     return '/home';
   }
 
-  /**
-   * Vérifie si l'utilisateur connecté est un client
-   * @returns true si l'utilisateur est connecté et a le rôle CLIENT
-   */
-  private isClientUser(): boolean {
-    return this.authStorage.isAuthenticated() && 
-           this.authStorage.getUserRole() === UserRole.CLIENT;
-  }
+
 
   /**
    * Gère la navigation vers un élément du menu
@@ -205,25 +214,6 @@ export class HeaderComponent implements OnInit {
       return this.isAccueilActive();
     }
     return this.currentPath === path;
-  }
-
-  /**
-   * Détermine si l'élément Accueil doit être considéré comme actif
-   * @returns true si Accueil doit être considéré comme actif
-   */
-  private isAccueilActive(): boolean {
-    const userRole = this.authStorage.getUserRole();
-    
-    // Si c'est un CLIENT sur la page service-search, considérer Accueil comme actif
-    if (userRole === UserRole.CLIENT && this.currentPath === '/service-search') {
-      return true;
-    }
-    // Si c'est un PROVIDER sur la page profile pour la MVP, considérer Accueil comme actif
-    else if (userRole === UserRole.PROVIDER && this.currentPath === '/profile') {
-      return true;
-    }
-    
-    return false;
   }
 
   getIcon(item: any): string {
