@@ -2,9 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DisplayProfileHeaderComponent } from "../display-profile/utils/display-profile-header/display-profile-header.component";
 import { DisplayProfileServicesComponent } from './utils/display-profile-services/display-profile-services.component';
-import { User } from '../../../models/User';
+import { User, UserRole } from '../../../models/User';
 import { Service } from '../../../models/Service';
-import { UserRole } from '../../../models/User';
 import { UserInformationService } from '../../../services/user-information/user-information.service';
 
 @Component({
@@ -12,14 +11,14 @@ import { UserInformationService } from '../../../services/user-information/user-
   standalone: true,
   imports: [CommonModule, DisplayProfileHeaderComponent, DisplayProfileServicesComponent],
   templateUrl: './display-profile.component.html',
-  styleUrl: './display-profile.component.scss'
+
 })
 export class DisplayProfileComponent implements OnInit {
   @Input() user!: User;
   @Input() services!: Service[];
   @Input() userRole!: UserRole;
 
-  constructor(private userInformationService: UserInformationService) {}
+  constructor(private readonly userInformationService: UserInformationService) {}
 
   ngOnInit() {
     // Charge les données du profil depuis le backend si pas fournies

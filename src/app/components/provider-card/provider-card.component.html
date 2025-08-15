@@ -1,31 +1,31 @@
-<mat-card class="provider-card" role="article" [attr.aria-label]="'Carte de prestataire pour ' + user?.firstName + ' ' + user?.lastName">
+<mat-card class="provider-card" [attr.aria-label]="'Carte de prestataire pour ' + user?.firstName + ' ' + user?.lastName">
   <div class="header">
     <img src="assets/icons/person_24dp_FFA101.svg" alt="Avatar de {{ user?.firstName }}" class="avatar" />
 
     <div class="info">
       <div class="top-line">
-        <span class="name" role="heading" aria-level="3">{{ user?.firstName }} {{ user?.lastName }}</span>
+        <h3 class="name">{{ user?.firstName }} {{ user?.lastName }}</h3>
         <mat-icon class="verified-icon" aria-label="Profil vérifié">check_circle</mat-icon>
         <button mat-button class="profile-btn" 
                 [attr.aria-label]="'Voir le profil de ' + user?.firstName + ' ' + user?.lastName"
                 (click)="navigateToProfile()">Voir le profil</button>
       </div>
 
-      <div class="rating" role="region" aria-label="Évaluations">
+      <section class="rating" aria-label="Évaluations">
         <app-rating-stars [rating]="3" [reviewsCount]="32"></app-rating-stars>
-      </div>
+      </section>
 
-      <div class="description" role="region" aria-label="Description du service">
+      <section class="description" aria-label="Description du service">
         {{ service?.description }}
-      </div>
+      </section>
     </div>
   </div>
 
 
   <div class="footer">
-    <div class="price" role="region" aria-label="Prix du service">
+    <section class="price" aria-label="Prix du service">
       <span class="euro">€ {{ service?.price }}</span><span class="unit">/heure</span>
-    </div>
+    </section>
     <button mat-raised-button class="reserve-btn" 
             [attr.aria-label]="'Réserver le service de ' + user?.firstName + ' ' + user?.lastName + ' pour ' + service?.price + ' euros par heure'"
             (click)="createCheckoutSession()">

@@ -1,8 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { User } from '../../../models/User';
+import { User, UserRole } from '../../../models/User';
 import { Service } from '../../../models/Service';
-import { UserRole } from '../../../models/User';
 import { UpdateUserDTO } from '../../../models/UpdateUserDTO';
 import { UserInformationService } from '../../../services/user-information/user-information.service';
 import { UpdateProfileHeaderComponent } from './utils/update-profile-header/update-profile-header.component';
@@ -14,7 +13,7 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [CommonModule, UpdateProfileHeaderComponent, UpdateProfileServicesComponent],
   templateUrl: './update-profile.component.html',
-  styleUrl: './update-profile.component.scss'
+
 })
 export class UpdateProfileComponent implements OnInit {
   @Input() user!: User;
@@ -27,7 +26,7 @@ export class UpdateProfileComponent implements OnInit {
 
   @ViewChild(UpdateProfileHeaderComponent) headerComponent!: UpdateProfileHeaderComponent;
 
-  constructor(private userInformationService: UserInformationService) {}
+  constructor(private readonly userInformationService: UserInformationService) {}
 
   ngOnInit() {
     // Charge les données du profil depuis le backend si pas fournies

@@ -26,8 +26,9 @@
         <form [formGroup]="serviceForm" class="service-form">
           <div class="form-row">
             <div class="form-field">
-              <label class="field-label">Titre du service*</label>
+              <label for="service-title" class="field-label">Titre du service*</label>
               <input 
+                id="service-title"
                 type="text" 
                 formControlName="title" 
                 placeholder="Ex: Location de vélo"
@@ -39,8 +40,8 @@
             </div>
 
             <div class="form-field">
-              <label class="field-label">Catégorie*</label>
-              <select formControlName="category" class="form-select" [class.invalid]="isFieldInvalid('category')">
+              <label for="service-category" class="field-label">Catégorie*</label>
+              <select id="service-category" formControlName="category" class="form-select" [class.invalid]="isFieldInvalid('category')">
                 <option value="">Sélectionnez une catégorie</option>
                 <option *ngFor="let category of categories" [value]="category">
                   {{ category }}
@@ -53,8 +54,9 @@
           </div>
 
           <div class="form-field full-width">
-            <label class="field-label">Description*</label>
+            <label for="service-description" class="field-label">Description*</label>
             <textarea 
+              id="service-description"
               formControlName="description" 
               rows="3" 
               placeholder="Décrivez votre service en détail..."
@@ -67,8 +69,9 @@
 
           <div class="form-row">
             <div class="form-field">
-              <label class="field-label">Prix (€)*</label>
+              <label for="service-price" class="field-label">Prix (€)*</label>
               <input 
+                id="service-price"
                 type="number" 
                 formControlName="price" 
                 min="0" 

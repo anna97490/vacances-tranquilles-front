@@ -32,8 +32,8 @@ export class UpdateProfileHeaderComponent implements OnInit {
   profileForm!: FormGroup;
 
   constructor(
-    private fb: FormBuilder,
-    private profileValidationService: ProfileValidationService
+    private readonly fb: FormBuilder,
+    private readonly profileValidationService: ProfileValidationService
   ) {}
 
   ngOnInit(): void {

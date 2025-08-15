@@ -5,7 +5,7 @@ import { ServiceCategory } from '../../models/Service';
   providedIn: 'root'
 })
 export class IconService {
-  private categoryIcons: Record<ServiceCategory, string> = {
+  private readonly categoryIcons: Record<ServiceCategory, string> = {
     [ServiceCategory.HOME]: 'home',
     [ServiceCategory.OUTDOOR]: 'park',
     [ServiceCategory.REPAIRS]: 'construction',

@@ -13,7 +13,7 @@ import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.compon
 import { PaymentService } from '../../services/payment/payment.service';
 import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 /**
  * Composant carte prestataire (affichage d'un User de rôle PROVIDER)

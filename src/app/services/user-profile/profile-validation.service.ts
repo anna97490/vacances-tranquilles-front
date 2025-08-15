@@ -38,8 +38,8 @@ function makeDangerValidator(pattern: RegExp) {
 }
 
 // Définition des patterns d'injection
-const DANGEROUS_GENERAL = /[<>'"&;{}()\[\]\\|`~#$%^*+=]/;
-const DANGEROUS_EMAIL = /[<>'"&;{}()\[\]\\|`~#$%^*=]/;
+const DANGEROUS_GENERAL = /[<>'"&;{}()[\]\\|`~#$%^*+=]/;
+const DANGEROUS_EMAIL = /[<>'"&;{}()[\]\\|`~#$%^*=]/;
 
 const injectionPreventionValidator = makeDangerValidator(DANGEROUS_GENERAL);
 const emailInjectionPreventionValidator = makeDangerValidator(DANGEROUS_EMAIL);
@@ -101,7 +101,7 @@ function descriptionLengthValidator(control: AbstractControl): ValidationErrors 
 })
 export class ProfileValidationService {
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private readonly fb: FormBuilder) {}
 
   /**
    * Crée le formulaire de profil avec les validateurs appropriés.
@@ -133,43 +133,94 @@ export class ProfileValidationService {
    * @returns Message d'erreur ou chaîne vide
    */
   getFieldErrorText(fieldName: string, control: AbstractControl): string {
-    if (!control || !control.errors || !control.touched) return '';
+    if (!this.shouldShowError(control)) return '';
 
-    const labels = this.getFieldLabels();
-    const L = (k: string) => labels[k] || k;
+    const errorHandlers = this.getErrorHandlers();
+    const handler = errorHandlers[fieldName];
+    
+    return handler ? handler(control.errors!) : '';
+  }
 
-    switch (fieldName) {
-      case 'firstName':
-        if (control.errors['required']) return 'Le prénom est requis';
-        if (control.errors['lettersOnly']) return 'Le prénom ne doit contenir que des lettres';
-        if (control.errors['injectionPrevention']) return `Le prénom ne doit pas contenir de caractères spéciaux dangereux`;
-        break;
-      case 'lastName':
-        if (control.errors['required']) return 'Le nom est requis';
-        if (control.errors['lettersOnly']) return 'Le nom ne doit contenir que des lettres';
-        if (control.errors['injectionPrevention']) return `Le nom ne doit pas contenir de caractères spéciaux dangereux`;
-        break;
-      case 'email':
-        if (control.errors['required']) return "L'email est requis";
-        if (control.errors['emailFormat']) return "Format d'email invalide";
-        if (control.errors['injectionPrevention']) return `L'email ne doit pas contenir de caractères spéciaux dangereux`;
-        break;
-      case 'phoneNumber':
-        if (control.errors['required']) return 'Le numéro de téléphone est requis';
-        if (control.errors['phoneNumberFormat']) return 'Format de numéro de téléphone invalide (ex: 0612345678)';
-        if (control.errors['injectionPrevention']) return `Le numéro de téléphone ne doit pas contenir de caractères spéciaux dangereux`;
-        break;
-      case 'city':
-        if (control.errors['required']) return 'La ville est requise';
-        if (control.errors['lettersOnly']) return 'La ville ne doit contenir que des lettres';
-        if (control.errors['injectionPrevention']) return `La ville ne doit pas contenir de caractères spéciaux dangereux`;
-        break;
-      case 'description':
-        if (control.errors['maxLength']) return `La description ne doit pas dépasser ${control.errors['maxLength'].max} caractères`;
-        if (control.errors['injectionPrevention']) return `La description ne doit pas contenir de caractères spéciaux dangereux`;
-        break;
-    }
+  /**
+   * Vérifie si une erreur doit être affichée
+   * @param control Contrôle du formulaire
+   * @returns true si l'erreur doit être affichée
+   */
+  private shouldShowError(control: AbstractControl): boolean {
+    return !!(control && control.errors && control.touched);
+  }
 
+  /**
+   * Retourne les gestionnaires d'erreurs pour chaque champ
+   * @returns Objet contenant les gestionnaires d'erreurs
+   */
+  private getErrorHandlers(): { [key: string]: (errors: ValidationErrors) => string } {
+    return {
+      firstName: (errors) => this.getFirstNameErrors(errors),
+      lastName: (errors) => this.getLastNameErrors(errors),
+      email: (errors) => this.getEmailErrors(errors),
+      phoneNumber: (errors) => this.getPhoneNumberErrors(errors),
+      city: (errors) => this.getCityErrors(errors),
+      description: (errors) => this.getDescriptionErrors(errors)
+    };
+  }
+
+  /**
+   * Gestionnaire d'erreurs pour le prénom
+   */
+  private getFirstNameErrors(errors: ValidationErrors): string {
+    if (errors['required']) return 'Le prénom est requis';
+    if (errors['lettersOnly']) return 'Le prénom ne doit contenir que des lettres';
+    if (errors['injectionPrevention']) return 'Le prénom ne doit pas contenir de caractères spéciaux dangereux';
+    return '';
+  }
+
+  /**
+   * Gestionnaire d'erreurs pour le nom
+   */
+  private getLastNameErrors(errors: ValidationErrors): string {
+    if (errors['required']) return 'Le nom est requis';
+    if (errors['lettersOnly']) return 'Le nom ne doit contenir que des lettres';
+    if (errors['injectionPrevention']) return 'Le nom ne doit pas contenir de caractères spéciaux dangereux';
+    return '';
+  }
+
+  /**
+   * Gestionnaire d'erreurs pour l'email
+   */
+  private getEmailErrors(errors: ValidationErrors): string {
+    if (errors['required']) return "L'email est requis";
+    if (errors['emailFormat']) return "Format d'email invalide";
+    if (errors['injectionPrevention']) return "L'email ne doit pas contenir de caractères spéciaux dangereux";
+    return '';
+  }
+
+  /**
+   * Gestionnaire d'erreurs pour le numéro de téléphone
+   */
+  private getPhoneNumberErrors(errors: ValidationErrors): string {
+    if (errors['required']) return 'Le numéro de téléphone est requis';
+    if (errors['phoneNumberFormat']) return 'Format de numéro de téléphone invalide (ex: 0612345678)';
+    if (errors['injectionPrevention']) return 'Le numéro de téléphone ne doit pas contenir de caractères spéciaux dangereux';
+    return '';
+  }
+
+  /**
+   * Gestionnaire d'erreurs pour la ville
+   */
+  private getCityErrors(errors: ValidationErrors): string {
+    if (errors['required']) return 'La ville est requise';
+    if (errors['lettersOnly']) return 'La ville ne doit contenir que des lettres';
+    if (errors['injectionPrevention']) return 'La ville ne doit pas contenir de caractères spéciaux dangereux';
+    return '';
+  }
+
+  /**
+   * Gestionnaire d'erreurs pour la description
+   */
+  private getDescriptionErrors(errors: ValidationErrors): string {
+    if (errors['maxLength']) return `La description ne doit pas dépasser ${errors['maxLength'].max} caractères`;
+    if (errors['injectionPrevention']) return 'La description ne doit pas contenir de caractères spéciaux dangereux';
     return '';
   }
 

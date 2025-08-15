@@ -1,9 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor, NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { NgFor } from '@angular/common';
-import { NgClass } from '@angular/common';
 import { Service } from '../../../../../models/Service';
 import { IconService } from '../../../../../services/icon/icon.service';
 

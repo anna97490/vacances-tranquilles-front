@@ -5,11 +5,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
-import { User } from '../../models/User';
+import { User, UserRole } from '../../models/User';
 import { Service } from '../../models/Service';
 import { UserInformationService } from '../../services/user-information/user-information.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
-import { UserRole } from '../../models/User';
 
 @Component({
   selector: 'app-profile',

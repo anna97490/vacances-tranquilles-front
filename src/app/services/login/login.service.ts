@@ -51,8 +51,6 @@ export class LoginService {
     // Stockage des données d'authentification
     this.authStorage.storeAuthenticationData(responseBody.token, responseBody.userRole);
 
-    // Log non intrusif au lieu d'une popup
-    this.logInfo('Connexion réussie !');
     this.navigation.redirectAfterLogin(responseBody.userRole);
 
     // Actualiser la page uniquement en environnement browser (pas pendant les tests)
@@ -82,7 +80,6 @@ export class LoginService {
       }
 
       this.authStorage.storeAuthenticationData(token, userRole);
-      this.logInfo('Connexion réussie !');
       this.navigation.redirectAfterLogin(userRole);
 
       // Actualiser la page uniquement en environnement browser
@@ -152,11 +149,6 @@ export class LoginService {
   private processActualError(error: HttpErrorResponse): void {
     const errorMessage = this.errorHandler.getLoginErrorMessage(error);
     this.logError(errorMessage);
-  }
-
-  /** Log helpers sans popup **/
-  private logInfo(message: string): void {
-
   }
 
   private logError(message: string): void {

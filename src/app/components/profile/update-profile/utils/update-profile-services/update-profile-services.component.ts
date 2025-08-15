@@ -49,11 +49,11 @@ export class UpdateProfileServicesComponent {
   categories: ServiceCategory[] = [];
 
   constructor(
-    private fb: FormBuilder,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private userInformationService: UserInformationService,
-    public iconService: IconService
+    private readonly fb: FormBuilder,
+    private readonly dialog: MatDialog,
+    private readonly snackBar: MatSnackBar,
+    private readonly userInformationService: UserInformationService,
+    public readonly iconService: IconService
   ) {
     this.categories = this.iconService.getAvailableCategories();
     this.serviceForm = this.fb.group({
