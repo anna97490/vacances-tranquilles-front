@@ -22,7 +22,7 @@ import { HeaderComponent } from '../../components/header/header.component';
   selector: 'app-available-providers',
   standalone: true,
   imports: [
-    ProviderCardComponent, 
+    ProviderCardComponent,
     CommonModule,
     MatToolbarModule,
     MatButtonModule,
@@ -61,7 +61,7 @@ export class AvailableProvidersComponent implements OnInit {
     if (searchCriteria) {
       try {
         this.searchCriteria = JSON.parse(searchCriteria);
-        
+
         // Recherche des services avec les critères
         this.searchServices();
       } catch (error) {
@@ -89,7 +89,7 @@ export class AvailableProvidersComponent implements OnInit {
       .subscribe({
         next: (services) => {
           this.services = services;
-          
+
           // Récupérer les informations des prestataires
           this.loadProvidersInfo();
         },
@@ -106,7 +106,7 @@ export class AvailableProvidersComponent implements OnInit {
   private loadProvidersInfo(): void {
     // Extraire les IDs des prestataires uniques
     const providerIds = [...new Set(this.services.map(service => service.providerId))];
-    
+
     if (providerIds.length === 0) {
       return;
     }
@@ -150,12 +150,12 @@ export class AvailableProvidersComponent implements OnInit {
    */
   get formattedCriteria(): string {
     if (!this.searchCriteria) return '';
-    
+
     const { category, postalCode, date, startTime, endTime } = this.searchCriteria;
-    
+
     // Convertir le code de catégorie en label complet
     const categoryLabel = this.getCategoryLabel(category);
-    
+
     return `${categoryLabel} - ${postalCode} - ${date} ${startTime}-${endTime}`;
   }
 
@@ -172,7 +172,7 @@ export class AvailableProvidersComponent implements OnInit {
       'SHOPPING': 'Courses et logistique',
       'ANIMALS': 'Soins aux animaux'
     };
-    
+
     return categoryMap[categoryCode] || categoryCode;
   }
 

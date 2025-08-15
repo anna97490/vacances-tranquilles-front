@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,6 +16,7 @@ import { EnvService } from './services/env/env.service';
   imports: [
     RouterOutlet,
     HeaderComponent,
+    FooterComponent,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,

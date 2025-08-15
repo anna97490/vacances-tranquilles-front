@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
@@ -53,7 +54,6 @@ export class ReservationDetailComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des détails:', error);
         this.error = 'Erreur lors du chargement des détails de la réservation';
         this.isLoading = false;
       }
@@ -78,43 +78,39 @@ export class ReservationDetailComponent implements OnInit {
     return date;
   }
 
-  formatPrice(price: number): string {
-    if (!price) return '0';
-    return price.toFixed(2);
+  formatPrice(price: number | null | undefined): string {
+    if (price === null || price === undefined || price === 0) {
+      return '0,00 €';
+    }
+
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(price);
   }
 
   formatTime(time: string): string {
     if (!time) return '';
 
-    // Si c'est déjà au format HH:MM, on le retourne
-    if (time.match(/^\d{2}:\d{2}$/)) {
-      return time;
-    }
-
-    // Si c'est au format HH:MM:SS, on extrait HH:MM
-    if (time.match(/^\d{2}:\d{2}:\d{2}$/)) {
-      return time.substring(0, 5);
-    }
-
-    // Si c'est au format ISO (avec T), on extrait l'heure
+    // Si c'est un format LocalDateTime complet (ex: 2024-01-15T22:29:02)
     if (time.includes('T')) {
-      const timePart = time.split('T')[1];
-      const match = timePart.match(/^(\d{2}:\d{2})/);
-      return match ? match[1] : timePart;
+      const date = new Date(time);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
     }
 
-    try {
-      const date = new Date(time);
-      if (isNaN(date.getTime())) {
-        return time;
-      }
-      // Formatage manuel pour avoir seulement HH:MM
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      return `${hours}:${minutes}`;
-    } catch {
-      return time;
+    // Si c'est un format LocalTime (ex: 22:29:02)
+    const match = time.match(/^(\d{2}):(\d{2})/);
+    if (match) {
+      return `${match[1]}:${match[2]}`;
     }
+
+    // Fallback: retourner la valeur originale
+    return time;
   }
 
   getStatusLabel(status: string): string {
@@ -145,7 +141,6 @@ export class ReservationDetailComponent implements OnInit {
           this.liveMessage = `Statut mis à jour: ${this.getStatusLabel(updated.status)}`;
         },
         error: (err) => {
-          console.error('Erreur lors de la mise à jour du statut:', err);
           this.error = "Impossible de mettre à jour le statut de la réservation.";
           this.isUpdating = false;
         },

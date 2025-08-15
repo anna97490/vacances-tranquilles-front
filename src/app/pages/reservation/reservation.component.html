@@ -1,3 +1,4 @@
+
 <div class="reservations-container">
   <!-- Région d'annonce accessible -->
   <div class="sr-only" aria-live="polite" [textContent]="liveMessage"></div>
@@ -32,7 +33,7 @@
         </div>
       </div>
 
-             <!-- Cartes des réservations -->
+      <!-- Cartes des réservations -->
        <div class="reservation-cards">
          <div
            *ngFor="let reservation of reservations"
@@ -61,6 +62,16 @@
               </div>
 
               <div class="footer-buttons">
+                <!-- Bouton "Commencer une conversation" -->
+                <button
+                  *ngIf="shouldShowConversationButton(reservation)"
+                  class="conversation-btn"
+                  (click)="startConversation(reservation)"
+                  type="button">
+                  Commencer une conversation
+                </button>
+
+                <!-- Bouton "Voir détails" -->
                 <a class="profile-btn" [routerLink]="['/reservations', reservation.id]">Voir détails</a>
               </div>
            </div>

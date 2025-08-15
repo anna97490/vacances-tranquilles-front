@@ -44,6 +44,9 @@ export interface ReservationResponseDTO {
   comments?: string;
   services: string[];
 
+  // ID de la conversation si elle existe
+  conversationId?: number;
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
@@ -70,8 +73,7 @@ export class ReservationService {
   getAllReservations(): Observable<ReservationResponseDTO[]> {
     const apiUrl = this.envService.apiUrl;
     const url = `${apiUrl}/reservations`;
-    console.log('🌐 Appel API - URL:', url);
-    console.log('🔧 API URL configurée:', apiUrl);
+
     return this.http.get<ReservationResponseDTO[]>(url);
   }
 
@@ -82,6 +84,7 @@ export class ReservationService {
    */
   getReservationById(id: number): Observable<ReservationResponseDTO> {
     const apiUrl = this.envService.apiUrl;
+
     return this.http.get<ReservationResponseDTO>(`${apiUrl}/reservations/${id}`);
   }
 
@@ -92,6 +95,7 @@ export class ReservationService {
    */
   createReservation(reservationData: ReservationDTO): Observable<ReservationResponseDTO> {
     const apiUrl = this.envService.apiUrl;
+
     return this.http.post<ReservationResponseDTO>(`${apiUrl}/reservations`, reservationData);
   }
 
@@ -103,6 +107,7 @@ export class ReservationService {
    */
   updateReservationStatus(id: number, statusData: UpdateReservationStatusDTO): Observable<ReservationResponseDTO> {
     const apiUrl = this.envService.apiUrl;
+
     return this.http.patch<ReservationResponseDTO>(`${apiUrl}/reservations/${id}/status`, statusData);
   }
 
@@ -113,6 +118,7 @@ export class ReservationService {
    */
   deleteReservation(id: number): Observable<HttpResponse<any>> {
     const apiUrl = this.envService.apiUrl;
+
     return this.http.delete(`${apiUrl}/reservations/${id}`, { observe: 'response' });
   }
 
