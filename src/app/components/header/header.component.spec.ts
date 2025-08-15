@@ -333,7 +333,7 @@ describe('HeaderComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/service-search']);
     });
 
-    it('should navigate to home when non-client user clicks on Accueil', () => {
+    it('should navigate to profile when provider user clicks on Accueil', () => {
       // Simuler un utilisateur non-client connecté
       authStorage.isAuthenticated.and.returnValue(true);
       authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
@@ -341,7 +341,7 @@ describe('HeaderComponent', () => {
       const accueilItem = component.menu[0]; // Accueil
       component.onMenuNavigation(accueilItem);
 
-      expect(router.navigate).toHaveBeenCalledWith(['/home']);
+      expect(router.navigate).toHaveBeenCalledWith(['/profile']);
     });
 
     it('should navigate to home when non-authenticated user clicks on Accueil', () => {
