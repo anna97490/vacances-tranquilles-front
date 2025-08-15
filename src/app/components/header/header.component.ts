@@ -87,18 +87,28 @@ export class HeaderComponent implements OnInit {
   getNavigationPath(item: any): string {
     // Si c'est l'élément "Accueil" et que l'utilisateur est connecté
     if (item.label === 'Accueil' && this.authStorage.isAuthenticated()) {
-      const userRole = this.authStorage.getUserRole();
-      
-      // Si c'est un CLIENT, rediriger vers service-search
-      if (userRole === UserRole.CLIENT) {
-        return '/service-search';
-      }
-      // Si c'est un PROVIDER, rediriger vers son profil
-      else if (userRole === UserRole.PROVIDER) {
-        return '/profile';
-      }
+      return this.getAccueilNavigationPath();
     }
     return item.path;
+  }
+
+  /**
+   * Détermine le chemin de navigation pour l'élément Accueil selon le rôle utilisateur
+   * @returns Le chemin de navigation approprié pour Accueil
+   */
+  private getAccueilNavigationPath(): string {
+    const userRole = this.authStorage.getUserRole();
+    
+    // Si c'est un CLIENT, rediriger vers service-search
+    if (userRole === UserRole.CLIENT) {
+      return '/service-search';
+    }
+    // Si c'est un PROVIDER, rediriger vers son profil pour le MVP
+    else if (userRole === UserRole.PROVIDER) {
+      return '/profile';
+    }
+    
+    return '/home';
   }
 
   /**
@@ -192,18 +202,28 @@ export class HeaderComponent implements OnInit {
   isActive(path: string): boolean {
     // Si c'est le chemin "Accueil" et que l'utilisateur est connecté
     if (path === '/home' && this.authStorage.isAuthenticated()) {
-      const userRole = this.authStorage.getUserRole();
-      
-      // Si c'est un CLIENT sur la page service-search, considérer Accueil comme actif
-      if (userRole === UserRole.CLIENT && this.currentPath === '/service-search') {
-        return true;
-      }
-      // Si c'est un PROVIDER sur la page profile pour la MVP, considérer Accueil comme actif
-      else if (userRole === UserRole.PROVIDER && this.currentPath === '/profile') {
-        return true;
-      }
+      return this.isAccueilActive();
     }
     return this.currentPath === path;
+  }
+
+  /**
+   * Détermine si l'élément Accueil doit être considéré comme actif
+   * @returns true si Accueil doit être considéré comme actif
+   */
+  private isAccueilActive(): boolean {
+    const userRole = this.authStorage.getUserRole();
+    
+    // Si c'est un CLIENT sur la page service-search, considérer Accueil comme actif
+    if (userRole === UserRole.CLIENT && this.currentPath === '/service-search') {
+      return true;
+    }
+    // Si c'est un PROVIDER sur la page profile pour la MVP, considérer Accueil comme actif
+    else if (userRole === UserRole.PROVIDER && this.currentPath === '/profile') {
+      return true;
+    }
+    
+    return false;
   }
 
   getIcon(item: any): string {
