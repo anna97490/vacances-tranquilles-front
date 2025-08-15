@@ -114,6 +114,11 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 0.8rem;
+    }
   }
 
   .info-card {
@@ -138,6 +143,13 @@
       justify-content: center;
       width: 2.2rem;
       height: 2.2rem;
+      flex-shrink: 0;
+    }
+
+    .input-container {
+      flex: 1;
+      min-width: 0;
+      max-width: 100%;
     }
 
     .info-label {
@@ -160,6 +172,9 @@
       padding: 0.2rem 0.7rem;
       background: var(--secondary-text-color);
       transition: border-color 0.2s ease;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
       
       &.invalid {
         border-color: #f44336;
@@ -172,6 +187,34 @@
     }
     .email {
       color: var(--secondary-color);
+    }
+
+    // Styles responsives pour mobile
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 1rem;
+
+      mat-icon {
+        align-self: flex-start;
+      }
+
+      .input-container {
+        width: 100%;
+      }
+
+      .info-value {
+        font-size: 1rem;
+        padding: 0.3rem 0.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .info-value {
+        font-size: 0.95rem;
+        padding: 0.25rem 0.4rem;
+      }
     }
   }
 }

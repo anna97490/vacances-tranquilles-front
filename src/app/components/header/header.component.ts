@@ -85,9 +85,18 @@ export class HeaderComponent implements OnInit {
    * @returns Le chemin de navigation
    */
   getNavigationPath(item: any): string {
-    // Si c'est l'élément "Accueil" et que l'utilisateur est connecté avec le rôle CLIENT
-    if (item.label === 'Accueil' && this.isClientUser()) {
-      return '/service-search';
+    // Si c'est l'élément "Accueil" et que l'utilisateur est connecté
+    if (item.label === 'Accueil' && this.authStorage.isAuthenticated()) {
+      const userRole = this.authStorage.getUserRole();
+      
+      // Si c'est un CLIENT, rediriger vers service-search
+      if (userRole === UserRole.CLIENT) {
+        return '/service-search';
+      }
+      // Si c'est un PROVIDER, rediriger vers son profil
+      else if (userRole === UserRole.PROVIDER) {
+        return '/profile';
+      }
     }
     return item.path;
   }
@@ -181,15 +190,18 @@ export class HeaderComponent implements OnInit {
   }
 
   isActive(path: string): boolean {
-    // Si c'est le chemin "Accueil" et que l'utilisateur est un client connecté
-    // sur la page service-search, considérer Accueil comme actif
-    if (path === '/home' && this.isClientUser() && this.currentPath === '/service-search') {
-      return true;
-    }
-    // Si c'est le chemin "Accueil" et que l'utilisateur est un client connecté
-    // sur la page service-search, considérer Accueil comme actif
-    if (path === '/home' && this.isClientUser() && this.currentPath === '/service-search') {
-      return true;
+    // Si c'est le chemin "Accueil" et que l'utilisateur est connecté
+    if (path === '/home' && this.authStorage.isAuthenticated()) {
+      const userRole = this.authStorage.getUserRole();
+      
+      // Si c'est un CLIENT sur la page service-search, considérer Accueil comme actif
+      if (userRole === UserRole.CLIENT && this.currentPath === '/service-search') {
+        return true;
+      }
+      // Si c'est un PROVIDER sur la page profile pour la MVP, considérer Accueil comme actif
+      else if (userRole === UserRole.PROVIDER && this.currentPath === '/profile') {
+        return true;
+      }
     }
     return this.currentPath === path;
   }
