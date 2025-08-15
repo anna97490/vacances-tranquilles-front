@@ -1,6 +1,6 @@
 <div>
   <!-- Bouton retour -->
-  <button class="back-btn" aria-label="Retour" type="button" (click)="goBack()">
+  <button class="back-btn" aria-label="Retour à la page précédente" type="button" (click)="goBack()">
     ←
   </button>
 </div>
@@ -30,15 +30,15 @@
         <input matInput id="email" name="email" formControlName="email" placeholder="entreprise@email.com" [required]="true"
                type="email" autocomplete="email" inputmode="email"
                [attr.aria-invalid]="(form.get('email')?.invalid && form.get('email')?.touched) ? 'true' : 'false'"
-               [attr.aria-describedby]="'email-hint ' + (emailError ? 'email-api-error' : '')">
+               [attr.aria-describedby]="'email-hint ' + (emailError ? 'email-api-error' : '') + ' ' + (form.get('email')?.invalid && form.get('email')?.touched ? 'email-validation-error' : '')">
         <mat-hint id="email-hint">Exemple: nom&#64;domaine.com</mat-hint>
-        <mat-error *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+        <mat-error *ngIf="form.get('email')?.invalid && form.get('email')?.touched" id="email-validation-error">
           <ng-container class="error-message" *ngIf="form.get('email')?.errors?.['required']">L'email est requis</ng-container>
           <ng-container class="error-message" *ngIf="form.get('email')?.errors?.['email']">Format d'email invalide</ng-container>
         </mat-error>
       </mat-form-field>
       <!-- Erreur d'API pour l'email -->
-      <div id="email-api-error" class="error-message" *ngIf="emailError" role="alert">
+      <div id="email-api-error" class="error-message" *ngIf="emailError" role="alert" aria-live="assertive">
         <span>{{ emailError }}</span>
       </div>
     </div>
@@ -49,14 +49,14 @@
         <input matInput id="userSecret" name="userSecret" formControlName="userSecret" type="password" placeholder="********" [required]="true"
                autocomplete="current-password"
                [attr.aria-invalid]="(form.get('userSecret')?.invalid && form.get('userSecret')?.touched) ? 'true' : 'false'"
-               [attr.aria-describedby]="'password-hint ' + (passwordError ? 'password-api-error' : '')">
+               [attr.aria-describedby]="'password-hint ' + (passwordError ? 'password-api-error' : '') + ' ' + (form.get('userSecret')?.invalid && form.get('userSecret')?.touched ? 'password-validation-error' : '')">
         <mat-hint id="password-hint">8+ caractères, 1 minuscule, 1 majuscule, 1 chiffre, 1 spécial (&#64;$!%*?&)</mat-hint>
-        <mat-error *ngIf="form.get('userSecret')?.invalid && form.get('userSecret')?.touched">
+        <mat-error *ngIf="form.get('userSecret')?.invalid && form.get('userSecret')?.touched" id="password-validation-error">
           {{ getPasswordErrorText() }}
         </mat-error>
       </mat-form-field>
       <!-- Erreur d'API pour le mot de passe -->
-      <div id="password-api-error" class="error-message" *ngIf="passwordError" role="alert">
+      <div id="password-api-error" class="error-message" *ngIf="passwordError" role="alert" aria-live="assertive">
         <span>{{ passwordError }}</span>
       </div>
     </div>
@@ -65,5 +65,4 @@
   <div class="login-register">
     Pas encore de compte ? <a routerLink="/home" aria-label="Aller à la page d'inscription">S'inscrire</a>
   </div>
-  <app-footer></app-footer>
 </div>

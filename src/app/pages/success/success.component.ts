@@ -52,7 +52,7 @@ export class SuccessComponent implements OnInit {
       });
   }
 
-  goToHome(): void {
-    this.router.navigate(['/home']);
+  goToReservations(): void {
+    this.router.navigate(['/reservations']);
   }
 }

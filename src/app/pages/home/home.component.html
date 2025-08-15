@@ -7,9 +7,22 @@
     <div class="subtitle">{{ content.subtitle }}</div>
     <div class="intro-text">{{ content.introText }}</div>
     <div class="cta-buttons">
-      <button class="btn blue" routerLink="/auth/register/prestataire" aria-label="S'inscrire en tant que prestataire de services">{{ content.btnPrestataire }}</button>
-      <button class="btn blue" routerLink="/auth/register/particulier" aria-label="S'inscrire en tant que particulier">{{ content.btnParticulier }}</button>
-      <button class="btn grey" routerLink="/auth/login" aria-label="Se connecter à son compte">{{ content.btnConnexion }}</button>
+      <button class="btn blue" routerLink="/auth/register/prestataire" 
+              aria-label="S'inscrire en tant que prestataire de services"
+              aria-describedby="prestataire-description">{{ content.btnPrestataire }}</button>
+      <button class="btn blue" routerLink="/auth/register/particulier" 
+              aria-label="S'inscrire en tant que particulier"
+              aria-describedby="particulier-description">{{ content.btnParticulier }}</button>
+      <button class="btn grey" routerLink="/auth/login" 
+              aria-label="Se connecter à son compte"
+              aria-describedby="connexion-description">{{ content.btnConnexion }}</button>
+    </div>
+    
+    <!-- Descriptions cachées pour les lecteurs d'écran -->
+    <div class="sr-only">
+      <div id="prestataire-description">Créez votre compte prestataire pour proposer vos services aux vacanciers</div>
+      <div id="particulier-description">Rejoignez Vacances Tranquilles pour confier votre logement à des professionnels</div>
+      <div id="connexion-description">Accédez à votre espace personnel pour gérer vos réservations et services</div>
     </div>
   </main>
   <section class="features-section">
@@ -27,5 +40,4 @@
       </div>
     </div>
   </section>
-  <app-footer></app-footer>
 </div>

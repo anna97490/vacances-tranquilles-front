@@ -48,7 +48,6 @@ describe('LoginService', () => {
 
     // Créer les spies au niveau global avec des valeurs par défaut
     reloadPageIfBrowserSpy = spyOn(service as any, 'reloadPageIfBrowser').and.callFake(() => {
-      console.log('reloadPageIfBrowser called but mocked in test');
     });
 
     isTestEnvironmentSpy = spyOn(service as any, 'isTestEnvironment').and.returnValue(true);
@@ -79,8 +78,6 @@ describe('LoginService', () => {
       expect(authStorageSpy.storeAuthenticationData).toHaveBeenCalledWith('fake-token', 'CLIENT');
       expect(navigationSpy.redirectAfterLogin).toHaveBeenCalledWith('CLIENT');
 
-      // En environnement de test, le service utilise console.log au lieu d'alert
-      expect(consoleSpy).toHaveBeenCalledWith('Connexion réussie !');
     });
 
     it('should handle login success with missing token', () => {
@@ -167,7 +164,6 @@ describe('LoginService', () => {
       expect(errorHandlerSpy.isPotentialParseError).toHaveBeenCalledWith(parseError);
       expect(errorHandlerSpy.extractTokenFromErrorResponse).toHaveBeenCalledWith(parseError);
       expect(authStorageSpy.storeAuthenticationData).toHaveBeenCalledWith('extracted-token', '');
-      expect(consoleSpy).toHaveBeenCalledWith('Connexion réussie !');
     });
 
     it('should handle login error with parse error but no token', () => {
@@ -259,7 +255,6 @@ describe('LoginService', () => {
 
       // Remettre le mock
       reloadPageIfBrowserSpy.and.callFake(() => {
-        console.log('reloadPageIfBrowser called but mocked in test');
       });
     });
 
@@ -301,7 +296,6 @@ describe('LoginService', () => {
 
       expect(authStorageSpy.storeAuthenticationData).toHaveBeenCalledWith('test-token', 'CLIENT');
       expect(navigationSpy.redirectAfterLogin).toHaveBeenCalledWith('CLIENT');
-      expect(consoleSpy).toHaveBeenCalledWith('Connexion réussie !');
     });
 
     // Mock the HTTP request

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { loadStripe } from '@stripe/stripe-js';
 import { EnvService } from '../env/env.service';
-import { NotificationService } from '../notification/notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +8,7 @@ import { NotificationService } from '../notification/notification.service';
 export class PaymentService {
 
   constructor(
-    private readonly envService: EnvService,
-    private readonly notificationService: NotificationService
+    private readonly envService: EnvService
   ) { }
 
   async redirectToStripe(sessionId: string): Promise<boolean> {
@@ -18,7 +16,8 @@ export class PaymentService {
       const stripePublicKey = this.envService.stripePublicKey;
       if (!stripePublicKey || stripePublicKey.trim() === '') {
         console.warn('Stripe public key not configured. Payment functionality will be disabled.');
-        this.notificationService.warning('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+        console.warn('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
+        alert('Le système de paiement n\'est pas configuré. Veuillez contacter le support.');
         return false;
       }
       
@@ -27,18 +26,21 @@ export class PaymentService {
         const result = await stripe.redirectToCheckout({ sessionId });
         if (result.error) {
           console.error('Erreur Stripe:', result.error);
-          this.notificationService.error(`Erreur de paiement: ${result.error.message}`);
+          console.error(`Erreur de paiement: ${result.error.message}`);
+          alert(`Erreur de paiement: ${result.error.message}`);
           return false;
         }
         return true;
       } else {
         console.error('Stripe could not be loaded');
-        this.notificationService.error('Impossible de charger le système de paiement. Veuillez réessayer.');
+        console.error('Impossible de charger le système de paiement. Veuillez réessayer.');
+        alert('Impossible de charger le système de paiement. Veuillez réessayer.');
         return false;
       }
     } catch (error) {
       console.error('Erreur lors du chargement de Stripe:', error);
-      this.notificationService.error('Erreur lors du chargement du système de paiement. Veuillez réessayer.');
+      console.error('Erreur lors du chargement du système de paiement. Veuillez réessayer.');
+      alert('Erreur lors du chargement du système de paiement. Veuillez réessayer.');
       return false;
     }
   }

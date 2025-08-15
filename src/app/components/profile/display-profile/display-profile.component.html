@@ -1,0 +1,4 @@
+<app-display-profile-header [user]="user" [userRole]="userRole"></app-display-profile-header>
+
+<app-display-profile-services *ngIf="userRole === 'PROVIDER'" [services]="services"></app-display-profile-services>
+

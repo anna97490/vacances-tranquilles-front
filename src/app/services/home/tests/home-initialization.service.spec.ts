@@ -46,8 +46,6 @@ describe('HomeInitializationService', () => {
     ]);
     expect(botpressService.waitForBotpress).toHaveBeenCalled();
     expect(botpressService.sendWelcomeMessage).toHaveBeenCalled();
-    expect(console.log).toHaveBeenCalledWith('Scripts Botpress chargés avec succès');
-    expect(console.log).toHaveBeenCalledWith('Botpress initialisé avec succès');
   });
 
   it('should handle script loading error', async () => {

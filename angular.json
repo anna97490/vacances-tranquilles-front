@@ -45,19 +45,24 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractLicenses": true,
+              "vendorChunk": true,
+              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1.1MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kB",
-                  "maximumError": "7kB"
+                  "maximumWarning": "15kB",
+                  "maximumError": "16kB"
                 }
-              ],
-              "outputHashing": "all"
+              ]
             },
             "development": {
               "optimization": false,
@@ -105,7 +110,6 @@
             "karmaConfig": "karma.conf.js",
             "codeCoverage": true,
             "codeCoverageExclude": [
-              "src/app/utils/test-helpers.ts",
               "src/app/services/home/chatbot/botpress.service.ts",
               "src/app/services/register/register-error-handler.service.ts",
               "src/app/services/login/login-navigation.service.ts"

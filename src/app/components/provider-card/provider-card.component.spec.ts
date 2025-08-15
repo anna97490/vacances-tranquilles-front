@@ -8,6 +8,7 @@ import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { PaymentService } from '../../services/payment/payment.service';
 import { of, throwError } from 'rxjs';
+import { MOCK_USER_PROVIDER, MOCK_SERVICES } from '../../utils/test-mocks';
 
 describe('ProviderCardComponent', () => {
   let component: ProviderCardComponent;
@@ -16,27 +17,8 @@ describe('ProviderCardComponent', () => {
   let authStorageService: jasmine.SpyObj<AuthStorageService>;
   let paymentService: jasmine.SpyObj<PaymentService>;
 
-  const mockUser = new User({
-    idUser: 101,
-    firstName: 'Marie',
-    lastName: 'Dubois',
-    email: 'marie@test.com',
-    phoneNumber: '0600000001',
-    address: '10 rue du Test',
-    role: UserRole.PROVIDER,
-    city: 'Lyon',
-    postalCode: 69000,
-    password: ''
-  });
-
-  const mockService = {
-    id: 2,
-    title: 'Tonte de pelouse',
-    description: 'Coupe et entretien du gazon',
-    category: ServiceCategory.OUTDOOR,
-    price: 45,
-    providerId: 101
-  };
+  const mockUser: User = MOCK_USER_PROVIDER;
+  const mockService = MOCK_SERVICES[1];
 
   beforeEach(async () => {
     const authStorageSpy = jasmine.createSpyObj('AuthStorageService', ['getToken', 'getUserId', 'clearToken']);
@@ -106,7 +88,7 @@ describe('ProviderCardComponent', () => {
   it('should display the service price with euro symbol', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('€');
-    expect(compiled.textContent).toContain('45');
+    expect(compiled.textContent).toContain('60'); // MOCK_SERVICES[1] has price 60
   });
 
   it('should not crash if service is undefined', () => {
@@ -137,7 +119,7 @@ describe('ProviderCardComponent', () => {
   it('should display user full name when user is provided', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const name = compiled.querySelector('.name');
-    expect(name?.textContent).toContain('Marie Dubois');
+    expect(name?.textContent).toContain('Ashfak Sayem'); // MOCK_USER_PROVIDER name
   });
 
   it('should display "Voir le profil" button', () => {
@@ -204,7 +186,7 @@ describe('ProviderCardComponent', () => {
   });
 
   it('should set providerInfo through setter', () => {
-    const newUser = new User({
+    const newUser = {
       idUser: 102,
       firstName: 'Jean',
       lastName: 'Martin',
@@ -215,7 +197,7 @@ describe('ProviderCardComponent', () => {
       city: 'Paris',
       postalCode: 75000,
       password: ''
-    });
+    };
     component.providerInfo = newUser;
     expect(component.providerInfo).toEqual(newUser);
   });
@@ -260,12 +242,12 @@ describe('ProviderCardComponent', () => {
   describe('calculateTotalPrice', () => {
     it('should calculate total price correctly for 1 hour', () => {
       const totalPrice = component.calculateTotalPrice('10:00', '11:00');
-      expect(totalPrice).toBe(45); // 1 heure * 45€/heure
+      expect(totalPrice).toBe(60); // 1 heure * 60€/heure (MOCK_SERVICES[1] price)
     });
 
     it('should calculate total price correctly for 2.5 hours', () => {
       const totalPrice = component.calculateTotalPrice('10:00', '12:30');
-      expect(totalPrice).toBe(112.5); // 2.5 heures * 45€/heure
+      expect(totalPrice).toBe(150); // 2.5 heures * 60€/heure (MOCK_SERVICES[1] price)
     });
 
     it('should return 0 when service price is undefined', () => {
@@ -305,12 +287,12 @@ describe('ProviderCardComponent', () => {
       expect(req.request.body).toEqual({
         serviceId: 2,
         customerId: 123,
-        providerId: 101,
+        providerId: 1, // MOCK_USER_PROVIDER idUser
         date: '2024-01-15',
         startTime: '10:00',
         endTime: '11:00',
         duration: 1,
-        totalPrice: 45
+        totalPrice: 60 // MOCK_SERVICES[1] price
       });
 
       req.flush(mockResponse);
@@ -419,7 +401,7 @@ describe('ProviderCardComponent', () => {
       const promise = component.createCheckoutSession();
 
       const req = httpMock.expectOne('http://test-api.example.com/api/stripe/create-checkout-session');
-      expect(req.request.body.providerId).toBe(101); // Utilise providerId du service
+      expect(req.request.body.providerId).toBe(1); // Utilise providerId du service (MOCK_SERVICES[1].providerId)
       req.flush(mockResponse);
 
       await promise;

@@ -1,0 +1,28 @@
+<div class="services-container">
+  <h3 class="services-title">Services Proposés</h3>
+  
+  <!-- Liste des services existants -->
+  <div class="services-list" *ngIf="services.length > 0">
+    <mat-card *ngFor="let service of services" class="service-card" appearance="outlined">
+      <div class="service-header">
+        <mat-icon class="service-icon">{{ iconService.getIcon(service.category) }}</mat-icon>
+      </div>
+      <div class="service-content">
+        <h4 class="service-title">{{ service.title }}</h4>
+        <p class="service-description">{{ service.description }}</p>
+        <p class="service-price">{{ service.price }} €</p>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Message si aucun service -->
+  <div *ngIf="services.length === 0" class="no-services">
+    <mat-card class="empty-state-card" appearance="outlined">
+      <mat-card-content class="empty-state-content">
+        <mat-icon class="empty-icon">add_business</mat-icon>
+        <h4>Aucun service proposé</h4>
+        <p>Commencez par ajouter vos premiers services pour les faire découvrir aux autres utilisateurs.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -32,13 +32,19 @@ export class HeaderComponent implements OnInit {
       label: 'Profil',
       icon: 'assets/icons/person_24dp_FFFFFF.svg',
       iconActive: 'assets/icons/person_24dp_FFA101.svg',
-      path: '/profil'
+      path: '/profile'
+    },
+    {
+      label: 'Mes réservations',
+      icon: 'assets/icons/calendar_month_24dp_FFFFF.svg',
+      iconActive: 'assets/icons/calendar_FFA101.svg',
+      path: '/reservations'
     },
     {
       label: 'Messagerie',
       icon: 'assets/icons/chat_bubble_24dp_FFFFFF.svg',
       iconActive: 'assets/icons/chat_bubble_24dp_FFA101.svg',
-      path: '/messagerie'
+      path: '/messaging'
     },
     {
       label: 'Assistance',
@@ -79,21 +85,49 @@ export class HeaderComponent implements OnInit {
    * @returns Le chemin de navigation
    */
   getNavigationPath(item: any): string {
-    // Si c'est l'élément "Accueil" et que l'utilisateur est connecté avec le rôle CLIENT
-    if (item.label === 'Accueil' && this.isClientUser()) {
-      return '/service-search';
+    // Si c'est l'élément "Accueil" et que l'utilisateur est connecté
+    if (item.label === 'Accueil' && this.authStorage.isAuthenticated()) {
+      return this.getAccueilNavigationPath();
     }
     return item.path;
   }
 
   /**
-   * Vérifie si l'utilisateur connecté est un client
-   * @returns true si l'utilisateur est connecté et a le rôle CLIENT
+   * Détermine le chemin de navigation pour l'élément Accueil selon le rôle utilisateur
+   * @returns Le chemin de navigation approprié pour Accueil
    */
-  private isClientUser(): boolean {
-    return this.authStorage.isAuthenticated() && 
-           this.authStorage.getUserRole() === UserRole.CLIENT;
+  private getAccueilNavigationPath(): string {
+    return this.getAccueilPathByRole();
   }
+
+  /**
+   * Détermine si l'élément Accueil doit être considéré comme actif
+   * @returns true si Accueil doit être considéré comme actif
+   */
+  private isAccueilActive(): boolean {
+    return this.currentPath === this.getAccueilPathByRole();
+  }
+
+  /**
+   * Détermine le chemin approprié pour l'élément Accueil selon le rôle utilisateur
+   * @returns Le chemin de navigation approprié pour Accueil
+   */
+  private getAccueilPathByRole(): string {
+    const userRole = this.authStorage.getUserRole();
+    
+    // Si c'est un CLIENT, rediriger vers service-search
+    if (userRole === UserRole.CLIENT) {
+      return '/service-search';
+    }
+    // Si c'est un PROVIDER, rediriger vers son profil pour le MVP
+    else if (userRole === UserRole.PROVIDER) {
+      return '/profile';
+    }
+    
+    return '/home';
+  }
+
+
 
   /**
    * Gère la navigation vers un élément du menu
@@ -101,6 +135,20 @@ export class HeaderComponent implements OnInit {
    */
   onMenuNavigation(item: any): void {
     const path = this.getNavigationPath(item);
+    
+    // Si on navigue vers le profil depuis le header, nettoyer le localStorage
+    // pour s'assurer qu'on affiche le profil de l'utilisateur connecté
+    if (item.label === 'Profil') {
+      localStorage.removeItem('displayedUserId');
+      
+      // Si on est déjà sur la page profil, forcer le rechargement
+      if (this.currentPath === '/profile') {
+        // Recharger la page pour forcer le rechargement des données
+        window.location.reload();
+        return;
+      }
+    }
+    
     this.router.navigate([path]);
     this.closeMobileMenu();
   }
@@ -161,10 +209,9 @@ export class HeaderComponent implements OnInit {
   }
 
   isActive(path: string): boolean {
-    // Si c'est le chemin "Accueil" et que l'utilisateur est un client connecté
-    // sur la page service-search, considérer Accueil comme actif
-    if (path === '/home' && this.isClientUser() && this.currentPath === '/service-search') {
-      return true;
+    // Si c'est le chemin "Accueil" et que l'utilisateur est connecté
+    if (path === '/home' && this.authStorage.isAuthenticated()) {
+      return this.isAccueilActive();
     }
     return this.currentPath === path;
   }

@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { FooterComponent } from '../../components/footer/footer.component';
+
 import { EnvService } from '../../services/env/env.service';
 import { RegisterValidationService } from '../../services/register/register-validation.service';
 import { RegisterFormConfigService } from '../../services/register/register-form-config.service';
@@ -32,8 +32,7 @@ import { RegisterService } from '../../services/register/register.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    RouterModule,
-    FooterComponent
+    RouterModule
   ],
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.scss'],

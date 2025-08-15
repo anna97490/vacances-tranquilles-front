@@ -20,7 +20,26 @@ import { LoginService } from '../../services/login/login.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { LoginErrorHandlerService } from '../../services/login/login-error-handler.service';
 import { LoginNavigationService } from '../../services/login/login-navigation.service';
-import { createWindowSpies, verifyNoAlertsShown } from '../../utils/test-helpers';
+// Helper functions for tests
+function createWindowSpies() {
+  const alertSpy = spyOn(window, 'alert').and.stub();
+  const confirmSpy = spyOn(window, 'confirm').and.stub();
+  const promptSpy = spyOn(window, 'prompt').and.stub();
+  const openSpy = spyOn(window, 'open').and.stub();
+
+  return {
+    alert: alertSpy,
+    confirm: confirmSpy,
+    prompt: promptSpy,
+    open: openSpy
+  };
+}
+
+function verifyNoAlertsShown(spies: ReturnType<typeof createWindowSpies>): void {
+  expect(spies.alert).not.toHaveBeenCalled();
+  expect(spies.confirm).not.toHaveBeenCalled();
+  expect(spies.prompt).not.toHaveBeenCalled();
+}
 
 // Mock component pour les tests de navigation
 @Component({

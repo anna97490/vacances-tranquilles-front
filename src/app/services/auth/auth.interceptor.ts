@@ -9,7 +9,6 @@ import { catchError } from 'rxjs/operators';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthStorageService } from '../login/auth-storage.service';
-import { NotificationService } from '../notification/notification.service';
 
 export function authInterceptor(
   request: HttpRequest<unknown>,
@@ -17,12 +16,10 @@ export function authInterceptor(
 ): Observable<HttpEvent<unknown>> {
   let authStorage: AuthStorageService;
   let router: Router;
-  let notificationService: NotificationService;
   
   try {
     authStorage = inject(AuthStorageService);
     router = inject(Router);
-    notificationService = inject(NotificationService);
   } catch (error) {
     // En cas d'erreur d'injection (par exemple dans les tests), on utilise des valeurs par défaut
     console.warn('Injection context not available, using fallback', error);
@@ -51,7 +48,8 @@ export function authInterceptor(
         authStorage.clearAuthenticationData();
         
         // Afficher une notification à l'utilisateur
-        notificationService.sessionExpired();
+        console.warn('Session expirée. Vous allez être redirigé vers la page de connexion.');
+        alert('Votre session a expiré. Vous allez être redirigé vers la page de connexion.');
         
         // Rediriger vers la page de connexion
         router.navigate(['/auth/login']);

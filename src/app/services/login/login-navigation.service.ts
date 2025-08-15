@@ -18,8 +18,17 @@ export class LoginNavigationService {
     // Si le rôle est CLIENT, rediriger vers service-search
     if (userRole === UserRole.CLIENT) {
       this.router.navigate(['/service-search']);
-    } else {
-      // Redirection par défaut vers la page d'accueil pour les autres rôles
+    } 
+    // Si le rôle est PROVIDER, rediriger vers le profil
+    else if (userRole === UserRole.PROVIDER) {
+      this.router.navigate(['/profile']);
+    }
+    // Si le rôle est ADMIN, rediriger vers la page d'accueil
+    else if (userRole === UserRole.ADMIN) {
+      this.router.navigate(['/home']);
+    }
+    // Redirection par défaut vers la page d'accueil pour les autres rôles
+    else {
       this.router.navigate(['/home']);
     }
   }
