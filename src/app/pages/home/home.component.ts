@@ -55,8 +55,10 @@ export class HomeComponent implements OnInit, OnDestroy {
    */
   private async initializeServices(): Promise<void> {
     try {
-  
-      await this.homeInitializationService.initializeHomeServices();
+      // Charge les services Botpress avec un délai pour prioriser le chargement initial de la page
+      setTimeout(async () => {
+        await this.homeInitializationService.initializeHomeServices();
+      }, 2000);
       
     } catch (error) {
       console.error('Erreur lors de l\'initialisation des services:', error);
