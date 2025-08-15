@@ -40,7 +40,6 @@ export class ConversationComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (data: ConversationSummaryDTO[]) => {
-          console.log('📋 Conversations reçues:', data);
           this.conversations = data;
           this.isLoading = false;
         },
