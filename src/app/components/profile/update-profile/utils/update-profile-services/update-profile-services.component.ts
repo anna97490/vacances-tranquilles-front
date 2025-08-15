@@ -189,14 +189,15 @@ export class UpdateProfileServicesComponent {
    */
   getErrorMessage(fieldName: string): string {
     const field = this.serviceForm.get(fieldName);
-    if (!field || !field.errors) return '';
+    const errors = field?.errors;
+    if (!errors) return '';
 
-    if (field.errors['required']) return 'Ce champ est requis';
-    if (field.errors['minlength']) return `Minimum ${field.errors['minlength'].requiredLength} caractères`;
-    if (field.errors['maxlength']) return `Maximum ${field.errors['maxlength'].requiredLength} caractères`;
-    if (field.errors['min']) return `La valeur minimum est ${field.errors['min'].min}`;
-    if (field.errors['max']) return `La valeur maximum est ${field.errors['max'].max}`;
-    if (field.errors['pattern']) return 'Format d\'URL invalide';
+    if (errors['required']) return 'Ce champ est requis';
+    if (errors['minlength']) return `Minimum ${errors['minlength'].requiredLength} caractères`;
+    if (errors['maxlength']) return `Maximum ${errors['maxlength'].requiredLength} caractères`;
+    if (errors['min']) return `La valeur minimum est ${errors['min'].min}`;
+    if (errors['max']) return `La valeur maximum est ${errors['max'].max}`;
+    if (errors['pattern']) return 'Format d\'URL invalide';
 
     return 'Champ invalide';
   }
