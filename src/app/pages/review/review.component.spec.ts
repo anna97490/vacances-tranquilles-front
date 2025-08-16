@@ -335,4 +335,169 @@ describe('ReviewComponent', () => {
     expect(window.alert).toHaveBeenCalledWith('Aucune réservation terminée trouvée.');
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
   });
+
+  it('should handle star keyboard navigation left', () => {
+    component.rating = 3;
+    const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
+    spyOn(event, 'preventDefault');
+    spyOn(document, 'getElementById').and.returnValue(null);
+
+    component.onStarKeydown(event, 3);
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(component.rating).toBe(2);
+  });
+
+  it('should handle star keyboard navigation right', () => {
+    component.rating = 3;
+    const event = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+    spyOn(event, 'preventDefault');
+    spyOn(document, 'getElementById').and.returnValue(null);
+
+    component.onStarKeydown(event, 3);
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(component.rating).toBe(4);
+  });
+
+  it('should handle star keyboard navigation home', () => {
+    component.rating = 3;
+    const event = new KeyboardEvent('keydown', { key: 'Home' });
+    spyOn(event, 'preventDefault');
+    spyOn(document, 'getElementById').and.returnValue(null);
+
+    component.onStarKeydown(event, 3);
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(component.rating).toBe(1);
+  });
+
+  it('should handle star keyboard navigation end', () => {
+    component.rating = 3;
+    const event = new KeyboardEvent('keydown', { key: 'End' });
+    spyOn(event, 'preventDefault');
+    spyOn(document, 'getElementById').and.returnValue(null);
+
+    component.onStarKeydown(event, 3);
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(component.rating).toBe(5);
+  });
+
+  it('should handle star keyboard navigation boundary left', () => {
+    component.rating = 1;
+    const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
+    spyOn(event, 'preventDefault');
+    spyOn(document, 'getElementById').and.returnValue(null);
+
+    component.onStarKeydown(event, 1);
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(component.rating).toBe(1);
+  });
+
+  it('should handle star keyboard navigation boundary right', () => {
+    component.rating = 5;
+    const event = new KeyboardEvent('keydown', { key: 'ArrowRight' });
+    spyOn(event, 'preventDefault');
+    spyOn(document, 'getElementById').and.returnValue(null);
+
+    component.onStarKeydown(event, 5);
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(component.rating).toBe(5);
+  });
+
+  it('should handle star keyboard navigation unknown key', () => {
+    component.rating = 3;
+    const event = new KeyboardEvent('keydown', { key: 'Enter' });
+    spyOn(event, 'preventDefault');
+
+    component.onStarKeydown(event, 3);
+
+    expect(event.preventDefault).not.toHaveBeenCalled();
+    expect(component.rating).toBe(3);
+  });
+
+  it('should get feedback aria described by without error', () => {
+    component.feedbackError = '';
+    const result = component.getFeedbackAriaDescribedBy();
+    expect(result).toBe('feedback-help');
+  });
+
+  it('should get feedback aria described by with error', () => {
+    component.feedbackError = 'Test error';
+    const result = component.getFeedbackAriaDescribedBy();
+    expect(result).toBe('feedback-help feedback-error');
+  });
+
+  it('should get send button aria described by without errors', () => {
+    component.rating = 5;
+    component.feedback = 'Test feedback';
+    const result = component.getSendButtonAriaDescribedBy();
+    expect(result).toBe('');
+  });
+
+  it('should get send button aria described by with rating error', () => {
+    component.rating = 0;
+    component.feedback = 'Test feedback';
+    const result = component.getSendButtonAriaDescribedBy();
+    expect(result).toBe('rating-error');
+  });
+
+  it('should get send button aria described by with feedback error', () => {
+    component.rating = 5;
+    component.feedback = '';
+    const result = component.getSendButtonAriaDescribedBy();
+    expect(result).toBe('feedback-error');
+  });
+
+  it('should get send button aria described by with both errors', () => {
+    component.rating = 0;
+    component.feedback = '';
+    const result = component.getSendButtonAriaDescribedBy();
+    expect(result).toBe('rating-error feedback-error');
+  });
+
+  it('should handle reservation loading error with getAllReservations', () => {
+    spyOn(window, 'alert');
+    const routeParams = of({});
+    const queryParams = of({});
+    Object.defineProperty(mockActivatedRoute, 'params', { value: routeParams });
+    Object.defineProperty(mockActivatedRoute, 'queryParams', { value: queryParams });
+    mockReservationService.getAllReservations.and.returnValue(throwError(() => new Error('Network error')));
+
+    component.ngOnInit();
+
+    expect(window.alert).toHaveBeenCalledWith('Erreur lors du chargement des réservations.');
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+  });
+
+  it('should handle localStorage data loading', () => {
+    localStorage.setItem('reviewReservationId', '123');
+    localStorage.setItem('reviewProviderId', '456');
+    localStorage.setItem('reviewServiceName', 'Test Service');
+
+    const customReservation = { ...mockReservation, providerId: 456, providerName: 'Test Service' };
+    mockReservationService.getReservationById.and.returnValue(of(customReservation));
+
+    component.ngOnInit();
+
+    expect(component.reservationId).toBe(123);
+    expect(component.providerId).toBe(456);
+    expect(component.providerName).toBe('Test Service');
+    expect(mockReservationService.getReservationById).toHaveBeenCalledWith(123);
+  });
+
+    it('should handle localStorage data without service name', () => {
+    localStorage.setItem('reviewReservationId', '123');
+    localStorage.setItem('reviewProviderId', '456');
+
+    const customReservation = { ...mockReservation, providerId: 456, providerName: '' };
+    mockReservationService.getReservationById.and.returnValue(of(customReservation));
+
+    component.ngOnInit();
+
+    expect(component.providerName).toBe('Prestataire');
+  });
 });
