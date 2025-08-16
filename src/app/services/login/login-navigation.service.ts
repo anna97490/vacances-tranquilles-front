@@ -14,14 +14,9 @@ export class LoginNavigationService {
    * Redirige l'utilisateur après une connexion réussie
    * @param userRole Le rôle de l'utilisateur (optionnel pour redirection spécifique)
    */
-  redirectAfterLogin(userRole?: string): void {
-    // Si le rôle est CLIENT, rediriger vers service-search
-    if (userRole === UserRole.CLIENT) {
-      this.router.navigate(['/service-search']);
-    } else {
-      // Redirection par défaut vers la page d'accueil pour les autres rôles
-      this.router.navigate(['/home']);
-    }
+      redirectAfterLogin(userRole?: string): void {
+    // Redirection vers home pour tous les utilisateurs
+    this.router.navigate(['/home']);
   }
 
   /**

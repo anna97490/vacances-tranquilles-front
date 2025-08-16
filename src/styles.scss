@@ -52,22 +52,31 @@ $frontend-theme: mat.define-theme((
 
     /** Background-color */
     --primary-color: #FBF4E9;
+    /** Background-color */
     --secondary-color: #31525B;
     /** Button color */
     --button-color: #31525B;
-    /** Button text color */
-    --secondary-text-color: #FFFFFF;
     /** Button nav color */
     --tertiary-color: #db9e36;
     /** Title color */
     --quaternary-color: #FFFFFF;
-    
+
     /** Text color */
     --text-color: #31525B;
     /** >Secondary text color */
     --secondary-text-color: #FFFFFF;
-    /** Discret text color */ 
-    --discret-text-color: #777; 
+    /** Discret text color */
+    --discret-text-color: #777;
+
+    /** Border radius de référence */
+    --border-radius-base: 12px;
+
+    --vt-grey: #f5f5f5;
+    --vt-grey-border: #e0e0e0;
+    /** >Secondary text color */
+    --secondary-text-color: #FFFFFF;
+    /** Discret text color */
+    --discret-text-color: #777;
 
     /** Border radius de référence */
     --border-radius-base: 12px;
@@ -106,7 +115,39 @@ html, body {
   max-width: 100%;
 }
 
-/* Assure que les conteneurs principaux ne dépassent pas */
+*:focus-visible {
+  outline: 2px solid #31525B !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+}
+
+/* Focus pour les boutons */
+button:focus-visible {
+  outline: 3px solid #31525B !important;
+  outline-offset: 2px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 0 0 2px rgba(49, 82, 91, 0.2) !important;
+}
+
+/* Focus pour les liens */
+a:focus-visible {
+  outline: 2px solid #31525B !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+  text-decoration: underline !important;
+}
+
+/* Focus pour les champs de formulaire */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #31525B !important;
+  outline-offset: 2px !important;
+  border-radius: 6px !important;
+}
+
+/* Les styles de cartes sont maintenant définis dans chaque composant pour éviter les problèmes de compilation */
+
 .app-container,
 .homepage-container,
 .content,

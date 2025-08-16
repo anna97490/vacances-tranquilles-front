@@ -10,8 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ServiceCategory } from '../../models/Service';
 import { ServicesService } from '../../services/services/services.service';
 import { Router } from '@angular/router';
-import { FooterComponent } from '../../components/footer/footer.component';
-import { NotificationService } from '../../services/notification/notification.service';
+
 
 @Component({
   selector: 'app-service-search',
@@ -27,7 +26,6 @@ import { NotificationService } from '../../services/notification/notification.se
     MatIconModule,
     MatMenuModule,
     MatInputModule,
-    FooterComponent,
   ]
 })
 
@@ -65,14 +63,14 @@ export class ServiceSearchComponent {
    */
   isDayInPast(day: number): boolean {
     if (!this.selectedMonth || !this.selectedYear) return false;
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Remet à minuit pour comparer seulement la date
-    
+
     const monthIndex = this.months.indexOf(this.selectedMonth);
     const selectedDate = new Date(this.selectedYear, monthIndex, day);
     selectedDate.setHours(0, 0, 0, 0); // Assure que l'heure est à minuit
-    
+
     return selectedDate < today;
   }
 
@@ -99,19 +97,19 @@ export class ServiceSearchComponent {
     if (!this.selectedStartHour) {
       return this.hours;
     }
-    
+
     // Convertit les heures "HH:mm" en minutes pour comparaison
     const toMinutes = (h: string) => {
       const [hour, min] = h.split(":").map(Number);
       return hour * 60 + min;
     };
-    
+
     const startMinutes = toMinutes(this.selectedStartHour);
-    
+
     // Retourne seulement les heures qui sont strictement supérieures à l'heure de début
     return this.hours.filter(hour => toMinutes(hour) > startMinutes);
   }
-  
+
   /** Liste des services disponibles */
   services = Object.entries(ServiceCategory).map(([key, value]) => ({ key, value }));
 
@@ -165,8 +163,7 @@ export class ServiceSearchComponent {
 
   constructor(
     private readonly servicesService: ServicesService,
-    private readonly router: Router,
-    private readonly notificationService: NotificationService
+    private readonly router: Router
   ) {}
 
   /**
@@ -175,12 +172,6 @@ export class ServiceSearchComponent {
   private checkDateInPast(): void {
     if (this.selectedDay && this.selectedMonth && this.selectedYear) {
       this.isDateInPast = this.isDayInPast(this.selectedDay);
-      console.log('Date check:', {
-        day: this.selectedDay,
-        month: this.selectedMonth,
-        year: this.selectedYear,
-        isDateInPast: this.isDateInPast
-      });
     } else {
       this.isDateInPast = false;
     }
@@ -213,14 +204,14 @@ export class ServiceSearchComponent {
    */
   get isDateValid(): boolean {
     if (!this.selectedDay || !this.selectedMonth || !this.selectedYear) return true;
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Remet à minuit pour comparer seulement la date
-    
+
     const monthIndex = this.months.indexOf(this.selectedMonth);
     const selectedDate = new Date(this.selectedYear, monthIndex, this.selectedDay);
     selectedDate.setHours(0, 0, 0, 0); // Assure que l'heure est à minuit
-    
+
     return selectedDate >= today;
   }
 
@@ -294,12 +285,12 @@ export class ServiceSearchComponent {
     if (!this.selectedDay || !this.selectedMonth || !this.selectedYear) {
       throw new Error('Date incomplète');
     }
-    
+
     const monthIndex = this.months.indexOf(this.selectedMonth);
     const month = (monthIndex + 1).toString().padStart(2, '0');
     const day = this.selectedDay.toString().padStart(2, '0');
     const year = this.selectedYear.toString();
-    
+
     return `${year}-${month}-${day}`;
   }
 
@@ -345,21 +336,23 @@ export class ServiceSearchComponent {
               startTime,
               endTime
             }));
-            
+
             // Redirection vers la page des prestataires disponibles
             this.router.navigate(['/available-providers']);
           },
           error: (error) => {
             console.error('Erreur lors de la recherche:', error);
-            
+
             // L'intercepteur gère automatiquement les erreurs 401/403
             // On ne gère que les autres types d'erreurs ici
             if (error.status === 0) {
               // Erreur de connexion réseau
-              this.notificationService.error('Impossible de se connecter au serveur. Vérifiez votre connexion internet ou contactez le support.');
+              console.error('Impossible de se connecter au serveur. Vérifiez votre connexion internet ou contactez le support.');
+              alert('Impossible de se connecter au serveur. Vérifiez votre connexion internet ou contactez le support.');
             } else if (error.status !== 401 && error.status !== 403) {
               // Erreurs autres que l'authentification
-              this.notificationService.error('Erreur lors de la recherche. Veuillez réessayer.');
+              console.error('Erreur lors de la recherche. Veuillez réessayer.');
+              alert('Erreur lors de la recherche. Veuillez réessayer.');
             }
             // Les erreurs 401/403 sont gérées par l'intercepteur
           },
@@ -367,7 +360,7 @@ export class ServiceSearchComponent {
             this.isLoading = false;
           }
         });
-        
+
     } catch (error) {
       console.error('Erreur lors du formatage de la date:', error);
       alert('Erreur lors du formatage de la date.');

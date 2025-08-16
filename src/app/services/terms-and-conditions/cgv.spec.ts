@@ -43,7 +43,7 @@ describe('CGV_DATA', () => {
     CGV_DATA.sections.forEach(section => {
       section.content.forEach(item => {
         if (item.text.startsWith('• ')) {
-          expect(item.text.length).toBeGreaterThan(2); // Plus que juste "• "
+          expect(item.text.length).toBeGreaterThan(2);
         }
       });
     });

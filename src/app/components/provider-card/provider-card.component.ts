@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, Injector } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, Injector, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { User } from '../../models/User';
@@ -13,6 +13,8 @@ import { RatingStarsComponent } from '../shared/rating-stars/rating-stars.compon
 import { PaymentService } from '../../services/payment/payment.service';
 import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { Router } from '@angular/router';
+
 
 /**
  * Composant carte prestataire (affichage d'un User de rôle PROVIDER)
@@ -22,18 +24,20 @@ import { AuthStorageService } from '../../services/login/auth-storage.service';
   selector: 'app-provider-card',
   standalone: true,
   imports: [
-    CommonModule, 
-    MatCardModule, 
-    MatButtonModule, 
-    MatIconModule, 
-    MatChipsModule, 
-    MatDividerModule, 
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    MatDividerModule,
     RatingStarsComponent
   ],
   templateUrl: './provider-card.component.html',
   styleUrl: './provider-card.component.scss'
 })
-export class ProviderCardComponent implements OnChanges {
+export class ProviderCardComponent implements OnChanges, OnInit {
+
+
 
   /**
    * Prestataire (User) correspondant au service affiché.
@@ -50,7 +54,7 @@ export class ProviderCardComponent implements OnChanges {
   @Input()
   /**
    * Setter pour le service.
-   * Met à jour le service et utilise les données mockées par défaut.
+   * Met à jour le service.
    */
   set service(service: Service) {
     this._service = service;
@@ -77,21 +81,32 @@ export class ProviderCardComponent implements OnChanges {
    */
   set providerInfo(providerInfo: User | undefined) {
     this._providerInfo = providerInfo;
+
+    // Mettre à jour l'utilisateur si les infos sont disponibles
+    if (providerInfo) {
+      this.user = providerInfo;
+    }
   }
 
   constructor(
     private readonly http: HttpClient,
     private readonly envService: EnvService,
     private readonly authStorage: AuthStorageService,
-    private readonly injector: Injector
+    private readonly injector: Injector,
+    private readonly router: Router
   ) {}
 
   private get paymentService(): PaymentService {
     return this.injector.get(PaymentService);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (this._service && this._providerInfo) {
+  ngOnInit(): void {
+    // Cette méthode sera appelée après l'initialisation du composant
+  }
+
+    ngOnChanges(changes: SimpleChanges): void {
+    // Mettre à jour l'utilisateur si providerInfo est disponible
+    if (this._providerInfo) {
       this.user = this._providerInfo;
     }
   }
@@ -128,15 +143,13 @@ export class ProviderCardComponent implements OnChanges {
    */
   async createCheckoutSession(): Promise<void> {
     if (!this.service || !this.providerInfo) {
-      console.error('Service ou prestataire non défini');
       return;
     }
 
     // Récupérer l'ID du client connecté depuis le service d'authentification
     const customerId = this.authStorage.getUserId();
-    
+
     if (!customerId) {
-      console.error('Utilisateur non connecté');
       return;
     }
 
@@ -150,7 +163,6 @@ export class ProviderCardComponent implements OnChanges {
     // Récupérer les critères de recherche depuis le localStorage
     const searchCriteriaStr = localStorage.getItem('searchCriteria');
     if (!searchCriteriaStr) {
-      console.error('Aucun critère de recherche trouvé. Veuillez effectuer une recherche d\'abord.');
       return;
     }
 
@@ -159,7 +171,6 @@ export class ProviderCardComponent implements OnChanges {
 
     // Vérifier que les données de recherche sont présentes
     if (!date || !startTime || !endTime) {
-      console.error('Critères de recherche incomplets');
       return;
     }
 
@@ -174,16 +185,13 @@ export class ProviderCardComponent implements OnChanges {
       totalPrice: this.calculateTotalPrice(startTime, endTime) // Prix total calculé
     };
 
-    console.log('Payload envoyé:', payload);
-
     try {
       const token = this.authStorage.getToken();
-      
+
       if (!token) {
-        console.error('Token d\'authentification non trouvé');
         return;
       }
-      
+
       const headers = { 'Authorization': `Bearer ${token}` };
 
       const response = await firstValueFrom(
@@ -197,11 +205,29 @@ export class ProviderCardComponent implements OnChanges {
       const sessionId = response['sessionId'];
       if (sessionId) {
         await this.paymentService.redirectToStripe(sessionId);
-      } else {
-        console.error('Session ID non reçu');
       }
     } catch (error) {
-      console.error('Erreur lors de la création de la session de paiement:', error);
+      // Gestion d'erreur silencieuse
+    }
+  }
+
+  /**
+   * Navigue vers la page de profil de l'utilisateur affiché
+   */
+  navigateToProfile(): void {
+    let userId: number | undefined;
+
+    if (this.user?.idUser) {
+      userId = this.user.idUser;
+    } else if (this.service?.providerId) {
+      userId = this.service.providerId;
+    }
+
+    if (userId) {
+      // Stocker l'ID de l'utilisateur à afficher dans le localStorage
+      // pour que la page de profil puisse le récupérer
+      localStorage.setItem('displayedUserId', userId.toString());
+      this.router.navigate(['/provider-profile']);
     }
   }
 }

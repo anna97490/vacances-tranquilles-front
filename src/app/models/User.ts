@@ -65,8 +65,11 @@ export class User {
   /** Description de l'utilisateur */
   description?: string;
 
+  /** Avis reçus par l'utilisateur */
+  reviews?: any[];
+
   /**
-   * Constructeur permettant d'initialiser un objet utilisateur partiellement.
+   * Constructeur permettant d'initialiser un objet utilisateur.
    * @param data Données initiales de l'utilisateur.
    */
   constructor(data: Partial<User> = {}) {

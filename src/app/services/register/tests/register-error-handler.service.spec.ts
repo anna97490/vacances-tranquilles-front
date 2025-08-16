@@ -16,116 +16,86 @@ describe('RegisterErrorHandlerService', () => {
 
   describe('isPotentialParseError', () => {
     it('should return true for status 200', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 200 });
 
-      // Act
       const result = service.isPotentialParseError(error);
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('should return true for status 201', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 201 });
 
-      // Act
       const result = service.isPotentialParseError(error);
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('should return false for other status codes', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 400 });
 
-      // Act
       const result = service.isPotentialParseError(error);
 
-      // Assert
       expect(result).toBe(false);
     });
   });
 
   describe('isSuccessfulButParseFailed', () => {
     it('should return true for status 200', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 200 });
 
-      // Act
       const result = service.isSuccessfulButParseFailed(error);
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('should return true for status 201', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 201 });
 
-      // Act
       const result = service.isSuccessfulButParseFailed(error);
 
-      // Assert
       expect(result).toBe(true);
     });
 
     it('should return false for other status codes', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 400 });
 
-      // Act
       const result = service.isSuccessfulButParseFailed(error);
 
-      // Assert
       expect(result).toBe(false);
     });
   });
 
   describe('getRegistrationErrorMessage', () => {
     it('should return message for 400 error', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 400 });
 
-      // Act
       const result = service.getRegistrationErrorMessage(error);
 
-      // Assert
       expect(result).toBeDefined();
     });
 
     it('should return message for 409 error', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 409 });
 
-      // Act
       const result = service.getRegistrationErrorMessage(error);
 
-      // Assert
       expect(result).toBe('Email déjà utilisé');
     });
 
     it('should return message for 422 error', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 422 });
 
-      // Act
       const result = service.getRegistrationErrorMessage(error);
 
-      // Assert
       expect(result).toContain('Données');
     });
 
     it('should return default message for unknown error', () => {
-      // Arrange
       const error = new HttpErrorResponse({ status: 500 });
 
-      // Act
       const result = service.getRegistrationErrorMessage(error);
 
-      // Assert
       expect(result).toContain('Erreur');
     });
 
@@ -167,76 +137,58 @@ describe('RegisterErrorHandlerService', () => {
     });
 
     it('should extract token from valid JSON text', () => {
-      // Arrange
       const error = new HttpErrorResponse({
         error: { text: '{"token":"test-token","userRole":"USER"}' }
       });
 
-      // Act
       const result = service.extractTokenFromErrorResponse(error);
 
-      // Assert
       expect(result).toBe('test-token');
     });
 
     it('should return null for JSON without token', () => {
-      // Arrange
       const error = new HttpErrorResponse({
         error: { text: '{"message":"No token"}' }
       });
 
-      // Act
       const result = service.extractTokenFromErrorResponse(error);
 
-      // Assert
       expect(result).toBeNull();
     });
 
     it('should return null for empty error object', () => {
-      // Arrange
       const error = new HttpErrorResponse({ error: {} });
 
-      // Act
       const result = service.extractTokenFromErrorResponse(error);
 
-      // Assert
       expect(result).toBeNull();
     });
 
     it('should handle malformed JSON gracefully', () => {
-      // Arrange
       const error = new HttpErrorResponse({
         error: { text: 'invalid json' }
       });
 
-      // Act
       const result = service.extractTokenFromErrorResponse(error);
 
-      // Assert
       expect(result).toBeNull();
     });
 
     it('should return null for missing text property', () => {
-      // Arrange
       const error = new HttpErrorResponse({ error: { other: 'value' } });
 
-      // Act
       const result = service.extractTokenFromErrorResponse(error);
 
-      // Assert
       expect(result).toBeNull();
     });
 
     it('should return null for invalid JSON text', () => {
-      // Arrange
       const error = new HttpErrorResponse({
         error: { text: '{"token":}' }
       });
 
-      // Act
       const result = service.extractTokenFromErrorResponse(error);
 
-      // Assert
       expect(result).toBeNull();
     });
 

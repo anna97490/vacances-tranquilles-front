@@ -1,0 +1,148 @@
+.profile-header-main {
+  padding: 32px;
+  gap: 20px;
+  border-radius: var(--border-radius-base);
+  background: var(--quaternary-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  min-height: 200px;
+  width: 100%;
+  position: relative;
+  border: 1px solid #e1e8ed;
+  max-width: 1136px;
+  margin: 0 auto 2rem auto;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .name {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text-color);
+  }
+
+  .verified-icon {
+    color: var(--tertiary-color);
+    font-size: 1.3rem;
+  }
+}
+
+.rating {
+  margin: 4px 0 8px 0;
+}
+
+.description {
+  font-size: 1rem;
+  color: var(--text-color);
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: auto;
+
+  .info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .info-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--primary-color);
+    padding: 0.9rem 1.2rem;
+    border-radius: var(--border-radius-base);
+    min-height: 80px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+
+    mat-icon {
+      background: var(--secondary-text-color);
+      border-radius: 50%;
+      padding: 0.4rem;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      font-size: 1.4rem;
+      color: var(--tertiary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.2rem;
+      height: 2.2rem;
+    }
+
+    .info-label {
+      font-size: 0.85rem;
+      color: var(--discret-text-color);
+      margin-bottom: 0.2rem;
+    }
+
+    .info-value {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-color);
+      &.email {
+        color: var(--text-color);
+      }
+    }
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .profile-header-main {
+    padding: 16px;
+    max-width: 100%;
+    border-radius: var(--border-radius-base);
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  .avatar {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+  }
+
+  .top-line {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .footer {
+    align-items: stretch;
+  }
+}

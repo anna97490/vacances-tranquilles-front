@@ -444,31 +444,6 @@ describe('FooterComponent', () => {
       expect(hasStructure).toBe(true);
     });
 
-    it('should debug footer text structure', () => {
-      const footerText = getElements.single(selectors.footerText);
-
-      if (footerText) {
-        const element = footerText.nativeElement;
-        console.log('Footer text innerHTML:', element.innerHTML);
-        console.log('Footer text textContent:', element.textContent);
-        console.log('Footer text childNodes count:', element.childNodes.length);
-        console.log('Footer text children count:', element.children.length);
-
-        Array.from(element.childNodes).forEach((node, index) => {
-          const n = node as Node;
-          console.log(`Child node ${index}:`, {
-            type: n.nodeType,
-            name: n.nodeName,
-            value: n.nodeValue,
-            textContent: n.textContent
-          });
-        });
-      }
-
-      // Ce test passe toujours, il sert au debug
-      expect(true).toBe(true);
-    });
-
     it('should contain required company information', () => {
       const footerText = getElements.single(selectors.footerText);
       expect(footerText).toBeTruthy();

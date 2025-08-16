@@ -1,6 +1,6 @@
 <div>
   <!-- Bouton retour -->
-  <button class="back-btn" aria-label="Retour" type="button" (click)="goBack()">
+  <button class="back-btn" aria-label="Retour à la page précédente" type="button" (click)="goBack()">
     ←
   </button>
 </div>
@@ -8,7 +8,7 @@
 <div class="register-container">
   <div class="register-header">
     <div class="logo">
-        <img [src]="mainLogo" class="logo" alt="Logo Vacances Tranquilles" />
+      <img [src]="mainLogo" class="logo" alt="Logo Vacances Tranquilles" />
     </div>
     <h2>Bienvenue sur Vacances Tranquilles</h2>
     <div class="register-subtitle">
@@ -137,5 +137,4 @@
   <div class="register-login">
     Déjà un compte ? <a routerLink="/auth/login" aria-label="Aller à la page de connexion">Se connecter</a>
   </div>
-  <app-footer></app-footer>
 </div>

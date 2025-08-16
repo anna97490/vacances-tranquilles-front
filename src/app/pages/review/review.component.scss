@@ -210,8 +210,6 @@
   }
 }
 
-
-
 // Responsive design
 @media (max-width: 768px) {
   .container {
@@ -281,5 +279,88 @@
   .rating-card {
     max-width: 700px;
     padding: 3rem 3rem;
+  }
+}
+
+// Styles d'accessibilité WCAG
+.rating-status {
+  text-align: center;
+  font-weight: bold;
+  color: var(--secondary-color);
+  margin-bottom: 16px;
+  padding: 8px;
+  background-color: rgba(255, 193, 7, 0.1);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.help-text {
+  font-size: 12px;
+  color: var(--discret-text-color);
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.character-count {
+  font-size: 11px;
+  color: var(--discret-text-color);
+  text-align: right;
+  margin-top: 2px;
+}
+
+.error-icon {
+  margin-right: 4px;
+}
+
+.btn-text {
+  display: inline;
+}
+
+// Amélioration du focus pour l'accessibilité
+.star:focus {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3);
+}
+
+textarea:focus {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+  border-color: var(--secondary-color);
+}
+
+// Amélioration du contraste pour les messages d'erreur
+.error-message {
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 4px;
+  color: #dc3545;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+// Amélioration de l'accessibilité pour les boutons
+.btn:focus {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3);
+}
+
+// Support pour les lecteurs d'écran
+@media (prefers-reduced-motion: reduce) {
+  .star {
+    transition: none;
+  }
+
+  .btn {
+    transition: none;
   }
 }

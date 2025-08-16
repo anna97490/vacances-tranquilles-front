@@ -12,8 +12,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { ServicesService } from '../../services/services/services.service';
 import { UserInformationService } from '../../services/user-information/user-information.service';
-import { FooterComponent } from '../../components/footer/footer.component';
-import { HeaderComponent } from '../../components/header/header.component';
+
 /**
  * Composant listant les prestataires disponibles.
  * Fournit la liste des services disponibles au composant provider-card.
@@ -22,16 +21,14 @@ import { HeaderComponent } from '../../components/header/header.component';
   selector: 'app-available-providers',
   standalone: true,
   imports: [
-    ProviderCardComponent, 
+    ProviderCardComponent,
     CommonModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatOptionModule,
-    FooterComponent,
-    HeaderComponent],
+    MatOptionModule],
   templateUrl: './available-providers.component.html',
   styleUrl: './available-providers.component.scss'
 })
@@ -61,11 +58,10 @@ export class AvailableProvidersComponent implements OnInit {
     if (searchCriteria) {
       try {
         this.searchCriteria = JSON.parse(searchCriteria);
-        
+
         // Recherche des services avec les critères
         this.searchServices();
       } catch (error) {
-        console.error('Erreur lors du parsing des critères:', error);
         this.router.navigate(['/service-search']);
       }
     } else {
@@ -79,7 +75,6 @@ export class AvailableProvidersComponent implements OnInit {
    */
   private searchServices(): void {
     if (!this.searchCriteria) {
-      console.error('Aucun critère de recherche disponible');
       return;
     }
 
@@ -89,12 +84,11 @@ export class AvailableProvidersComponent implements OnInit {
       .subscribe({
         next: (services) => {
           this.services = services;
-          
+
           // Récupérer les informations des prestataires
           this.loadProvidersInfo();
         },
         error: (error) => {
-          console.error('Erreur lors de la recherche des services:', error);
           this.services = [];
         }
       });
@@ -106,7 +100,7 @@ export class AvailableProvidersComponent implements OnInit {
   private loadProvidersInfo(): void {
     // Extraire les IDs des prestataires uniques
     const providerIds = [...new Set(this.services.map(service => service.providerId))];
-    
+
     if (providerIds.length === 0) {
       return;
     }
@@ -119,7 +113,6 @@ export class AvailableProvidersComponent implements OnInit {
             this.providersInfo.set(providerId, user);
           },
           error: (error) => {
-            console.error(`Erreur lors de la récupération du prestataire ${providerId}:`, error);
             // Créer un objet User minimal en cas d'échec
             const minimalUser: User = {
               idUser: providerId,
@@ -150,13 +143,32 @@ export class AvailableProvidersComponent implements OnInit {
    */
   get formattedCriteria(): string {
     if (!this.searchCriteria) return '';
-    
+
     const { category, postalCode, date, startTime, endTime } = this.searchCriteria;
-    
+
     // Convertir le code de catégorie en label complet
     const categoryLabel = this.getCategoryLabel(category);
-    
-    return `${categoryLabel} - ${postalCode} - ${date} ${startTime}-${endTime}`;
+
+    // Formater la date au format JJ/MM/YY
+    const formattedDate = this.formatDate(date);
+
+    return `${categoryLabel} - ${postalCode} - ${formattedDate} ${startTime}-${endTime}`;
+  }
+
+  /**
+   * Formate une date au format JJ/MM/YY
+   * @param dateString La date au format YYYY-MM-DD
+   * @returns La date formatée au format JJ/MM/YY
+   */
+  private formatDate(dateString: string): string {
+    if (!dateString) return '';
+
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+
+    return `${day}/${month}/${year}`;
   }
 
   /**
@@ -172,7 +184,7 @@ export class AvailableProvidersComponent implements OnInit {
       'SHOPPING': 'Courses et logistique',
       'ANIMALS': 'Soins aux animaux'
     };
-    
+
     return categoryMap[categoryCode] || categoryCode;
   }
 
@@ -182,7 +194,8 @@ export class AvailableProvidersComponent implements OnInit {
    * @returns User | undefined Les informations du prestataire
    */
   getProviderInfo(providerId: number): User | undefined {
-    return this.providersInfo.get(providerId);
+    const providerInfo = this.providersInfo.get(providerId);
+    return providerInfo;
   }
 
   /**

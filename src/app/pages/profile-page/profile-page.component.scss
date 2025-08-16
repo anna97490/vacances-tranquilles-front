@@ -1,0 +1,153 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--primary-color);
+  padding: 2rem 0;
+}
+
+.profile-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 2rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: var(--primary-color);
+
+  .spinner-icon {
+    font-size: 3rem;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--text-color);
+  }
+}
+
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  padding: 2rem;
+}
+
+.error-message {
+  text-align: center;
+  max-width: 400px;
+
+  .error-icon {
+    font-size: 3rem;
+    color: #f44336;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+  }
+
+  p {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    opacity: 0.8;
+  }
+
+  button {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border-radius: 8px !important;
+    padding: 12px 24px !important;
+    font-size: 1rem !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.profile-action-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.profile-action-btn {
+  background-color: var(--secondary-color) !important;
+  color: var(--secondary-text-color) !important;
+  border-radius: 16px !important;
+  padding: 12px 32px !important;
+  font-size: 1.2rem !important;
+  font-family: 'Open Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: none !important;
+  transition: background 0.2s;
+}
+.profile-action-btn:hover {
+  background-color: var(--tertiary-color) !important;
+}
+
+// Styles pour les messages d'erreur dans le snackbar
+::ng-deep .error-snackbar {
+  background-color: #f44336 !important;
+  color: var(--quaternary-color) !important;
+
+  .mat-simple-snackbar-action {
+    color: var(--quaternary-color) !important;
+  }
+
+  .mat-simple-snackbar-content {
+    color: var(--quaternary-color) !important;
+  }
+}
+
+.icon-left {
+  font-size: 1.5em;
+}
+
+@media (max-width: 900px) {
+  .profile-content {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 1rem 0;
+  }
+
+  .profile-content {
+    padding: 0 1rem;
+  }
+}
+

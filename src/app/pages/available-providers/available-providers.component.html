@@ -2,7 +2,7 @@
   <div class="header-section">
     <h1>Prestataires Disponibles</h1>
     <p class="subtitle">Trouvez le prestataire idéal pour vos besoins</p>
-    
+
     <!-- Affichage des critères de recherche -->
     <div *ngIf="searchCriteria" class="search-criteria">
       <p><strong>Recherche :</strong> {{ formattedCriteria }}</p>
@@ -25,7 +25,7 @@
     <!-- Liste des prestataires trouvés-->
     <div *ngIf="services.length > 0" class="providers-grid">
       <ng-container *ngFor="let service of services">
-        <app-provider-card 
+        <app-provider-card
           [service]="service"
           [providerInfo]="getProviderInfo(service.providerId)">
         </app-provider-card>
@@ -33,4 +33,3 @@
     </div>
   </div>
 </div>
-<app-footer></app-footer>

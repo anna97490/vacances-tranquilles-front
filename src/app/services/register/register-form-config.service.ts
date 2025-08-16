@@ -117,7 +117,7 @@ function passwordComplexityValidator(control: AbstractControl): ValidationErrors
 }
 
 // Validateurs regroupés pour le mot de passe
-const PASSWORD_VALIDATORS = [Validators.required, Validators.minLength(8), passwordComplexityValidator];
+const PASSWORD_VALIDATORS = [Validators.required, Validators.minLength(8), passwordComplexityValidator, injectionPreventionValidator];
 
 @Injectable({ providedIn: 'root' })
 export class RegisterFormConfigService {

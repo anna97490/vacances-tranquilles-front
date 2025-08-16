@@ -1,0 +1,49 @@
+<!-- État de chargement -->
+<output *ngIf="isLoading" class="loading-container" aria-live="polite" aria-label="Chargement en cours">
+  <div class="loading-spinner">
+    <p>Chargement du profil du prestataire...</p>
+  </div>
+</output>
+
+<!-- État d'erreur -->
+<div *ngIf="hasError && !isLoading" class="error-container" role="alert" aria-live="assertive">
+  <div class="error-message">
+    <h3>Erreur de chargement</h3>
+    <p>Impossible de récupérer les informations du prestataire.</p>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="retryLoadData()"
+      aria-label="Réessayer le chargement du profil"
+    >
+      Réessayer
+    </button>
+  </div>
+</div>
+
+<!-- Contenu principal -->
+<main *ngIf="!isLoading && !hasError && provider" class="provider-profile-container" role="main" aria-labelledby="provider-title">
+  <div class="provider-profile-content">
+    <h1 id="provider-title" class="sr-only">Profil du prestataire {{ provider.firstName }} {{ provider.lastName }}</h1>
+    <app-display-profile-header
+      [user]="provider"
+      [userRole]="provider.role"
+      aria-label="Informations du prestataire"
+    ></app-display-profile-header>
+    <section aria-labelledby="reviews-title">
+      <h2 id="reviews-title" class="sr-only">Avis et évaluations du prestataire</h2>
+      <app-display-profile-reviews
+        [providerId]="provider.idUser"
+        aria-label="Avis des clients"
+      ></app-display-profile-reviews>
+    </section>
+  </div>
+</main>
+
+<!-- État vide -->
+<output *ngIf="!isLoading && !hasError && !provider" class="empty-state" aria-live="polite">
+  <div class="empty-message">
+    <h3>Aucun prestataire trouvé</h3>
+    <p>Le profil demandé n'existe pas ou n'est plus disponible.</p>
+  </div>
+</output>

@@ -52,6 +52,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       get: () => MOCK_CGU,
       configurable: true
     });
+
     Object.defineProperty(TermsAndConditionsComponent.prototype, 'cgvContent', {
       get: () => MOCK_CGV,
       configurable: true
@@ -76,6 +77,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
     if (originalCguContentGetter) {
       Object.defineProperty(TermsAndConditionsComponent.prototype, 'cguContent', originalCguContentGetter);
     }
+
     if (originalCgvContentGetter) {
       Object.defineProperty(TermsAndConditionsComponent.prototype, 'cgvContent', originalCgvContentGetter);
     }
@@ -98,6 +100,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       expect(component.isShowingCGU()).toBeTrue();
       expect(component.isShowingCGV()).toBeFalse();
     });
+
     it('devrait détecter CGV', () => {
       mockLocationService.getPathname.and.returnValue('/terms-and-conditions/cgv');
       fixture = TestBed.createComponent(TermsAndConditionsComponent);
@@ -107,6 +110,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       expect(component.isShowingCGU()).toBeFalse();
       expect(component.isShowingCGV()).toBeTrue();
     });
+
     it('aucun flag ne doit être à true pour une autre route', () => {
       mockLocationService.getPathname.and.returnValue('/autre');
       fixture = TestBed.createComponent(TermsAndConditionsComponent);
@@ -116,6 +120,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       expect(component.isShowingCGU()).toBeFalse();
       expect(component.isShowingCGV()).toBeFalse();
     });
+
     it('doit détecter partiellement cgu/cgv', () => {
       mockLocationService.getPathname.and.returnValue('/foo-cgu-bar');
       fixture = TestBed.createComponent(TermsAndConditionsComponent);
@@ -136,29 +141,39 @@ describe('TermsAndConditionsComponent (robuste)', () => {
         get: () => MOCK_CGU,
         configurable: true
       });
+
       Object.defineProperty(TermsAndConditionsComponent.prototype, 'cgvContent', {
         get: () => MOCK_CGV,
         configurable: true
       });
+
       fixture = TestBed.createComponent(TermsAndConditionsComponent);
       component = fixture.componentInstance;
     });
+
     afterEach(() => {
       if (originalCguContentGetter) {
         Object.defineProperty(TermsAndConditionsComponent.prototype, 'cguContent', originalCguContentGetter);
       }
+
       if (originalCgvContentGetter) {
         Object.defineProperty(TermsAndConditionsComponent.prototype, 'cgvContent', originalCgvContentGetter);
       }
     });
-    it('isArray doit détecter un tableau', () => {
-      expect(component.isArray(['a', 'b'])).toBeTrue();
-      expect(component.isArray('foo')).toBeFalse();
+
+    it('isShowingCGU retourne true pour CGU', () => {
+      expect(component.isShowingCGU()).toBeTrue();
     });
-    it('getContent retourne le bon contenu pour CGU', () => {
-      expect(component.getContent()).toEqual(MOCK_CGU);
+
+    it('isShowingCGV retourne false pour CGU', () => {
+      expect(component.isShowingCGV()).toBeFalse();
     });
-    it('getContent retourne le bon contenu pour CGV', () => {
+
+    it('cguContent retourne le bon contenu pour CGU', () => {
+      expect(component.cguContent).toEqual(MOCK_CGU);
+    });
+
+    it('cgvContent retourne le bon contenu pour CGV', () => {
       // Redéfinir le getter cgvContent juste avant ce test
       Object.defineProperty(TermsAndConditionsComponent.prototype, 'cgvContent', {
         get: () => MOCK_CGV,
@@ -167,13 +182,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       mockLocationService.getPathname.and.returnValue('/terms-and-conditions/cgv');
       fixture = TestBed.createComponent(TermsAndConditionsComponent);
       component = fixture.componentInstance;
-      expect(component.getContent()).toEqual(MOCK_CGV);
-    });
-    it('getContent retourne un objet vide si aucun flag', () => {
-      mockLocationService.getPathname.and.returnValue('/autre');
-      fixture = TestBed.createComponent(TermsAndConditionsComponent);
-      component = fixture.componentInstance;
-      expect(component.getContent()).toEqual({ title: '', date: '', sections: [] });
+      expect(component.cgvContent).toEqual(MOCK_CGV);
     });
   });
 
@@ -183,6 +192,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       fixture = TestBed.createComponent(TermsAndConditionsComponent);
       component = fixture.componentInstance;
     });
+
     it('cguContent et cgvContent doivent avoir la bonne structure', () => {
       const cgu = component.cguContent;
       expect(cgu.title).toBeDefined();
@@ -194,28 +204,33 @@ describe('TermsAndConditionsComponent (robuste)', () => {
           expect(typeof c.text).toBe('string');
         });
       });
+
       const cgv = component.cgvContent;
       expect(cgv.title).toBeDefined();
       expect(Array.isArray(cgv.sections)).toBeTrue();
     });
+
     // Cas limite : CGU vide
     it('gère un contenu CGU vide sans erreur', () => {
       Object.defineProperty(TermsAndConditionsComponent.prototype, 'cguContent', {
         get: () => EMPTY_CGU,
         configurable: true
       });
+
       expect(() => {
         fixture = TestBed.createComponent(TermsAndConditionsComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
       }).not.toThrow();
     });
+
     // Cas limite : CGV vide
     it('gère un contenu CGV vide sans erreur', () => {
       Object.defineProperty(TermsAndConditionsComponent.prototype, 'cgvContent', {
         get: () => EMPTY_CGV,
         configurable: true
       });
+
       mockLocationService.getPathname.and.returnValue('/terms-and-conditions/cgv');
       expect(() => {
         fixture = TestBed.createComponent(TermsAndConditionsComponent);
@@ -237,6 +252,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
         configurable: true
       });
     });
+
     afterEach(() => {
       // Restaurer les getters originaux après chaque test
       if (originalCguContentGetter) {
@@ -246,6 +262,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
         Object.defineProperty(TermsAndConditionsComponent.prototype, 'cgvContent', originalCgvContentGetter);
       }
     });
+
     it('affiche le titre et les sections CGU', () => {
       mockLocationService.getPathname.and.returnValue('/terms-and-conditions/cgu');
       fixture = TestBed.createComponent(TermsAndConditionsComponent);
@@ -256,6 +273,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       const sections = compiled.querySelectorAll('h3');
       expect(sections.length).toBe(CGU_DATA.sections.length);
     });
+
     it('affiche le titre et les sections CGV', () => {
       mockLocationService.getPathname.and.returnValue('/terms-and-conditions/cgv');
       fixture = TestBed.createComponent(TermsAndConditionsComponent);
@@ -266,6 +284,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       const sections = compiled.querySelectorAll('h3');
       expect(sections.length).toBe(CGV_DATA.sections.length);
     });
+
     it('affiche le fallback si aucun flag', () => {
       mockLocationService.getPathname.and.returnValue('/autre');
       fixture = TestBed.createComponent(TermsAndConditionsComponent);
@@ -274,6 +293,7 @@ describe('TermsAndConditionsComponent (robuste)', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       expect(compiled.textContent).toMatch(/Aucune condition à afficher/i);
     });
+
     it('affiche le titre même si sections vide', () => {
       Object.defineProperty(TermsAndConditionsComponent.prototype, 'cguContent', {
         get: () => ({ ...CGU_DATA, sections: [] }),

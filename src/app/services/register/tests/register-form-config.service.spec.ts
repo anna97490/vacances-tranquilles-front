@@ -234,10 +234,10 @@ describe('RegisterFormConfigService', () => {
       const form = service.createRegistrationForm();
       const phone = form.get('phoneNumber');
 
-      phone?.setValue('012345678'); // 9 digits
+      phone?.setValue('012345678');
       expect(phone?.hasError('phoneNumberLength')).toBeTrue();
 
-      phone?.setValue('01234567890'); // 11 digits
+      phone?.setValue('01234567890');
       expect(phone?.hasError('phoneNumberLength')).toBeTrue();
 
       phone?.setValue('01 23-45 67-89');
@@ -272,23 +272,18 @@ describe('RegisterFormConfigService', () => {
       const form = service.createRegistrationForm();
       const pwd = form.get('userSecret');
 
-      // Too short
       pwd?.setValue('Aa1!aaa');
       expect(pwd?.hasError('minLength')).toBeTrue();
 
-      // Missing lowercase
       pwd?.setValue('AAAAAAA1!');
       expect(pwd?.hasError('lowercase')).toBeTrue();
 
-      // Missing uppercase
       pwd?.setValue('aaaaaaa1!');
       expect(pwd?.hasError('uppercase')).toBeTrue();
 
-      // Missing number
       pwd?.setValue('Aaaaaaaa!');
       expect(pwd?.hasError('number')).toBeTrue();
 
-      // Missing special
       pwd?.setValue('Aaaaaaaa1');
       expect(pwd?.hasError('special')).toBeTrue();
 
@@ -453,12 +448,12 @@ describe('RegisterFormConfigService', () => {
       const siretControl = form.get('siretSiren');
 
       const testCases = [
-        { value: '1234567890123', valid: false }, // 13 digits
-        { value: '12345678901234', valid: true },  // 14 digits
-        { value: '123456789012345', valid: false }, // 15 digits
-        { value: '12345678901abc', valid: false },  // contains letters
-        { value: '00000000000000', valid: true },   // all zeros
-        { value: '99999999999999', valid: true }    // all nines
+        { value: '1234567890123', valid: false },
+        { value: '12345678901234', valid: true },
+        { value: '123456789012345', valid: false },
+        { value: '12345678901abc', valid: false },
+        { value: '00000000000000', valid: true },
+        { value: '99999999999999', valid: true }
       ];
 
       testCases.forEach(({ value, valid }) => {

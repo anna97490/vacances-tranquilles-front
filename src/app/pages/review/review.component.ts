@@ -7,6 +7,11 @@ import { FooterComponent } from '../../components/footer/footer.component';
 import { ReviewService, ReviewCreateRequest } from '../../services/review/review.service';
 import { ReservationService } from '../../services/reservation/reservation.service';
 
+/**
+ * Composant pour la création et l'envoi d'avis sur les prestataires.
+ * Ce composant permet aux utilisateurs de noter et commenter les services
+ * après une réservation terminée (statut CLOSED).
+ */
 @Component({
   selector: 'app-review',
   standalone: true,
@@ -21,18 +26,33 @@ import { ReservationService } from '../../services/reservation/reservation.servi
   styleUrls: ['./review.component.scss']
 })
 export class ReviewComponent implements OnInit {
+  /** Tableau des étoiles disponibles pour la notation (1 à 5) */
   stars = [1, 2, 3, 4, 5];
+  /** Note sélectionnée par l'utilisateur (0 à 5) */
   rating = 0;
+  /** Commentaire saisi par l'utilisateur */
   feedback = '';
+  /** Message d'erreur de validation du commentaire */
   feedbackError = '';
 
-  // Informations du prestataire
+  /** Nom du prestataire à évaluer */
   providerName = 'Prestataire';
+  /** Identifiant de la réservation associée à l'avis */
   reservationId = 0;
+  /** Identifiant du prestataire à évaluer */
   providerId = 0;
+  /** Identifiant du client qui évalue */
   clientId = 0;
+  /** Identifiant de l'utilisateur actuel */
   currentUserId = 0;
 
+  /**
+   * Constructeur du composant ReviewComponent.
+   * @param reviewService - Service pour la gestion des avis
+   * @param reservationService - Service pour la gestion des réservations
+   * @param route - Service pour accéder aux paramètres de route
+   * @param router - Service pour la navigation
+   */
   constructor(
     private reviewService: ReviewService,
     private reservationService: ReservationService,
@@ -45,6 +65,26 @@ export class ReviewComponent implements OnInit {
   }
 
   private loadReservationData(): void {
+    // Vérifier d'abord si les informations sont dans le localStorage (venant de la page réservations)
+    const reviewReservationId = localStorage.getItem('reviewReservationId');
+    const reviewProviderId = localStorage.getItem('reviewProviderId');
+    const reviewServiceName = localStorage.getItem('reviewServiceName');
+
+    if (reviewReservationId && reviewProviderId) {
+      this.reservationId = +reviewReservationId;
+      this.providerId = +reviewProviderId;
+      this.providerName = reviewServiceName || 'Prestataire';
+
+      // Nettoyer le localStorage
+      localStorage.removeItem('reviewReservationId');
+      localStorage.removeItem('reviewProviderId');
+      localStorage.removeItem('reviewServiceName');
+
+      // Charger les détails de la réservation
+      this.loadReservationDetails();
+      return;
+    }
+
     // Récupérer les paramètres de route ou query parameters
     this.route.params.subscribe(params => {
       const reservationId = params['reservationId'];
@@ -69,6 +109,11 @@ export class ReviewComponent implements OnInit {
     }
   }
 
+  /**
+   * Charge les détails d'une réservation spécifique et vérifie son statut.
+   * Redirige vers la page d'accueil si la réservation n'est pas fermée.
+   * @private
+   */
   private loadReservationDetails(): void {
     this.reservationService.getReservationById(this.reservationId).subscribe({
       next: (reservation) => {
@@ -84,23 +129,19 @@ export class ReviewComponent implements OnInit {
         this.providerName = reservation.providerName || 'Prestataire';
         this.providerId = reservation.providerId;
         this.clientId = reservation.clientId;
-
-        // Afficher un message informatif
-        console.log('Réservation chargée:', {
-          id: reservation.id,
-          status: reservation.status,
-          providerName: reservation.providerName,
-          clientName: reservation.clientName
-        });
       },
       error: (err) => {
-        console.error('Erreur lors du chargement de la réservation:', err);
         alert('Erreur lors du chargement de la réservation.');
         this.router.navigate(['/home']);
       }
     });
   }
 
+  /**
+   * Charge la première réservation fermée disponible pour l'utilisateur.
+   * Redirige vers la page d'accueil si aucune réservation fermée n'est trouvée.
+   * @private
+   */
   private loadFirstClosedReservation(): void {
     this.reservationService.getAllReservations().subscribe({
       next: (reservations) => {
@@ -119,24 +160,24 @@ export class ReviewComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Erreur lors du chargement des réservations:', err);
         alert('Erreur lors du chargement des réservations.');
         this.router.navigate(['/home']);
       }
     });
   }
 
+  /**
+   * Définit la note sélectionnée par l'utilisateur.
+   * @param value - La note à définir (1 à 5)
+   */
   setRating(value: number) {
     this.rating = value;
   }
 
-  onStarKeydown(event: KeyboardEvent, value: number) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      this.setRating(value);
-    }
-  }
-
+  /**
+   * Gère la saisie de commentaire et valide le contenu en temps réel.
+   * @param event - Événement de saisie contenant la valeur du champ
+   */
   onFeedbackInput(event: any) {
     const input = event.target.value;
     this.feedback = input;
@@ -145,6 +186,12 @@ export class ReviewComponent implements OnInit {
     this.validateFeedback();
   }
 
+  /**
+   * Valide le contenu du commentaire selon les règles définies.
+   * Vérifie les caractères interdits, les commentaires uniquement numériques,
+   * et les commentaires uniquement de ponctuation.
+   * @private
+   */
   private validateFeedback() {
     // Effacer l'erreur précédente
     this.feedbackError = '';
@@ -180,6 +227,11 @@ export class ReviewComponent implements OnInit {
     }
   }
 
+  /**
+   * Envoie l'avis au serveur après validation complète des données.
+   * Vérifie la note, le commentaire et les identifiants nécessaires.
+   * Affiche des messages d'erreur appropriés en cas de problème.
+   */
   sendFeedback() {
     if (this.rating === 0) {
       alert('Veuillez sélectionner une note avant d\'envoyer votre avis.');
@@ -239,7 +291,6 @@ export class ReviewComponent implements OnInit {
         this.router.navigate(['/home']);
       },
       error: (err: any) => {
-        console.error('Erreur lors de l\'envoi de l\'avis:', err);
         let errorMessage = 'Erreur lors de l\'envoi de l\'avis';
 
         if (err.error && err.error.message) {
@@ -253,9 +304,88 @@ export class ReviewComponent implements OnInit {
     });
   }
 
+  /**
+   * Annule la création d'avis et réinitialise le formulaire.
+   * Remet à zéro la note, le commentaire et les messages d'erreur.
+   */
   cancel() {
     this.rating = 0;
     this.feedback = '';
     this.feedbackError = '';
+  }
+
+  /**
+   * Gère la navigation au clavier pour les étoiles.
+   * Permet d'utiliser les flèches gauche/droite pour naviguer entre les étoiles.
+   * @param event - L'événement clavier
+   * @param starValue - La valeur de l'étoile actuelle
+   */
+  onStarKeydown(event: KeyboardEvent, starValue: number): void {
+    const currentIndex = starValue - 1;
+    let newIndex = currentIndex;
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+        newIndex = Math.max(0, currentIndex - 1);
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        newIndex = Math.min(4, currentIndex + 1);
+        break;
+      case 'Home':
+        event.preventDefault();
+        newIndex = 0;
+        break;
+      case 'End':
+        event.preventDefault();
+        newIndex = 4;
+        break;
+      default:
+        return;
+    }
+
+    if (newIndex !== currentIndex) {
+      this.setRating(newIndex + 1);
+      // Focus sur la nouvelle étoile
+      const newStarElement = document.getElementById(`star-${newIndex + 1}`);
+      if (newStarElement) {
+        newStarElement.focus();
+      }
+    }
+  }
+
+  /**
+   * Retourne l'ID des éléments ARIA pour décrire le champ feedback.
+   * Utilisé pour lier les messages d'aide et d'erreur au champ textarea.
+   * @returns Une chaîne contenant les IDs des éléments descriptifs
+   */
+  getFeedbackAriaDescribedBy(): string {
+    const descriptions = ['feedback-help'];
+
+    if (this.feedbackError) {
+      descriptions.push('feedback-error');
+    }
+
+    return descriptions.join(' ');
+  }
+
+  /**
+   * Retourne l'ID des éléments ARIA pour décrire le bouton d'envoi.
+   * Utilisé pour expliquer pourquoi le bouton est désactivé.
+   * @returns Une chaîne contenant les IDs des éléments descriptifs
+   */
+  getSendButtonAriaDescribedBy(): string {
+    const descriptions = [];
+
+    if (this.rating === 0) {
+      descriptions.push('rating-error');
+    }
+
+    if (this.feedback.trim().length === 0) {
+      descriptions.push('feedback-error');
+    }
+
+    return descriptions.join(' ');
   }
 }

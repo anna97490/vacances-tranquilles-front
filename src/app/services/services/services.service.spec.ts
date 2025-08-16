@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { ServicesService } from './services.service';
 import { Service } from '../../models/Service';
 import { EnvService } from '../env/env.service';
@@ -22,12 +23,13 @@ describe('ServicesService', () => {
     const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         ServicesService,
         { provide: EnvService, useClass: MockEnvService },
         { provide: TokenValidatorService, useValue: tokenValidatorSpyObj },
-        { provide: Router, useValue: routerSpyObj }
+        { provide: Router, useValue: routerSpyObj },
+        provideHttpClient(withFetch()),
+        provideHttpClientTesting()
       ]
     });
 
@@ -48,7 +50,7 @@ describe('ServicesService', () => {
 it('should send GET request with correct parameters', () => {
   // Configurer le spy pour retourner true (token valide)
   tokenValidatorSpy.isTokenValid.and.returnValue(true);
-  
+
   // Configurer localStorage pour avoir un token
   spyOn(localStorage, 'getItem').and.returnValue('mock-token');
 
@@ -75,13 +77,13 @@ it('should send GET request with correct parameters', () => {
   // Simule une réponse vide
   req.flush([]);
 
-  httpMock.verify(); // ✅ important pour valider qu'aucune requête oubliée
+  httpMock.verify();
 });
 
   it('should throw an error if category is invalid', () => {
     // Configurer le spy pour retourner true (token valide)
     tokenValidatorSpy.isTokenValid.and.returnValue(true);
-    
+
     expect(() =>
       service.searchServices('INVALID' as any, '75001', '2025-01-01', '10:00', '12:00')
     ).toThrowError('Catégorie inconnue : INVALID');

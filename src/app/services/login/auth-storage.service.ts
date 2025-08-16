@@ -42,7 +42,7 @@ export class AuthStorageService {
     try {
       // Décoder le token JWT (format: header.payload.signature)
       const parts = token.split('.');
-      
+
       if (parts.length !== 3) {
         return null;
       }
@@ -51,12 +51,12 @@ export class AuthStorageService {
 
       // Décoder le payload base64
       const decodedPayload = JSON.parse(atob(payload));
-      
+
       // Chercher l'userId dans le payload
       // Les clés possibles peuvent être: userId, user_id, id, sub, etc.
-      const userId = decodedPayload.userId || 
-                    decodedPayload.user_id || 
-                    decodedPayload.id || 
+      const userId = decodedPayload.userId ||
+                    decodedPayload.user_id ||
+                    decodedPayload.id ||
                     decodedPayload.sub;
 
       // Convertir en number si c'est une string
@@ -67,7 +67,7 @@ export class AuthStorageService {
         userIdNumber = userId;
       }
 
-      if (userIdNumber && userIdNumber >= 1 && userIdNumber <= 50) {
+      if (userIdNumber && userIdNumber >= 1) {
         return userIdNumber;
       }
 

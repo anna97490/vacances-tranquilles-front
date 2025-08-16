@@ -15,7 +15,7 @@ describe('LoginNavigationService', () => {
         { provide: Router, useValue: routerSpy }
       ]
     });
-    
+
     service = TestBed.inject(LoginNavigationService);
     mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
 
@@ -32,37 +32,25 @@ describe('LoginNavigationService', () => {
   describe('redirectAfterLogin', () => {
     it('should redirect to home by default when no userRole provided', () => {
       service.redirectAfterLogin();
-      
+
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });
 
-    it('should redirect to service-search when userRole is CLIENT', () => {
+    it('should redirect to home for any userRole', () => {
       service.redirectAfterLogin(UserRole.CLIENT);
-      
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/service-search']);
-    });
 
-    it('should redirect to service-search when userRole is CLIENT as string', () => {
-      service.redirectAfterLogin('CLIENT');
-      
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/service-search']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });
 
     it('should redirect to home when userRole is PROVIDER', () => {
       service.redirectAfterLogin(UserRole.PROVIDER);
-      
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
-    });
 
-    it('should redirect to home when userRole is ADMIN', () => {
-      service.redirectAfterLogin(UserRole.ADMIN);
-      
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });
 
     it('should redirect to home with any other userRole', () => {
       service.redirectAfterLogin('OTHER_ROLE');
-      
+
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });
   });
@@ -70,7 +58,7 @@ describe('LoginNavigationService', () => {
   describe('redirectToRegister', () => {
     it('should redirect to register page', () => {
       service.redirectToRegister();
-      
+
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/register']);
     });
   });
@@ -78,7 +66,7 @@ describe('LoginNavigationService', () => {
   describe('redirectToForgotPassword', () => {
     it('should redirect to forgot password page', () => {
       service.redirectToForgotPassword();
-      
+
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/auth/forgot-password']);
     });
   });

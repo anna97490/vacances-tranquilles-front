@@ -5,12 +5,14 @@ import { HomeInitializationService } from './../../services/home/home-initilizat
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { FooterComponent } from '../../components/footer/footer.component';
+
+import { ServiceSearchComponent } from '../service-search/service-search.component';
+import { AuthStorageService } from '../../services/login/auth-storage.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, FooterComponent],
+  imports: [CommonModule, RouterModule, MatIconModule, ServiceSearchComponent],
   templateUrl: './home.component.html',
   styleUrls: [
     './home.component.scss',           // Styles de base (commun)
@@ -21,17 +23,19 @@ import { FooterComponent } from '../../components/footer/footer.component';
 export class HomeComponent implements OnInit, OnDestroy {
   content!: HomeContent;
   mainLogo = 'assets/pictures/logo.png';
+  isAuthenticated = false;
 
   @HostBinding('style.display') display = 'block';
   @HostBinding('style.height') height = '100%';
 
   constructor(
     private readonly homeContentService: HomeContentService,
-    private readonly homeInitializationService: HomeInitializationService
+    private readonly homeInitializationService: HomeInitializationService,
+    private readonly authStorage: AuthStorageService
   ) {}
 
   ngOnInit(): void {
-    console.log('HomeComponent initialized');
+    this.isAuthenticated = this.authStorage.isAuthenticated();
     this.initializeContent();
     this.initializeServices();
   }
@@ -44,10 +48,10 @@ export class HomeComponent implements OnInit, OnDestroy {
    * Initialise le contenu de la page
    */
   private initializeContent(): void {
-    console.log('Initializing content...');
+
     const content = this.homeContentService.getContent();
     this.content = content ?? this.getDefaultContent();
-    console.log('Content initialized:', this.content);
+
   }
 
   /**
@@ -55,9 +59,11 @@ export class HomeComponent implements OnInit, OnDestroy {
    */
   private async initializeServices(): Promise<void> {
     try {
-      console.log('Initializing services...');
-      await this.homeInitializationService.initializeHomeServices();
-      console.log('Services initialized successfully');
+      // Charge les services Botpress avec un délai pour prioriser le chargement initial de la page
+      setTimeout(async () => {
+        await this.homeInitializationService.initializeHomeServices();
+      }, 2000);
+
     } catch (error) {
       console.error('Erreur lors de l\'initialisation des services:', error);
     }

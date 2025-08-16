@@ -42,9 +42,10 @@
       <div class="card-body">
         <!-- Informations du service -->
         <div class="info-section">
-          <h3>Prestation</h3>
+          <h3>Service</h3>
           <div class="info-grid">
             <div class="info-item">
+              <span class="label">Nom du service:</span>
               <span class="value">{{ reservation.serviceName || 'Non spécifié' }}</span>
             </div>
             <div class="info-item">
@@ -81,8 +82,7 @@
         <div class="info-section">
           <h3>Prix</h3>
           <div class="price-display">
-            <span class="price-amount">€ {{ formatPrice(reservation.totalPrice) }}</span>
-            <span class="price-label">Prix total</span>
+            <span class="price-amount">{{ formatPrice(reservation.totalPrice) }}</span>
           </div>
         </div>
 

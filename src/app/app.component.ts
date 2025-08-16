@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,6 +16,7 @@ import { EnvService } from './services/env/env.service';
   imports: [
     RouterOutlet,
     HeaderComponent,
+    FooterComponent,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -25,7 +27,7 @@ import { EnvService } from './services/env/env.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'frontend';
 
   constructor(private readonly envService: EnvService) {}

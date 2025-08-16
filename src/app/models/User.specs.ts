@@ -13,7 +13,7 @@ describe('UserRole Enum', () => {
 
 describe('User class', () => {
   it('should initialize a user with all basic fields', () => {
-    const user = new User({
+    const user: User = {
       idUser: 1,
       firstName: 'Alice',
       lastName: 'Dupont',
@@ -24,7 +24,7 @@ describe('User class', () => {
       address: '123 rue de Paris',
       city: 'Paris',
       postalCode: 75000
-    });
+    };
 
     expect(user.idUser).toBe(1);
     expect(user.firstName).toBe('Alice');
@@ -39,7 +39,7 @@ describe('User class', () => {
   });
 
   it('should initialize with optional fields', () => {
-    const user = new User({
+    const user: User = {
       siretSiren: '12345678900011',
       companyName: 'Ma Société',
       rcNumber: 'RC-123',
@@ -47,7 +47,7 @@ describe('User class', () => {
       autoEntrepreneurAttestationUrl: 'http://example.com/auto.pdf',
       insuranceCertificateUrl: 'http://example.com/insurance.pdf',
       description: 'Prestataire multiservices'
-    });
+    } as User;
 
     expect(user.siretSiren).toBe('12345678900011');
     expect(user.companyName).toBe('Ma Société');
@@ -59,12 +59,12 @@ describe('User class', () => {
   });
 
   it('should initialize a user with empty constructor', () => {
-    const user = new User();
+    const user: User = {} as User;
     expect(user).toBeDefined();
   });
 
   it('should initialize optional fields when provided', () => {
-    const user = new User({
+    const user: User = {
       siretSiren: '12345678900011',
       companyName: 'Entreprise Test',
       rcNumber: 'RC-TEST',
@@ -72,7 +72,7 @@ describe('User class', () => {
       autoEntrepreneurAttestationUrl: 'https://test.com/attestation',
       insuranceCertificateUrl: 'https://test.com/insurance',
       description: 'Un bon prestataire'
-    });
+    } as User;
 
     expect(user.siretSiren).toBe('12345678900011');
     expect(user.companyName).toBe('Entreprise Test');

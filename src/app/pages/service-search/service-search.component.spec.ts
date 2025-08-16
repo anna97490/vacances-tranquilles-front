@@ -290,22 +290,26 @@ describe('ServiceSearchComponent', () => {
   });
 
   describe('findProviders errors', () => {
-    it('should catch error if formatDate throws', () => {
-      spyOn<any>(component, 'formatDate').and.throwError('format error');
-      spyOnProperty(component, 'isDateValid', 'get').and.returnValue(true);
+    it('should handle form validation errors', () => {
+      // Simuler un token d'authentification
+      spyOn(localStorage, 'getItem').and.returnValue('mock-token');
+      
+      // Rendre le formulaire invalide
+      component.selectedDay = undefined;
+      component.selectedMonth = undefined;
+      component.selectedYear = undefined;
+      component.selectedStartHour = undefined;
+      component.selectedEndHour = undefined;
+      component.selectedService = undefined;
+      component.postalCode = '';
+      
+      spyOnProperty(component, 'isDateValid', 'get').and.returnValue(false);
+      spyOnProperty(component, 'isPostalCodeValid', 'get').and.returnValue(false);
       spyOn(window, 'alert');
-
-      component.selectedDay = 1;
-      component.selectedMonth = 'Janvier';
-      component.selectedYear = 2025;
-      component.selectedStartHour = '10:00';
-      component.selectedEndHour = '11:00';
-      component.selectedService = 'HOME';
-      component.postalCode = '75001';
 
       component.findProviders();
 
-      expect(window.alert).toHaveBeenCalledWith('Erreur lors du formatage de la date.');
+      expect(window.alert).toHaveBeenCalledWith('Veuillez saisir un code postal valide.');
     });
   });
 

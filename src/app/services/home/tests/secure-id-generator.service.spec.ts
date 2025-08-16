@@ -140,7 +140,6 @@ describe('SecureIdGeneratorService', () => {
       expect(longResult.startsWith('long-')).toBe(true);
     });
 
-    // Test edge case pour Math.ceil dans generateWebCryptoId
     it('should handle odd lengths correctly in Web Crypto method', async () => {
       const getRandomValuesSpy = jasmine.createSpy('getRandomValues').and.callFake((array: Uint8Array) => {
         for (let i = 0; i < array.length; i++) {
