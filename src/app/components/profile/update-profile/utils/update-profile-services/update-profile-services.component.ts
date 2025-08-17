@@ -16,9 +16,6 @@ import { IconService } from '../../../../../services/icon/icon.service';
 /**
  * Composant de modification des services proposés dans le profil utilisateur.
  * Permet d'éditer, ajouter et supprimer des services avec une interface utilisateur moderne.
- *
- * @example
- * <app-update-profile-services [services]="userServices" (servicesChange)="onServicesUpdate($event)"></app-update-profile-services>
  */
 @Component({
   selector: 'app-update-profile-services',
@@ -106,15 +103,14 @@ export class UpdateProfileServicesComponent {
   saveService(): void {
     if (this.serviceForm.valid) {
       const formValue = this.serviceForm.value;
-      
       if (this.isAddingNew) {
         // Ajouter un nouveau service
         const newService: Service = {
           id: 0,
-          providerId: 0, 
+          providerId: 0,
           ...formValue
         };
-        
+
         this.userInformationService.createService(newService).subscribe({
           next: (createdService: Service) => {
             this.services = [...this.services, createdService];
@@ -133,10 +129,10 @@ export class UpdateProfileServicesComponent {
           ...this.editingService,
           ...formValue
         };
-        
+
         this.userInformationService.updateService(this.editingService.id, updatedService).subscribe({
           next: (savedService: Service) => {
-            this.services = this.services.map(service => 
+            this.services = this.services.map(service =>
               service.id === this.editingService?.id ? savedService : service
             );
             this.servicesChange.emit(this.services);

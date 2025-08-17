@@ -19,7 +19,6 @@ describe('UpdateProfileHeaderComponent', () => {
     fixture = TestBed.createComponent(UpdateProfileHeaderComponent);
     component = fixture.componentInstance;
 
-    // Mock user data
     mockUser = {
       idUser: 1,
       firstName: 'John',
@@ -45,7 +44,6 @@ describe('UpdateProfileHeaderComponent', () => {
 
   it('should initialize form with user data', () => {
     fixture.detectChanges();
-    
     expect(component.profileForm.get('firstName')?.value).toBe('John');
     expect(component.profileForm.get('lastName')?.value).toBe('Doe');
     expect(component.profileForm.get('email')?.value).toBe('john.doe@example.com');
@@ -69,56 +67,54 @@ describe('UpdateProfileHeaderComponent', () => {
 
   it('should validate required fields', () => {
     fixture.detectChanges();
-    
+
     const firstNameControl = component.profileForm.get('firstName');
     firstNameControl?.setValue('');
     firstNameControl?.markAsTouched();
-    
+
     expect(component.isFieldInvalid('firstName')).toBeTrue();
     expect(component.getFieldErrorText('firstName')).toBe('Le prénom est requis');
   });
 
   it('should validate email format', () => {
     fixture.detectChanges();
-    
+
     const emailControl = component.profileForm.get('email');
     emailControl?.setValue('invalid-email');
     emailControl?.markAsTouched();
-    
+
     expect(component.isFieldInvalid('email')).toBeTrue();
     expect(component.getFieldErrorText('email')).toBe('Format d\'email invalide');
   });
 
   it('should validate phone number format', () => {
     fixture.detectChanges();
-    
+
     const phoneControl = component.profileForm.get('phoneNumber');
     phoneControl?.setValue('123');
     phoneControl?.markAsTouched();
-    
+
     expect(component.isFieldInvalid('phoneNumber')).toBeTrue();
     expect(component.getFieldErrorText('phoneNumber')).toBe('Format de numéro de téléphone invalide (ex: 0612345678)');
   });
 
   it('should validate letters only for name fields', () => {
     fixture.detectChanges();
-    
+
     const firstNameControl = component.profileForm.get('firstName');
     firstNameControl?.setValue('John123');
     firstNameControl?.markAsTouched();
-    
+
     expect(component.isFieldInvalid('firstName')).toBeTrue();
     expect(component.getFieldErrorText('firstName')).toBe('Le prénom ne doit contenir que des lettres');
   });
 
   it('should validate description length', () => {
     fixture.detectChanges();
-    
     const descriptionControl = component.profileForm.get('description');
     const longDescription = 'a'.repeat(501);
     descriptionControl?.setValue(longDescription);
     descriptionControl?.markAsTouched();
-    
     expect(component.isFieldInvalid('description')).toBeTrue();
     expect(component.getFieldErrorText('description')).toContain('ne doit pas dépasser 500 caractères');
   });
@@ -134,12 +130,11 @@ describe('UpdateProfileHeaderComponent', () => {
     });
 
     const isValid = component.validateForm();
-    
     expect(isValid).toBeFalse();
     expect(component.validationError.emit).toHaveBeenCalled();
   });
 
-  it('should return true when form is valid', () => {
+    it('should return true when form is valid', () => {
     fixture.detectChanges();
 
     // S'assurer que le formulaire est valide
@@ -153,7 +148,44 @@ describe('UpdateProfileHeaderComponent', () => {
     });
 
     const isValid = component.validateForm();
-    
+
     expect(isValid).toBeTrue();
+  });
+
+  it('should emit userChange when onUserChange is called', () => {
+    spyOn(component.userChange, 'emit');
+    fixture.detectChanges();
+
+    component.onUserChange();
+
+    expect(component.userChange.emit).toHaveBeenCalledWith(component.user);
+  });
+
+  it('should emit userChange when form becomes valid', () => {
+    spyOn(component.userChange, 'emit');
+    fixture.detectChanges();
+
+    component.profileForm.patchValue({
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'jane.smith@example.com',
+      phoneNumber: '0612345678',
+      city: 'Lyon',
+      description: 'Valid description'
+    });
+
+    expect(component.userChange.emit).toHaveBeenCalledWith(component.user);
+  });
+
+  it('should not emit userChange when form is invalid', () => {
+    spyOn(component.userChange, 'emit');
+    fixture.detectChanges();
+
+    component.profileForm.patchValue({
+      firstName: '',
+      email: 'invalid-email'
+    });
+
+    expect(component.userChange.emit).not.toHaveBeenCalled();
   });
 });

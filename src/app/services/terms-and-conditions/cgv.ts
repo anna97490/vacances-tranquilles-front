@@ -4,7 +4,6 @@ import { TermsContent } from './../../models/Terms';
 const bullet = (items: string[]) =>
   items.map((i) => ({ text: `• ${i}` }));
 
-// Exportez un objet concret qui correspond à l'interface TermsContent
 export const CGV_DATA: TermsContent = {
   title: "CONDITIONS GÉNÉRALES DE VENTE",
   date: "Juin 2025",

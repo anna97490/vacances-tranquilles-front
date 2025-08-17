@@ -5,12 +5,14 @@ import { HomeInitializationService } from './../../services/home/home-initilizat
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { FooterComponent } from '../../components/footer/footer.component';
+
+import { ServiceSearchComponent } from '../service-search/service-search.component';
+import { AuthStorageService } from '../../services/login/auth-storage.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, FooterComponent],
+  imports: [CommonModule, RouterModule, MatIconModule, ServiceSearchComponent],
   templateUrl: './home.component.html',
   styleUrls: [
     './home.component.scss',           // Styles de base (commun)
@@ -21,17 +23,19 @@ import { FooterComponent } from '../../components/footer/footer.component';
 export class HomeComponent implements OnInit, OnDestroy {
   content!: HomeContent;
   mainLogo = 'assets/pictures/logo.png';
+  isAuthenticated = false;
 
   @HostBinding('style.display') display = 'block';
   @HostBinding('style.height') height = '100%';
 
   constructor(
     private readonly homeContentService: HomeContentService,
-    private readonly homeInitializationService: HomeInitializationService
+    private readonly homeInitializationService: HomeInitializationService,
+    private readonly authStorage: AuthStorageService
   ) {}
 
   ngOnInit(): void {
-
+    this.isAuthenticated = this.authStorage.isAuthenticated();
     this.initializeContent();
     this.initializeServices();
   }
@@ -59,7 +63,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       setTimeout(async () => {
         await this.homeInitializationService.initializeHomeServices();
       }, 2000);
-      
     } catch (error) {
       console.error('Erreur lors de l\'initialisation des services:', error);
     }

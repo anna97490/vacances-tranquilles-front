@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
-import { ProfilePageComponent } from './pages/ProfilePage/profilePage.component';
-
+import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
+import { ProviderProfileComponent } from './pages/provider-profile/provider-profile.component';
 
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
@@ -9,6 +9,7 @@ import { ServiceSearchComponent } from './pages/service-search/service-search.co
 import { AvailableProvidersComponent } from './pages/available-providers/available-providers.component';
 import { ConversationComponent } from './pages/conversation/conversation.component';
 import { MessageComponent } from './pages/message/message.component';
+import { ReviewComponent } from './pages/review/review.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -42,9 +43,8 @@ export const routes: Routes = [
     ]
   },
   { path: 'profile', component: ProfilePageComponent },
-  { path: 'service-search', component: ServiceSearchComponent },
-  { path: 'avalaible-providers', component: AvailableProvidersComponent },
-  
+  { path: 'provider-profile', component: ProviderProfileComponent },
+
     // Routes d'authentification avec paramètres pour le type d'utilisateur
   {
     path: 'auth',
@@ -64,6 +64,7 @@ export const routes: Routes = [
   },
   { path: 'reservations', component: ReservationComponent },
   { path: 'reservations/:id', component: ReservationDetailComponent },
+  { path: 'review', component: ReviewComponent },
   { path: 'messaging', component: ConversationComponent },
   { path: 'conversations/:id', component: ConversationComponent },
   { path: 'messages/:id', component: MessageComponent }

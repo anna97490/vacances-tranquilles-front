@@ -75,12 +75,10 @@ export class BotpressService {
 
       /* istanbul ignore next */
       const data = await response.json();
-      console.log('Message envoyé avec succès', data);
       return true;
 
     } catch (error) {
       /* istanbul ignore next */
-      console.error('Erreur lors de l\'envoi du message:', error);
       return false;
     }
   }

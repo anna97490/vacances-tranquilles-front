@@ -1,0 +1,75 @@
+<!-- État de chargement -->
+<div *ngIf="isLoading" class="loading-container">
+  <div class="loading-spinner">
+    <mat-icon class="spinner-icon">refresh</mat-icon>
+    <p>Chargement des avis pour le prestataire {{ providerId }}...</p>
+  </div>
+</div>
+
+<!-- État d'erreur -->
+<div *ngIf="hasError && !isLoading" class="error-container">
+  <div class="error-message">
+    <mat-icon class="error-icon">error</mat-icon>
+    <h3>Erreur de chargement</h3>
+    <p>Impossible de récupérer les avis.</p>
+    <button mat-raised-button color="primary" (click)="loadReviews()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
+  </div>
+</div>
+
+<!-- Contenu principal -->
+<div *ngIf="!isLoading && !hasError" class="reviews-section">
+  <h3 class="reviews-title" *ngIf="reviews.length > 0">Avis reçus ({{ reviews.length }})</h3>
+
+  <div class="reviews-grid" *ngIf="reviews.length > 0">
+    <mat-card class="review-card" *ngFor="let review of reviews">
+      <div class="header">
+        <img src="assets/icons/person_24dp_FFA101.svg" alt="Avatar de l'avis" class="avatar" />
+
+        <div class="info">
+          <div class="top-line">
+            <h3 class="name">Posté par : {{ review.reviewerFirstName }}</h3>
+          </div>
+
+          <section class="rating" aria-label="Évaluations">
+            <div class="stars">
+              <mat-icon *ngFor="let star of getStars(review.note)" class="star-icon">
+                {{ star }}
+              </mat-icon>
+            </div>
+            <span class="rating-text">{{ review.note }}/5</span>
+          </section>
+
+          <section class="date" aria-label="Date de l'avis">
+            <div class="review-date">
+              {{ formatDate(review.createdAt) }}
+            </div>
+          </section>
+
+          <section class="description" aria-label="Commentaire" *ngIf="review.commentaire">
+            "{{ review.commentaire }}"
+          </section>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="review-info">
+          <p class="no-comment" *ngIf="!review.commentaire">
+            Aucun commentaire
+          </p>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="no-reviews" *ngIf="reviews.length === 0">
+    <div class="no-reviews-content">
+      <mat-icon class="no-reviews-icon">star_border</mat-icon>
+      <h4>Aucun avis pour le moment</h4>
+      <p>Ce prestataire n'a pas encore reçu d'avis.</p>
+    </div>
+  </div>
+</div>
+

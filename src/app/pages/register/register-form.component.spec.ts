@@ -41,7 +41,7 @@ describe('RegisterFormComponent', () => {
       siretSiren: new FormControl('')
     });
 
-    envServiceMock = { 
+    envServiceMock = {
       apiUrl: 'http://api.test',
       isProduction: false
     } as EnvService;
@@ -375,20 +375,6 @@ describe('RegisterFormComponent', () => {
     expect(component.apiError).toBe('Email déjà utilisé');
   });
 
-  it('should delegate resetPasswordField to validation service', () => {
-    component.resetPasswordField();
-    expect(validationServiceMock.resetPasswordField).toHaveBeenCalledWith(testForm);
-  });
-
-  it('should expose titles and user type from detector service (particulier)', () => {
-    expect(component.getFormTitle()).toBe('Inscription Particulier');
-    expect(component.getUserTypeString()).toBe('particulier');
-  });
-
-  it('should return api url from config service', () => {
-    expect(component.getApiUrl()).toBe('http://api.test');
-  });
-
   it('should unsubscribe on destroy if subscription exists', () => {
     const unsubscribeSpy = jasmine.createSpy('unsubscribe');
     // @ts-expect-error - accès direct pour test
@@ -468,53 +454,7 @@ describe('RegisterFormComponent', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/home']);
   });
 
-  it('should delegate form configuration methods correctly', () => {
-         expect(component.shouldShowField('testField')).toBeTrue();
-     expect(formConfigServiceMock.shouldShowField).toHaveBeenCalledWith('testField', false);
-
-     expect(component.getFieldLabel('testField')).toBe('testField');
-     expect(formConfigServiceMock.getFieldLabel).toHaveBeenCalledWith('testField', false);
-
-     expect(component.getFieldPlaceholder('testField')).toBe('');
-     expect(formConfigServiceMock.getFieldPlaceholder).toHaveBeenCalledWith('testField', false);
-
-     expect(component.getFieldType('testField')).toBe('text');
-     expect(formConfigServiceMock.getFieldType).toHaveBeenCalledWith('testField');
-
-     expect(component.getFieldRequired('testField')).toBeTrue();
-     expect(formConfigServiceMock.getFieldRequired).toHaveBeenCalledWith('testField', false);
-  });
-
-  it('should delegate validation methods correctly', () => {
-    expect(component.getFieldClasses('testField')).toBe('');
-    expect(validationServiceMock.getFieldClasses).toHaveBeenCalledWith(testForm, 'testField');
-  });
-
-  it('should delegate user type detection methods correctly', () => {
-    userTypeDetectorMock.detectUserTypeFromString.and.returnValue(false);
-
-    expect(component.detectUserTypeFromUrl()).toBeFalse();
-    expect(userTypeDetectorMock.detectUserTypeFromUrl).toHaveBeenCalled();
-
-    expect(component.detectUserTypeFromString('prestataire')).toBeFalse();
-    expect(userTypeDetectorMock.detectUserTypeFromString).toHaveBeenCalledWith('prestataire');
-  });
-
-    it('should handle prestataire user type correctly', () => {
-    userTypeDetectorMock.detectUserTypeFromUrl.and.returnValue(true);
-    userTypeDetectorMock.getPrestataireFormTitle.and.returnValue('Inscription Prestataire');
-    userTypeDetectorMock.getPrestataireUserTypeString.and.returnValue('prestataire');
-
-    // Réinitialiser le composant avec les nouveaux mocks
-    fixture = TestBed.createComponent(RegisterFormComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    expect(component.getFormTitle()).toBe('Inscription Prestataire');
-    expect(component.getUserTypeString()).toBe('prestataire');
-  });
-
-    it('should handle error summary building for prestataire', () => {
+  it('should handle error summary building for prestataire', () => {
     userTypeDetectorMock.detectUserTypeFromUrl.and.returnValue(true);
     // Réinitialiser le composant avec les nouveaux mocks
     fixture = TestBed.createComponent(RegisterFormComponent);

@@ -3,7 +3,6 @@ import { TermsContent } from './../../models/Terms';
 // Fonction utilitaire pour formatage des puces
 const bullet = (lines: string[]) => lines.map(text => ({ text: `• ${text}` }));
 
-// Exportez un objet concret qui correspond à l'interface TermsContent
 export const CGU_DATA: TermsContent = {
   title: "CONDITIONS GÉNÉRALES D'UTILISATION",
   date: "Juin 2025",

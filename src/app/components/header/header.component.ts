@@ -17,10 +17,16 @@ import { UserRole } from '../../models/User';
   ]
 })
 export class HeaderComponent implements OnInit {
+  /** Chemin vers le logo principal de l'application */
   mainLogo = 'assets/pictures/logo.png';
+
+  /** Élément du menu actuellement survolé par la souris */
   hoveredItem: any = null;
+
+  /** Indique si le menu mobile est ouvert */
   isMobileMenuOpen = false;
 
+  /** Configuration des éléments du menu de navigation */
   menu = [
     {
       label: 'Accueil',
@@ -54,7 +60,7 @@ export class HeaderComponent implements OnInit {
     }
   ];
 
-  // Bouton de déconnexion
+  /** Configuration du bouton de déconnexion */
   logoutItem = {
     label: 'Se déconnecter',
     icon: 'assets/icons/logout_24dp_FFFFFF.svg',
@@ -62,14 +68,30 @@ export class HeaderComponent implements OnInit {
     action: 'logout'
   };
 
+  /** Chemin actuel de l'application */
   currentPath: string = '';
-  
+
+  /** Menu filtré selon le rôle utilisateur */
+  get filteredMenu() {
+    const userRole = this.authStorage.getUserRole();
+
+    // Si l'utilisateur est un prestataire, masquer l'onglet "Accueil"
+    if (userRole === UserRole.PROVIDER) {
+      return this.menu.filter(item => item.label !== 'Accueil');
+    }
+
+    return this.menu;
+  }
+
   constructor(
-    private readonly router: Router, 
+    private readonly router: Router,
     public location: Location,
     private readonly authStorage: AuthStorageService
   ) {}
-  
+
+  /**
+   * Initialise le composant et configure l'écoute des événements de navigation
+   */
   ngOnInit(): void {
     this.currentPath = this.location.path() || '/home';
     this.router.events.pipe(
@@ -113,21 +135,9 @@ export class HeaderComponent implements OnInit {
    * @returns Le chemin de navigation approprié pour Accueil
    */
   private getAccueilPathByRole(): string {
-    const userRole = this.authStorage.getUserRole();
-    
-    // Si c'est un CLIENT, rediriger vers service-search
-    if (userRole === UserRole.CLIENT) {
-      return '/service-search';
-    }
-    // Si c'est un PROVIDER, rediriger vers son profil pour le MVP
-    else if (userRole === UserRole.PROVIDER) {
-      return '/profile';
-    }
-    
-    return '/home';
+    // Pour tous les utilisateurs (CLIENT, PROVIDER, etc.), rediriger vers service-search
+    return '/service-search';
   }
-
-
 
   /**
    * Gère la navigation vers un élément du menu
@@ -135,12 +145,12 @@ export class HeaderComponent implements OnInit {
    */
   onMenuNavigation(item: any): void {
     const path = this.getNavigationPath(item);
-    
+
     // Si on navigue vers le profil depuis le header, nettoyer le localStorage
     // pour s'assurer qu'on affiche le profil de l'utilisateur connecté
     if (item.label === 'Profil') {
       localStorage.removeItem('displayedUserId');
-      
+
       // Si on est déjà sur la page profil, forcer le rechargement
       if (this.currentPath === '/profile') {
         // Recharger la page pour forcer le rechargement des données
@@ -148,7 +158,7 @@ export class HeaderComponent implements OnInit {
         return;
       }
     }
-    
+
     this.router.navigate([path]);
     this.closeMobileMenu();
   }
@@ -200,6 +210,9 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  /**
+   * Place le focus sur le menu mobile pour l'accessibilité
+   */
   private focusMobileMenu(): void {
     const menu = document.getElementById('mobile-menu');
     if (this.isMobileMenuOpen && menu) {
@@ -208,14 +221,28 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  /**
+   * Détermine si un chemin est actuellement actif
+   * @param path Le chemin à vérifier
+   * @returns true si le chemin est actif, false sinon
+   */
   isActive(path: string): boolean {
     // Si c'est le chemin "Accueil" et que l'utilisateur est connecté
     if (path === '/home' && this.authStorage.isAuthenticated()) {
       return this.isAccueilActive();
     }
+    // Si c'est le chemin "service-search" et que l'utilisateur est connecté, considérer comme Accueil actif
+    if (path === '/service-search' && this.authStorage.isAuthenticated()) {
+      return this.isAccueilActive();
+    }
     return this.currentPath === path;
   }
 
+  /**
+   * Retourne l'icône appropriée pour un élément du menu
+   * @param item L'élément du menu
+   * @returns Le chemin de l'icône à afficher
+   */
   getIcon(item: any): string {
     // Affiche l'icône active si l'item est survolé OU si la route est active
     if ((this.hoveredItem === item || this.isActive(item.path)) && item.iconActive) {

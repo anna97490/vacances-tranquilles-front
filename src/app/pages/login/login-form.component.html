@@ -8,7 +8,7 @@
 <div class="login-container">
   <div class="login-header">
     <div class="logo">
-        <img [src]="mainLogo" class="logo" alt="Logo Vacances Tranquilles" />
+      <img [src]="mainLogo" class="logo" alt="Logo Vacances Tranquilles" />
     </div>
     <h2>Bienvenue sur Vacances Tranquilles</h2>
   </div>
@@ -18,7 +18,7 @@
        <p>Veuillez corriger les erreurs suivantes :</p>
        <ul>
          <li *ngFor="let err of errorSummaryItems">
-           <a href="javascript:void(0)" (click)="focusField(err.id)">{{ err.label }} : {{ err.message }}</a>
+            <a href="javascript:void(0)" (click)="focusField(err.id)">{{ err.label }} : {{ err.message }}</a>
          </li>
        </ul>
      </div>

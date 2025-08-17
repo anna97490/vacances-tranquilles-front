@@ -42,8 +42,24 @@ h2 {
   color: var(--text-color);
 }
 
-.mat-mdc-text-field-wrapper {
+// Correction des décalages dans les inputs Material
+::ng-deep .mat-mdc-text-field-wrapper {
   height: 56px !important;
+  padding: 0 !important;
+}
+
+::ng-deep .mat-mdc-form-field-infix {
+  padding: 0 !important;
+  min-height: 56px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+::ng-deep .mat-mdc-input-element {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 56px !important;
+  line-height: 56px !important;
 }
 
 .register-header {
@@ -70,8 +86,9 @@ h2 {
   margin-bottom: 0.5rem;
 }
 
-.mat-mdc-floating-label {
-  top: 10px;
+::ng-deep .mat-mdc-floating-label {
+  top: 18px !important;
+  transform: translateY(-50%) !important;
 }
 
 .register-form {
@@ -177,18 +194,13 @@ h2 {
   }
 }
 
-// Uniformiser la hauteur de tous les champs du formulaire
-::ng-deep .custom-form-field .mat-form-field-infix {
-  min-height: 56px;
-  display: flex;
-  align-items: center;
-}
+
 
 // Style pour les labels au-dessus des champs
 ::ng-deep .form-group label {
   display: block;
   margin-bottom: 0.25rem;
-  color: #9e9e9e !important; // Gris clair avec !important pour forcer l'application
+  color: #9e9e9e !important;
   font-size: 1.05rem;
   font-weight: 600;
 }
@@ -214,7 +226,6 @@ h2 {
   opacity: 1; // assure la visibilité sur Firefox
 }
 
-// Compatibilité ancienne API Material
 ::ng-deep .mat-input-element::placeholder {
   color: #9e9e9e !important;
   opacity: 1;

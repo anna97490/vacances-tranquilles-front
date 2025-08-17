@@ -1,0 +1,114 @@
+.provider-profile-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-color);
+}
+
+.provider-profile-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.provider-profile-content > * {
+  width: 100%;
+  max-width: 800px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: #666;
+}
+
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.error-message {
+  text-align: center;
+  color: #d32f2f;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.error-message h3 {
+  margin-bottom: 1rem;
+  color: #d32f2f;
+}
+
+.error-message p {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+// Classes d'accessibilité WCAG
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// État vide pour l'accessibilité
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+
+.empty-message {
+  text-align: center;
+  color: #666;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.empty-message h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.empty-message p {
+  margin-bottom: 0;
+  color: #666;
+}
+
+// Amélioration du focus pour l'accessibilité
+button:focus {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.3);
+}
+
+// Support pour les lecteurs d'écran
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+  }
+}

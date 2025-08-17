@@ -444,10 +444,6 @@ describe('FooterComponent', () => {
       expect(hasStructure).toBe(true);
     });
 
-
-
-
-
     it('should contain required company information', () => {
       const footerText = getElements.single(selectors.footerText);
       expect(footerText).toBeTruthy();

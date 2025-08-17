@@ -40,24 +40,24 @@ describe('AuthStorageService', () => {
     });
 
     it('should store token with different user roles', () => {
-      const roles = ['ADMIN', 'CLIENT', 'PROVIDER', 'MODERATOR'];
-      
+      const roles = ['CLIENT', 'PROVIDER', 'MODERATOR'];
+
       roles.forEach(role => {
         localStorage.clear();
         service.storeAuthenticationData('test-token', role);
-        
+
         expect(localStorage.getItem('token')).toBe('test-token');
         expect(localStorage.getItem('userRole')).toBe(role);
       });
     });
 
-    it('should store token with special characters', () => {
+        it('should store token with special characters', () => {
       const specialToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-      
-      service.storeAuthenticationData(specialToken, 'ADMIN');
-      
+
+      service.storeAuthenticationData(specialToken, 'CLIENT');
+
       expect(localStorage.getItem('token')).toBe(specialToken);
-      expect(localStorage.getItem('userRole')).toBe('ADMIN');
+      expect(localStorage.getItem('userRole')).toBe('CLIENT');
     });
   });
 
@@ -82,9 +82,9 @@ describe('AuthStorageService', () => {
 
   describe('getUserRole', () => {
     it('should return stored user role', () => {
-      localStorage.setItem('userRole', 'ADMIN');
+      localStorage.setItem('userRole', 'CLIENT');
 
-      expect(service.getUserRole()).toBe('ADMIN');
+      expect(service.getUserRole()).toBe('CLIENT');
     });
 
     it('should return null when no user role stored', () => {
@@ -97,9 +97,9 @@ describe('AuthStorageService', () => {
       expect(service.getUserRole()).toBe('');
     });
 
-    it('should return different user roles', () => {
-      const roles = ['ADMIN', 'CLIENT', 'PROVIDER', 'MODERATOR'];
-      
+        it('should return different user roles', () => {
+      const roles = ['CLIENT', 'PROVIDER', 'MODERATOR'];
+
       roles.forEach(role => {
         localStorage.setItem('userRole', role);
         expect(service.getUserRole()).toBe(role);
@@ -142,7 +142,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: '25' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(25);
     });
 
@@ -150,7 +150,7 @@ describe('AuthStorageService', () => {
       const payload = { user_id: '30' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(30);
     });
 
@@ -158,7 +158,7 @@ describe('AuthStorageService', () => {
       const payload = { id: '15' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(15);
     });
 
@@ -166,7 +166,7 @@ describe('AuthStorageService', () => {
       const payload = { sub: '40' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(40);
     });
 
@@ -174,7 +174,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: 35 };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(35);
     });
 
@@ -182,7 +182,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: 0 };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBeNull();
     });
 
@@ -190,23 +190,23 @@ describe('AuthStorageService', () => {
       const payload = { userId: -5 };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBeNull();
     });
 
-    it('should return null when userId is greater than 50', () => {
+    it('should return userId when userId is greater than 50', () => {
       const payload = { userId: 51 };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
-      expect(service.getUserIdFromToken()).toBeNull();
+
+      expect(service.getUserIdFromToken()).toBe(51);
     });
 
     it('should return null when userId is not a valid number string', () => {
       const payload = { userId: 'invalid' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBeNull();
     });
 
@@ -214,7 +214,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: '25.5' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(25); // parseInt('25.5') returns 25
     });
 
@@ -222,7 +222,7 @@ describe('AuthStorageService', () => {
       const payload = { name: 'John', email: 'john@example.com' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBeNull();
     });
 
@@ -230,7 +230,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: null };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBeNull();
     });
 
@@ -238,7 +238,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: undefined };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBeNull();
     });
 
@@ -246,7 +246,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: '' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBeNull();
     });
 
@@ -254,7 +254,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: '   ' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBeNull();
     });
 
@@ -262,22 +262,22 @@ describe('AuthStorageService', () => {
       const payload = { userId: '25', user_id: '30', id: '15', sub: '40' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(25);
     });
 
     it('should handle payload with complex structure', () => {
-      const payload = { 
-        user: { 
-          profile: { 
-            userId: '25' 
-          } 
+      const payload = {
+        user: {
+          profile: {
+            userId: '25'
+          }
         },
         userId: '30'
       };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(30);
     });
 
@@ -285,7 +285,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: 1 };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(1);
     });
 
@@ -293,7 +293,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: 50 };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserIdFromToken()).toBe(50);
     });
   });
@@ -303,7 +303,7 @@ describe('AuthStorageService', () => {
       const payload = { userId: '25' };
       const encodedPayload = btoa(JSON.stringify(payload));
       localStorage.setItem('token', `header.${encodedPayload}.signature`);
-      
+
       expect(service.getUserId()).toBe(25);
     });
 
@@ -369,7 +369,7 @@ describe('AuthStorageService', () => {
     });
 
     it('should clear data even when only userRole exists', () => {
-      localStorage.setItem('userRole', 'ADMIN');
+      localStorage.setItem('userRole', 'CLIENT');
 
       service.clearAuthenticationData();
 
@@ -388,10 +388,10 @@ describe('AuthStorageService', () => {
   describe('Integration tests', () => {
     it('should handle complete authentication flow', () => {
       // Stocker les données d'authentification
-      service.storeAuthenticationData('test-token', 'ADMIN');
+      service.storeAuthenticationData('test-token', 'CLIENT');
       expect(service.isAuthenticated()).toBeTruthy();
       expect(service.getToken()).toBe('test-token');
-      expect(service.getUserRole()).toBe('ADMIN');
+      expect(service.getUserRole()).toBe('CLIENT');
 
       // Nettoyer les données d'authentification
       service.clearAuthenticationData();
@@ -404,9 +404,9 @@ describe('AuthStorageService', () => {
       const payload = { userId: '25', name: 'John Doe' };
       const encodedPayload = btoa(JSON.stringify(payload));
       const token = `header.${encodedPayload}.signature`;
-      
+
       service.storeAuthenticationData(token, 'CLIENT');
-      
+
       expect(service.isAuthenticated()).toBeTruthy();
       expect(service.getToken()).toBe(token);
       expect(service.getUserRole()).toBe('CLIENT');

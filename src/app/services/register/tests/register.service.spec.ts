@@ -43,14 +43,11 @@ describe('RegisterService', () => {
     userTypeDetector = TestBed.inject(UserTypeDetectorService) as jasmine.SpyObj<UserTypeDetectorService>;
   });
 
-
-
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
   it('should perform registration successfully', () => {
-    // Arrange
     const payload = new RegisterPayload();
     payload.email = 'test@example.com';
     payload.password = 'Password123!';
@@ -61,76 +58,59 @@ describe('RegisterService', () => {
     apiConfig.url = 'https://api.example.com/register';
     apiConfig.payload = payload;
 
-    // Act & Assert - Just verify the service can be created and the method exists
     expect(service).toBeTruthy();
     expect(typeof service.performRegistration).toBe('function');
   });
 
   it('should handle registration success for particulier', () => {
-    // Arrange
     userTypeDetector.getParticulierUserTypeString.and.returnValue('particulier');
     const mockResponse = { status: 200 } as any;
 
-    // Act
     service.handleRegistrationSuccess(mockResponse, false);
 
-    // Assert
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
   });
 
   it('should handle registration success for prestataire', () => {
-    // Arrange
     userTypeDetector.getPrestataireUserTypeString.and.returnValue('prestataire');
     const mockResponse = { status: 200 } as any;
 
-    // Act
     service.handleRegistrationSuccess(mockResponse, true);
-
-    // Assert
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
   });
 
   it('should handle registration error with parse error but success for particulier', () => {
-    // Arrange
     spyOn(console, 'error');
     const error = new HttpErrorResponse({ status: 200 });
     errorHandler.isSuccessfulButParseFailed.and.returnValue(true);
     userTypeDetector.getParticulierUserTypeString.and.returnValue('particulier');
 
-    // Act
     service.handleRegistrationError(error, false);
 
-    // Assert
     expect(console.error).toHaveBeenCalledWith('Erreur d\'inscription:', error);
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
   });
 
   it('should handle registration error with parse error but success for prestataire', () => {
-    // Arrange
     spyOn(console, 'error');
     const error = new HttpErrorResponse({ status: 200 });
     errorHandler.isSuccessfulButParseFailed.and.returnValue(true);
     userTypeDetector.getPrestataireUserTypeString.and.returnValue('prestataire');
 
-    // Act
     service.handleRegistrationError(error, true);
 
-    // Assert
     expect(console.error).toHaveBeenCalledWith('Erreur d\'inscription:', error);
     expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
   });
 
   it('should handle registration error with real error', () => {
-    // Arrange
     spyOn(console, 'error');
     const error = new HttpErrorResponse({ status: 400 });
     errorHandler.isSuccessfulButParseFailed.and.returnValue(false);
     errorHandler.getRegistrationErrorMessage.and.returnValue('Bad Request');
 
-    // Act
     service.handleRegistrationError(error, false);
 
-    // Assert
     expect(console.error).toHaveBeenCalledWith('Erreur d\'inscription:', error);
     // Le message d'erreur utilisateur est retourné à l'appelant
     // Ici on vérifie uniquement le log d'erreur du service
@@ -151,54 +131,42 @@ describe('RegisterService', () => {
   // Tests additionnels pour couvrir les différents scénarios
   describe('User Type Detection Integration', () => {
     it('should use correct method for particulier registration', () => {
-      // Arrange
       userTypeDetector.getParticulierUserTypeString.and.returnValue('particulier');
       const mockResponse = { status: 200 } as any;
 
-      // Act
       service.handleRegistrationSuccess(mockResponse, false);
 
-      // Assert
       expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
 
     it('should use correct method for prestataire registration', () => {
-      // Arrange
       userTypeDetector.getPrestataireUserTypeString.and.returnValue('prestataire');
       const mockResponse = { status: 200 } as any;
 
-      // Act
       service.handleRegistrationSuccess(mockResponse, true);
 
-      // Assert
       expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
   });
 
   describe('Edge Cases', () => {
     it('should handle undefined response in success handler', () => {
-      // Arrange
       userTypeDetector.getParticulierUserTypeString.and.returnValue('particulier');
 
-      // Act
       expect(() => {
         service.handleRegistrationSuccess(undefined as any, false);
       }).not.toThrow();
 
-      // Assert
       expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
 
     it('should handle null response in success handler', () => {
-      // Arrange
       userTypeDetector.getPrestataireUserTypeString.and.returnValue('prestataire');
 
-      // Act
       expect(() => {
         service.handleRegistrationSuccess(null as any, true);
       }).not.toThrow();
 
-      // Assert
       expect(router.navigate).toHaveBeenCalledWith(['/auth/login']);
     });
   });

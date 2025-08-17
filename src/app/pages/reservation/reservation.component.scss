@@ -81,8 +81,7 @@
   padding: 32px;
   gap: 20px;
   border-radius: var(--border-radius-base);
-  background: #ffffff;
-  border: 1px solid #e1e8ed;
+  background: var(--quaternary-color);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -90,38 +89,72 @@
   min-height: 200px;
   width: 100%;
   position: relative;
+  border: 1px solid #e1e8ed;
 }
 
 .header {
   display: flex;
+  justify-content: space-between;
   align-items: flex-start;
-  gap: 16px;
-}
+  margin-bottom: 1rem;
+  gap: 1rem;
 
-.avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+  .info {
+    flex: 1;
 
-.info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+    .top-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
 
-.top-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+      .name {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
 
-  .name {
-    font-weight: 700;
-    font-size: 1.25rem;
-    color: var(--text-color);
+      .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .rating {
+      .service-date {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  .review-button-container {
+    .review-btn {
+      background: var(--button-color);
+      color: var(--secondary-text-color);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius-base);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background: var(--tertiary-color);
+      }
+
+      &:focus {
+        outline: 2px solid var(--button-color);
+        outline-offset: 2px;
+      }
+    }
   }
 }
 
@@ -155,12 +188,12 @@
     gap: 12px;
 
     .conversation-btn {
-      background: var(--button-color);
-      color: white;
+      background: var(--secondary-color) !important;
+      color: var(--secondary-text-color) !important;
       border-radius: var(--border-radius-base);
-      font-size: 0.9rem;
+      font-size: 1.1rem;
       font-weight: 500;
-      padding: 12px 16px;
+      padding: 14px;
       border: none;
       cursor: pointer;
       transition: background-color 0.3s ease;
@@ -169,11 +202,7 @@
       text-align: center;
 
       &:hover {
-        background: var(--tertiary-color);
-      }
-
-      &:focus {
-        outline-offset: 2px;
+        background: var(--tertiary-color) !important;
       }
     }
 
@@ -318,21 +347,6 @@
 @media (max-width: 768px) {
   .reservations-container {
     padding: 1rem;
-  }
-
-  .reservation-card {
-    padding: 20px;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .avatar {
-    width: 60px;
-    height: 60px;
   }
 
   .actions {

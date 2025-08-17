@@ -53,6 +53,17 @@
                  <span class="service-date"> Le {{ formatDate(reservation.reservationDate) }}</span>
                </div>
              </div>
+
+             <!-- Bouton "Noter le prestataire" en haut à droite -->
+             <div *ngIf="shouldShowReviewButton(reservation)" class="review-button-container">
+               <button
+                 class="review-btn"
+                 (click)="goToReview(reservation)"
+                 type="button"
+                 aria-label="Noter le prestataire">
+                 Noter le prestataire
+               </button>
+             </div>
            </div>
 
            <div class="footer">

@@ -74,8 +74,6 @@ export class ConversationComponent implements OnInit {
     }
   }
 
-
-
   /**
    * Fonction de tracking pour optimiser les performances de la liste des conversations
    * @param index - Index de la conversation

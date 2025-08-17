@@ -302,13 +302,6 @@ export class RegisterFormComponent implements OnDestroy {
   }
 
   /**
-   * Réinitialise le champ mot de passe du formulaire
-   */
-  resetPasswordField(): void {
-    this.validationService.resetPasswordField(this.form);
-  }
-
-  /**
    * Nettoyage lors de la destruction du composant
    */
   ngOnDestroy(): void {
@@ -317,85 +310,10 @@ export class RegisterFormComponent implements OnDestroy {
     }
   }
 
-
-  /**
-   * Récupère le titre du formulaire selon le type d'utilisateur
-   */
-  getFormTitle(): string {
-    return this.isPrestataire
-      ? this.userTypeDetector.getPrestataireFormTitle()
-      : this.userTypeDetector.getParticulierFormTitle();
-  }
-
-  /**
-   * Retourne le type d'utilisateur sous forme de chaîne pour affichage.
-   */
-  getUserTypeString(): string {
-    return this.isPrestataire
-      ? this.userTypeDetector.getPrestataireUserTypeString()
-      : this.userTypeDetector.getParticulierUserTypeString();
-  }
-
-  /**
-   * Vérifie si un champ doit être affiché selon le type d'utilisateur
-   */
-  shouldShowField(fieldName: string): boolean {
-    return this.formConfigService.shouldShowField(fieldName, this.isPrestataire);
-  }
-
-  /**
-   * Récupère les classes CSS pour un champ selon son état de validation
-   */
-  getFieldClasses(fieldName: string): string {
-    return this.validationService.getFieldClasses(this.form, fieldName);
-  }
-
-  /**
-   * Récupère le libellé d'un champ selon le type d'utilisateur.
-   */
-  getFieldLabel(fieldName: string): string {
-    return this.formConfigService.getFieldLabel(fieldName, this.isPrestataire);
-  }
-
-  /**
-   * Récupère le placeholder d'un champ selon le type d'utilisateur.
-   */
-  getFieldPlaceholder(fieldName: string): string {
-    return this.formConfigService.getFieldPlaceholder(fieldName, this.isPrestataire);
-  }
-
-  /**
-   * Récupère le type d'input d'un champ selon le type d'utilisateur.
-   */
-  getFieldType(fieldName: string): string {
-    return this.formConfigService.getFieldType(fieldName);
-  }
-
-  /**
-   * Indique si un champ est requis selon le type d'utilisateur.
-   */
-  getFieldRequired(fieldName: string): boolean {
-    return this.formConfigService.getFieldRequired(fieldName, this.isPrestataire);
-  }
-
   /**
    * Détecte le type d'utilisateur à partir de l'URL courante (exposé publiquement)
    */
   detectUserTypeFromUrl(): boolean {
     return this.userTypeDetector.detectUserTypeFromUrl();
-  }
-
-  /**
-   * Détecte le type d'utilisateur à partir d'une chaîne fournie (exposé publiquement)
-   */
-  detectUserTypeFromString(str: string): boolean {
-    return this.userTypeDetector.detectUserTypeFromString(str);
-  }
-
-  /**
-   * Retourne l'URL de base de l'API provenant de la configuration d'application.
-   */
-  getApiUrl(): string {
-    return this.envService.apiUrl;
   }
 }

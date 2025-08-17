@@ -88,13 +88,11 @@ export class UpdateProfileHeaderComponent implements OnInit {
    */
   validateForm(): boolean {
     this.profileValidationService.markAllFieldsAsTouched(this.profileForm);
-    
     if (!this.profileForm.valid) {
       const errorMessage = this.getValidationErrorMessage();
       this.validationError.emit(errorMessage);
       return false;
     }
-    
     return true;
   }
 
@@ -103,11 +101,11 @@ export class UpdateProfileHeaderComponent implements OnInit {
    */
   private getValidationErrorMessage(): string {
     const controls = this.profileForm.controls;
-    
+
     // Vérifier les champs requis
     const requiredFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'city'];
     const missingFields: string[] = [];
-    
+
     requiredFields.forEach(fieldName => {
       const control = controls[fieldName];
       if (control?.hasError('required')) {

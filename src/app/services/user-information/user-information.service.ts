@@ -3,8 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../../models/User';
 import { Service } from '../../models/Service';
-import { UpdateUserDTO } from '../../models/UpdateUserDTO';
-import { UserProfileDTO } from '../../models/UserProfileDTO';
+import { UpdateUser } from '../../models/UpdateUser';
+import { UserProfile } from '../../models/UserProfile';
 import { EnvService } from '../env/env.service';
 
 @Injectable({
@@ -27,16 +27,16 @@ export class UserInformationService {
    */
   getUserById(userId: number): Observable<User> {
     const url = `${this.urlApi}/users/${userId}`;
-    
+
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.get<User>(url);
     }
-    
+
     // Configuration des headers avec token
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -52,16 +52,16 @@ export class UserInformationService {
    */
   getUserProfile(): Observable<User> {
     const url = `${this.urlApi}/users/profile`;
-    
+
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.get<User>(url);
     }
-    
+
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -78,16 +78,16 @@ export class UserInformationService {
    */
   getUsersByIds(userIds: number[]): Observable<User[]> {
     const url = `${this.urlApi}/users/batch`;
-    
+
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.post<User[]>(url, { userIds });
     }
-    
+
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -100,52 +100,52 @@ export class UserInformationService {
   /**
    * Met à jour le profil de l'utilisateur authentifié
    * @param updateDTO Les données de mise à jour du profil
-   * @returns Observable<UserProfileDTO> Le profil mis à jour
+   * @returns Observable<UserProfile> Le profil mis à jour
    */
-  updateUserProfile(updateDTO: UpdateUserDTO): Observable<UserProfileDTO> {
+  updateUserProfile(updateDTO: UpdateUser): Observable<UserProfile> {
     const url = `${this.urlApi}/users/profile`;
-    
+
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
-      return this.http.patch<UserProfileDTO>(url, updateDTO);
+      return this.http.patch<UserProfile>(url, updateDTO);
     }
-    
+
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.patch<UserProfileDTO>(url, updateDTO, { headers });
+    return this.http.patch<UserProfile>(url, updateDTO, { headers });
   }
 
   /**
    * Récupère le profil complet de l'utilisateur avec ses services
-   * @returns Observable<UserProfileDTO> Le profil complet de l'utilisateur
+   * @returns Observable<UserProfile> Le profil complet de l'utilisateur
    */
-  getUserProfileWithServices(): Observable<UserProfileDTO> {
+  getUserProfileWithServices(): Observable<UserProfile> {
     const url = `${this.urlApi}/users/profile`;
-    
+
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
-      return this.http.get<UserProfileDTO>(url);
+      return this.http.get<UserProfile>(url);
     }
-    
+
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.get<UserProfileDTO>(url, { headers });
+    return this.http.get<UserProfile>(url, { headers });
   }
 
   /**
@@ -154,18 +154,17 @@ export class UserInformationService {
    */
   getMyServices(): Observable<Service[]> {
     const url = `${this.urlApi}/services/my-services`;
-    
 
-    
+
+
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.get<Service[]>(url);
     }
-    
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -182,18 +181,17 @@ export class UserInformationService {
    */
   getUserServices(userId: number): Observable<Service[]> {
     const url = `${this.urlApi}/users/${userId}/services`;
-    
 
-    
+
+
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.get<Service[]>(url);
     }
-    
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -210,18 +208,17 @@ export class UserInformationService {
    */
   createService(service: Service): Observable<Service> {
     const url = `${this.urlApi}/services`;
-    
 
-    
+
+
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.post<Service>(url, service);
     }
-    
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -239,18 +236,15 @@ export class UserInformationService {
    */
   updateService(serviceId: number, service: Service): Observable<Service> {
     const url = `${this.urlApi}/services/${serviceId}`;
-    
 
-    
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.patch<Service>(url, service);
     }
-    
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -267,18 +261,15 @@ export class UserInformationService {
    */
   deleteService(serviceId: number): Observable<void> {
     const url = `${this.urlApi}/services/${serviceId}`;
-    
 
-    
     // Récupération du token depuis le localStorage
     const token = localStorage.getItem('token');
-    
+
     // Si pas de token, essayer d'accéder sans authentification
     if (!token) {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.delete<void>(url);
     }
-    
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -287,4 +278,4 @@ export class UserInformationService {
 
     return this.http.delete<void>(url, { headers });
   }
-} 
+}

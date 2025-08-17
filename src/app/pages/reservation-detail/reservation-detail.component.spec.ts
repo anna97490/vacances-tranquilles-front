@@ -284,4 +284,14 @@ describe('ReservationDetailComponent', () => {
       expect(reservationServiceMock.updateReservationStatus).not.toHaveBeenCalled();
     });
   });
+
+  describe('Additional safe cases', () => {
+    it('should keep non-enum status label unchanged (case-sensitive passthrough)', () => {
+      expect(component.getStatusLabel('pending' as any)).toBe('pending');
+    });
+
+    it('should return default color for empty status string', () => {
+      expect(component.getStatusColor('' as any)).toBe('#95a5a6');
+    });
+  });
 });

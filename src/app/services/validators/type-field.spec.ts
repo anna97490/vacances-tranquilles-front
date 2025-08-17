@@ -62,25 +62,25 @@ describe('CustomValidators', () => {
     });
 
     it('should reject invalid postal codes', () => {
-      expect(CustomValidators.postalCodeValidator('1234')).toBe(false); // Too short
-      expect(CustomValidators.postalCodeValidator('123456')).toBe(false); // Too long
-      expect(CustomValidators.postalCodeValidator('1234A')).toBe(false); // Contains letter
-      expect(CustomValidators.postalCodeValidator('12-345')).toBe(false); // Contains hyphen
+      expect(CustomValidators.postalCodeValidator('1234')).toBe(false);
+      expect(CustomValidators.postalCodeValidator('123456')).toBe(false);
+      expect(CustomValidators.postalCodeValidator('1234A')).toBe(false);
+      expect(CustomValidators.postalCodeValidator('12-345')).toBe(false);
       expect(CustomValidators.postalCodeValidator('')).toBe(false);
     });
   });
 
   describe('siretSirenValidator', () => {
     it('should validate correct SIREN numbers', () => {
-      expect(CustomValidators.siretSirenValidator('123456789')).toBe(true); // SIREN (9 digits)
-      expect(CustomValidators.siretSirenValidator('12345678901234')).toBe(true); // SIRET (14 digits)
+      expect(CustomValidators.siretSirenValidator('123456789')).toBe(true);
+      expect(CustomValidators.siretSirenValidator('12345678901234')).toBe(true);
     });
 
     it('should reject invalid SIRET/SIREN numbers', () => {
-      expect(CustomValidators.siretSirenValidator('12345678')).toBe(false); // Too short
-      expect(CustomValidators.siretSirenValidator('123456789012345')).toBe(false); // Too long
-      expect(CustomValidators.siretSirenValidator('12345678A')).toBe(false); // Contains letter
-      expect(CustomValidators.siretSirenValidator('123-456-789')).toBe(false); // Contains hyphens
+      expect(CustomValidators.siretSirenValidator('12345678')).toBe(false);
+      expect(CustomValidators.siretSirenValidator('123456789012345')).toBe(false);
+      expect(CustomValidators.siretSirenValidator('12345678A')).toBe(false);
+      expect(CustomValidators.siretSirenValidator('123-456-789')).toBe(false);
       expect(CustomValidators.siretSirenValidator('')).toBe(false);
     });
   });
@@ -88,12 +88,12 @@ describe('CustomValidators', () => {
   describe('injectionPreventionValidator', () => {
     it('should accept safe values', () => {
       expect(CustomValidators.injectionPreventionValidator('John Doe')).toBe(true);
-      expect(CustomValidators.injectionPreventionValidator('test.example.com')).toBe(true); // Removed @ as it's in the dangerous pattern
+      expect(CustomValidators.injectionPreventionValidator('test.example.com')).toBe(true);
       expect(CustomValidators.injectionPreventionValidator('123456789')).toBe(true);
       expect(CustomValidators.injectionPreventionValidator('normal text with spaces')).toBe(true);
-      expect(CustomValidators.injectionPreventionValidator('')).toBe(true); // Empty string is allowed
-      expect(CustomValidators.injectionPreventionValidator(null as any)).toBe(true); // Null is allowed
-      expect(CustomValidators.injectionPreventionValidator(undefined as any)).toBe(true); // Undefined is allowed
+      expect(CustomValidators.injectionPreventionValidator('')).toBe(true);
+      expect(CustomValidators.injectionPreventionValidator(null as any)).toBe(true);
+      expect(CustomValidators.injectionPreventionValidator(undefined as any)).toBe(true);
     });
 
     it('should reject values with dangerous characters', () => {
@@ -122,8 +122,8 @@ describe('CustomValidators', () => {
     });
 
     it('should handle edge cases', () => {
-      expect(CustomValidators.injectionPreventionValidator(' ')).toBe(true); // Space only
-      expect(CustomValidators.injectionPreventionValidator('   ')).toBe(true); // Multiple spaces
+      expect(CustomValidators.injectionPreventionValidator(' ')).toBe(true);
+      expect(CustomValidators.injectionPreventionValidator('   ')).toBe(true);
       expect(CustomValidators.injectionPreventionValidator('test with <dangerous> chars')).toBe(false);
       expect(CustomValidators.injectionPreventionValidator('normal text with "quotes" inside')).toBe(false);
     });
