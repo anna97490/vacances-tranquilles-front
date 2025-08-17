@@ -165,7 +165,6 @@ export class UserInformationService {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.get<Service[]>(url);
     }
-
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -193,7 +192,6 @@ export class UserInformationService {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.get<Service[]>(url);
     }
-
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -221,7 +219,6 @@ export class UserInformationService {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.post<Service>(url, service);
     }
-
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -248,7 +245,6 @@ export class UserInformationService {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.patch<Service>(url, service);
     }
-
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -274,7 +270,6 @@ export class UserInformationService {
       console.warn('Aucun token d\'authentification disponible, tentative d\'accès sans token');
       return this.http.delete<void>(url);
     }
-
     // Configuration des headers
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

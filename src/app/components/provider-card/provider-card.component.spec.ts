@@ -1,14 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ProviderCardComponent } from './provider-card.component';
-import { ServiceCategory } from '../../models/Service';
 import { User, UserRole } from '../../models/User';
 import { SimpleChange } from '@angular/core';
 import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { PaymentService } from '../../services/payment/payment.service';
 import { ReviewService, Review } from '../../services/review/review.service';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { MOCK_USER_PROVIDER, MOCK_SERVICES } from '../../utils/test-mocks';
 import { Router } from '@angular/router';
 

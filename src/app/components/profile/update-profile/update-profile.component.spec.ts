@@ -5,8 +5,7 @@ import { UserInformationService } from '../../../services/user-information/user-
 import { User } from '../../../models/User';
 import { Service, ServiceCategory } from '../../../models/Service';
 import { UserRole } from '../../../models/User';
-import { UpdateProfileHeaderComponent } from './utils/update-profile-header/update-profile-header.component';
-import { UpdateProfileServicesComponent } from './utils/update-profile-services/update-profile-services.component';
+
 
 describe('UpdateProfileComponent', () => {
   let component: UpdateProfileComponent;
@@ -65,7 +64,6 @@ describe('UpdateProfileComponent', () => {
     it('should load user profile if not provided', () => {
       component.user = undefined as any;
       component.services = undefined as any;
-
       mockUserInformationService.getUserProfileWithServices.and.returnValue(of({ user: mockUser, services: mockServices }));
       mockUserInformationService.getMyServices.and.returnValue(of(mockServices));
 
@@ -88,7 +86,6 @@ describe('UpdateProfileComponent', () => {
     it('should handle error when loading user profile', () => {
       component.user = undefined as any;
       component.services = undefined as any;
-
       mockUserInformationService.getUserProfileWithServices.and.returnValue(throwError(() => new Error('Network error')));
       mockUserInformationService.getMyServices.and.returnValue(of(mockServices));
 
@@ -101,7 +98,6 @@ describe('UpdateProfileComponent', () => {
     it('should handle error when loading services', () => {
       component.user = undefined as any;
       component.services = undefined as any;
-
       mockUserInformationService.getUserProfileWithServices.and.returnValue(of({ user: mockUser, services: mockServices }));
       mockUserInformationService.getMyServices.and.returnValue(throwError(() => new Error('Services error')));
 
@@ -327,7 +323,6 @@ describe('UpdateProfileComponent', () => {
       spyOn(component.saveSuccess, 'emit');
       spyOn(component.saveError, 'emit');
       spyOn(component.profileDataChange, 'emit');
-
       const updatedProfile = { user: mockUser, services: mockServices };
       mockUserInformationService.updateUserProfile.and.returnValue(of(updatedProfile));
 
@@ -398,7 +393,6 @@ describe('UpdateProfileComponent', () => {
         insuranceCertificateUrl: 'https://example.com/insurance.pdf'
       };
       component.user = userWithAllFields;
-
       const updatedProfile = { user: userWithAllFields, services: mockServices };
       mockUserInformationService.updateUserProfile.and.returnValue(of(updatedProfile));
 
@@ -440,7 +434,6 @@ describe('UpdateProfileComponent', () => {
         postalCode: 75000
       } as User;
       component.user = minimalUser;
-
       const updatedProfile = { user: minimalUser, services: mockServices };
       mockUserInformationService.updateUserProfile.and.returnValue(of(updatedProfile));
 

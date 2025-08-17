@@ -88,13 +88,11 @@ export class UpdateProfileHeaderComponent implements OnInit {
    */
   validateForm(): boolean {
     this.profileValidationService.markAllFieldsAsTouched(this.profileForm);
-
     if (!this.profileForm.valid) {
       const errorMessage = this.getValidationErrorMessage();
       this.validationError.emit(errorMessage);
       return false;
     }
-
     return true;
   }
 

@@ -33,7 +33,6 @@ describe('DisplayProfileServicesComponent', () => {
         providerId: 1
       } as Service
     ];
-
     fixture.detectChanges();
   });
 

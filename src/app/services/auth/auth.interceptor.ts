@@ -19,7 +19,6 @@ export function authInterceptor(
 ): Observable<HttpEvent<unknown>> {
   let authStorage: AuthStorageService;
   let router: Router;
-
   try {
     authStorage = inject(AuthStorageService);
     router = inject(Router);
@@ -53,7 +52,6 @@ export function authInterceptor(
         // Afficher une notification à l'utilisateur
         console.warn('Session expirée. Vous allez être redirigé vers la page de connexion.');
         alert('Votre session a expiré. Vous allez être redirigé vers la page de connexion.');
-
         // Rediriger vers la page de connexion
         router.navigate(['/auth/login']);
 

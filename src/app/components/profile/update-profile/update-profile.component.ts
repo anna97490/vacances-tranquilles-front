@@ -132,7 +132,6 @@ export class UpdateProfileComponent implements OnInit {
           this.services = updatedProfile.services;
           this.profileDataChange.emit({ user: this.user, services: this.services });
           this.saveSuccess.emit();
-
           observer.next(true);
           observer.complete();
         },

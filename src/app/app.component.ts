@@ -36,7 +36,4 @@ export class AppComponent {
     // Simple check: considère connecté si un token est présent (ajuste si besoin)
     return !!localStorage.getItem('token');
   }
-
-  ngOnInit() {
-  }
 }

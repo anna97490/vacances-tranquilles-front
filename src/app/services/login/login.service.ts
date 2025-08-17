@@ -63,7 +63,6 @@ export class LoginService {
    */
   private handleSuccessWithParseError(error: HttpErrorResponse): void {
 
-
     const token = this.errorHandler.extractTokenFromErrorResponse(error);
     if (token) {
       // Essayer d'extraire le userRole de la réponse d'erreur

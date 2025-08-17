@@ -44,7 +44,6 @@ describe('UpdateProfileHeaderComponent', () => {
 
   it('should initialize form with user data', () => {
     fixture.detectChanges();
-
     expect(component.profileForm.get('firstName')?.value).toBe('John');
     expect(component.profileForm.get('lastName')?.value).toBe('Doe');
     expect(component.profileForm.get('email')?.value).toBe('john.doe@example.com');
@@ -112,12 +111,10 @@ describe('UpdateProfileHeaderComponent', () => {
 
   it('should validate description length', () => {
     fixture.detectChanges();
-
     const descriptionControl = component.profileForm.get('description');
     const longDescription = 'a'.repeat(501);
     descriptionControl?.setValue(longDescription);
     descriptionControl?.markAsTouched();
-
     expect(component.isFieldInvalid('description')).toBeTrue();
     expect(component.getFieldErrorText('description')).toContain('ne doit pas dépasser 500 caractères');
   });
@@ -133,7 +130,6 @@ describe('UpdateProfileHeaderComponent', () => {
     });
 
     const isValid = component.validateForm();
-
     expect(isValid).toBeFalse();
     expect(component.validationError.emit).toHaveBeenCalled();
   });

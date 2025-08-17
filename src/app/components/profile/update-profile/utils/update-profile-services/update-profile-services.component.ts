@@ -103,7 +103,6 @@ export class UpdateProfileServicesComponent {
   saveService(): void {
     if (this.serviceForm.valid) {
       const formValue = this.serviceForm.value;
-
       if (this.isAddingNew) {
         // Ajouter un nouveau service
         const newService: Service = {

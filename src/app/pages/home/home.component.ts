@@ -63,7 +63,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       setTimeout(async () => {
         await this.homeInitializationService.initializeHomeServices();
       }, 2000);
-
     } catch (error) {
       console.error('Erreur lors de l\'initialisation des services:', error);
     }

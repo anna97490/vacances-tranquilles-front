@@ -16,6 +16,12 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'service-search', component: ServiceSearchComponent },
   { path: 'available-providers', component: AvailableProvidersComponent },
+  { path: 'success', 
+    loadComponent: () => import('./pages/success/success.component')
+      .then(m => m.SuccessComponent)
+  },
+  { path: 'service-search', component: ServiceSearchComponent },
+  { path: 'available-providers', component: AvailableProvidersComponent },
   { path: 'success',
     loadComponent: () => import('./pages/success/success.component')
       .then(m => m.SuccessComponent)
