@@ -25,7 +25,7 @@ import { RatingStarsComponent } from '../../../../../components/shared/rating-st
   templateUrl: './display-profile-header.component.html',
   styleUrls: ['./display-profile-header.component.scss']
 })
-export class DisplayProfileHeaderComponent implements OnInit {
+export class DisplayProfileHeaderComponent {
   /**
    * Données de l'utilisateur à afficher.
    */
@@ -41,14 +41,4 @@ export class DisplayProfileHeaderComponent implements OnInit {
    */
   UserRole = UserRole;
 
-  ngOnInit(): void {
-    console.log('DisplayProfileHeader debug:', {
-      user: this.user,
-      userRole: this.userRole,
-      userRoleEnum: this.UserRole,
-      isProvider: this.user?.role === this.UserRole.PROVIDER,
-      hasReviews: (this.user?.reviews?.length || 0) > 0,
-      reviews: this.user?.reviews
-    });
-  }
 }

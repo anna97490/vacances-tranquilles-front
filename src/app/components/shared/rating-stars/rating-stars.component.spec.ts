@@ -155,7 +155,6 @@ describe('RatingStarsComponent', () => {
       component.reviews = mockReviews;
       (component as any).calculateRating();
 
-      expect(console.log).toHaveBeenCalled();
     });
   });
 
