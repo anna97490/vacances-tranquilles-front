@@ -266,7 +266,7 @@ export class HeaderComponent implements OnInit {
    * Déconnecte l'utilisateur
    */
   logout(): void {
-    localStorage.clear();
+    this.authStorage.clearAuthenticationData();
     this.closeMobileMenu();
     this.router.navigate(['/home']);
     setTimeout(() => {

@@ -18,10 +18,6 @@ describe('LoginNavigationService', () => {
 
     service = TestBed.inject(LoginNavigationService);
     mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-
-    spyOn(console, 'warn').and.stub();
-    spyOn(console, 'error').and.stub();
-    spyOn(console, 'log').and.stub();
   });
 
   it('should be created', () => {
@@ -35,10 +31,10 @@ describe('LoginNavigationService', () => {
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });
 
-    it('should redirect to home for CLIENT userRole', () => {
+    it('should redirect to service-search for CLIENT userRole', () => {
       service.redirectAfterLogin(UserRole.CLIENT);
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/service-search']);
     });
 
     it('should redirect to profile when userRole is PROVIDER', () => {

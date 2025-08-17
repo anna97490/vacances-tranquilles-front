@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Service, ServiceCategory } from '../../models/Service';
 import { EnvService } from '../env/env.service';
-import { TokenValidatorService } from '../auth/token-validator.service';
+import { TokenValidatorService } from '../auth/validators/token-validator.service';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -40,10 +40,10 @@ export class ServicesService {
     const url = `${this.urlApi}/services/search`;
 
     // Vérification que la catégorie est valide
-    if (!Object.keys(ServiceCategory).includes(category)) {
+    if (!Object.values(ServiceCategory).includes(category as ServiceCategory)) {
       throw new Error(`Catégorie inconnue : ${category}`);
     }
-    
+
     // Construction des paramètres de requête
     const params = new HttpParams()
       .set('category', category)
