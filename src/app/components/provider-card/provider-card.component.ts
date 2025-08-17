@@ -15,6 +15,7 @@ import { EnvService } from '../../services/env/env.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { Router } from '@angular/router';
 
+
 /**
  * Composant carte prestataire (affichage d'un User de rôle PROVIDER)
  * @example <app-provider-card [user]="user"></app-provider-card>
@@ -35,8 +36,6 @@ import { Router } from '@angular/router';
   styleUrl: './provider-card.component.scss'
 })
 export class ProviderCardComponent implements OnChanges, OnInit {
-
-
 
 
 
@@ -120,8 +119,6 @@ export class ProviderCardComponent implements OnChanges, OnInit {
     return this._providerInfo;
   }
 
-
-
   /**
    * Calcule la durée en heures à partir des heures de début et fin
    */
@@ -140,8 +137,6 @@ export class ProviderCardComponent implements OnChanges, OnInit {
     const pricePerHour = this.service?.price || 0;
     return duration * pricePerHour;
   }
-
-
 
   /**
    * Crée une session de paiement Stripe et redirige vers le checkout
@@ -221,20 +216,18 @@ export class ProviderCardComponent implements OnChanges, OnInit {
    */
   navigateToProfile(): void {
     let userId: number | undefined;
-    
+
     if (this.user?.idUser) {
       userId = this.user.idUser;
     } else if (this.service?.providerId) {
       userId = this.service.providerId;
     }
-    
+
     if (userId) {
       // Stocker l'ID de l'utilisateur à afficher dans le localStorage
       // pour que la page de profil puisse le récupérer
       localStorage.setItem('displayedUserId', userId.toString());
-      this.router.navigate(['/profile']);
-    } else {
-      console.error('Impossible de naviguer: aucun ID utilisateur disponible');
+      this.router.navigate(['/provider-profile']);
     }
   }
 }

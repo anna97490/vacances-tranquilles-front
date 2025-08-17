@@ -135,21 +135,9 @@ export class HeaderComponent implements OnInit {
    * @returns Le chemin de navigation approprié pour Accueil
    */
   private getAccueilPathByRole(): string {
-    const userRole = this.authStorage.getUserRole();
-    
-    // Si c'est un CLIENT, rediriger vers service-search
-    if (userRole === UserRole.CLIENT) {
-      return '/service-search';
-    }
-    // Si c'est un PROVIDER, rediriger vers son profil pour le MVP
-    else if (userRole === UserRole.PROVIDER) {
-      return '/profile';
-    }
-    
-    return '/home';
+    // Pour tous les utilisateurs (CLIENT, PROVIDER, etc.), rediriger vers service-search
+    return '/service-search';
   }
-
-
 
   /**
    * Gère la navigation vers un élément du menu
@@ -157,10 +145,12 @@ export class HeaderComponent implements OnInit {
    */
   onMenuNavigation(item: any): void {
     const path = this.getNavigationPath(item);
+
     // Si on navigue vers le profil depuis le header, nettoyer le localStorage
     // pour s'assurer qu'on affiche le profil de l'utilisateur connecté
     if (item.label === 'Profil') {
       localStorage.removeItem('displayedUserId');
+
       // Si on est déjà sur la page profil, forcer le rechargement
       if (this.currentPath === '/profile') {
         // Recharger la page pour forcer le rechargement des données
@@ -168,6 +158,7 @@ export class HeaderComponent implements OnInit {
         return;
       }
     }
+
     this.router.navigate([path]);
     this.closeMobileMenu();
   }
