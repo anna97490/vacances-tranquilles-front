@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { DisplayProfileComponent } from '../../components/profile/display-profile/display-profile.component';
 import { UpdateProfileComponent } from '../../components/profile/update-profile/update-profile.component';
+import { DisplayProfileReviewsComponent } from '../../components/profile/display-profile/utils/display-profile-reviews/display-profile-reviews.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -9,11 +10,13 @@ import { User, UserRole } from '../../models/User';
 import { Service } from '../../models/Service';
 import { UserInformationService } from '../../services/user-information/user-information.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
+import { ReviewService } from '../../services/review/review.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [DisplayProfileComponent, UpdateProfileComponent, MatButtonModule, MatIconModule, MatSnackBarModule, CommonModule],
+  imports: [DisplayProfileComponent, UpdateProfileComponent, DisplayProfileReviewsComponent, MatButtonModule, MatIconModule, MatSnackBarModule, CommonModule],
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.scss'
 })
@@ -47,9 +50,11 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   userRole: UserRole | null = null;
 
   constructor(
-    private readonly userInformationService: UserInformationService,
-    private readonly authStorageService: AuthStorageService,
-    private readonly snackBar: MatSnackBar
+    private userInformationService: UserInformationService,
+    private authStorageService: AuthStorageService,
+    private router: Router,
+    private reviewService: ReviewService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -97,9 +102,13 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     // Récupérer les informations de l'utilisateur connecté
     this.userInformationService.getUserProfile().subscribe({
       next: (userData: User) => {
-        // Créer l'objet loggedUser avec les données de l'API + le role du localStorage
+        // Récupérer l'ID utilisateur depuis le token JWT
+        const userId = this.authStorageService.getUserId();
+
+        // Créer l'objet loggedUser avec les données de l'API + le role du localStorage + l'ID du token
         this.loggedUser = {
           ...userData,
+          idUser: userId || userData.idUser, // Utiliser l'ID du token ou celui de l'API
           role: this.userRole || UserRole.CLIENT // fallback par défaut
         } as User;
 
@@ -107,6 +116,28 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         const displayedUserId = localStorage.getItem('displayedUserId');
         if (!displayedUserId) {
           this.displayedUser = { ...this.loggedUser };
+        }
+
+        // Charger les reviews si l'utilisateur est un prestataire
+        if (this.loggedUser.role === UserRole.PROVIDER && this.loggedUser.idUser) {
+          this.reviewService.getReviewsByProviderId(this.loggedUser.idUser).subscribe({
+            next: (reviews) => {
+              if (this.loggedUser) {
+                this.loggedUser.reviews = reviews;
+              }
+              if (!displayedUserId && this.displayedUser) {
+                this.displayedUser.reviews = reviews;
+              }
+            },
+            error: (error) => {
+              if (this.loggedUser) {
+                this.loggedUser.reviews = [];
+              }
+              if (!displayedUserId && this.displayedUser) {
+                this.displayedUser.reviews = [];
+              }
+            }
+          });
         }
 
         this.isLoading = false;
@@ -118,7 +149,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     });
 
     // Charger les services séparément si l'utilisateur est un prestataire
-    if (this.userRole === 'PROVIDER') {
+    if (this.userRole === UserRole.PROVIDER) {
       this.userInformationService.getMyServices().subscribe({
         next: (services: Service[]) => {
           this.services = services;
@@ -154,6 +185,21 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             },
             error: (error: any) => {
               this.services = [];
+            }
+          });
+
+          // Charger les reviews de ce prestataire
+          this.reviewService.getReviewsByProviderId(userId).subscribe({
+            next: (reviews) => {
+              if (this.displayedUser) {
+                this.displayedUser.reviews = reviews;
+              }
+            },
+            error: (error) => {
+              console.error('Error loading reviews for displayed provider:', error);
+              if (this.displayedUser) {
+                this.displayedUser.reviews = [];
+              }
             }
           });
         }
@@ -265,6 +311,16 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
    * @returns true si l'utilisateur affiché est le même que l'utilisateur connecté
    */
   isCurrentUserProfile(): boolean {
-    return this.displayedUser?.idUser === this.loggedUser?.idUser;
+    // Vérifier si on est sur son propre profil (pas d'ID spécifique dans le localStorage)
+    const displayedUserId = localStorage.getItem('displayedUserId');
+    const loggedUserId = this.loggedUser?.idUser;
+
+    // Si aucun displayedUserId spécifié et que loggedUser existe, c'est le profil de l'utilisateur connecté
+    if (!displayedUserId && this.loggedUser) {
+      return true;
+    }
+
+    // Sinon, comparer les IDs
+    return displayedUserId === loggedUserId?.toString();
   }
 }

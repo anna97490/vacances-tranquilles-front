@@ -70,9 +70,6 @@
           <span class="error-icon" aria-hidden="true">⚠️</span>
           {{ feedbackError }}
         </div>
-        <div *ngIf="!feedbackError" id="feedback-help" class="help-text">
-          Saisissez votre commentaire pour cette réservation (maximum 500 caractères)
-        </div>
         <div class="character-count" aria-live="polite">
           {{ feedback.length }}/500 caractères
         </div>

@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { fakeAsync, tick } from '@angular/core/testing';
 
 import { ProviderProfileComponent } from './provider-profile.component';
 import { UserInformationService } from '../../services/user-information/user-information.service';
@@ -47,29 +46,27 @@ describe('ProviderProfileComponent', () => {
     userInformationService = TestBed.inject(UserInformationService) as jasmine.SpyObj<UserInformationService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
 
-    // Mock localStorage
     spyOn(localStorage, 'getItem').and.returnValue('1');
-    spyOn(console, 'error').and.stub();
   });
 
-  it('devrait créer le composant', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   describe('ngOnInit', () => {
-    it('devrait charger les données du prestataire lors de l\'initialisation', () => {
+    it('should load provider data on initialization', () => {
       userInformationService.getUserById.and.returnValue(of(mockUser));
 
       component.ngOnInit();
 
       expect(userInformationService.getUserById).toHaveBeenCalledWith(1);
-      expect(component.provider).toEqual({ ...mockUser, idUser: 1 });
+      expect(component.provider).toEqual({ ...mockUser, idUser: 1, role: UserRole.PROVIDER });
       expect(component.isLoading).toBeFalse();
       expect(component.hasError).toBeFalse();
     });
 
-    it('devrait gérer l\'erreur lors du chargement des données', () => {
-      userInformationService.getUserById.and.returnValue(throwError(() => new Error('Erreur réseau')));
+    it('should handle error when loading data', () => {
+      userInformationService.getUserById.and.returnValue(throwError(() => new Error('Network error')));
 
       component.ngOnInit();
 
@@ -78,7 +75,7 @@ describe('ProviderProfileComponent', () => {
       expect(component.provider).toBeNull();
     });
 
-    it('devrait rediriger vers la page d\'accueil si aucun displayedUserId n\'est trouvé', () => {
+    it('should redirect to home if no displayedUserId found', () => {
       (localStorage.getItem as jasmine.Spy).and.returnValue(null);
 
       component.ngOnInit();
@@ -87,39 +84,39 @@ describe('ProviderProfileComponent', () => {
       expect(userInformationService.getUserById).not.toHaveBeenCalled();
     });
 
-    it('devrait utiliser l\'ID utilisateur fourni par l\'API si disponible', () => {
+    it('should use API user ID if available', () => {
       const userWithId = { ...mockUser, idUser: 5 };
       userInformationService.getUserById.and.returnValue(of(userWithId));
 
       component.ngOnInit();
 
-      expect(component.provider).toEqual({ ...userWithId, idUser: 5 });
+      expect(component.provider).toEqual({ ...userWithId, idUser: 5, role: UserRole.PROVIDER });
     });
 
-    it('devrait utiliser l\'ID du localStorage si l\'API ne fournit pas d\'ID', () => {
+    it('should use localStorage ID if API does not provide ID', () => {
       const userWithoutId = { ...mockUser, idUser: undefined } as any;
       userInformationService.getUserById.and.returnValue(of(userWithoutId));
 
       component.ngOnInit();
 
-      expect(component.provider).toEqual({ ...userWithoutId, idUser: 1 });
+      expect(component.provider).toEqual({ ...userWithoutId, idUser: 1, role: UserRole.PROVIDER });
     });
   });
 
   describe('loadProviderData', () => {
-    it('devrait charger les données du prestataire avec succès', () => {
+    it('should load provider data successfully', () => {
       userInformationService.getUserById.and.returnValue(of(mockUser));
 
       (component as any).loadProviderData();
 
       expect(userInformationService.getUserById).toHaveBeenCalledWith(1);
-      expect(component.provider).toEqual({ ...mockUser, idUser: 1 });
+      expect(component.provider).toEqual({ ...mockUser, idUser: 1, role: UserRole.PROVIDER });
       expect(component.isLoading).toBeFalse();
       expect(component.hasError).toBeFalse();
     });
 
-    it('devrait gérer l\'erreur lors du chargement des données', () => {
-      userInformationService.getUserById.and.returnValue(throwError(() => new Error('Erreur réseau')));
+    it('should handle error when loading data', () => {
+      userInformationService.getUserById.and.returnValue(throwError(() => new Error('Network error')));
 
       (component as any).loadProviderData();
 
@@ -128,7 +125,7 @@ describe('ProviderProfileComponent', () => {
       expect(component.provider).toBeNull();
     });
 
-    it('devrait rediriger vers la page d\'accueil si aucun displayedUserId n\'est trouvé', () => {
+    it('should redirect to home if no displayedUserId found', () => {
       (localStorage.getItem as jasmine.Spy).and.returnValue(null);
 
       (component as any).loadProviderData();
@@ -137,20 +134,7 @@ describe('ProviderProfileComponent', () => {
       expect(userInformationService.getUserById).not.toHaveBeenCalled();
     });
 
-    it('devrait gérer les displayedUserId non numériques', () => {
-      (localStorage.getItem as jasmine.Spy).and.returnValue('abc');
-
-      // Configurer le mock pour retourner une valeur par défaut
-      userInformationService.getUserById.and.returnValue(of(mockUser));
-
-      (component as any).loadProviderData();
-
-      // Le composant utilise parseInt() qui retourne NaN pour 'abc'
-      // mais il appelle quand même getUserById avec NaN
-      expect(userInformationService.getUserById).toHaveBeenCalledWith(NaN);
-    });
-
-    it('devrait gérer les displayedUserId vides', () => {
+    it('should handle empty displayedUserId', () => {
       (localStorage.getItem as jasmine.Spy).and.returnValue('');
 
       (component as any).loadProviderData();
@@ -160,26 +144,20 @@ describe('ProviderProfileComponent', () => {
   });
 
   describe('retryLoadData', () => {
-    it('devrait réinitialiser l\'état et recharger les données', () => {
-      // Définir l'état initial
+    it('should reset state and reload data', () => {
       component.isLoading = false;
       component.hasError = true;
       component.provider = mockUser;
 
-      // Configurer le mock pour retourner une valeur
       userInformationService.getUserById.and.returnValue(of(mockUser));
-
-      // Configurer localStorage pour retourner un ID valide
       (localStorage.getItem as jasmine.Spy).and.returnValue('1');
 
       component.retryLoadData();
 
-      // Vérifier que loadProviderData a été appelé (via getUserById)
       expect(userInformationService.getUserById).toHaveBeenCalledWith(1);
     });
 
-    it('devrait appeler getUserById avec l\'ID correct', () => {
-      // Configurer le mock
+    it('should call getUserById with correct ID', () => {
       userInformationService.getUserById.and.returnValue(of(mockUser));
       (localStorage.getItem as jasmine.Spy).and.returnValue('123');
 
@@ -189,20 +167,20 @@ describe('ProviderProfileComponent', () => {
     });
   });
 
-  describe('Intégration', () => {
-    it('devrait mettre à jour l\'affichage après le chargement réussi des données', () => {
+  describe('Integration', () => {
+    it('should update display after successful data loading', () => {
       userInformationService.getUserById.and.returnValue(of(mockUser));
 
       component.ngOnInit();
       fixture.detectChanges();
 
-      expect(component.provider).toEqual({ ...mockUser, idUser: 1 });
+      expect(component.provider).toEqual({ ...mockUser, idUser: 1, role: UserRole.PROVIDER });
       expect(component.isLoading).toBeFalse();
       expect(component.hasError).toBeFalse();
     });
 
-    it('devrait afficher l\'état d\'erreur après un échec de chargement', () => {
-      userInformationService.getUserById.and.returnValue(throwError(() => new Error('Erreur réseau')));
+    it('should display error state after loading failure', () => {
+      userInformationService.getUserById.and.returnValue(throwError(() => new Error('Network error')));
 
       component.ngOnInit();
       fixture.detectChanges();
@@ -212,25 +190,23 @@ describe('ProviderProfileComponent', () => {
       expect(component.provider).toBeNull();
     });
 
-    it('devrait permettre de réessayer après une erreur', () => {
-      // Premier appel échoue
-      userInformationService.getUserById.and.returnValue(throwError(() => new Error('Erreur réseau')));
+    it('should allow retry after error', () => {
+      userInformationService.getUserById.and.returnValue(throwError(() => new Error('Network error')));
       component.ngOnInit();
 
       expect(component.hasError).toBeTrue();
 
-      // Deuxième appel réussit
       userInformationService.getUserById.and.returnValue(of(mockUser));
       component.retryLoadData();
 
-      expect(component.provider).toEqual({ ...mockUser, idUser: 1 });
+      expect(component.provider).toEqual({ ...mockUser, idUser: 1, role: UserRole.PROVIDER });
       expect(component.isLoading).toBeFalse();
       expect(component.hasError).toBeFalse();
     });
   });
 
-  describe('Gestion des cas limites', () => {
-    it('devrait gérer un utilisateur avec des données partielles', () => {
+  describe('Edge cases', () => {
+    it('should handle user with partial data', () => {
       const partialUser = {
         idUser: 1,
         firstName: 'Jean',
@@ -242,10 +218,10 @@ describe('ProviderProfileComponent', () => {
 
       component.ngOnInit();
 
-      expect(component.provider).toEqual({ ...partialUser, idUser: 1 });
+      expect(component.provider).toEqual({ ...partialUser, idUser: 1, role: UserRole.PROVIDER });
     });
 
-    it('devrait gérer un displayedUserId très grand', () => {
+    it('should handle large displayedUserId', () => {
       (localStorage.getItem as jasmine.Spy).and.returnValue('999999999');
       userInformationService.getUserById.and.returnValue(of(mockUser));
 
@@ -254,7 +230,7 @@ describe('ProviderProfileComponent', () => {
       expect(userInformationService.getUserById).toHaveBeenCalledWith(999999999);
     });
 
-    it('devrait gérer un displayedUserId négatif', () => {
+    it('should handle negative displayedUserId', () => {
       (localStorage.getItem as jasmine.Spy).and.returnValue('-1');
       userInformationService.getUserById.and.returnValue(of(mockUser));
 

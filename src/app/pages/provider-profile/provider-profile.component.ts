@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DisplayProfileHeaderComponent } from '../../components/profile/display-profile/utils/display-profile-header/display-profile-header.component';
 import { DisplayProfileReviewsComponent } from '../../components/profile/display-profile/utils/display-profile-reviews/display-profile-reviews.component';
-import { User } from '../../models/User';
+import { User, UserRole } from '../../models/User';
 import { UserInformationService } from '../../services/user-information/user-information.service';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
@@ -69,7 +69,8 @@ export class ProviderProfileComponent implements OnInit {
       next: (userData: User) => {
         this.provider = {
           ...userData,
-          idUser: userData.idUser || userId
+          idUser: userData.idUser || userId,
+          role: UserRole.PROVIDER // Forcer le rôle à PROVIDER pour cette page
         };
         this.isLoading = false;
       },

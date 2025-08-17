@@ -31,6 +31,7 @@
   .rating-card {
     background-color: var(--quaternary-color);
     border-radius: 16px;
+    border: none !important;
     padding: 2.5rem 2rem 2rem 2rem;
     max-width: 600px;
     width: 100%;
@@ -78,7 +79,7 @@
   .stars {
     font-size: 28px;
     color: #ccc;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
 
@@ -125,6 +126,7 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     resize: none;
+    margin-top: 8px;
     margin-bottom: 8px;
     transition: border-color 0.2s;
     color: var(--text-color);
@@ -168,16 +170,18 @@
   .buttons {
     display: flex;
     gap: 8px;
+    border: none;
 
-    .btn {
-      flex: 1;
-      padding: 12px 24px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+         .btn {
+       flex: 1;
+       padding: 12px 24px;
+       border-radius: 12px;
+       border: none;
+       outline: none;
+       cursor: pointer;
+       font-size: 14px;
+       font-weight: 600;
+       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 
       &.send {
         background-color: var(--secondary-color);
@@ -196,16 +200,16 @@
         }
       }
 
-      &.cancel {
-        background-color: white;
-        border: 1px solid #ccc;
-        color: var(--text-color);
+             &.cancel {
+         background-color: white;
+         border: none;
+         color: var(--text-color);
 
-        &:focus {
-          outline: 2px solid var(--secondary-color);
-          outline-offset: 2px;
-        }
-      }
+         &:focus {
+           outline: 2px solid var(--secondary-color);
+           outline-offset: 2px;
+         }
+       }
     }
   }
 }
@@ -287,11 +291,10 @@
   text-align: center;
   font-weight: bold;
   color: var(--secondary-color);
-  margin-bottom: 16px;
-  padding: 8px;
-  background-color: rgba(255, 193, 7, 0.1);
-  border-radius: 4px;
-  border: 1px solid rgba(255, 193, 7, 0.3);
+  margin-bottom: 32px;
+  padding: 12px;
+  background-color: transparent;
+  border: none;
 }
 
 .form-group {
@@ -348,6 +351,11 @@ textarea:focus {
 }
 
 // Amélioration de l'accessibilité pour les boutons
+.btn {
+  border: none !important;
+  outline: none;
+}
+
 .btn:focus {
   outline: 2px solid var(--secondary-color);
   outline-offset: 2px;

@@ -14,16 +14,21 @@ export class LoginNavigationService {
    * Redirige l'utilisateur après une connexion réussie
    * @param userRole Le rôle de l'utilisateur (optionnel pour redirection spécifique)
    */
-      redirectAfterLogin(userRole?: string): void {
-    // Redirection vers home pour tous les utilisateurs
-    this.router.navigate(['/home']);
+  redirectAfterLogin(userRole?: string): void {
+    // Si l'utilisateur est un prestataire, rediriger vers /profile
+    if (userRole === UserRole.PROVIDER) {
+      this.router.navigate(['/profile']);
+    } else {
+      // Redirection vers home pour tous les autres utilisateurs
+      this.router.navigate(['/home']);
+    }
   }
 
   /**
    * Redirige vers la page d'inscription
    */
   redirectToRegister(): void {
-    this.router.navigate(['/auth/register']);
+    this.router.navigate(['/auth/register/particulier']);
   }
 
   /**

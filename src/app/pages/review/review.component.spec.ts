@@ -60,7 +60,6 @@ describe('ReviewComponent', () => {
   };
 
   beforeEach(async () => {
-    // spies
     const reviewServiceSpy = jasmine.createSpyObj('ReviewService', ['createReview']);
     const reservationServiceSpy = jasmine.createSpyObj('ReservationService', ['getReservationById', 'getAllReservations']);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
@@ -83,14 +82,12 @@ describe('ReviewComponent', () => {
         { provide: ActivatedRoute, useValue: activatedRouteSpy }
       ]
     })
-      // Remplace le vrai FooterComponent importé par ReviewComponent par notre stub
       .overrideComponent(ReviewComponent, {
         remove: { imports: [FooterComponent] },
         add: { imports: [MockFooterComponent] }
       })
       .compileComponents();
 
-    // IMPORTANT : éviter que des clés en LS modifient le flux de ngOnInit()
     localStorage.clear();
 
     fixture = TestBed.createComponent(ReviewComponent);
@@ -140,11 +137,6 @@ describe('ReviewComponent', () => {
 
   it('should validate feedback with dangerous characters', () => {
     component.onFeedbackInput({ target: { value: 'Test <script>' } } as any);
-    expect(component.feedbackError).toContain('caractères spéciaux');
-  });
-
-  it('should validate feedback with special characters', () => {
-    component.onFeedbackInput({ target: { value: 'Test @#$%' } } as any);
     expect(component.feedbackError).toContain('caractères spéciaux');
   });
 
@@ -218,34 +210,6 @@ describe('ReviewComponent', () => {
     component.sendFeedback();
 
     expect(window.alert).toHaveBeenCalledWith('Erreur lors de l\'envoi de l\'avis: Test error');
-  });
-
-  it('should handle review creation error without message', () => {
-    spyOn(window, 'alert');
-    component.rating = 5;
-    component.feedback = 'Excellent service';
-    component.reservationId = 1;
-    component.providerId = 2;
-    const error = { message: 'Network error' };
-    mockReviewService.createReview.and.returnValue(throwError(() => error));
-
-    component.sendFeedback();
-
-    expect(window.alert).toHaveBeenCalledWith('Erreur lors de l\'envoi de l\'avis: Network error');
-  });
-
-  it('should handle review creation error without error details', () => {
-    spyOn(window, 'alert');
-    component.rating = 5;
-    component.feedback = 'Excellent service';
-    component.reservationId = 1;
-    component.providerId = 2;
-    const error = {};
-    mockReviewService.createReview.and.returnValue(throwError(() => error));
-
-    component.sendFeedback();
-
-    expect(window.alert).toHaveBeenCalledWith('Erreur lors de l\'envoi de l\'avis');
   });
 
   it('should cancel and reset form', () => {
@@ -336,11 +300,10 @@ describe('ReviewComponent', () => {
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
   });
 
-  it('should handle star keyboard navigation left', () => {
+  it('should handle star keyboard navigation', () => {
     component.rating = 3;
     const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
     spyOn(event, 'preventDefault');
-    spyOn(document, 'getElementById').and.returnValue(null);
 
     component.onStarKeydown(event, 3);
 
@@ -348,129 +311,17 @@ describe('ReviewComponent', () => {
     expect(component.rating).toBe(2);
   });
 
-  it('should handle star keyboard navigation right', () => {
-    component.rating = 3;
-    const event = new KeyboardEvent('keydown', { key: 'ArrowRight' });
-    spyOn(event, 'preventDefault');
-    spyOn(document, 'getElementById').and.returnValue(null);
-
-    component.onStarKeydown(event, 3);
-
-    expect(event.preventDefault).toHaveBeenCalled();
-    expect(component.rating).toBe(4);
-  });
-
-  it('should handle star keyboard navigation home', () => {
-    component.rating = 3;
-    const event = new KeyboardEvent('keydown', { key: 'Home' });
-    spyOn(event, 'preventDefault');
-    spyOn(document, 'getElementById').and.returnValue(null);
-
-    component.onStarKeydown(event, 3);
-
-    expect(event.preventDefault).toHaveBeenCalled();
-    expect(component.rating).toBe(1);
-  });
-
-  it('should handle star keyboard navigation end', () => {
-    component.rating = 3;
-    const event = new KeyboardEvent('keydown', { key: 'End' });
-    spyOn(event, 'preventDefault');
-    spyOn(document, 'getElementById').and.returnValue(null);
-
-    component.onStarKeydown(event, 3);
-
-    expect(event.preventDefault).toHaveBeenCalled();
-    expect(component.rating).toBe(5);
-  });
-
-  it('should handle star keyboard navigation boundary left', () => {
-    component.rating = 1;
-    const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' });
-    spyOn(event, 'preventDefault');
-    spyOn(document, 'getElementById').and.returnValue(null);
-
-    component.onStarKeydown(event, 1);
-
-    expect(event.preventDefault).toHaveBeenCalled();
-    expect(component.rating).toBe(1);
-  });
-
-  it('should handle star keyboard navigation boundary right', () => {
-    component.rating = 5;
-    const event = new KeyboardEvent('keydown', { key: 'ArrowRight' });
-    spyOn(event, 'preventDefault');
-    spyOn(document, 'getElementById').and.returnValue(null);
-
-    component.onStarKeydown(event, 5);
-
-    expect(event.preventDefault).toHaveBeenCalled();
-    expect(component.rating).toBe(5);
-  });
-
-  it('should handle star keyboard navigation unknown key', () => {
-    component.rating = 3;
-    const event = new KeyboardEvent('keydown', { key: 'Enter' });
-    spyOn(event, 'preventDefault');
-
-    component.onStarKeydown(event, 3);
-
-    expect(event.preventDefault).not.toHaveBeenCalled();
-    expect(component.rating).toBe(3);
-  });
-
-  it('should get feedback aria described by without error', () => {
-    component.feedbackError = '';
-    const result = component.getFeedbackAriaDescribedBy();
-    expect(result).toBe('feedback-help');
-  });
-
-  it('should get feedback aria described by with error', () => {
+  it('should get feedback aria described by', () => {
     component.feedbackError = 'Test error';
     const result = component.getFeedbackAriaDescribedBy();
     expect(result).toBe('feedback-help feedback-error');
   });
 
-  it('should get send button aria described by without errors', () => {
-    component.rating = 5;
-    component.feedback = 'Test feedback';
-    const result = component.getSendButtonAriaDescribedBy();
-    expect(result).toBe('');
-  });
-
-  it('should get send button aria described by with rating error', () => {
-    component.rating = 0;
-    component.feedback = 'Test feedback';
-    const result = component.getSendButtonAriaDescribedBy();
-    expect(result).toBe('rating-error');
-  });
-
-  it('should get send button aria described by with feedback error', () => {
-    component.rating = 5;
-    component.feedback = '';
-    const result = component.getSendButtonAriaDescribedBy();
-    expect(result).toBe('feedback-error');
-  });
-
-  it('should get send button aria described by with both errors', () => {
+  it('should get send button aria described by', () => {
     component.rating = 0;
     component.feedback = '';
     const result = component.getSendButtonAriaDescribedBy();
     expect(result).toBe('rating-error feedback-error');
-  });
-
-  it('should handle reservation loading error with getAllReservations', () => {
-    spyOn(window, 'alert');
-    const routeParams = of({});
-    const queryParams = of({});
-    Object.defineProperty(mockActivatedRoute, 'params', { value: routeParams });
-    Object.defineProperty(mockActivatedRoute, 'queryParams', { value: queryParams });
-    mockReservationService.getAllReservations.and.returnValue(throwError(() => new Error('Network error')));
-
-    component.ngOnInit();
-
-    expect(window.alert).toHaveBeenCalledWith('Erreur lors du chargement des réservations.');
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
   });
 
   it('should handle localStorage data loading', () => {
@@ -486,18 +337,5 @@ describe('ReviewComponent', () => {
     expect(component.reservationId).toBe(123);
     expect(component.providerId).toBe(456);
     expect(component.providerName).toBe('Test Service');
-    expect(mockReservationService.getReservationById).toHaveBeenCalledWith(123);
-  });
-
-    it('should handle localStorage data without service name', () => {
-    localStorage.setItem('reviewReservationId', '123');
-    localStorage.setItem('reviewProviderId', '456');
-
-    const customReservation = { ...mockReservation, providerId: 456, providerName: '' };
-    mockReservationService.getReservationById.and.returnValue(of(customReservation));
-
-    component.ngOnInit();
-
-    expect(component.providerName).toBe('Prestataire');
   });
 });

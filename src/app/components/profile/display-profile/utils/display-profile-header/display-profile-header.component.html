@@ -5,10 +5,10 @@
     <div class="info">
       <div class="top-line">
         <h3 class="name">{{ user.firstName }} {{ user.lastName }}</h3>
-        <mat-icon class="verified-icon" aria-label="Profil vérifié" *ngIf="user.role === 'PROVIDER'">check_circle</mat-icon>
+        <mat-icon class="verified-icon" aria-label="Profil vérifié" *ngIf="user.role === UserRole.PROVIDER">check_circle</mat-icon>
       </div>
 
-      <section class="rating" aria-label="Évaluations">
+      <section class="rating" aria-label="Évaluations" *ngIf="user.role === UserRole.PROVIDER">
         <app-rating-stars [providerId]="user.idUser" [reviews]="user.reviews || []"></app-rating-stars>
       </section>
 

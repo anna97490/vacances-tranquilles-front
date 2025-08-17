@@ -92,6 +92,11 @@ describe('RatingStarsComponent', () => {
   });
 
   describe('calculateRating', () => {
+    beforeEach(() => {
+      // Supprimer les logs console pour les tests
+      spyOn(console, 'log').and.stub();
+    });
+
     it('devrait calculer la note moyenne correctement avec plusieurs avis', () => {
       const mockReviews: Review[] = [
         { id: 1, note: 4, commentaire: 'Très bien', reservationId: 1, reviewerId: 1, reviewedId: 1, createdAt: '2024-01-01' },
@@ -139,6 +144,18 @@ describe('RatingStarsComponent', () => {
 
       // (4 + 4 + 5) / 3 = 4.333... arrondi à 4.3
       expect(component.rating).toBe(4.3);
+    });
+
+    it('devrait logger les informations de débogage', () => {
+      const mockReviews: Review[] = [
+        { id: 1, note: 4, commentaire: 'Bien', reservationId: 1, reviewerId: 1, reviewedId: 1, createdAt: '2024-01-01' }
+      ];
+
+      component.providerId = 123;
+      component.reviews = mockReviews;
+      (component as any).calculateRating();
+
+      expect(console.log).toHaveBeenCalled();
     });
   });
 

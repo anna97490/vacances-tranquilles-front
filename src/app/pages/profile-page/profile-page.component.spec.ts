@@ -331,8 +331,28 @@ describe('ProfilePageComponent', () => {
   });
 
   describe('isCurrentUserProfile', () => {
-    it('should return true when displayed user is current user', () => {
-      component.displayedUser = mockUser;
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    it('should return true when no displayedUserId in localStorage and loggedUser exists', () => {
+      component.loggedUser = mockUser;
+
+      const result = component.isCurrentUserProfile();
+
+      expect(result).toBeTrue();
+    });
+
+    it('should return false when no displayedUserId in localStorage but loggedUser is null', () => {
+      component.loggedUser = null;
+
+      const result = component.isCurrentUserProfile();
+
+      expect(result).toBeFalse();
+    });
+
+    it('should return true when displayedUserId matches loggedUser id', () => {
+      localStorage.setItem('displayedUserId', '1');
       component.loggedUser = mockUser;
 
       const result = component.isCurrentUserProfile();
@@ -341,16 +361,10 @@ describe('ProfilePageComponent', () => {
     });
 
     it('should return false when displayed user is different from current user', () => {
-      component.displayedUser = mockUser;
-      component.loggedUser = { ...mockUser, idUser: 2 };
-
-      const result = component.isCurrentUserProfile();
-
-      expect(result).toBeFalse();
-    });
-
-    it('should return false when displayedUser is null', () => {
-      component.displayedUser = null;
+      (localStorage.getItem as jasmine.Spy).and.callFake((key: string) => {
+        if (key === 'displayedUserId') return '2';
+        return null;
+      });
       component.loggedUser = mockUser;
 
       const result = component.isCurrentUserProfile();
@@ -358,8 +372,8 @@ describe('ProfilePageComponent', () => {
       expect(result).toBeFalse();
     });
 
-    it('should return false when loggedUser is null', () => {
-      component.displayedUser = mockUser;
+    it('should return false when displayedUserId exists but loggedUser is null', () => {
+      localStorage.setItem('displayedUserId', '1');
       component.loggedUser = null;
 
       const result = component.isCurrentUserProfile();
@@ -367,13 +381,13 @@ describe('ProfilePageComponent', () => {
       expect(result).toBeFalse();
     });
 
-    it('should return true when both users are null', () => {
+    it('should return false when both users are null', () => {
       component.displayedUser = null;
       component.loggedUser = null;
 
       const result = component.isCurrentUserProfile();
 
-      expect(result).toBeTrue();
+      expect(result).toBeFalse();
     });
   });
 

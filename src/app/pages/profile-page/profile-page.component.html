@@ -19,20 +19,31 @@
 <!-- Contenu principal -->
 <div *ngIf="!isLoading && !hasError" class="profile-container">
   <div class="profile-content">
-    <ng-container *ngIf="!isEditMode; else editMode">
-      <app-display-profile *ngIf="displayedUser && loggedUser" [user]="displayedUser" [services]="services" [userRole]="loggedUser.role" />
-    </ng-container>
-    <ng-template #editMode>
-      <app-update-profile
-        *ngIf="displayedUser && loggedUser"
-        [user]="displayedUser"
-        [services]="services"
-        [userRole]="loggedUser.role"
-        (profileDataChange)="onProfileDataChange($event)"
-        (validationError)="onValidationError($event)"
-        (saveSuccess)="onSaveSuccess()"
-        (saveError)="onSaveError($event)" />
-    </ng-template>
+    <div class="profile-main-container">
+      <ng-container *ngIf="!isEditMode; else editMode">
+        <app-display-profile *ngIf="displayedUser && loggedUser" [user]="displayedUser" [services]="services" [userRole]="loggedUser.role" />
+      </ng-container>
+      <ng-template #editMode>
+        <app-update-profile
+          *ngIf="displayedUser && loggedUser"
+          [user]="displayedUser"
+          [services]="services"
+          [userRole]="loggedUser.role"
+          (profileDataChange)="onProfileDataChange($event)"
+          (validationError)="onValidationError($event)"
+          (saveSuccess)="onSaveSuccess()"
+          (saveError)="onSaveError($event)" />
+      </ng-template>
+
+      <!-- Section des avis reçus pour les prestataires -->
+      <section *ngIf="isCurrentUserProfile() && !isEditMode && loggedUser?.role === 'PROVIDER' && loggedUser?.idUser" aria-labelledby="reviews-title" class="reviews-section">
+        <h2 id="reviews-title" class="sr-only">Avis et évaluations reçus</h2>
+        <app-display-profile-reviews
+          [providerId]="loggedUser!.idUser"
+          aria-label="Avis reçus par le prestataire"
+        ></app-display-profile-reviews>
+      </section>
+    </div>
 
     <div class="profile-action-btn-container" *ngIf="isCurrentUserProfile()">
       <button mat-raised-button class="profile-action-btn" (click)="toggleEditMode()" [disabled]="isSaving">

@@ -54,11 +54,25 @@ export class RatingStarsComponent implements OnInit, OnChanges {
   private calculateRating(): void {
     this.reviewsCount = this.reviews.length;
 
+    console.log('RatingStars debug:', {
+      providerId: this.providerId,
+      reviews: this.reviews,
+      reviewsCount: this.reviewsCount,
+      reviewsLength: this.reviews.length
+    });
+
     if (this.reviews.length > 0) {
       const totalRating = this.reviews.reduce((sum, review) => sum + review.note, 0);
       this.rating = Math.round((totalRating / this.reviews.length) * 10) / 10; // Arrondi à 1 décimale
+
+      console.log('RatingStars calculation:', {
+        totalRating: totalRating,
+        averageRating: this.rating,
+        reviews: this.reviews.map(r => ({ id: r.id, note: r.note }))
+      });
     } else {
       this.rating = 0;
+      console.log('RatingStars: No reviews found, rating set to 0');
     }
   }
 

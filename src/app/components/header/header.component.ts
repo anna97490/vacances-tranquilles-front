@@ -71,6 +71,18 @@ export class HeaderComponent implements OnInit {
   /** Chemin actuel de l'application */
   currentPath: string = '';
 
+  /** Menu filtré selon le rôle utilisateur */
+  get filteredMenu() {
+    const userRole = this.authStorage.getUserRole();
+
+    // Si l'utilisateur est un prestataire, masquer l'onglet "Accueil"
+    if (userRole === UserRole.PROVIDER) {
+      return this.menu.filter(item => item.label !== 'Accueil');
+    }
+
+    return this.menu;
+  }
+
   constructor(
     private readonly router: Router,
     public location: Location,

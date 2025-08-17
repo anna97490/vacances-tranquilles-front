@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SimpleChanges } from '@angular/core';
 import { of, throwError } from 'rxjs';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { DisplayProfileComponent } from './display-profile.component';
 import { UserInformationService } from '../../../services/user-information/user-information.service';
 import { User, UserRole } from '../../../models/User';
@@ -41,10 +42,11 @@ describe('DisplayProfileComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        DisplayProfileComponent,
-        HttpClientTestingModule
+        DisplayProfileComponent
       ],
       providers: [
+        provideHttpClient(withFetch()),
+        provideHttpClientTesting(),
         { provide: UserInformationService, useValue: spy }
       ]
     })
@@ -61,7 +63,6 @@ describe('DisplayProfileComponent', () => {
 
   describe('ngOnInit', () => {
     beforeEach(() => {
-      // Nettoyer le localStorage avant chaque test
       localStorage.clear();
     });
 
@@ -129,7 +130,6 @@ describe('DisplayProfileComponent', () => {
 
       component.ngOnInit();
 
-      // La méthode gère les erreurs silencieusement, donc pas de console.error
       expect(userInformationService.getUserProfile).toHaveBeenCalled();
     });
 
@@ -140,8 +140,6 @@ describe('DisplayProfileComponent', () => {
       component.ngOnInit();
 
       expect(userInformationService.getMyServices).toHaveBeenCalled();
-      // Les services sont définis dans le subscribe, donc on ne peut pas tester directement
-      // mais la méthode gère l'erreur en définissant services = []
     });
   });
 

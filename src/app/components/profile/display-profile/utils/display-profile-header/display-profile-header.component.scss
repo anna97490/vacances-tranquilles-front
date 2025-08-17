@@ -11,8 +11,8 @@
   width: 100%;
   position: relative;
   border: 1px solid #e1e8ed;
-  max-width: 1136px;
-  margin: 0 auto 2rem auto;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .header {
@@ -72,8 +72,10 @@
 
   .info-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .info-card {
@@ -144,5 +146,10 @@
 
   .footer {
     align-items: stretch;
+
+    .info-cards {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
   }
 }
