@@ -181,7 +181,6 @@ describe('PaymentService', () => {
 
       const result = await service.redirectToStripe(sessionId);
 
-      // Dans un environnement de test, Stripe ne peut pas être chargé, donc on s'attend à une erreur
       expect(result).toBeFalsy();
     });
 
@@ -192,7 +191,6 @@ describe('PaymentService', () => {
 
       const result = await service.redirectToStripe(sessionId);
 
-      // Dans un environnement de test, Stripe ne peut pas être chargé, donc on s'attend à une erreur
       expect(result).toBeFalsy();
     });
 
@@ -201,7 +199,6 @@ describe('PaymentService', () => {
       spyOn(console, 'warn');
       spyOn(console, 'error');
 
-      // Mock the service method to avoid timeouts
       spyOn(service, 'redirectToStripe').and.returnValue(Promise.resolve(false));
 
       const result = await service.redirectToStripe(sessionId);
@@ -214,7 +211,6 @@ describe('PaymentService', () => {
       spyOn(console, 'warn');
       spyOn(console, 'error');
 
-      // Mock the service method to avoid timeouts
       spyOn(service, 'redirectToStripe').and.returnValue(Promise.resolve(false));
 
       const result = await service.redirectToStripe(sessionId);
@@ -233,7 +229,6 @@ describe('PaymentService', () => {
 
       const result = await service.redirectToStripe(sessionId);
 
-      // Dans un environnement de test, Stripe ne peut pas être chargé, donc on s'attend à une erreur
       expect(result).toBeFalsy();
     });
 
@@ -248,7 +243,6 @@ describe('PaymentService', () => {
 
       const result = await service.redirectToStripe(sessionId);
 
-      // Dans un environnement de test, Stripe ne peut pas être chargé, donc on s'attend à une erreur
       expect(result).toBeFalsy();
     });
 

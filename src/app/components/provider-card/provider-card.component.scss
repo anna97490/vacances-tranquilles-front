@@ -1,14 +1,17 @@
 .provider-card {
-  padding: 24px;
-  gap: 15px;
+  padding: 32px;
+  gap: 20px;
   border-radius: var(--border-radius-base);
   background: var(--quaternary-color);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  min-height: 200px;
+  width: 100%;
+  position: relative;
+  border: 1px solid #e1e8ed;
 }
-
 
 .header {
   display: flex;
@@ -55,8 +58,15 @@
     font-size: 0.95rem;
     font-weight: 500;
     padding: 6px 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+
     &:hover {
       background: var(--tertiary-color);
+      text-decoration: none;
     }
   }
 }
@@ -67,43 +77,57 @@
 
 .description {
   font-size: 1rem;
-  color: var(--text-color)
+  color: var(--text-color);
+  line-height: 1.4;
+  margin-bottom: 8px;
 }
 
 .footer {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 16px;
+  margin-top: auto;
 
   .price {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--text-color);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+
+    .euro {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text-color);
+    }
 
     .unit {
-      font-size: 1rem;
+      font-size: 0.9rem;
       color: var(--text-color);
-      margin-left: 4px;
+      opacity: 0.7;
     }
   }
 
   .reserve-btn {
-    align-self: center;
-    width: 100%;
     background: var(--secondary-color) !important;
     color: var(--secondary-text-color) !important;
+    border-radius: var(--border-radius-base);
     font-size: 1.1rem;
     font-weight: 500;
     padding: 14px;
-    border-radius: var(--border-radius-base);
-    max-width: 90%;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: block;
+    width: 100%;
+    text-align: center;
+    align-self: center;
+
     &:hover {
       background: var(--tertiary-color) !important;
     }
   }
 }
 
+/* Responsive design */
 @media (max-width: 768px) {
   .provider-card {
     padding: 16px;
@@ -111,13 +135,9 @@
     border-radius: var(--border-radius-base);
   }
 
-  .card-content,
   .header {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .header {
     position: relative;
   }
 
@@ -130,26 +150,26 @@
   .top-line {
     flex-wrap: wrap;
     gap: 6px;
-  }
 
-  .profile-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 0.85rem;
-    padding: 5px 12px;
+    .profile-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 0.85rem;
+      padding: 5px 12px;
+    }
   }
 
   .footer {
     align-items: stretch;
 
     .price {
-      font-size: 1.2rem;
-      margin-bottom: 8px;
+      .unit {
+        font-size: 1.2rem;
+      }
     }
 
     .reserve-btn {
-      width: 100%;
       font-size: 1rem;
       padding: 12px;
     }

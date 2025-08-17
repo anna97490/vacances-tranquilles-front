@@ -15,10 +15,8 @@ describe('HomeContentService', () => {
   });
 
   it('should return home content with correct structure', () => {
-    // Act
     const content = service.getContent();
 
-    // Assert
     expect(content).toBeDefined();
     expect(content.iconType).toBe('custom');
     expect(content.mainIcon).toBe('assets/icons/beach_access_FFA101.svg');
@@ -32,20 +30,16 @@ describe('HomeContentService', () => {
   });
 
   it('should return features array with correct length', () => {
-    // Act
     const content = service.getContent();
 
-    // Assert
     expect(content.features).toBeDefined();
     expect(Array.isArray(content.features)).toBe(true);
     expect(content.features.length).toBe(4);
   });
 
   it('should return features with correct structure', () => {
-    // Act
     const content = service.getContent();
 
-    // Assert
     content.features.forEach(feature => {
       expect(feature.iconType).toBe('custom');
       expect(feature.icon).toBeDefined();
@@ -55,10 +49,8 @@ describe('HomeContentService', () => {
   });
 
   it('should return specific features with correct content', () => {
-    // Act
     const content = service.getContent();
 
-    // Assert
     const prestatairesFeature = content.features.find(f => f.title === 'Prestataires Vérifiés');
     expect(prestatairesFeature).toBeDefined();
     expect(prestatairesFeature?.icon).toBe('assets/icons/field_FFA101.svg');
@@ -75,4 +67,4 @@ describe('HomeContentService', () => {
     expect(serviceFeature).toBeDefined();
     expect(serviceFeature?.icon).toBe('assets/icons/check_FFA101.svg');
   });
-}); 
+});

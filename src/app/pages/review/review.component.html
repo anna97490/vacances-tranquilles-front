@@ -1,0 +1,116 @@
+<main class="review-container" role="main" aria-labelledby="review-title">
+  <div class="container">
+    <!-- Formulaire de création de review -->
+    <form class="rating-card" aria-labelledby="review-title" novalidate>
+      <div class="profile">
+        <div>
+          <div class="name" id="provider-name" aria-label="Nom du prestataire">{{ providerName }}</div>
+        </div>
+      </div>
+
+      <h3 class="title" id="review-title">Donner une note</h3>
+
+      <fieldset class="stars-container">
+        <legend class="sr-only">Note sur 5 étoiles</legend>
+        <div class="stars" role="radiogroup" aria-labelledby="review-title" aria-describedby="rating-description">
+          <input
+            *ngFor="let star of stars; let i = index"
+            type="radio"
+            [id]="'star-' + (i + 1)"
+            name="rating"
+            [value]="i + 1"
+            [checked]="rating === i + 1"
+            (change)="setRating(i + 1)"
+            (keydown)="onStarKeydown($event, i + 1)"
+            class="star-input"
+            [attr.aria-label]="'Note ' + (i + 1) + ' sur 5'"
+            [attr.aria-describedby]="'star-description-' + (i + 1)"
+          >
+          <label
+            *ngFor="let star of stars; let i = index"
+            [for]="'star-' + (i + 1)"
+            class="star"
+            [class.filled]="i < rating"
+            [attr.aria-label]="'Note ' + (i + 1) + ' sur 5'"
+          >
+            ★
+            <span class="sr-only" [id]="'star-description-' + (i + 1)">
+              {{ i + 1 }} étoile{{ i > 0 ? 's' : '' }} sur 5
+            </span>
+          </label>
+        </div>
+        <div id="rating-description" class="sr-only">
+          Utilisez les flèches gauche et droite pour naviguer entre les étoiles,
+          Entrée ou Espace pour sélectionner une note
+        </div>
+      </fieldset>
+
+      <output class="rating-status" aria-live="polite" *ngIf="rating > 0">
+        <span class="sr-only">Note sélectionnée : </span>{{ rating }} sur 5
+      </output>
+
+      <div class="form-group">
+        <label for="feedback" class="sr-only">Commentaire</label>
+        <textarea
+          id="feedback"
+          name="feedback"
+          placeholder="Votre commentaire"
+          [(ngModel)]="feedback"
+          (input)="onFeedbackInput($event)"
+          [class.error]="feedbackError"
+          [attr.aria-describedby]="getFeedbackAriaDescribedBy()"
+          [attr.aria-invalid]="feedbackError ? 'true' : 'false'"
+          [attr.aria-required]="'true'"
+          [attr.maxlength]="500"
+          required
+          rows="4"
+        ></textarea>
+
+        <div *ngIf="feedbackError" id="feedback-error" class="error-message" role="alert" aria-live="assertive">
+          <span class="error-icon" aria-hidden="true">⚠️</span>
+          {{ feedbackError }}
+        </div>
+        <div class="character-count" aria-live="polite">
+          {{ feedback.length }}/500 caractères
+        </div>
+      </div>
+
+      <div class="info-box" role="note" aria-label="Information importante">
+        <span class="info-icon" aria-hidden="true">ℹ️</span>
+        <span>
+          Votre avis est important pour nous. Il nous aide à améliorer nos services et à mieux répondre à vos besoins.
+          Merci de prendre le temps de partager votre expérience.
+        </span>
+      </div>
+
+      <fieldset class="buttons" aria-label="Actions du formulaire">
+        <button
+          class="btn send"
+          (click)="sendFeedback()"
+          [disabled]="rating === 0 || feedback.trim().length === 0 || feedbackError"
+          [attr.aria-describedby]="getSendButtonAriaDescribedBy()"
+          type="submit"
+          aria-label="Envoyer l'avis"
+        >
+          <span class="btn-text">Envoyer</span>
+          <span class="sr-only" *ngIf="rating === 0"> - Veuillez d'abord sélectionner une note</span>
+          <span class="sr-only" *ngIf="feedback.trim().length === 0"> - Veuillez d'abord saisir un commentaire</span>
+        </button>
+        <button
+          class="btn cancel"
+          (click)="cancel()"
+          type="button"
+          aria-label="Annuler et retourner à la page précédente"
+        >
+          Annuler
+        </button>
+      </fieldset>
+
+      <div *ngIf="rating === 0" id="rating-error" class="sr-only" aria-live="polite">
+        Veuillez sélectionner une note avant d'envoyer votre avis
+      </div>
+    </form>
+  </div>
+</main>
+
+<app-footer></app-footer>

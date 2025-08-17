@@ -1,33 +1,33 @@
 <div class="profile-header-main">
-  <div class="profile-header-left">
-    <img src="assets/icons/person_24dp_FFA101.svg" alt="Profil de {{ user.firstName }}" class="profile-picture" />
-    <div class="profile-name">
-      {{ user.firstName }} {{ user.lastName }}
-      <mat-icon *ngIf="user.role === 'PROVIDER'" color="warn" matTooltip="Prestataire vérifié">verified</mat-icon>
+  <div class="header">
+    <img src="assets/icons/person_24dp_FFA101.svg" alt="Avatar de {{ user.firstName }}" class="avatar" />
+
+    <div class="info">
+      <div class="top-line">
+        <h3 class="name">{{ user.firstName }} {{ user.lastName }}</h3>
+        <mat-icon class="verified-icon" aria-label="Profil vérifié" *ngIf="user.role === UserRole.PROVIDER">check_circle</mat-icon>
+      </div>
+
+      <section class="rating" aria-label="Évaluations" *ngIf="user.role === UserRole.PROVIDER">
+        <app-rating-stars [providerId]="user.idUser" [reviews]="user.reviews || []"></app-rating-stars>
+      </section>
+
+      <section class="description" aria-label="Description du prestataire" *ngIf="user.description">
+        {{ user.description }}
+      </section>
     </div>
-    <div class="profile-rating">
-      <span class="stars">
-        <ng-container *ngFor="let star of fullStars"><mat-icon>star</mat-icon></ng-container>
-        <ng-container *ngIf="hasHalfStar"><mat-icon>star_half</mat-icon></ng-container>
-        <ng-container *ngFor="let star of emptyStars"><mat-icon>star_border</mat-icon></ng-container>
-      </span>
-      <span class="rating">{{ rating | number:'1.1-1' }}</span>
-    </div>
-    <div class="reviews">{{ reviewsCount }} avis vérifiés</div>
   </div>
 
-  <div class="profile-header-right">
-    <div class="desc-title" *ngIf="user.description">Description</div>
-    <div class="profile-description" *ngIf="user.description">{{ user.description }}</div>
+  <div class="footer">
     <div class="info-cards">
-      <div class="info-card" *ngIf="isAdmin && user.phoneNumber">
+      <div class="info-card" *ngIf="user.phoneNumber">
         <mat-icon>call</mat-icon>
         <div>
           <div class="info-label">Téléphone</div>
           <div class="info-value">{{ user.phoneNumber }}</div>
         </div>
       </div>
-      <div class="info-card" *ngIf="isAdmin && user.email">
+      <div class="info-card" *ngIf="user.email">
         <mat-icon>mail</mat-icon>
         <div>
           <div class="info-label">Email</div>

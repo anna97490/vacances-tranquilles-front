@@ -17,8 +17,8 @@ describe('UpdateProfileComponent', () => {
 
   beforeEach(async () => {
     const userInfoSpy = jasmine.createSpyObj('UserInformationService', [
-      'getUserProfileWithServices', 
-      'getMyServices', 
+      'getUserProfileWithServices',
+      'getMyServices',
       'updateUserProfile'
     ]);
 
@@ -33,7 +33,6 @@ describe('UpdateProfileComponent', () => {
     component = fixture.componentInstance;
     mockUserInformationService = TestBed.inject(UserInformationService) as jasmine.SpyObj<UserInformationService>;
 
-    // Mock user data
     mockUser = {
       idUser: 1,
       firstName: 'John',
@@ -50,7 +49,6 @@ describe('UpdateProfileComponent', () => {
     };
 
     mockServices = [];
-
     component.user = mockUser;
     component.services = mockServices;
     component.userRole = UserRole.CLIENT;
@@ -67,7 +65,7 @@ describe('UpdateProfileComponent', () => {
     it('should load user profile if not provided', () => {
       component.user = undefined as any;
       component.services = undefined as any;
-      
+
       mockUserInformationService.getUserProfileWithServices.and.returnValue(of({ user: mockUser, services: mockServices }));
       mockUserInformationService.getMyServices.and.returnValue(of(mockServices));
 
@@ -90,7 +88,7 @@ describe('UpdateProfileComponent', () => {
     it('should handle error when loading user profile', () => {
       component.user = undefined as any;
       component.services = undefined as any;
-      
+
       mockUserInformationService.getUserProfileWithServices.and.returnValue(throwError(() => new Error('Network error')));
       mockUserInformationService.getMyServices.and.returnValue(of(mockServices));
 
@@ -103,7 +101,7 @@ describe('UpdateProfileComponent', () => {
     it('should handle error when loading services', () => {
       component.user = undefined as any;
       component.services = undefined as any;
-      
+
       mockUserInformationService.getUserProfileWithServices.and.returnValue(of({ user: mockUser, services: mockServices }));
       mockUserInformationService.getMyServices.and.returnValue(throwError(() => new Error('Services error')));
 
@@ -113,7 +111,18 @@ describe('UpdateProfileComponent', () => {
       expect(mockUserInformationService.getMyServices).toHaveBeenCalled();
     });
 
+    it('should handle both errors when loading profile and services', () => {
+      component.user = undefined as any;
+      component.services = undefined as any;
 
+      mockUserInformationService.getUserProfileWithServices.and.returnValue(throwError(() => new Error('Profile error')));
+      mockUserInformationService.getMyServices.and.returnValue(throwError(() => new Error('Services error')));
+
+      component.ngOnInit();
+
+      expect(mockUserInformationService.getUserProfileWithServices).toHaveBeenCalled();
+      expect(mockUserInformationService.getMyServices).toHaveBeenCalled();
+    });
   });
 
   describe('onUserChange', () => {
@@ -129,8 +138,8 @@ describe('UpdateProfileComponent', () => {
 
     it('should handle user change with different properties', () => {
       spyOn(component.profileDataChange, 'emit');
-      const newUser = { 
-        ...mockUser, 
+      const newUser = {
+        ...mockUser,
         firstName: 'Jane',
         lastName: 'Smith',
         email: 'jane.smith@example.com'
@@ -297,12 +306,10 @@ describe('UpdateProfileComponent', () => {
 
       expect(result).toBeTrue();
     });
-
-
   });
 
   describe('saveProfile', () => {
-    it('should return false when form validation fails', () => {
+    it('should return false when form validation fails', (done) => {
       spyOn(component, 'validateForm').and.returnValue(false);
       spyOn(component.saveSuccess, 'emit');
       spyOn(component.saveError, 'emit');
@@ -311,15 +318,16 @@ describe('UpdateProfileComponent', () => {
         expect(result).toBeFalse();
         expect(component.saveSuccess.emit).not.toHaveBeenCalled();
         expect(component.saveError.emit).not.toHaveBeenCalled();
+        done();
       });
     });
 
-    it('should return true and emit success when saveProfile succeeds', () => {
+    it('should return true and emit success when saveProfile succeeds', (done) => {
       spyOn(component, 'validateForm').and.returnValue(true);
       spyOn(component.saveSuccess, 'emit');
       spyOn(component.saveError, 'emit');
       spyOn(component.profileDataChange, 'emit');
-      
+
       const updatedProfile = { user: mockUser, services: mockServices };
       mockUserInformationService.updateUserProfile.and.returnValue(of(updatedProfile));
 
@@ -329,28 +337,30 @@ describe('UpdateProfileComponent', () => {
         expect(component.saveError.emit).not.toHaveBeenCalled();
         expect(mockUserInformationService.updateUserProfile).toHaveBeenCalled();
         expect(component.profileDataChange.emit).toHaveBeenCalledWith({ user: mockUser, services: mockServices });
+        done();
       });
     });
 
-    it('should return false and emit error when saveProfile fails', () => {
+    it('should return false and emit error when saveProfile fails', (done) => {
       spyOn(component, 'validateForm').and.returnValue(true);
       spyOn(component.saveSuccess, 'emit');
       spyOn(component.saveError, 'emit');
-      
+
       mockUserInformationService.updateUserProfile.and.returnValue(throwError(() => new Error('Network error')));
 
       component.saveProfile().subscribe(result => {
         expect(result).toBeFalse();
         expect(component.saveSuccess.emit).not.toHaveBeenCalled();
         expect(component.saveError.emit).toHaveBeenCalledWith('Erreur lors de la sauvegarde du profil');
+        done();
       });
     });
 
-    it('should create correct UpdateUserDTO when saving', () => {
+    it('should create correct UpdateUser when saving', (done) => {
       spyOn(component, 'validateForm').and.returnValue(true);
       spyOn(component.saveSuccess, 'emit');
       spyOn(component.saveError, 'emit');
-      
+
       const updatedProfile = { user: mockUser, services: mockServices };
       mockUserInformationService.updateUserProfile.and.returnValue(of(updatedProfile));
 
@@ -371,14 +381,15 @@ describe('UpdateProfileComponent', () => {
           insuranceCertificateUrl: mockUser.insuranceCertificateUrl,
           description: mockUser.description
         });
+        done();
       });
     });
 
-    it('should handle user with all optional fields', () => {
+    it('should handle user with all optional fields', (done) => {
       spyOn(component, 'validateForm').and.returnValue(true);
       spyOn(component.saveSuccess, 'emit');
       spyOn(component.saveError, 'emit');
-      
+
       const userWithAllFields = {
         ...mockUser,
         rcNumber: 'RC123456',
@@ -387,7 +398,7 @@ describe('UpdateProfileComponent', () => {
         insuranceCertificateUrl: 'https://example.com/insurance.pdf'
       };
       component.user = userWithAllFields;
-      
+
       const updatedProfile = { user: userWithAllFields, services: mockServices };
       mockUserInformationService.updateUserProfile.and.returnValue(of(updatedProfile));
 
@@ -408,14 +419,15 @@ describe('UpdateProfileComponent', () => {
           insuranceCertificateUrl: userWithAllFields.insuranceCertificateUrl,
           description: userWithAllFields.description
         });
+        done();
       });
     });
 
-    it('should handle user with minimal fields', () => {
+    it('should handle user with minimal fields', (done) => {
       spyOn(component, 'validateForm').and.returnValue(true);
       spyOn(component.saveSuccess, 'emit');
       spyOn(component.saveError, 'emit');
-      
+
       const minimalUser = {
         idUser: 1,
         firstName: 'John',
@@ -428,7 +440,7 @@ describe('UpdateProfileComponent', () => {
         postalCode: 75000
       } as User;
       component.user = minimalUser;
-      
+
       const updatedProfile = { user: minimalUser, services: mockServices };
       mockUserInformationService.updateUserProfile.and.returnValue(of(updatedProfile));
 
@@ -449,68 +461,15 @@ describe('UpdateProfileComponent', () => {
           insuranceCertificateUrl: undefined,
           description: undefined
         });
+        done();
       });
-    });
-
-
-  });
-
-  describe('loadUserProfile', () => {
-    it('should load user profile successfully', () => {
-      spyOn(component.profileDataChange, 'emit');
-      mockUserInformationService.getUserProfileWithServices.and.returnValue(of({ user: mockUser, services: mockServices }));
-      mockUserInformationService.getMyServices.and.returnValue(of(mockServices));
-
-      (component as any).loadUserProfile();
-
-      expect(mockUserInformationService.getUserProfileWithServices).toHaveBeenCalled();
-      expect(mockUserInformationService.getMyServices).toHaveBeenCalled();
-      expect(component.profileDataChange.emit).toHaveBeenCalledWith({ user: mockUser });
-      expect(component.profileDataChange.emit).toHaveBeenCalledWith({ services: mockServices });
-    });
-
-    it('should handle error when loading user profile', () => {
-      spyOn(component.profileDataChange, 'emit');
-      mockUserInformationService.getUserProfileWithServices.and.returnValue(throwError(() => new Error('Network error')));
-      mockUserInformationService.getMyServices.and.returnValue(of(mockServices));
-
-      (component as any).loadUserProfile();
-
-      expect(mockUserInformationService.getUserProfileWithServices).toHaveBeenCalled();
-      expect(mockUserInformationService.getMyServices).toHaveBeenCalled();
-      expect(component.profileDataChange.emit).toHaveBeenCalledWith({ services: mockServices });
-    });
-
-    it('should handle error when loading services', () => {
-      spyOn(component.profileDataChange, 'emit');
-      mockUserInformationService.getUserProfileWithServices.and.returnValue(of({ user: mockUser, services: mockServices }));
-      mockUserInformationService.getMyServices.and.returnValue(throwError(() => new Error('Services error')));
-
-      (component as any).loadUserProfile();
-
-      expect(mockUserInformationService.getUserProfileWithServices).toHaveBeenCalled();
-      expect(mockUserInformationService.getMyServices).toHaveBeenCalled();
-      expect(component.profileDataChange.emit).toHaveBeenCalledWith({ user: mockUser });
-      expect(component.profileDataChange.emit).toHaveBeenCalledWith({ services: [] });
-    });
-
-    it('should handle both errors when loading profile and services', () => {
-      spyOn(component.profileDataChange, 'emit');
-      mockUserInformationService.getUserProfileWithServices.and.returnValue(throwError(() => new Error('Profile error')));
-      mockUserInformationService.getMyServices.and.returnValue(throwError(() => new Error('Services error')));
-
-      (component as any).loadUserProfile();
-
-      expect(mockUserInformationService.getUserProfileWithServices).toHaveBeenCalled();
-      expect(mockUserInformationService.getMyServices).toHaveBeenCalled();
-      expect(component.profileDataChange.emit).toHaveBeenCalledWith({ services: [] });
     });
   });
 
   describe('Component Input/Output', () => {
     it('should handle different user roles', () => {
-      const roles = [UserRole.CLIENT, UserRole.PROVIDER, UserRole.ADMIN];
-      
+      const roles = [UserRole.CLIENT, UserRole.PROVIDER];
+
       roles.forEach(role => {
         component.userRole = role;
         expect(component.userRole).toBe(role);

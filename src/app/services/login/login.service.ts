@@ -62,7 +62,7 @@ export class LoginService {
    * @param error L'erreur HTTP
    */
   private handleSuccessWithParseError(error: HttpErrorResponse): void {
-    
+
 
     const token = this.errorHandler.extractTokenFromErrorResponse(error);
     if (token) {

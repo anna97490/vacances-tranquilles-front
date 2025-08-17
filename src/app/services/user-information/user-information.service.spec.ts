@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { UserInformationService } from './user-information.service';
 import { User, UserRole } from '../../models/User';
 import { Service, ServiceCategory } from '../../models/Service';
-import { UpdateUserDTO } from '../../models/UpdateUserDTO';
-import { UserProfileDTO } from '../../models/UserProfileDTO';
+import { UpdateUser } from '../../models/UpdateUser';
+import { UserProfile } from '../../models/UserProfile';
 import { EnvService } from '../env/env.service';
-import { MOCK_USER_PROVIDER, MOCK_USER_ADMIN, MOCK_SERVICES } from '../../utils/test-mocks';
+import { MOCK_USER_PROVIDER, MOCK_SERVICES } from '../../utils/test-mocks';
 
 describe('UserInformationService', () => {
   let service: UserInformationService;
@@ -19,10 +20,11 @@ describe('UserInformationService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         UserInformationService,
-        { provide: EnvService, useValue: mockEnvService }
+        { provide: EnvService, useValue: mockEnvService },
+        provideHttpClient(withFetch()),
+        provideHttpClientTesting()
       ]
     });
 
@@ -149,7 +151,7 @@ describe('UserInformationService', () => {
         return key === 'token' ? 'mock-token' : null;
       });
 
-      const mockUsers: User[] = [MOCK_USER_PROVIDER, MOCK_USER_ADMIN];
+      const mockUsers: User[] = [MOCK_USER_PROVIDER];
 
       const userIds = [1, 2];
 
@@ -198,14 +200,14 @@ describe('UserInformationService', () => {
         return key === 'token' ? 'mock-token' : null;
       });
 
-      const updateDTO: UpdateUserDTO = {
+      const updateDTO: UpdateUser = {
         firstName: 'Updated',
         lastName: 'Name',
         email: 'updated@example.com',
         phoneNumber: '0987654321'
       };
 
-              const mockResponse: UserProfileDTO = {
+              const mockResponse: UserProfile = {
           user: {
             idUser: 1,
             firstName: 'Updated',
@@ -231,12 +233,12 @@ describe('UserInformationService', () => {
       spyOn(localStorage, 'getItem').and.returnValue(null);
       spyOn(console, 'warn').and.stub();
 
-      const updateDTO: UpdateUserDTO = {
+      const updateDTO: UpdateUser = {
         firstName: 'Updated',
         lastName: 'Name'
       };
 
-              const mockResponse: UserProfileDTO = {
+              const mockResponse: UserProfile = {
           user: {
             idUser: 1,
             firstName: 'Updated',
@@ -266,7 +268,7 @@ describe('UserInformationService', () => {
 
       const mockService = MOCK_SERVICES[0];
 
-              const mockResponse: UserProfileDTO = {
+              const mockResponse: UserProfile = {
           user: {
             idUser: 1,
             firstName: 'John',
@@ -291,7 +293,7 @@ describe('UserInformationService', () => {
       spyOn(localStorage, 'getItem').and.returnValue(null);
       spyOn(console, 'warn').and.stub();
 
-              const mockResponse: UserProfileDTO = {
+              const mockResponse: UserProfile = {
           user: {
             idUser: 1,
             firstName: 'John',

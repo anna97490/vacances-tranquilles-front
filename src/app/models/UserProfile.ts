@@ -3,9 +3,9 @@ import { Service } from './Service';
 
 /**
  * DTO pour la réponse du profil utilisateur.
- * Correspond au UserProfileDTO du backend.
+ * Correspond au UserProfile du backend.
  */
-export interface UserProfileDTO {
+export interface UserProfile {
   user: User;
   services: Service[];
 }

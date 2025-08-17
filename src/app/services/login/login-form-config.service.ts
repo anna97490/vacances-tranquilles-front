@@ -56,7 +56,7 @@ export class LoginFormConfigService {
   createLoginForm(): FormGroup {
     return this.fb.group({
       email: ['', [Validators.required, strictEmailFormatValidator, emailInjectionPreventionValidator]],
-      userSecret: ['', [Validators.required, Validators.minLength(8), passwordComplexityValidator]]
+      userSecret: ['', [Validators.required, Validators.minLength(8), passwordComplexityValidator, createInjectionPreventionValidator(/[<>'"&;{}()\[\]\\|`~#$%^*+=]/)]]
     });
   }
 

@@ -24,23 +24,18 @@
 
 .providers-container {
   .providers-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
     ::ng-deep app-provider-card {
-      height: 100%;
+      width: 100%;
       display: block;
 
-      > * {
-        height: 100%;
+      .provider-card {
+        width: 100%;
+        min-height: 200px;
       }
-    }
-  }
-
-  @media (max-width: 768px) {
-    .providers-grid {
-      grid-template-columns: 1fr;
     }
   }
 }

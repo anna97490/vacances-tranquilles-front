@@ -1,8 +1,8 @@
 /**
  * DTO pour la mise à jour du profil utilisateur.
- * Correspond au UpdateUserDTO du backend.
+ * Correspond au UpdateUser du backend.
  */
-export interface UpdateUserDTO {
+export interface UpdateUser {
   firstName?: string;
   lastName?: string;
   email?: string;

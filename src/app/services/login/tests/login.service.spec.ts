@@ -1,5 +1,5 @@
-import { HttpErrorResponse, HttpResponse } from "@angular/common/http";
-import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
+import { HttpErrorResponse, HttpResponse, provideHttpClient, withFetch } from "@angular/common/http";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { LoginService } from "../login.service";
 import { AuthStorageService } from "../auth-storage.service";
 import { LoginErrorHandlerService } from "../login-error-handler.service";
@@ -30,13 +30,14 @@ describe('LoginService', () => {
     const navigationSpyObj = jasmine.createSpyObj('LoginNavigationService', ['redirectAfterLogin']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         LoginService,
         { provide: AuthStorageService, useValue: authStorageSpyObj },
         { provide: LoginErrorHandlerService, useValue: errorHandlerSpyObj },
         { provide: LoginNavigationService, useValue: navigationSpyObj },
-        { provide: PLATFORM_ID, useValue: 'browser' }
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        provideHttpClient(withFetch()),
+        provideHttpClientTesting()
       ]
     });
 

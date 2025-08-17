@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DisplayProfileHeaderComponent } from "../display-profile/utils/display-profile-header/display-profile-header.component";
 import { DisplayProfileServicesComponent } from './utils/display-profile-services/display-profile-services.component';
+import { DisplayProfileReviewsComponent } from './utils/display-profile-reviews/display-profile-reviews.component';
 import { User, UserRole } from '../../../models/User';
 import { Service } from '../../../models/Service';
 import { UserInformationService } from '../../../services/user-information/user-information.service';
@@ -9,22 +10,32 @@ import { UserInformationService } from '../../../services/user-information/user-
 @Component({
   selector: 'app-display-profile',
   standalone: true,
-  imports: [CommonModule, DisplayProfileHeaderComponent, DisplayProfileServicesComponent],
+  imports: [CommonModule, DisplayProfileHeaderComponent, DisplayProfileServicesComponent, DisplayProfileReviewsComponent],
   templateUrl: './display-profile.component.html',
 
 })
-export class DisplayProfileComponent implements OnInit {
+export class DisplayProfileComponent implements OnInit, OnChanges {
   @Input() user!: User;
   @Input() services!: Service[];
   @Input() userRole!: UserRole;
 
+  isProviderProfile = false;
+
   constructor(private readonly userInformationService: UserInformationService) {}
 
   ngOnInit() {
+    // Vérifie si on est sur la page provider-profile
+    const displayedUserId = localStorage.getItem('displayedUserId');
+    this.isProviderProfile = displayedUserId !== null;
+
     // Charge les données du profil depuis le backend si pas fournies
     if (!this.user) {
       this.loadUserProfile();
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Méthode vide car les logs ont été retirés
   }
 
   /**
@@ -37,7 +48,7 @@ export class DisplayProfileComponent implements OnInit {
         this.user = userData;
       },
       error: (error: any) => {
-        console.error('Erreur lors du chargement du profil utilisateur:', error);
+        // Gestion d'erreur silencieuse
       }
     });
 
@@ -47,7 +58,6 @@ export class DisplayProfileComponent implements OnInit {
         this.services = services;
       },
       error: (error: any) => {
-        console.error('Erreur lors du chargement des services:', error);
         this.services = [];
       }
     });

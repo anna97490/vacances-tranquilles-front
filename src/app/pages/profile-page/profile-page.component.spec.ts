@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, throwError } from 'rxjs';
 
-import { ProfilePageComponent } from './profilePage.component';
+import { ProfilePageComponent } from './profile-page.component';
 import { UserInformationService } from '../../services/user-information/user-information.service';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { User, UserRole } from '../../models/User';
@@ -49,7 +49,6 @@ describe('ProfilePageComponent', () => {
     const authStorageSpy = jasmine.createSpyObj('AuthStorageService', ['getUserId']);
     const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
-    // Configure default return values
     userInfoSpy.getUserProfile.and.returnValue(of(mockUser));
     userInfoSpy.getUserById.and.returnValue(of(mockUser));
     userInfoSpy.getMyServices.and.returnValue(of(mockServices));
@@ -60,11 +59,11 @@ describe('ProfilePageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ProfilePageComponent,
-        HttpClientTestingModule,
         MatSnackBarModule,
         NoopAnimationsModule
       ],
       providers: [
+        provideHttpClient(withFetch()),
         { provide: UserInformationService, useValue: userInfoSpy },
         { provide: AuthStorageService, useValue: authStorageSpy },
         { provide: MatSnackBar, useValue: snackBarSpy }
@@ -82,13 +81,11 @@ describe('ProfilePageComponent', () => {
     spyOn(localStorage, 'getItem').and.returnValue(null);
     spyOn(localStorage, 'removeItem').and.stub();
     spyOn(localStorage, 'setItem').and.stub();
-    
-    // Mock console.error to avoid noise in tests
+
     spyOn(console, 'error').and.stub();
   });
 
   afterEach(() => {
-    // Reset all spy calls after each test
     if (snackBar && snackBar.open) {
       snackBar.open.calls.reset();
     }
@@ -209,7 +206,6 @@ describe('ProfilePageComponent', () => {
 
       component.toggleEditMode();
 
-      // Test that the method doesn't throw an error
       expect(true).toBeTrue();
     });
   });
@@ -290,7 +286,6 @@ describe('ProfilePageComponent', () => {
 
       component.onValidationError(errorMessage);
 
-      // Test that the method doesn't throw an error
       expect(true).toBeTrue();
     });
   });
@@ -336,8 +331,28 @@ describe('ProfilePageComponent', () => {
   });
 
   describe('isCurrentUserProfile', () => {
-    it('should return true when displayed user is current user', () => {
-      component.displayedUser = mockUser;
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    it('should return true when no displayedUserId in localStorage and loggedUser exists', () => {
+      component.loggedUser = mockUser;
+
+      const result = component.isCurrentUserProfile();
+
+      expect(result).toBeTrue();
+    });
+
+    it('should return false when no displayedUserId in localStorage but loggedUser is null', () => {
+      component.loggedUser = null;
+
+      const result = component.isCurrentUserProfile();
+
+      expect(result).toBeFalse();
+    });
+
+    it('should return true when displayedUserId matches loggedUser id', () => {
+      localStorage.setItem('displayedUserId', '1');
       component.loggedUser = mockUser;
 
       const result = component.isCurrentUserProfile();
@@ -346,16 +361,10 @@ describe('ProfilePageComponent', () => {
     });
 
     it('should return false when displayed user is different from current user', () => {
-      component.displayedUser = mockUser;
-      component.loggedUser = { ...mockUser, idUser: 2 };
-
-      const result = component.isCurrentUserProfile();
-
-      expect(result).toBeFalse();
-    });
-
-    it('should return false when displayedUser is null', () => {
-      component.displayedUser = null;
+      (localStorage.getItem as jasmine.Spy).and.callFake((key: string) => {
+        if (key === 'displayedUserId') return '2';
+        return null;
+      });
       component.loggedUser = mockUser;
 
       const result = component.isCurrentUserProfile();
@@ -363,8 +372,8 @@ describe('ProfilePageComponent', () => {
       expect(result).toBeFalse();
     });
 
-    it('should return false when loggedUser is null', () => {
-      component.displayedUser = mockUser;
+    it('should return false when displayedUserId exists but loggedUser is null', () => {
+      localStorage.setItem('displayedUserId', '1');
       component.loggedUser = null;
 
       const result = component.isCurrentUserProfile();
@@ -372,13 +381,13 @@ describe('ProfilePageComponent', () => {
       expect(result).toBeFalse();
     });
 
-    it('should return true when both users are null', () => {
+    it('should return false when both users are null', () => {
       component.displayedUser = null;
       component.loggedUser = null;
 
       const result = component.isCurrentUserProfile();
 
-      expect(result).toBeTrue();
+      expect(result).toBeFalse();
     });
   });
 
@@ -450,7 +459,6 @@ describe('ProfilePageComponent', () => {
         return null;
       });
 
-      // Initialize userRole from localStorage
       component.userRole = UserRole.PROVIDER;
 
       (component as any).loadLoggedUserDataOnly();
@@ -551,7 +559,6 @@ describe('ProfilePageComponent', () => {
 
       (component as any).saveProfileChanges();
 
-      // Test that the method doesn't throw an error
       expect(true).toBeTrue();
     });
 
@@ -560,7 +567,6 @@ describe('ProfilePageComponent', () => {
 
       (component as any).saveProfileChanges();
 
-      // Test that the method doesn't throw an error
       expect(true).toBeTrue();
     });
 
@@ -570,7 +576,6 @@ describe('ProfilePageComponent', () => {
 
       (component as any).saveProfileChanges();
 
-      // Test that the method doesn't throw an error
       expect(true).toBeTrue();
     });
   });

@@ -2,3 +2,5 @@
 
 <app-display-profile-services *ngIf="userRole === 'PROVIDER'" [services]="services"></app-display-profile-services>
 
+<app-display-profile-reviews *ngIf="isProviderProfile" [providerId]="user.idUser"></app-display-profile-reviews>
+

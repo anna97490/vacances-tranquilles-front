@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EnvService } from './services/env/env.service';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -30,7 +30,6 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         AppComponent,
-        HttpClientTestingModule,
         HeaderComponent,
         FooterComponent,
         RouterOutlet,
@@ -149,19 +148,16 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
 
-    // Initially not authenticated
     clearLocalStorage();
     fixture.detectChanges();
     let compiled = fixture.nativeElement;
     expect(compiled.querySelector('app-header')).toBeFalsy();
 
-    // Become authenticated
     setToken();
     fixture.detectChanges();
     compiled = fixture.nativeElement;
     expect(compiled.querySelector('app-header')).toBeTruthy();
 
-    // Become unauthenticated again
     clearLocalStorage();
     fixture.detectChanges();
     compiled = fixture.nativeElement;
@@ -172,10 +168,8 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
 
-    // Trigger ngOnInit
     fixture.detectChanges();
 
-    // Verify that the component has access to EnvService
     expect(app).toBeTruthy();
   });
 
@@ -185,7 +179,6 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
 
-    // The component should be created successfully with EnvService injected
     expect(app).toBeTruthy();
     expect(fixture.componentInstance).toBeDefined();
   });

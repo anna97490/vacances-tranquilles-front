@@ -134,8 +134,6 @@ describe('ConversationComponent', () => {
     });
   });
 
-
-
   describe('trackByConversationId', () => {
     it('should return conversation ID for tracking', () => {
       const conversation = mockConversations[0];

@@ -23,10 +23,10 @@ export class ScriptLoaderService {
       script.type = 'text/javascript';
       script.src = src;
       script.async = async;
-      
+
       script.onload = () => resolve();
       script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
-      
+
       this.renderer.appendChild(document.body, script);
       this.scriptElements.push(script);
     });

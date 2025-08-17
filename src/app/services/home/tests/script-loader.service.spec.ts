@@ -204,20 +204,16 @@ describe('ScriptLoaderService', () => {
     it('should remove all added scripts', () => {
       const [mockScript1, mockScript2, mockScript3] = createMockScriptsWithParent();
 
-      // Add scripts to internal array (simulate previous additions)
       (service as any).scriptElements = [mockScript1, mockScript2, mockScript3];
 
       service.cleanupScripts();
 
       expect(mockScript1.parentNode!.removeChild).toHaveBeenCalledWith(mockScript1);
       expect(mockScript2.parentNode!.removeChild).toHaveBeenCalledWith(mockScript2);
-      // mockScript3 should not call removeChild as parentNode is null
       expect((service as any).scriptElements.length).toBe(0);
     });
 
-    // Test corrigé - le service actuel ne gère PAS les éléments null/undefined
     it('should handle only valid script elements', () => {
-      // Ne tester que des éléments valides car le service ne gère pas null/undefined
       const validScript = { parentNode: { removeChild: jasmine.createSpy() } };
       const scriptWithNullParent = { parentNode: null };
 
@@ -226,7 +222,6 @@ describe('ScriptLoaderService', () => {
       service.cleanupScripts();
 
       expect(validScript.parentNode.removeChild).toHaveBeenCalledWith(validScript);
-      // Le script avec parentNode null ne doit pas causer d'erreur
       expect((service as any).scriptElements.length).toBe(0);
     });
 
@@ -256,7 +251,6 @@ describe('ScriptLoaderService', () => {
   });
 
   describe('error handling', () => {
-    // Test corrigé - addScript ne throw pas directement, il retourne une Promise qui peut être rejetée
     it('should handle renderer errors in addScript', async () => {
       mockRenderer.createElement.and.throwError('Renderer error');
 
@@ -271,7 +265,6 @@ describe('ScriptLoaderService', () => {
       await expectAsync(service.addScript('test.js')).toBeRejected();
     });
 
-    // Test corrigé pour les erreurs du RendererFactory
     it('should handle renderer factory errors during service creation', () => {
       const faultyFactory = jasmine.createSpyObj('RendererFactory2', ['createRenderer']);
       faultyFactory.createRenderer.and.throwError('Factory error');

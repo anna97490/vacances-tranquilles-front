@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { FooterComponent } from '../../components/footer/footer.component';
+
 import { RouterModule, RouterLink, Router } from '@angular/router';
 import { LoginPayload } from './../../models/Login';
 import { EnvService } from '../../services/env/env.service';
@@ -24,8 +24,7 @@ import { LoginService } from '../../services/login/login.service';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    RouterLink,
-    FooterComponent
+    RouterLink
   ],
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.scss'],

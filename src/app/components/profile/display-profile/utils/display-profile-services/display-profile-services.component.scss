@@ -8,7 +8,7 @@
 .services-container {
   width: 100%;
   margin: 0 auto;
-  max-width: 1100px;
+  max-width: 1200px;
   padding: 0 1rem;
 }
 
@@ -21,18 +21,14 @@
 }
 
 .services-list {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 2rem;
-  align-items: stretch;
-  width: 100%;
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .service-card {
-  flex: 1;
-  max-width: 340px;
-  min-width: 260px;
   background: var(--secondary-text-color);
   border: 1px solid #e6e6e6;
   border-radius: 16px;
@@ -42,6 +38,9 @@
   flex-direction: column;
   align-items: flex-start;
   transition: box-shadow 0.2s;
+  min-height: 200px;
+  width: 100%;
+  position: relative;
 }
 
 .service-card:hover {
@@ -98,24 +97,16 @@
   .services-list {
     gap: 1.2rem;
   }
-  .service-card {
-    min-width: 220px;
-    max-width: 100%;
-  }
 }
 
 @media (max-width: 900px) {
   .services-container {
     padding: 0 0.5rem;
   }
-  
+
   .services-list {
-    flex-wrap: wrap;
+    grid-template-columns: 1fr;
     gap: 1rem;
-  }
-  .service-card {
-    min-width: 180px;
-    max-width: 100%;
   }
 }
 

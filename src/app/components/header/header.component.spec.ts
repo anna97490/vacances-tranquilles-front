@@ -333,16 +333,18 @@ describe('HeaderComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/service-search']);
     });
 
-    it('should navigate to profile when provider user clicks on Accueil', () => {
-      // Simuler un utilisateur non-client connecté
+    it('should navigate to service-search when provider user clicks on Accueil', () => {
+      // Simuler un utilisateur provider connecté
       authStorage.isAuthenticated.and.returnValue(true);
       authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
 
       const accueilItem = component.menu[0]; // Accueil
       component.onMenuNavigation(accueilItem);
 
-      expect(router.navigate).toHaveBeenCalledWith(['/profile']);
+      expect(router.navigate).toHaveBeenCalledWith(['/service-search']);
     });
+
+
 
     it('should navigate to home when non-authenticated user clicks on Accueil', () => {
       // Simuler un utilisateur non connecté
@@ -377,8 +379,8 @@ describe('HeaderComponent', () => {
       expect(isAccueilActive).toBe(true);
     });
 
-    it('should not consider Accueil as active when non-client is on service-search page', () => {
-      // Simuler un utilisateur non-client connecté
+    it('should consider Accueil as active when provider is on service-search page', () => {
+      // Simuler un utilisateur provider connecté
       authStorage.isAuthenticated.and.returnValue(true);
       authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
 
@@ -386,7 +388,20 @@ describe('HeaderComponent', () => {
       component.currentPath = '/service-search';
 
       const isAccueilActive = component.isActive('/home');
-      expect(isAccueilActive).toBe(false);
+      expect(isAccueilActive).toBe(true);
+    });
+
+
+
+    it('should consider service-search as active for Accueil when authenticated user is on service-search', () => {
+      // Simuler un utilisateur connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+
+      // Simuler que l'utilisateur est sur la page service-search
+      component.currentPath = '/service-search';
+
+      const isServiceSearchActive = component.isActive('/service-search');
+      expect(isServiceSearchActive).toBe(true);
     });
 
     it('should close mobile menu after navigation', () => {
@@ -401,6 +416,36 @@ describe('HeaderComponent', () => {
       component.onMenuNavigation(accueilItem);
 
       expect(component.isMobileMenuOpen).toBe(false);
+    });
+
+    it('should clear displayedUserId when navigating to profile', () => {
+      // Simuler un utilisateur connecté
+      authStorage.isAuthenticated.and.returnValue(true);
+
+      // Simuler qu'il y a un displayedUserId dans le localStorage
+      spyOn(localStorage, 'removeItem');
+
+      const profilItem = component.menu[1]; // Profil
+      component.onMenuNavigation(profilItem);
+
+      expect(localStorage.removeItem).toHaveBeenCalledWith('displayedUserId');
+    });
+
+    it('should navigate all authenticated users to service-search for Accueil', () => {
+      // Tester avec CLIENT
+      authStorage.isAuthenticated.and.returnValue(true);
+      authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+      const accueilItem = component.menu[0];
+      component.onMenuNavigation(accueilItem);
+      expect(router.navigate).toHaveBeenCalledWith(['/service-search']);
+
+      // Réinitialiser le spy
+      (router.navigate as jasmine.Spy).calls.reset();
+
+      // Tester avec PROVIDER
+      authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
+      component.onMenuNavigation(accueilItem);
+      expect(router.navigate).toHaveBeenCalledWith(['/service-search']);
     });
   });
 

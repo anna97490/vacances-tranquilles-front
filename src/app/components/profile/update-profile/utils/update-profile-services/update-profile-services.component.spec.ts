@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -47,13 +47,13 @@ describe('UpdateProfileServicesComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         UpdateProfileServicesComponent,
-        HttpClientTestingModule,
         MatSnackBarModule,
         MatDialogModule,
         BrowserAnimationsModule,
         ReactiveFormsModule
       ],
       providers: [
+        provideHttpClient(withFetch()),
         { provide: UserInformationService, useValue: userInfoSpy },
         { provide: IconService, useValue: iconSpy },
         { provide: MatSnackBar, useValue: snackBarSpy },
@@ -68,12 +68,12 @@ describe('UpdateProfileServicesComponent', () => {
     mockIconService = TestBed.inject(IconService) as jasmine.SpyObj<IconService>;
     mockSnackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     mockDialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
-    
+
     // Setup default spy returns
     mockUserInformationService.createService.and.returnValue(of(mockService));
     mockUserInformationService.updateService.and.returnValue(of(mockService));
     mockUserInformationService.deleteService.and.returnValue(of(void 0));
-    
+
     fixture.detectChanges();
   });
 
@@ -108,7 +108,7 @@ describe('UpdateProfileServicesComponent', () => {
 
     it('should create a copy of the service', () => {
       component.editService(mockService);
-      
+
       expect(component.editingService).not.toBe(mockService);
       expect(component.editingService).toEqual(mockService);
     });
@@ -263,7 +263,7 @@ describe('UpdateProfileServicesComponent', () => {
     it('should handle error during service creation', () => {
       const error = new Error('Creation failed');
       mockUserInformationService.createService.and.returnValue(throwError(() => error));
-      
+
       component.isAddingNew = true;
       component.serviceForm.patchValue({
         title: 'New Service',
@@ -286,7 +286,7 @@ describe('UpdateProfileServicesComponent', () => {
     it('should handle error during service update', () => {
       const error = new Error('Update failed');
       mockUserInformationService.updateService.and.returnValue(throwError(() => error));
-      
+
       component.editingService = mockService;
       component.serviceForm.patchValue({
         title: 'Updated Service',

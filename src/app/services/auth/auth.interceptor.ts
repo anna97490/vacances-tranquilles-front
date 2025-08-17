@@ -10,13 +10,16 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthStorageService } from '../login/auth-storage.service';
 
+/**
+ * Intercepteur HTTP pour gérer l'authentification automatique des requêtes.
+ */
 export function authInterceptor(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> {
   let authStorage: AuthStorageService;
   let router: Router;
-  
+
   try {
     authStorage = inject(AuthStorageService);
     router = inject(Router);
@@ -29,7 +32,7 @@ export function authInterceptor(
   // Ajouter le token d'authentification à la requête
   const token = authStorage.getToken();
   let authRequest = request;
-  
+
   if (token) {
     authRequest = request.clone({
       setHeaders: {
@@ -43,21 +46,21 @@ export function authInterceptor(
       // Gestion des erreurs d'authentification
       if (error.status === 403 || error.status === 401) {
         console.warn('Erreur d\'authentification détectée:', error.status);
-        
+
         // Nettoyer les données d'authentification
         authStorage.clearAuthenticationData();
-        
+
         // Afficher une notification à l'utilisateur
         console.warn('Session expirée. Vous allez être redirigé vers la page de connexion.');
         alert('Votre session a expiré. Vous allez être redirigé vers la page de connexion.');
-        
+
         // Rediriger vers la page de connexion
         router.navigate(['/auth/login']);
-        
+
         // Retourner une erreur avec un message explicite
         return throwError(() => new Error('Session expirée. Veuillez vous reconnecter.'));
       }
-      
+
       // Pour les autres erreurs, les laisser passer
       return throwError(() => error);
     })

@@ -6,13 +6,13 @@
       <div class="top-line">
         <h3 class="name">{{ user?.firstName }} {{ user?.lastName }}</h3>
         <mat-icon class="verified-icon" aria-label="Profil vérifié">check_circle</mat-icon>
-        <button mat-button class="profile-btn" 
+        <button mat-button class="profile-btn"
                 [attr.aria-label]="'Voir le profil de ' + user?.firstName + ' ' + user?.lastName"
                 (click)="navigateToProfile()">Voir le profil</button>
       </div>
 
       <section class="rating" aria-label="Évaluations">
-        <app-rating-stars [rating]="3" [reviewsCount]="32"></app-rating-stars>
+        <app-rating-stars [providerId]="user?.idUser || 0" [reviews]="user?.reviews || []"></app-rating-stars>
       </section>
 
       <section class="description" aria-label="Description du service">
@@ -26,7 +26,7 @@
     <section class="price" aria-label="Prix du service">
       <span class="euro">€ {{ service?.price }}</span><span class="unit">/heure</span>
     </section>
-    <button mat-raised-button class="reserve-btn" 
+    <button mat-raised-button class="reserve-btn"
             [attr.aria-label]="'Réserver le service de ' + user?.firstName + ' ' + user?.lastName + ' pour ' + service?.price + ' euros par heure'"
             (click)="createCheckoutSession()">
       Réserver

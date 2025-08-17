@@ -112,9 +112,8 @@ describe('AuthInterceptor', () => {
   });
 
   it('should handle injection errors gracefully', (done) => {
-    // Mock inject to throw an error
     spyOn(TestBed, 'inject').and.throwError('Injection error');
-    
+
     const response = { type: 0, body: { data: 'test' } };
     mockHandler = jasmine.createSpy('mockHandler').and.returnValue(of(response));
 

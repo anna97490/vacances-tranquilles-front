@@ -37,6 +37,6 @@ export class AppComponent {
     return !!localStorage.getItem('token');
   }
 
-
-
+  ngOnInit() {
+  }
 }

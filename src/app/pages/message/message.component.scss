@@ -224,7 +224,6 @@ button:focus, textarea:focus:not(.message-textarea):not(.edit-textarea), input:f
   @include flex-column;
 }
 
-// No conversations/messages
 .no-conversations, .no-messages {
   @include flex-center;
   flex: 1;

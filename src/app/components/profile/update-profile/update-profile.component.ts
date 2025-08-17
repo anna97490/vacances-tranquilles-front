@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, ViewChild } from '@angu
 import { CommonModule } from '@angular/common';
 import { User, UserRole } from '../../../models/User';
 import { Service } from '../../../models/Service';
-import { UpdateUserDTO } from '../../../models/UpdateUserDTO';
+import { UpdateUser } from '../../../models/UpdateUser';
 import { UserInformationService } from '../../../services/user-information/user-information.service';
 import { UpdateProfileHeaderComponent } from './utils/update-profile-header/update-profile-header.component';
 import { UpdateProfileServicesComponent } from './utils/update-profile-services/update-profile-services.component';
@@ -109,7 +109,7 @@ export class UpdateProfileComponent implements OnInit {
         return;
       }
 
-      const updateDTO: UpdateUserDTO = {
+      const updateDTO: UpdateUser = {
         firstName: this.user.firstName,
         lastName: this.user.lastName,
         email: this.user.email,
@@ -132,7 +132,7 @@ export class UpdateProfileComponent implements OnInit {
           this.services = updatedProfile.services;
           this.profileDataChange.emit({ user: this.user, services: this.services });
           this.saveSuccess.emit();
-  
+
           observer.next(true);
           observer.complete();
         },

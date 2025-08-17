@@ -43,7 +43,6 @@ export interface ConversationSummaryDTO {
 export interface ReservationResponseDTO {
   id: number;
   status: 'PENDING' | 'IN_PROGRESS' | 'CLOSED' | 'CANCELLED';
-  // autres propriétés de la réservation...
 }
 
 @Injectable({
