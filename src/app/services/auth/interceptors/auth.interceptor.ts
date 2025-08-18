@@ -8,31 +8,37 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthStorageService } from '../login/auth-storage.service';
+import { AuthStorageService } from '../../login/auth-storage.service';
+import { TokenValidatorService } from '../validators/token-validator.service';
 
 /**
  * Intercepteur HTTP pour gérer l'authentification automatique des requêtes.
  */
-export function authInterceptor(
-  request: HttpRequest<unknown>,
-  next: HttpHandlerFn
-): Observable<HttpEvent<unknown>> {
+export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   let authStorage: AuthStorageService;
+  let tokenValidator: TokenValidatorService;
   let router: Router;
   try {
     authStorage = inject(AuthStorageService);
+    tokenValidator = inject(TokenValidatorService);
     router = inject(Router);
   } catch (error) {
-    // En cas d'erreur d'injection (par exemple dans les tests), on utilise des valeurs par défaut
-    console.warn('Injection context not available, using fallback', error);
     return next(request);
   }
 
-  // Ajouter le token d'authentification à la requête
+  // Vérifier la validité du token (inclut la vérification d'identité)
   const token = authStorage.getToken();
   let authRequest = request;
 
   if (token) {
+    // Vérifier que le token est valide et correspond à l'utilisateur
+    if (!tokenValidator.isTokenValid()) {
+      authStorage.clearAuthenticationData();
+      router.navigate(['/home']);
+
+      return throwError(() => new Error('Token invalide ou usurpé'));
+    }
+
     authRequest = request.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
@@ -44,16 +50,14 @@ export function authInterceptor(
     catchError((error: HttpErrorResponse) => {
       // Gestion des erreurs d'authentification
       if (error.status === 403 || error.status === 401) {
-        console.warn('Erreur d\'authentification détectée:', error.status);
 
         // Nettoyer les données d'authentification
         authStorage.clearAuthenticationData();
 
         // Afficher une notification à l'utilisateur
-        console.warn('Session expirée. Vous allez être redirigé vers la page de connexion.');
-        alert('Votre session a expiré. Vous allez être redirigé vers la page de connexion.');
-        // Rediriger vers la page de connexion
-        router.navigate(['/auth/login']);
+        alert('Votre session a expiré. Vous allez être redirigé vers la page d\'accueil.');
+        // Rediriger vers la page d'accueil
+        router.navigate(['/home']);
 
         // Retourner une erreur avec un message explicite
         return throwError(() => new Error('Session expirée. Veuillez vous reconnecter.'));

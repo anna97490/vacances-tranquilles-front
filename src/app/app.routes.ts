@@ -10,22 +10,12 @@ import { AvailableProvidersComponent } from './pages/available-providers/availab
 import { ConversationComponent } from './pages/conversation/conversation.component';
 import { MessageComponent } from './pages/message/message.component';
 import { ReviewComponent } from './pages/review/review.component';
+import { AuthGuard } from './services/auth/guards/auth.guard';
 
 export const routes: Routes = [
+  // Routes publiques (pas de protection)
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent },
-  { path: 'service-search', component: ServiceSearchComponent },
-  { path: 'available-providers', component: AvailableProvidersComponent },
-  { path: 'success', 
-    loadComponent: () => import('./pages/success/success.component')
-      .then(m => m.SuccessComponent)
-  },
-  { path: 'service-search', component: ServiceSearchComponent },
-  { path: 'available-providers', component: AvailableProvidersComponent },
-  { path: 'success',
-    loadComponent: () => import('./pages/success/success.component')
-      .then(m => m.SuccessComponent)
-  },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
   { path: 'terms-and-conditions',
     children : [
       {
@@ -42,10 +32,8 @@ export const routes: Routes = [
       }
     ]
   },
-  { path: 'profile', component: ProfilePageComponent },
-  { path: 'provider-profile', component: ProviderProfileComponent },
 
-    // Routes d'authentification avec paramètres pour le type d'utilisateur
+  // Routes d'authentification (pas de protection)
   {
     path: 'auth',
     children: [
@@ -62,10 +50,62 @@ export const routes: Routes = [
       }
     ]
   },
-  { path: 'reservations', component: ReservationComponent },
-  { path: 'reservations/:id', component: ReservationDetailComponent },
-  { path: 'review', component: ReviewComponent },
-  { path: 'messaging', component: ConversationComponent },
-  { path: 'conversations/:id', component: ConversationComponent },
-  { path: 'messages/:id', component: MessageComponent }
+
+  // Routes protégées (avec AuthGuard)
+  {
+    path: 'success',
+    loadComponent: () => import('./pages/success/success.component')
+      .then(m => m.SuccessComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'available-providers',
+    component: AvailableProvidersComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'service-search',
+    component: ServiceSearchComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile',
+    component: ProfilePageComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'provider-profile',
+    component: ProviderProfileComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'reservations',
+    component: ReservationComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'reservations/:id',
+    component: ReservationDetailComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'review',
+    component: ReviewComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'messaging',
+    component: ConversationComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'conversations/:id',
+    component: ConversationComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'messages/:id',
+    component: MessageComponent,
+    canActivate: [AuthGuard]
+  }
 ];

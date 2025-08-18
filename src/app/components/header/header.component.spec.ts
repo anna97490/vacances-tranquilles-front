@@ -18,7 +18,8 @@ describe('HeaderComponent', () => {
   beforeEach(async () => {
     const authStorageSpy = jasmine.createSpyObj('AuthStorageService', [
       'isAuthenticated',
-      'getUserRole'
+      'getUserRole',
+      'clearAuthenticationData'
     ]);
 
     await TestBed.configureTestingModule({
@@ -142,6 +143,34 @@ describe('HeaderComponent', () => {
     expect(component.isMobileMenuOpen).toBe(false);
   });
 
+  it('should filter menu for provider users', () => {
+    // Simuler un utilisateur provider
+    authStorage.getUserRole.and.returnValue(UserRole.PROVIDER);
+
+    const filteredMenu = component.filteredMenu;
+    expect(filteredMenu.length).toBe(4); // 5 - 1 (Accueil masqué)
+    expect(filteredMenu.find(item => item.label === 'Accueil')).toBeUndefined();
+    expect(filteredMenu.find(item => item.label === 'Profil')).toBeTruthy();
+  });
+
+  it('should not filter menu for client users', () => {
+    // Simuler un utilisateur client
+    authStorage.getUserRole.and.returnValue(UserRole.CLIENT);
+
+    const filteredMenu = component.filteredMenu;
+    expect(filteredMenu.length).toBe(5); // Tous les éléments
+    expect(filteredMenu.find(item => item.label === 'Accueil')).toBeTruthy();
+  });
+
+  it('should not filter menu for unauthenticated users', () => {
+    // Simuler un utilisateur non authentifié
+    authStorage.getUserRole.and.returnValue('');
+
+    const filteredMenu = component.filteredMenu;
+    expect(filteredMenu.length).toBe(5); // Tous les éléments
+    expect(filteredMenu.find(item => item.label === 'Accueil')).toBeTruthy();
+  });
+
   it('should return correct icon based on hover state', () => {
     const menuItem = component.menu[0];
     component.hoveredItem = menuItem;
@@ -186,13 +215,11 @@ describe('HeaderComponent', () => {
     expect(icon).toBe(menuItem.icon);
   });
 
-  it('should clear localStorage and navigate on logout without triggering real reload', () => {
-    const clearSpy = spyOn(localStorage, 'clear');
-    (component as any).router = router;
+  it('should clear authentication data and navigate on logout without triggering real reload', () => {
     jasmine.clock().install();
     try {
       component.logout();
-      expect(clearSpy).toHaveBeenCalled();
+      expect(authStorage.clearAuthenticationData).toHaveBeenCalled();
       expect((router.navigate as jasmine.Spy)).toHaveBeenCalledWith(['/home']);
     } finally {
       jasmine.clock().uninstall();
@@ -321,7 +348,7 @@ describe('HeaderComponent', () => {
     expect(desktopNavLinks.length).toBe(component.menu.length + 1); // +1 for logout
   });
 
-  describe('Navigation conditionnelle pour les clients', () => {
+  describe('Navigation conditionnelle pour les utilisateurs', () => {
     it('should navigate to service-search when client clicks on Accueil', () => {
       // Simuler un utilisateur client connecté
       authStorage.isAuthenticated.and.returnValue(true);

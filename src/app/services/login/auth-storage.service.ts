@@ -10,10 +10,23 @@ export class AuthStorageService {
    * Stocke les données d'authentification en localStorage
    * @param token Le token JWT
    * @param userRole Le rôle de l'utilisateur
+   * @param userId L'ID de l'utilisateur (optionnel, extrait du token si non fourni)
    */
-  storeAuthenticationData(token: string, userRole: string = ''): void {
+  storeAuthenticationData(token: string, userRole: string = '', userId?: number): void {
     localStorage.setItem('token', token);
     localStorage.setItem('userRole', userRole);
+
+    // Si userId n'est pas fourni, l'extraire du token
+    if (!userId) {
+      const extractedUserId = this.getUserIdFromToken();
+      if (extractedUserId) {
+        userId = extractedUserId;
+      }
+    }
+
+    if (userId) {
+      localStorage.setItem('userId', userId.toString());
+    }
   }
 
   /**
@@ -28,6 +41,17 @@ export class AuthStorageService {
    */
   getUserRole(): string | null {
     return localStorage.getItem('userRole');
+  }
+
+  /**
+   * Récupère l'ID utilisateur stocké
+   */
+  getUserId(): number | null {
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      return parseInt(storedUserId, 10);
+    }
+    return null;
   }
 
   /**
@@ -73,16 +97,8 @@ export class AuthStorageService {
 
       return null;
     } catch (error) {
-      console.error('Erreur lors du décodage du token JWT:', error);
       return null;
     }
-  }
-
-  /**
-   * Récupère l'ID utilisateur depuis le token JWT
-   */
-  getUserId(): number | null {
-    return this.getUserIdFromToken();
   }
 
   /**
@@ -98,5 +114,6 @@ export class AuthStorageService {
   clearAuthenticationData(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
   }
 }

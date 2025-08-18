@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { routes } from './app.routes';
 
 describe('AppComponent', () => {
   const clearLocalStorage = () => localStorage.removeItem('token');
@@ -41,7 +42,7 @@ describe('AppComponent', () => {
         CommonModule
       ],
       providers: [
-        provideRouter([]),
+        provideRouter(routes),
         provideHttpClient(),
         provideHttpClientTesting(),
         {
@@ -173,13 +174,43 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-
-
   it('should inject EnvService correctly', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
 
     expect(app).toBeTruthy();
     expect(fixture.componentInstance).toBeDefined();
+  });
+
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
+  });
+
+  it('should have proper component structure', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement;
+    expect(compiled.querySelector('.app-container')).toBeTruthy();
+    expect(compiled.querySelector('main')).toBeTruthy();
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
+  });
+
+  it('should handle authentication state changes correctly', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    // Test initial state
+    expect(app.isAuthenticated()).toBeFalse();
+
+    // Test with token
+    setToken();
+    expect(app.isAuthenticated()).toBeTrue();
+
+    // Test after clearing
+    clearLocalStorage();
+    expect(app.isAuthenticated()).toBeFalse();
   });
 });

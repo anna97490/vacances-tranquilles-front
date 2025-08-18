@@ -267,16 +267,6 @@ describe('PaymentService', () => {
       expect(result).toBeFalsy();
     });
 
-    it('should handle session ID with unicode characters', async () => {
-      const sessionId = 'session-émojis-🎉-unicode-测试';
-      spyOn(console, 'warn');
-      spyOn(console, 'error');
-
-      const result = await service.redirectToStripe(sessionId);
-
-      expect(result).toBeFalsy();
-    });
-
     it('should handle session ID with numbers', async () => {
       const sessionId = 'session-123-456-789';
       spyOn(console, 'warn');

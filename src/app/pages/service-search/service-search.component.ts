@@ -287,6 +287,10 @@ export class ServiceSearchComponent {
     }
 
     const monthIndex = this.months.indexOf(this.selectedMonth);
+    if (monthIndex === -1) {
+      throw new Error('Mois invalide');
+    }
+
     const month = (monthIndex + 1).toString().padStart(2, '0');
     const day = this.selectedDay.toString().padStart(2, '0');
     const year = this.selectedYear.toString();
@@ -319,7 +323,7 @@ export class ServiceSearchComponent {
 
     try {
       const date = this.formatDate();
-      const category = this.selectedService!;
+      const category = ServiceCategory[this.selectedService as keyof typeof ServiceCategory];
       const postalCode = this.postalCode;
       const startTime = this.selectedStartHour!;
       const endTime = this.selectedEndHour!;
@@ -363,7 +367,33 @@ export class ServiceSearchComponent {
 
     } catch (error) {
       console.error('Erreur lors du formatage de la date:', error);
-      alert('Erreur lors du formatage de la date.');
+      console.error('Type d\'erreur:', typeof error);
+      console.error('Message d\'erreur:', (error as any)?.message || error?.toString());
+      console.error('Valeurs actuelles:', {
+        selectedDay: this.selectedDay,
+        selectedMonth: this.selectedMonth,
+        selectedYear: this.selectedYear,
+        monthIndex: this.selectedMonth ? this.months.indexOf(this.selectedMonth) : 'N/A'
+      });
+
+      // Gestion d'erreur améliorée
+      let errorMessage = 'Erreur lors du formatage de la date. Veuillez réessayer.';
+
+      if (error instanceof Error) {
+        if (error.message === 'Date incomplète') {
+          errorMessage = 'Veuillez sélectionner une date complète (jour, mois et année).';
+        } else if (error.message === 'Mois invalide') {
+          errorMessage = 'Le mois sélectionné n\'est pas valide. Veuillez sélectionner un mois dans la liste.';
+        }
+      } else if (typeof error === 'string') {
+        if (error.includes('Date incomplète')) {
+          errorMessage = 'Veuillez sélectionner une date complète (jour, mois et année).';
+        } else if (error.includes('Mois invalide')) {
+          errorMessage = 'Le mois sélectionné n\'est pas valide. Veuillez sélectionner un mois dans la liste.';
+        }
+      }
+
+      alert(errorMessage);
       this.isLoading = false;
     }
   }
