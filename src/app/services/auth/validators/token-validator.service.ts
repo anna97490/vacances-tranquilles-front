@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthStorageService } from '../login/auth-storage.service';
+import { AuthStorageService } from '../../login/auth-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class TokenValidatorService {
    */
   isTokenValid(): boolean {
     const token = this.authStorage.getToken();
-    
+
     if (!token) {
       return false;
     }
@@ -21,24 +21,62 @@ export class TokenValidatorService {
     try {
       // Décoder le token JWT (partie payload)
       const payload = this.decodeToken(token);
-      
+
       if (!payload) {
         this.authStorage.clearAuthenticationData();
+
         return false;
       }
 
       // Vérifier si le token a expiré
       const currentTime = Math.floor(Date.now() / 1000);
       if (payload.exp && payload.exp < currentTime) {
-        console.warn('Token expiré');
         this.authStorage.clearAuthenticationData();
+
+        return false;
+      }
+
+      // Vérifier l'identité de l'utilisateur
+      if (!this.verifyTokenIdentity(payload)) {
+        this.authStorage.clearAuthenticationData();
+
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Erreur lors de la validation du token:', error);
       this.authStorage.clearAuthenticationData();
+
+      return false;
+    }
+  }
+
+  /**
+   * Vérifie que l'ID utilisateur dans le token correspond à celui stocké
+   */
+  private verifyTokenIdentity(payload: any): boolean {
+    try {
+      // Extraire l'ID utilisateur du token (subject)
+      const tokenUserId = payload.sub;
+
+      if (!tokenUserId) {
+        return false;
+      }
+
+      // Récupérer l'ID utilisateur stocké dans le localStorage
+      const storedUserId = this.authStorage.getUserId();
+
+      if (!storedUserId) {
+        return false;
+      }
+
+      // Comparer les IDs
+      if (tokenUserId !== storedUserId.toString()) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
       return false;
     }
   }
@@ -53,12 +91,12 @@ export class TokenValidatorService {
       if (parts.length !== 3) {
         return null;
       }
-      
+
       const base64Url = parts[1];
       if (!base64Url) {
         return null;
       }
-      
+
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
@@ -66,7 +104,6 @@ export class TokenValidatorService {
 
       return JSON.parse(jsonPayload);
     } catch (error) {
-      console.error('Erreur lors du décodage du token:', error);
       return null;
     }
   }

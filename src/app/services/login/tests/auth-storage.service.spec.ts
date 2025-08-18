@@ -9,11 +9,6 @@ describe('AuthStorageService', () => {
     service = TestBed.inject(AuthStorageService);
 
     localStorage.clear();
-
-    // Supprimer tous les logs console pour chaque test
-    spyOn(console, 'warn').and.stub();
-    spyOn(console, 'error').and.stub();
-    spyOn(console, 'log').and.stub();
   });
 
   afterEach(() => {
@@ -300,9 +295,11 @@ describe('AuthStorageService', () => {
 
   describe('getUserId', () => {
     it('should return userId from token', () => {
-      const payload = { userId: '25' };
+      const payload = { userId: 25 };
       const encodedPayload = btoa(JSON.stringify(payload));
-      localStorage.setItem('token', `header.${encodedPayload}.signature`);
+      const token = `header.${encodedPayload}.signature`;
+
+      service.storeAuthenticationData(token, 'CLIENT');
 
       expect(service.getUserId()).toBe(25);
     });

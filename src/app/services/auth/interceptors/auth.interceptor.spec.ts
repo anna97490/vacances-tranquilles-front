@@ -3,12 +3,14 @@ import { HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/h
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { authInterceptor } from './auth.interceptor';
-import { AuthStorageService } from '../login/auth-storage.service';
+import { AuthStorageService } from '../../login/auth-storage.service';
+import { TokenValidatorService } from '../validators/token-validator.service';
 
 import { runInInjectionContext } from '@angular/core';
 
 describe('AuthInterceptor', () => {
   let authStorageSpy: jasmine.SpyObj<AuthStorageService>;
+  let tokenValidatorSpy: jasmine.SpyObj<TokenValidatorService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let mockRequest: HttpRequest<unknown>;
   let mockHandler: HttpHandlerFn;
@@ -16,21 +18,25 @@ describe('AuthInterceptor', () => {
 
   beforeEach(() => {
     const authSpy = jasmine.createSpyObj('AuthStorageService', ['clearAuthenticationData', 'getToken']);
+    const tokenValidatorSpyObj = jasmine.createSpyObj('TokenValidatorService', ['isTokenValid']);
     const routerSpyObj = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       providers: [
         { provide: AuthStorageService, useValue: authSpy },
+        { provide: TokenValidatorService, useValue: tokenValidatorSpyObj },
         { provide: Router, useValue: routerSpyObj }
       ]
     });
 
     injector = TestBed.inject;
     authStorageSpy = TestBed.inject(AuthStorageService) as jasmine.SpyObj<AuthStorageService>;
+    tokenValidatorSpy = TestBed.inject(TokenValidatorService) as jasmine.SpyObj<TokenValidatorService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
 
-    // Configurer les valeurs de retour par défaut pour les méthodes authStorage
+    // Configurer les valeurs de retour par défaut pour les méthodes
     authStorageSpy.getToken.and.returnValue('mock-token');
+    tokenValidatorSpy.isTokenValid.and.returnValue(true);
 
     mockRequest = new HttpRequest('GET', '/api/test');
     mockHandler = jasmine.createSpy('mockHandler').and.returnValue(of({}));
@@ -52,10 +58,45 @@ describe('AuthInterceptor', () => {
     });
   });
 
+  it('should handle invalid token by clearing auth data and redirecting', (done) => {
+    // Simuler un token invalide
+    tokenValidatorSpy.isTokenValid.and.returnValue(false);
+
+    runInInjectionContext(TestBed, () => {
+      authInterceptor(mockRequest, mockHandler).subscribe({
+        next: () => done.fail('Should have thrown an error'),
+        error: (err) => {
+          expect(tokenValidatorSpy.isTokenValid).toHaveBeenCalled();
+          expect(authStorageSpy.clearAuthenticationData).toHaveBeenCalled();
+          expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+          expect(err.message).toBe('Token invalide ou usurpé');
+          done();
+        }
+      });
+    });
+  });
+
+  it('should handle usurped token by clearing auth data and redirecting', (done) => {
+    // Simuler un token usurpé
+    tokenValidatorSpy.isTokenValid.and.returnValue(false);
+
+    runInInjectionContext(TestBed, () => {
+      authInterceptor(mockRequest, mockHandler).subscribe({
+        next: () => done.fail('Should have thrown an error'),
+        error: (err) => {
+          expect(tokenValidatorSpy.isTokenValid).toHaveBeenCalled();
+          expect(authStorageSpy.clearAuthenticationData).toHaveBeenCalled();
+          expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+          expect(err.message).toBe('Token invalide ou usurpé');
+          done();
+        }
+      });
+    });
+  });
+
   it('should handle 401 errors by clearing auth data, showing notification and redirecting', (done) => {
     const error = new HttpErrorResponse({ status: 401 });
     mockHandler = jasmine.createSpy('mockHandler').and.returnValue(throwError(() => error));
-    spyOn(console, 'warn');
     spyOn(window, 'alert');
 
     runInInjectionContext(TestBed, () => {
@@ -63,9 +104,8 @@ describe('AuthInterceptor', () => {
         next: () => done.fail('Should have thrown an error'),
         error: (err) => {
           expect(authStorageSpy.clearAuthenticationData).toHaveBeenCalled();
-          expect(console.warn).toHaveBeenCalledWith('Session expirée. Vous allez être redirigé vers la page de connexion.');
-          expect(window.alert).toHaveBeenCalledWith('Votre session a expiré. Vous allez être redirigé vers la page de connexion.');
-          expect(routerSpy.navigate).toHaveBeenCalledWith(['/auth/login']);
+          expect(window.alert).toHaveBeenCalledWith('Votre session a expiré. Vous allez être redirigé vers la page d\'accueil.');
+          expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
           expect(err.message).toBe('Session expirée. Veuillez vous reconnecter.');
           done();
         }
@@ -76,7 +116,6 @@ describe('AuthInterceptor', () => {
   it('should handle 403 errors by clearing auth data, showing notification and redirecting', (done) => {
     const error = new HttpErrorResponse({ status: 403 });
     mockHandler = jasmine.createSpy('mockHandler').and.returnValue(throwError(() => error));
-    spyOn(console, 'warn');
     spyOn(window, 'alert');
 
     runInInjectionContext(TestBed, () => {
@@ -84,9 +123,8 @@ describe('AuthInterceptor', () => {
         next: () => done.fail('Should have thrown an error'),
         error: (err) => {
           expect(authStorageSpy.clearAuthenticationData).toHaveBeenCalled();
-          expect(console.warn).toHaveBeenCalledWith('Session expirée. Vous allez être redirigé vers la page de connexion.');
-          expect(window.alert).toHaveBeenCalledWith('Votre session a expiré. Vous allez être redirigé vers la page de connexion.');
-          expect(routerSpy.navigate).toHaveBeenCalledWith(['/auth/login']);
+          expect(window.alert).toHaveBeenCalledWith('Votre session a expiré. Vous allez être redirigé vers la page d\'accueil.');
+          expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
           expect(err.message).toBe('Session expirée. Veuillez vous reconnecter.');
           done();
         }
@@ -476,6 +514,55 @@ describe('AuthInterceptor', () => {
 
     runInInjectionContext(TestBed, () => {
       authInterceptor(headerRequest, mockHandler).subscribe({
+        next: (result) => {
+          expect(result).toBeDefined();
+          expect(result).toEqual(response);
+          done();
+        },
+        error: done.fail
+      });
+    });
+  });
+
+  it('should add Authorization header when token is valid', (done) => {
+    const response = { type: 0, body: { data: 'test' } };
+    mockHandler = jasmine.createSpy('mockHandler').and.returnValue(of(response));
+
+    // Vérifier que le handler est appelé avec la requête modifiée
+    const originalHandler = mockHandler;
+    mockHandler = jasmine.createSpy('mockHandler').and.callFake((request: HttpRequest<unknown>) => {
+      expect(request.headers.get('Authorization')).toBe('Bearer mock-token');
+      return of(response);
+    });
+
+    runInInjectionContext(TestBed, () => {
+      authInterceptor(mockRequest, mockHandler).subscribe({
+        next: (result) => {
+          expect(result).toBeDefined();
+          expect(result).toEqual(response);
+          done();
+        },
+        error: done.fail
+      });
+    });
+  });
+
+  it('should not add Authorization header when no token', (done) => {
+    const response = { type: 0, body: { data: 'test' } };
+    mockHandler = jasmine.createSpy('mockHandler').and.returnValue(of(response));
+
+    // Simuler l'absence de token
+    authStorageSpy.getToken.and.returnValue(null);
+
+    // Vérifier que le handler est appelé avec la requête originale
+    const originalHandler = mockHandler;
+    mockHandler = jasmine.createSpy('mockHandler').and.callFake((request: HttpRequest<unknown>) => {
+      expect(request.headers.get('Authorization')).toBeNull();
+      return of(response);
+    });
+
+    runInInjectionContext(TestBed, () => {
+      authInterceptor(mockRequest, mockHandler).subscribe({
         next: (result) => {
           expect(result).toBeDefined();
           expect(result).toEqual(response);

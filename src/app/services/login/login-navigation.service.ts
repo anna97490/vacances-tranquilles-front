@@ -18,8 +18,11 @@ export class LoginNavigationService {
     // Si l'utilisateur est un prestataire, rediriger vers /profile
     if (userRole === UserRole.PROVIDER) {
       this.router.navigate(['/profile']);
+    } else if (userRole === UserRole.CLIENT) {
+      // Si l'utilisateur est un client, rediriger vers /service-search
+      this.router.navigate(['/service-search']);
     } else {
-      // Redirection vers home pour tous les autres utilisateurs
+      // Redirection vers home pour les autres cas (fallback)
       this.router.navigate(['/home']);
     }
   }
