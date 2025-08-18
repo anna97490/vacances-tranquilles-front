@@ -18,7 +18,6 @@ export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandler
   let authStorage: AuthStorageService;
   let tokenValidator: TokenValidatorService;
   let router: Router;
-
   try {
     authStorage = inject(AuthStorageService);
     tokenValidator = inject(TokenValidatorService);
