@@ -131,18 +131,54 @@ describe('ServiceSearchComponent', () => {
 
       spyOn(localStorage, 'setItem');
       spyOn(window, 'alert');
+      spyOn(console, 'error');
     });
 
     it('should call service and navigate if form is valid', () => {
       // Simuler un token d'authentification
       spyOn(localStorage, 'getItem').and.returnValue('mock-token');
-      
+
       component.findProviders();
 
-      expect(searchSpy).toHaveBeenCalled();
+      expect(searchSpy).toHaveBeenCalledWith(
+        ServiceCategory.HOME, // Vérifier que la catégorie est convertie correctement
+        '75001',
+        jasmine.any(String), // date formatée
+        '10:00',
+        '12:00'
+      );
       expect(localStorage.setItem).toHaveBeenCalledWith('searchResults', jasmine.any(String));
       expect(localStorage.setItem).toHaveBeenCalledWith('searchCriteria', jasmine.any(String));
       expect(navigateSpy).toHaveBeenCalledWith(['/available-providers']);
+    });
+
+    it('should convert different service categories correctly', () => {
+      // Simuler un token d'authentification
+      spyOn(localStorage, 'getItem').and.returnValue('mock-token');
+
+      // Tester avec différentes catégories
+      const testCases = [
+        { key: 'HOME', expected: ServiceCategory.HOME },
+        { key: 'OUTDOOR', expected: ServiceCategory.OUTDOOR },
+        { key: 'REPAIRS', expected: ServiceCategory.REPAIRS },
+        { key: 'SHOPPING', expected: ServiceCategory.SHOPPING },
+        { key: 'ANIMALS', expected: ServiceCategory.ANIMALS }
+      ];
+
+      testCases.forEach(({ key, expected }) => {
+        component.selectedService = key as keyof typeof ServiceCategory;
+        searchSpy.calls.reset();
+
+        component.findProviders();
+
+        expect(searchSpy).toHaveBeenCalledWith(
+          expected,
+          '75001',
+          jasmine.any(String),
+          '10:00',
+          '12:00'
+        );
+      });
     });
 
     it('should alert if postal code is invalid', () => {
@@ -290,10 +326,13 @@ describe('ServiceSearchComponent', () => {
   });
 
   describe('findProviders errors', () => {
-    it('should handle form validation errors', () => {
-      // Simuler un token d'authentification
+    beforeEach(() => {
       spyOn(localStorage, 'getItem').and.returnValue('mock-token');
-      
+      spyOn(window, 'alert');
+      spyOn(console, 'error');
+    });
+
+    it('should handle form validation errors', () => {
       // Rendre le formulaire invalide
       component.selectedDay = undefined;
       component.selectedMonth = undefined;
@@ -302,14 +341,55 @@ describe('ServiceSearchComponent', () => {
       component.selectedEndHour = undefined;
       component.selectedService = undefined;
       component.postalCode = '';
-      
+
       spyOnProperty(component, 'isDateValid', 'get').and.returnValue(false);
       spyOnProperty(component, 'isPostalCodeValid', 'get').and.returnValue(false);
-      spyOn(window, 'alert');
 
       component.findProviders();
 
       expect(window.alert).toHaveBeenCalledWith('Veuillez saisir un code postal valide.');
+    });
+
+    it('should handle date formatting errors', () => {
+      // Rendre le formulaire valide mais avec une date incomplète
+      component.selectedDay = 15;
+      component.selectedMonth = undefined; // Mois manquant
+      component.selectedYear = 2025;
+      component.selectedStartHour = '10:00';
+      component.selectedEndHour = '12:00';
+      component.selectedService = 'HOME';
+      component.postalCode = '75001';
+
+      // Forcer la validation du formulaire à retourner true pour atteindre le bloc try
+      spyOn(component, 'isFormValid').and.returnValue(true);
+      spyOnProperty(component, 'isPostalCodeValid', 'get').and.returnValue(true);
+      spyOnProperty(component, 'isDateValid', 'get').and.returnValue(true);
+
+      component.findProviders();
+
+      expect(console.error).toHaveBeenCalledWith('Erreur lors du formatage de la date:', jasmine.any(Error));
+      expect(window.alert).toHaveBeenCalledWith('Veuillez sélectionner une date complète (jour, mois et année).');
+    });
+
+    it('should handle invalid month error', () => {
+      // Rendre le formulaire valide mais avec un mois invalide
+      component.selectedDay = 15;
+      component.selectedMonth = 'MoisInvalide'; // Mois qui n'existe pas dans le tableau
+      component.selectedYear = 2025;
+      component.selectedStartHour = '10:00';
+      component.selectedEndHour = '12:00';
+      component.selectedService = 'HOME';
+      component.postalCode = '75001';
+
+      // Forcer la validation du formulaire à retourner true pour atteindre le bloc try
+      spyOn(component, 'isFormValid').and.returnValue(true);
+      spyOnProperty(component, 'isPostalCodeValid', 'get').and.returnValue(true);
+      spyOnProperty(component, 'isDateValid', 'get').and.returnValue(true);
+
+      component.findProviders();
+
+      expect(console.error).toHaveBeenCalledWith('Erreur lors du formatage de la date:', jasmine.any(Error));
+      expect(window.alert).toHaveBeenCalledWith('Le mois sélectionné n\'est pas valide. Veuillez sélectionner un mois dans la liste.');
     });
   });
 

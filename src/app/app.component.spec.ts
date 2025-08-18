@@ -42,7 +42,7 @@ describe('AppComponent', () => {
         CommonModule
       ],
       providers: [
-        provideRouter(routes), // ✅ Utilise les vraies routes au lieu d'un tableau vide
+        provideRouter(routes),
         provideHttpClient(),
         provideHttpClientTesting(),
         {
@@ -182,7 +182,6 @@ describe('AppComponent', () => {
     expect(fixture.componentInstance).toBeDefined();
   });
 
-  // ✅ Nouveaux tests ajoutés pour une meilleure couverture
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
