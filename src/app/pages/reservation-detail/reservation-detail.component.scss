@@ -339,15 +339,16 @@
   background: var(--secondary-color) !important;
   color: var(--secondary-text-color) !important;
   border-radius: var(--border-radius-base);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   padding: 14px;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  text-align: center;
   height: 40px;
 
   &:hover {
