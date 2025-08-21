@@ -21,6 +21,7 @@ import { RegisterFormConfigService } from '../../services/register/register-form
 import { UserTypeDetectorService } from '../../services/register/user-type-detector.service';
 import { RegisterApiBuilderService } from '../../services/register/register-api-builder.service';
 import { RegisterService } from '../../services/register/register.service';
+import { BackButtonComponent } from '../../components/shared/back-button/back-button.component';
 
 @Component({
   selector: 'app-register-form',
@@ -32,7 +33,8 @@ import { RegisterService } from '../../services/register/register.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    RouterModule
+    RouterModule,
+    BackButtonComponent
   ],
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.scss'],

@@ -12,6 +12,7 @@ import { EnvService } from '../../services/env/env.service';
 import { LoginValidationService } from '../../services/login/login-validation.service';
 import { LoginFormConfigService } from '../../services/login/login-form-config.service';
 import { LoginService } from '../../services/login/login.service';
+import { BackButtonComponent } from '../../components/shared/back-button/back-button.component';
 
 @Component({
   selector: 'app-login-form',
@@ -24,7 +25,8 @@ import { LoginService } from '../../services/login/login.service';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    RouterLink
+    RouterLink,
+    BackButtonComponent
   ],
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.scss'],
