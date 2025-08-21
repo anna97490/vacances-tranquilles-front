@@ -23,6 +23,13 @@
 
 <!-- Contenu principal -->
 <main *ngIf="!isLoading && !hasError && provider" class="provider-profile-container" role="main" aria-labelledby="provider-title">
+  <!-- Bouton de retour -->
+  <app-back-button 
+    ariaLabel="Retour à la page des prestataires disponibles" 
+    title="Retour à la page des prestataires disponibles"
+    (backClick)="goBack()">
+  </app-back-button>
+  
   <div class="provider-profile-content">
     <h1 id="provider-title" class="sr-only">Profil du prestataire {{ provider.firstName }} {{ provider.lastName }}</h1>
     <app-display-profile-header
