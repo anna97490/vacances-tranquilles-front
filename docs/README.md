@@ -2,7 +2,7 @@
 # Vacances Tranquilles Frontend
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.9.
-Vacances Tranquilles is an Angular 18 application for managing holiday rentals. It offers pages for provider registration, traveller sign-up, reservations, messaging and more.
+Vacances Tranquilles is an Angular 18 app that connects travellers with trusted providers for home services, bookings, and easy holiday management.
 
 ## Development server
 ## Prerequisites
@@ -56,4 +56,24 @@ npm run docs
 Output is generated in `docs/typedoc/`.
 
 ## Running without Docker
-A Dockerfile is provided for deployment, but local development only requires Node.js. Follow the steps above to run the frontend without Docker.
+A Dockerfile is provided for deployment, but local development only requires Node.js. Follow the steps above to run the frontend without Docker.``
+
+---
+
+## Documentation disponible :
+
+La documentation fonctionnelle destinée aux utilisateurs est disponible dans le dossier [`docs/`](./docs/).
+
+- [Manuel d'utilisation](./docs/manuel-utilisation.md)
+
+La documentation d’exploitation et de mise à jour est disponible dans le dépôt backend :
+
+- [Manuel de déploiement](https://github.com/anna97490/vacances-tranquilles-back/tree/main/docs/manuel-deploiement.md)
+- [Manuel de mise à jour](https://github.com/anna97490/vacances-tranquilles-back/tree/main/docs/manuel-mise-a-jour.md)
+
+---
+
+## Other repository
+
+- Backend Java (Spring Boot) : [vacances-tranquilles-back](https://github.com/anna97490/vacances-tranquilles-back)
+
