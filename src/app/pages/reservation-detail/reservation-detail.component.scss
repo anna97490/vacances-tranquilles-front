@@ -182,7 +182,7 @@
         display: flex;
         gap: 12px;
         flex-direction: column;
-        align-items: stretch;
+        align-items: center;
 
         .profile-btn + .profile-btn {
           margin-top: 12px;
@@ -314,7 +314,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: 250px;
   height: 40px;
 
   &:hover {

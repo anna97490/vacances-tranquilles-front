@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { DisplayProfileComponent } from '../../components/profile/display-profile/display-profile.component';
 import { UpdateProfileComponent } from '../../components/profile/update-profile/update-profile.component';
 import { DisplayProfileReviewsComponent } from '../../components/profile/display-profile/utils/display-profile-reviews/display-profile-reviews.component';
+import { BackButtonComponent } from '../../components/shared/back-button/back-button.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -16,7 +17,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [DisplayProfileComponent, UpdateProfileComponent, DisplayProfileReviewsComponent, MatButtonModule, MatIconModule, MatSnackBarModule, CommonModule],
+  imports: [DisplayProfileComponent, UpdateProfileComponent, DisplayProfileReviewsComponent, BackButtonComponent, MatButtonModule, MatIconModule, MatSnackBarModule, CommonModule],
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.scss'
 })
@@ -322,5 +323,12 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
 
     // Sinon, comparer les IDs
     return displayedUserId === loggedUserId?.toString();
+  }
+
+  /**
+   * Navigue vers la page précédente (désactive le mode édition)
+   */
+  goBack(): void {
+    this.isEditMode = false;
   }
 }
