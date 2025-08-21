@@ -32,10 +32,7 @@
   }
 }
 
-.main-icon {
-  font-size: 36px;
-  color: var(--quaternary-color);
-}
+
 
 .title {
   font-size: 1.6rem;
@@ -87,18 +84,6 @@
   box-sizing: border-box;
 }
 
-.btn.orange {
-  background: var(--quaternary-color);
-  color: var(--secondary-text-color);
-  border: 1.5px solid var(--quaternary-color);
-}
-
-.btn.orange-outline {
-  background: var(--secondary-text-color);
-  color: var(--quaternary-color);
-  border: 1.5px solid var(--quaternary-color);
-}
-
 .btn.grey {
   background: var(--vt-grey);
   color: var(--discret-text-color);
@@ -111,8 +96,7 @@
   border: 1.5px solid var(--button-color);
 }
 
-.btn.blue:hover,
-.btn.blue-outline:hover {
+.btn.blue:hover {
   background: var(--tertiary-color);
   color: var(--secondary-text-color);
   border-color: var(--tertiary-color);
@@ -122,18 +106,6 @@
   background: var(--tertiary-color);
   color: var(--vt-grey);
   border-color: var(--tertiary-color);
-}
-
-.btn.orange:hover {
-  background: var(--tertiary-color);
-  color: var(--quaternary-color);
-  border-color: var(--tertiary-color);
-}
-
-.btn.orange-outline:hover {
-  background: var(--quaternary-color);
-  color: var(--secondary-text-color);
-  border-color: var(--quaternary-color);
 }
 
 .features-section {
