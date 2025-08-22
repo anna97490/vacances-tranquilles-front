@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation, ElementRef, ViewChild } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -74,7 +74,7 @@ export class LoginFormComponent {
     ];
 
     const missing = constraints
-      .filter(constraint => control.errors && control.errors[constraint.key])
+      .filter(constraint => control.errors?.[constraint.key])
       .map(constraint => constraint.label);
 
     if (missing.length === 0) return '';
@@ -176,6 +176,16 @@ export class LoginFormComponent {
   }
 
   /**
+   * Obtient le message d'erreur pour un champ donné
+   */
+  private getMessageForField(id: string, ctrl: AbstractControl | null): string {
+    if (id === 'userSecret') {
+      return this.getPasswordErrorText();
+    }
+    return ctrl?.hasError('required') ? "L'email est requis" : 'Format d\'email invalide';
+  }
+
+  /**
    * Construit le résumé des erreurs du formulaire
    */
   private buildErrorSummary(): void {
@@ -189,8 +199,7 @@ export class LoginFormComponent {
       .map(({ id, label, ctrl }) => ({
         id,
         label,
-        message: id === 'userSecret' ? this.getPasswordErrorText() : 
-          (ctrl?.hasError('required') ? "L'email est requis" : 'Format d\'email invalide')
+        message: this.getMessageForField(id, ctrl)
       }))
       .filter(item => !!item.message);
   }
