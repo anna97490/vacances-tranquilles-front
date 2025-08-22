@@ -2,11 +2,11 @@
 <main class="message-page" aria-label="Page de conversation">
   <!-- Header de la conversation -->
   <div class="conversation-header">
-    <button class="back-button" (click)="goBack()" aria-label="Retour aux conversations" title="Retour aux conversations">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-      </svg>
-    </button>
+    <app-back-button 
+      ariaLabel="Retour aux conversations" 
+      title="Retour aux conversations"
+      (backClick)="goBack()">
+    </app-back-button>
   </div>
 
   <!-- Zone de chargement -->

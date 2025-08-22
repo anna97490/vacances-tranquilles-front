@@ -21,10 +21,10 @@ describe('HomeContentService', () => {
     expect(content.iconType).toBe('custom');
     expect(content.mainIcon).toBe('assets/icons/beach_access_FFA101.svg');
     expect(content.title).toBe('Vacances Tranquilles');
-    expect(content.subtitle).toBe('Votre partenaire de confiance pour des vacances sereines');
-    expect(content.introText).toContain('Simplifiez la gestion');
-    expect(content.btnPrestataire).toBe('Inscription Prestataires');
-    expect(content.btnParticulier).toBe('Inscription Particuliers');
+    expect(content.subtitle).toContain('Confiez votre maison, partez l');
+    expect(content.introText).toContain('Trouvez des professionnels de confiance');
+    expect(content.btnPrestataire).toBe('Je suis prestataire');
+    expect(content.btnParticulier).toBe('Je suis particulier');
     expect(content.btnConnexion).toBe('Connexion');
     expect(content.featuresTitle).toBe('Pourquoi nous choisir');
   });

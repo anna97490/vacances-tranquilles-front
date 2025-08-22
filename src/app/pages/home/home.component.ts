@@ -5,7 +5,6 @@ import { HomeInitializationService } from './../../services/home/home-initilizat
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-
 import { ServiceSearchComponent } from '../service-search/service-search.component';
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 
@@ -44,45 +43,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.homeInitializationService.cleanup();
   }
 
-  /**
-   * Initialise le contenu de la page
-   */
   private initializeContent(): void {
-
-    const content = this.homeContentService.getContent();
-    this.content = content ?? this.getDefaultContent();
-
+    this.content = this.homeContentService.getContent();
   }
 
-  /**
-   * Initialise les services externes (scripts, chatbot, etc.)
-   */
-  private async initializeServices(): Promise<void> {
-    try {
-      // Charge les services Botpress avec un délai pour prioriser le chargement initial de la page
-      setTimeout(async () => {
-        await this.homeInitializationService.initializeHomeServices();
-      }, 2000);
-    } catch (error) {
-      console.error('Erreur lors de l\'initialisation des services:', error);
-    }
-  }
-
-  /**
-   * Retourne un contenu par défaut en cas d'erreur
-   */
-  private getDefaultContent(): HomeContent {
-    return {
-      title: 'Vacances Tranquilles',
-      subtitle: 'Votre partenaire de confiance pour des vacances sereines',
-      introText: 'Simplifiez la gestion de vos locations saisonnières',
-      btnPrestataire: 'Inscription Prestataires',
-      btnParticulier: 'Inscription Particuliers',
-      btnConnexion: 'Connexion',
-      featuresTitle: 'Pourquoi nous choisir',
-      iconType: 'custom',
-      mainIcon: 'assets/icons/beach_access_FFA101.svg',
-      features: []
-    };
+  private initializeServices(): void {
+    setTimeout(() => {
+      this.homeInitializationService.initializeHomeServices();
+    }, 2000);
   }
 }

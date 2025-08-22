@@ -2,7 +2,6 @@
   display: block;
   width: 100%;
   background: var(--primary-color);
-  padding: 0 0 3rem 0;
 }
 
 .services-container {
@@ -16,8 +15,8 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 1.2rem;
   text-align: center;
+  padding: 2rem 0 0;
 }
 
 .services-list {
