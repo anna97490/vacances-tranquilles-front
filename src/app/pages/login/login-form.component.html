@@ -1,8 +1,10 @@
 <div>
   <!-- Bouton retour -->
-  <button class="back-btn" aria-label="Retour à la page précédente" type="button" (click)="goBack()">
-    ←
-  </button>
+  <app-back-button 
+    ariaLabel="Retour à la page précédente" 
+    title="Retour à la page précédente"
+    (backClick)="goBack()">
+  </app-back-button>
 </div>
 
 <div class="login-container">
@@ -14,14 +16,6 @@
   </div>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
-     <div *ngIf="showErrorSummary" #loginErrorSummary class="general-error-message" tabindex="-1" role="alert" aria-live="assertive">
-       <p>Veuillez corriger les erreurs suivantes :</p>
-       <ul>
-         <li *ngFor="let err of errorSummaryItems">
-            <a href="javascript:void(0)" (click)="focusField(err.id)">{{ err.label }} : {{ err.message }}</a>
-         </li>
-       </ul>
-     </div>
 
      <div class="form-group">
       <label for="email">Email <span class="required-asterisk" aria-hidden="true">*</span><span class="sr-only"> (obligatoire)</span></label>

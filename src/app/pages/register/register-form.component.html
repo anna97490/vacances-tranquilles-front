@@ -1,8 +1,10 @@
 <div>
   <!-- Bouton retour -->
-  <button class="back-btn" aria-label="Retour à la page précédente" type="button" (click)="goBack()">
-    ←
-  </button>
+  <app-back-button 
+    ariaLabel="Retour à la page précédente" 
+    title="Retour à la page précédente"
+    (backClick)="goBack()">
+  </app-back-button>
 </div>
 
 <div class="register-container">

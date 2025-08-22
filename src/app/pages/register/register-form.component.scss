@@ -150,9 +150,15 @@ h2 {
 }
 
 .register-login a {
-  color: var(--quaternary-color);
+  color: var( --tertiary-color);
   text-decoration: none;
   font-weight: 500;
+}
+
+.register-login a:hover,
+.register-login a:focus-visible {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .register-container > app-footer {

@@ -140,11 +140,13 @@
       border: none;
       padding: 0.5rem 1rem;
       border-radius: var(--border-radius-base);
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
       transition: background-color 0.3s ease;
       white-space: nowrap;
+      font-family: 'Roboto', Arial, sans-serif;
+      width: 180px;
 
       &:hover {
         background: var(--tertiary-color);
@@ -186,6 +188,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: center;
 
     .conversation-btn {
       background: var(--secondary-color) !important;
@@ -227,6 +230,13 @@
       }
     }
   }
+}
+
+.reservation-card .footer .footer-buttons .conversation-btn,
+.reservation-card .footer .footer-buttons a.profile-btn {
+  font-size: 1rem;
+  font-family: 'Roboto', Arial, sans-serif;
+  width: 250px;
 }
 
 .status-badge {

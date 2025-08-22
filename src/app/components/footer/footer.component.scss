@@ -1,3 +1,12 @@
+:host ::ng-deep a[mat-list-item].footer-link .mdc-list-item__primary-text {
+  color: var(--secondary-text-color);
+  white-space: normal; 
+  overflow-wrap: anywhere; 
+  text-overflow: clip;
+}
+
+:host ::ng-deep .mdc-list-item { height: auto; }
+
 .footer-mockup {
   background: var(--text-color);
   color: var(--secondary-text-color);
@@ -32,6 +41,8 @@
   gap: 0.7rem;
   flex: 1;
   max-width: 250px;
+  align-items: center;
+  text-align: center;
 }
 
 .footer-title {
@@ -158,5 +169,16 @@ mat-divider {
 
   .footer-copyright {
     padding: 0 0.5rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .footer-content { 
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .footer-col .mdc-list-item__content {
+    justify-content: center;
   }
 }

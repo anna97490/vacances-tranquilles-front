@@ -9,6 +9,7 @@ import { UserInformationService } from '../../services/user-information/user-inf
 import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { User, UserRole } from '../../models/User';
 import { Service, ServiceCategory } from '../../models/Service';
+import { BackButtonComponent } from '../../components/shared/back-button/back-button.component';
 
 describe('ProfilePageComponent', () => {
   let component: ProfilePageComponent;
@@ -577,6 +578,76 @@ describe('ProfilePageComponent', () => {
       (component as any).saveProfileChanges();
 
       expect(true).toBeTrue();
+    });
+  });
+
+    describe('goBack', () => {
+    it('should toggle edit mode back to display mode', () => {
+      component.isEditMode = true;
+      component.goBack();
+      expect(component.isEditMode).toBeFalse();
+    });
+
+    it('should be called when back button is clicked in edit mode', () => {
+      // Configurer les mocks nécessaires
+      userInformationService.getUserProfile.and.returnValue(of(mockUser));
+      userInformationService.getMyServices.and.returnValue(of(mockServices));
+      authStorageService.getUserId.and.returnValue(1);
+      
+      component.isEditMode = true;
+      spyOn(component, 'goBack');
+      fixture.detectChanges();
+      
+      const backButton = fixture.nativeElement.querySelector('app-back-button');
+      expect(backButton).toBeTruthy();
+      
+      // Simuler le clic sur le bouton retour
+      const backButtonComponent = fixture.debugElement.query(backButton => backButton.componentInstance instanceof BackButtonComponent);
+      if (backButtonComponent) {
+        backButtonComponent.componentInstance.backClick.emit();
+        expect(component.goBack).toHaveBeenCalled();
+      }
+    });
+  });
+
+  describe('Back button integration', () => {
+    it('should render back button only in edit mode', () => {
+      // Configurer les mocks nécessaires
+      userInformationService.getUserProfile.and.returnValue(of(mockUser));
+      userInformationService.getMyServices.and.returnValue(of(mockServices));
+      authStorageService.getUserId.and.returnValue(1);
+      
+      // En mode affichage
+      component.isEditMode = false;
+      fixture.detectChanges();
+      
+      let backButton = fixture.nativeElement.querySelector('app-back-button');
+      expect(backButton).toBeFalsy();
+      
+      // En mode édition
+      component.isEditMode = true;
+      fixture.detectChanges();
+      
+      backButton = fixture.nativeElement.querySelector('app-back-button');
+      expect(backButton).toBeTruthy();
+    });
+
+    it('should have correct default accessibility attributes on back button', () => {
+      // Configurer les mocks nécessaires
+      userInformationService.getUserProfile.and.returnValue(of(mockUser));
+      userInformationService.getMyServices.and.returnValue(of(mockServices));
+      authStorageService.getUserId.and.returnValue(1);
+      
+      component.isEditMode = true;
+      fixture.detectChanges();
+      
+      const backButton = fixture.nativeElement.querySelector('app-back-button');
+      expect(backButton).toBeTruthy();
+      
+      // Vérifier les attributs d'accessibilité par défaut
+      const button = backButton.querySelector('button');
+      expect(button.getAttribute('aria-label')).toBe('Retour à la page précédente');
+      expect(button.getAttribute('title')).toBe('Retour à la page précédente');
     });
   });
 });

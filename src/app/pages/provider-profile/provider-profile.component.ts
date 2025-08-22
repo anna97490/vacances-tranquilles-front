@@ -6,6 +6,7 @@ import { User, UserRole } from '../../models/User';
 import { UserInformationService } from '../../services/user-information/user-information.service';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
+import { BackButtonComponent } from '../../components/shared/back-button/back-button.component';
 
 /**
  * Composant pour afficher le profil d'un prestataire.
@@ -18,7 +19,8 @@ import { Router } from '@angular/router';
     CommonModule,
     DisplayProfileHeaderComponent,
     DisplayProfileReviewsComponent,
-    MatButtonModule
+    MatButtonModule,
+    BackButtonComponent
   ],
   templateUrl: './provider-profile.component.html',
   styleUrl: './provider-profile.component.scss'
@@ -89,5 +91,13 @@ export class ProviderProfileComponent implements OnInit {
     this.isLoading = true;
     this.hasError = false;
     this.loadProviderData();
+  }
+
+  /**
+   * Navigue vers la page précédente.
+   * Retourne à la page des prestataires disponibles.
+   */
+  goBack(): void {
+    this.router.navigate(['/available-providers']);
   }
 }
