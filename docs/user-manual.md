@@ -89,7 +89,7 @@ All required fields must be filled in.
 
 Information can later be updated in the user profile, with optional fields available.  
 
-At any time, a user may request account deletion via the support form.
+Account deletion requests may be submitted at any time by emailing customer support.
 
 ---
 
@@ -176,7 +176,7 @@ Messaging is available for clients and providers **from the moment a booking is 
 
 ## Cancelling a service
 
-Cancellations must be made via a written request using the contact form.
+All cancellation requests must be sent in writing to the designated support email.
 
 **Client side:**
 
@@ -197,7 +197,7 @@ Several support options are available:
 - Review the Terms of Use
 - Review the Terms of Sale
 - Ask the chatbot
-- Submit a support request via the contact form
+- Contact support at : **vacancestranquilles@outlook.fr**
 
 ---
 
