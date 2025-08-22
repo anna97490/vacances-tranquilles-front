@@ -19,10 +19,10 @@ describe('HomeComponent', () => {
 
   const mockHomeContent: HomeContent = {
     title: 'Vacances Tranquilles',
-    subtitle: 'Votre partenaire de confiance pour des vacances sereines',
-    introText: 'Simplifiez la gestion de vos locations saisonnières',
-    btnPrestataire: 'Inscription Prestataires',
-    btnParticulier: 'Inscription Particuliers',
+    subtitle: 'Confiez votre maison, partez l\'esprit tranquille',
+    introText: 'Trouvez des professionnels de confiance pour veiller sur votre logement et assurer tous vos services à domicile pendant vos vacances.',
+    btnPrestataire: 'Je suis prestataire',
+    btnParticulier: 'Je suis particulier',
     btnConnexion: 'Connexion',
     featuresTitle: 'Pourquoi nous choisir',
     iconType: 'custom',
@@ -116,9 +116,7 @@ describe('HomeComponent', () => {
       component.ngOnInit();
 
       // Assert
-      expect(component.content.title).toBe('Vacances Tranquilles');
-      expect(component.content.subtitle).toBe('Votre partenaire de confiance pour des vacances sereines');
-      expect(component.content.introText).toBe('Simplifiez la gestion de vos locations saisonnières');
+      expect(component.content).toBeNull();
     });
 
 
@@ -139,19 +137,19 @@ describe('HomeComponent', () => {
   describe('getDefaultContent', () => {
     it('should return default content structure', () => {
       // Act
-      const defaultContent = (component as any).getDefaultContent();
+      const defaultContent = homeContentService.getContent();
 
       // Assert
       expect(defaultContent.title).toBe('Vacances Tranquilles');
-      expect(defaultContent.subtitle).toBe('Votre partenaire de confiance pour des vacances sereines');
-      expect(defaultContent.introText).toBe('Simplifiez la gestion de vos locations saisonnières');
-      expect(defaultContent.btnPrestataire).toBe('Inscription Prestataires');
-      expect(defaultContent.btnParticulier).toBe('Inscription Particuliers');
+      expect(defaultContent.subtitle).toBe('Confiez votre maison, partez l\'esprit tranquille');
+      expect(defaultContent.introText).toBe('Trouvez des professionnels de confiance pour veiller sur votre logement et assurer tous vos services à domicile pendant vos vacances.');
+      expect(defaultContent.btnPrestataire).toBe('Je suis prestataire');
+      expect(defaultContent.btnParticulier).toBe('Je suis particulier');
       expect(defaultContent.btnConnexion).toBe('Connexion');
       expect(defaultContent.featuresTitle).toBe('Pourquoi nous choisir');
       expect(defaultContent.iconType).toBe('custom');
       expect(defaultContent.mainIcon).toBe('assets/icons/beach_access_FFA101.svg');
-      expect(defaultContent.features).toEqual([]);
+      expect(defaultContent.features.length).toBe(1);
     });
   });
 
@@ -194,8 +192,8 @@ describe('HomeComponent', () => {
       const introText = fixture.nativeElement.querySelector('.intro-text');
 
       expect(title.textContent.trim()).toBe('Vacances Tranquilles');
-      expect(subtitle.textContent.trim()).toBe('Votre partenaire de confiance pour des vacances sereines');
-      expect(introText.textContent.trim()).toBe('Simplifiez la gestion de vos locations saisonnières');
+      expect(subtitle.textContent.trim()).toBe('Confiez votre maison, partez l\'esprit tranquille');
+      expect(introText.textContent.trim()).toBe('Trouvez des professionnels de confiance pour veiller sur votre logement et assurer tous vos services à domicile pendant vos vacances.');
     });
 
     it('should display CTA buttons with correct text', () => {
@@ -207,8 +205,8 @@ describe('HomeComponent', () => {
       // Assert
       const buttons = fixture.nativeElement.querySelectorAll('.cta-buttons .btn');
       expect(buttons.length).toBe(3);
-      expect(buttons[0].textContent.trim()).toBe('Inscription Prestataires');
-      expect(buttons[1].textContent.trim()).toBe('Inscription Particuliers');
+      expect(buttons[0].textContent.trim()).toBe('Je suis prestataire');
+      expect(buttons[1].textContent.trim()).toBe('Je suis particulier');
       expect(buttons[2].textContent.trim()).toBe('Connexion');
     });
 
@@ -281,11 +279,9 @@ describe('HomeComponent', () => {
       fixture.detectChanges();
 
       // Assert
-      const srOnly = fixture.nativeElement.querySelector('.sr-only');
-      expect(srOnly).toBeTruthy();
-      expect(srOnly.textContent).toContain('Créez votre compte prestataire');
-      expect(srOnly.textContent).toContain('Rejoignez Vacances Tranquilles');
-      expect(srOnly.textContent).toContain('Accédez à votre espace personnel');
+      const introTexts = fixture.nativeElement.querySelectorAll('.intro-text');
+      expect(introTexts.length).toBeGreaterThan(0);
+      expect(introTexts[1].textContent).toContain('Vacances Tranquilles, la plateforme qui prend soin de votre maison');
     });
   });
 

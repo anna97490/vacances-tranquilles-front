@@ -60,22 +60,27 @@ export class LoginFormComponent {
   getPasswordErrorText(): string {
     const control = this.form?.get('userSecret');
     if (!control || !control.errors || !control.touched) return '';
-
+    
     if (control.errors['required']) {
       return 'Le mot de passe est requis';
     }
 
-    const constraints: string[] = [];
-    if (control.errors['minLength']) constraints.push('au moins 8 caractères');
-    if (control.errors['lowercase']) constraints.push('une minuscule');
-    if (control.errors['uppercase']) constraints.push('une majuscule');
-    if (control.errors['number']) constraints.push('un chiffre');
-    if (control.errors['special']) constraints.push('un caractère spécial');
+    const constraints = [
+      { key: 'minLength', label: 'au moins 8 caractères' },
+      { key: 'lowercase', label: 'une minuscule' },
+      { key: 'uppercase', label: 'une majuscule' },
+      { key: 'number', label: 'un chiffre' },
+      { key: 'special', label: 'un caractère spécial' }
+    ];
 
-    if (constraints.length === 0) return '';
+    const missing = constraints
+      .filter(constraint => control.errors && control.errors[constraint.key])
+      .map(constraint => constraint.label);
 
-    const last = constraints.pop();
-    const prefix = constraints.length > 0 ? constraints.join(', ') + ' et ' : '';
+    if (missing.length === 0) return '';
+
+    const last = missing.pop();
+    const prefix = missing.length > 0 ? missing.join(', ') + ' et ' : '';
     return `Le mot de passe doit contenir ${prefix}${last}`;
   }
 
@@ -172,27 +177,22 @@ export class LoginFormComponent {
 
   /**
    * Construit le résumé des erreurs du formulaire
-   * Récupère les erreurs des champs email et mot de passe et les ajoute à errorSummaryItems
    */
   private buildErrorSummary(): void {
-    this.errorSummaryItems = [];
-    const controls: Array<{ id: string; label: string; message: string }> = [];
+    const controls = [
+      { id: 'email', label: 'Email', ctrl: this.form.get('email') },
+      { id: 'userSecret', label: 'Mot de passe', ctrl: this.form.get('userSecret') }
+    ];
 
-    const emailCtrl = this.form.get('email');
-    if (emailCtrl && emailCtrl.invalid) {
-      const message = emailCtrl.hasError('required')
-        ? "L'email est requis"
-        : 'Format d\'email invalide';
-      controls.push({ id: 'email', label: 'Email', message });
-    }
-
-    const passCtrl = this.form.get('userSecret');
-    if (passCtrl && passCtrl.invalid) {
-      const message = this.getPasswordErrorText() || 'Mot de passe invalide';
-      controls.push({ id: 'userSecret', label: 'Mot de passe', message });
-    }
-
-    this.errorSummaryItems = controls;
+    this.errorSummaryItems = controls
+      .filter(({ ctrl }) => ctrl && ctrl.invalid)
+      .map(({ id, label, ctrl }) => ({
+        id,
+        label,
+        message: id === 'userSecret' ? this.getPasswordErrorText() : 
+          (ctrl?.hasError('required') ? "L'email est requis" : 'Format d\'email invalide')
+      }))
+      .filter(item => !!item.message);
   }
 
   /**
