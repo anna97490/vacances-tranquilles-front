@@ -71,11 +71,10 @@
   margin-top: auto;
 
   .info-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 1.5rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem; 
   }
 
   .info-card {
@@ -87,6 +86,8 @@
     border-radius: var(--border-radius-base);
     min-height: 80px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    max-width: 300px;    
+    width: 100%;
 
     mat-icon {
       background: var(--secondary-text-color);

@@ -6,6 +6,7 @@ import { AuthStorageService } from '../../services/login/auth-storage.service';
 import { ReservationService, ReservationResponseDTO } from '../../services/reservation/reservation.service';
 import { mapStatusColor, mapStatusLabel } from '../../models/reservation-status';
 import { take } from 'rxjs/operators';
+import { BackButtonComponent } from '../../components/shared/back-button/back-button.component';
 
 /**
  * Composant pour afficher les détails d'une réservation spécifique.
@@ -14,7 +15,7 @@ import { take } from 'rxjs/operators';
 @Component({
   selector: 'app-reservation-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, BackButtonComponent],
   templateUrl: './reservation-detail.component.html',
   styleUrl: './reservation-detail.component.scss'
 })

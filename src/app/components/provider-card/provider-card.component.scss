@@ -116,10 +116,10 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    display: block;
     width: 100%;
-    text-align: center;
-    align-self: center;
+    display: flex;  
+    align-items: center; 
+    justify-content: center; 
 
     &:hover {
       background: var(--tertiary-color) !important;

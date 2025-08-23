@@ -149,9 +149,15 @@
 }
 
 .login-register a {
-  color: var(--quaternary-color);
+  color: var( --tertiary-color);
   text-decoration: none;
   font-weight: 500;
+}
+
+.login-register a:hover,
+.login-register a:focus-visible {
+  text-decoration:underline;
+  cursor: pointer;
 }
 
 .required-asterisk {
