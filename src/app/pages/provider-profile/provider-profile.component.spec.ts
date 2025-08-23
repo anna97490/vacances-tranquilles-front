@@ -6,6 +6,7 @@ import { of, throwError } from 'rxjs';
 import { ProviderProfileComponent } from './provider-profile.component';
 import { UserInformationService } from '../../services/user-information/user-information.service';
 import { User, UserRole } from '../../models/User';
+import { BackButtonComponent } from '../../components/shared/back-button/back-button.component';
 
 describe('ProviderProfileComponent', () => {
   let component: ProviderProfileComponent;
@@ -164,6 +165,63 @@ describe('ProviderProfileComponent', () => {
       component.retryLoadData();
 
       expect(userInformationService.getUserById).toHaveBeenCalledWith(123);
+    });
+  });
+
+  describe('goBack', () => {
+    it('should navigate back to available providers page', () => {
+      component.goBack();
+      expect(router.navigate).toHaveBeenCalledWith(['/available-providers']);
+    });
+
+    it('should be called when back button is clicked', () => {
+      // Configurer les mocks nécessaires
+      userInformationService.getUserById.and.returnValue(of(mockUser));
+      component.ngOnInit();
+      
+      spyOn(component, 'goBack');
+      fixture.detectChanges();
+      
+      const backButton = fixture.nativeElement.querySelector('app-back-button');
+      expect(backButton).toBeTruthy();
+      
+      // Simuler le clic sur le bouton retour
+      const backButtonComponent = fixture.debugElement.query(backButton => backButton.componentInstance instanceof BackButtonComponent);
+      if (backButtonComponent) {
+        backButtonComponent.componentInstance.backClick.emit();
+        expect(component.goBack).toHaveBeenCalled();
+      }
+    });
+  });
+
+  describe('Back button integration', () => {
+    it('should render back button with correct aria-label and title', () => {
+      // Configurer les mocks nécessaires
+      userInformationService.getUserById.and.returnValue(of(mockUser));
+      component.ngOnInit();
+      fixture.detectChanges();
+      
+      const backButton = fixture.nativeElement.querySelector('app-back-button');
+      expect(backButton).toBeTruthy();
+      
+      // Vérifier que le composant back-button est bien intégré
+      const backButtonComponent = fixture.debugElement.query(backButton => backButton.componentInstance instanceof BackButtonComponent);
+      expect(backButtonComponent).toBeTruthy();
+    });
+
+    it('should have correct accessibility attributes on back button', () => {
+      // Configurer les mocks nécessaires
+      userInformationService.getUserById.and.returnValue(of(mockUser));
+      component.ngOnInit();
+      fixture.detectChanges();
+      
+      const backButton = fixture.nativeElement.querySelector('app-back-button');
+      expect(backButton).toBeTruthy();
+      
+      // Vérifier les attributs d'accessibilité
+      const button = backButton.querySelector('button');
+      expect(button.getAttribute('aria-label')).toBe('Retour à la page des prestataires disponibles');
+      expect(button.getAttribute('title')).toBe('Retour à la page des prestataires disponibles');
     });
   });
 

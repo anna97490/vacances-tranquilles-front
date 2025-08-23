@@ -71,11 +71,14 @@
   }
 }
 
-.conversation-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
+  .conversation-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0; 
+    padding: 0; 
+  }
 
 .conversation-card {
   padding: 32px;
@@ -167,9 +170,9 @@
     background: var(--button-color);
     color: var(--secondary-text-color);
     border-radius: var(--border-radius-base);
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
-    padding: 8px 16px;
+    padding: 12px 12px;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -220,6 +223,10 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+  }
+
+  .footer {
+    justify-content: center;
   }
 }
 
@@ -273,3 +280,4 @@ a:focus,
     outline: none !important;
   }
 }
+

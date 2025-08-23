@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConversationsService, ReservationResponseDTO } from '../../services/conversation/conversations.service';
 import { Message } from '../../models/Message';
-import { Conversation } from '../../models/Conversation';
+import { BackButtonComponent } from '../../components/shared/back-button/back-button.component';
 
 // Interface pour les données brutes de l'API
 interface MessageDTO {
@@ -18,7 +18,7 @@ interface MessageDTO {
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BackButtonComponent],
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.scss']
 })
