@@ -74,7 +74,7 @@ export class LoginFormComponent {
     ];
 
     const missing = constraints
-      .filter(constraint => control.errors?.[constraint.key])
+      .filter(constraint => control.errors && control.errors[constraint.key])
       .map(constraint => constraint.label);
 
     if (missing.length === 0) return '';
@@ -199,7 +199,8 @@ export class LoginFormComponent {
       .map(({ id, label, ctrl }) => ({
         id,
         label,
-        message: this.getMessageForField(id, ctrl)
+        message: id === 'userSecret' ? this.getPasswordErrorText() : 
+          (ctrl?.hasError('required') ? "L'email est requis" : 'Format d\'email invalide')
       }))
       .filter(item => !!item.message);
   }

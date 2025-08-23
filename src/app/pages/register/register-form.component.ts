@@ -184,7 +184,7 @@ export class RegisterFormComponent {
     ];
 
     const missing = constraints
-      .filter(constraint => control.errors?.[constraint.key])
+      .filter(constraint => control.errors && control.errors[constraint.key])
       .map(constraint => constraint.label);
 
     if (missing.length === 0) return '';
@@ -257,7 +257,7 @@ export class RegisterFormComponent {
     const messages = fieldMessages[fieldName];
     if (messages) {
       for (const [key, message] of Object.entries(messages)) {
-        if (control.errors?.[key]) {
+        if (control.errors[key]) {
           return message;
         }
       }
