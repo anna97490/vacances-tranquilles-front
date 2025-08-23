@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation, ElementRef, ViewChild } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -173,6 +173,16 @@ export class LoginFormComponent {
     } else {
       this.apiError = error.error?.message || 'Erreur de connexion inconnue';
     }
+  }
+
+  /**
+   * Obtient le message d'erreur pour un champ donné
+   */
+  private getMessageForField(id: string, ctrl: AbstractControl | null): string {
+    if (id === 'userSecret') {
+      return this.getPasswordErrorText();
+    }
+    return ctrl?.hasError('required') ? "L'email est requis" : 'Format d\'email invalide';
   }
 
   /**
